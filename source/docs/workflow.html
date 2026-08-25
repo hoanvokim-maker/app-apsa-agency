@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script>
+  document.documentElement.style.visibility = 'hidden';
+  fetch('../api/auth-api.php?action=me', { credentials: 'same-origin' })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(res => {
+      if (!res.ok) throw new Error();
+      window.__APSA_USER = res.data;
+      document.documentElement.style.visibility = 'visible';
+    })
+    .catch(() => {
+      location.replace('../login.html?next=' + encodeURIComponent(location.pathname + location.search));
+    });
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quy trình làm việc – APSA</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Oxanium', -apple-system, sans-serif;
+    background: #000000;
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  .back {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #9a9a9a;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1px solid #2b2b2b;
+    transition: all 0.2s;
+  }
+  .back:hover { color: #ffffff; border-color: #4d4d4d; }
+  .card {
+    background: #141414;
+    border: 1px solid #2b2b2b;
+    border-radius: 20px;
+    padding: 48px 40px;
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+  }
+  .icon { font-size: 52px; margin-bottom: 20px; display: block; }
+  h1 { font-size: 22px; font-weight: 800; margin-bottom: 10px; color: #fff; }
+  .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #e6e6e6;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+  p { color: #888; font-size: 15px; line-height: 1.6; }
+  .divider { height: 1px; background: #2b2b2b; margin: 28px 0; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #2b2b2b;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 12px;
+    transition: background 0.2s;
+  }
+  .btn:hover { background: #2b2b2b; }
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/theme.css?v=4" />
+</head>
+<body>
+<a class="back" href="../index.html">
+  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+  Trang chủ
+</a>
+
+<div class="card">
+  <span class="icon">📋</span>
+  <h1>Quy trình làm việc</h1>
+  <span class="badge">🚧 Đang cập nhật</span>
+  <p>Tài liệu hướng dẫn quy trình vận hành nội bộ của APSA đang được biên soạn.<br><br>Đang cập nhật chức năng này.</p>
+  <div class="divider"></div>
+  <a class="btn" href="../index.html">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Quay về trang chủ
+  </a>
+</div>
+</body>
+</html>

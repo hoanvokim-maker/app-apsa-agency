@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script>
+  document.documentElement.style.visibility = 'hidden';
+  fetch('./api/auth-api.php?action=me', { credentials: 'same-origin' })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(res => {
+      if (!res.ok) throw new Error();
+      window.__APSA_USER = res.data;
+      document.documentElement.style.visibility = 'visible';
+    })
+    .catch(() => {
+      location.replace('./login.html?next=' + encodeURIComponent(location.pathname + location.search));
+      return;
+    })
+    .then(() => { if (window.__APSA_USER) window.dispatchEvent(new Event('apsa-auth-ready')); });
+</script>
+<meta charset="UTF-8" />
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=1">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=1">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#dff20d">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chi tiết công nợ — APSA</title>
+<meta name="description" content="Chi tiết công nợ của một công ty: người liên hệ, danh sách khoản nợ, lịch sử thanh toán và thay đổi." />
+<style>
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root{
+  --bg:#000000; --bg2:#0b0b0b; --bg3:#141414;
+  --border:rgba(255,255,255,.08); --border-hover:rgba(255,255,255,.18);
+  --text:#ffffff; --text2:#9a9a9a; --text3:#5e5e5e;
+  --accent:#dff20d; --accent2:#c9dd00; --accent-glow:rgba(223,242,13,.35);
+  --green:#dff20d; --orange:#ffffff; --pink:#c9dd00; --cyan:#ffffff; --red:#ff4d4d; --yellow:#dff20d;
+  --radius:14px;
+}
+body{ font-family:'Oxanium', sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+body::before{ content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); }
+
+header{ position:sticky; top:0; z-index:100; height:56px; padding:0 20px;
+  background:rgba(0,0,0,.85); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; }
+.back{ display:flex; align-items:center; gap:7px; text-decoration:none; color:var(--text2); font-size:13px; font-weight:600;
+  padding:6px 12px; border-radius:20px; border:1px solid var(--border); transition:.2s; flex-shrink:0; white-space:nowrap; }
+.back:hover{ color:var(--text); border-color:var(--border-hover); background:var(--bg3); }
+.page-title{ font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px; flex-shrink:0; white-space:nowrap; }
+.page-title .count{ font-size:11px; font-weight:600; color:var(--text3); background:var(--bg3); border:1px solid var(--border); padding:2px 8px; border-radius:20px; }
+.header-search{ flex:1; max-width:300px; position:relative; }
+.header-search svg{ position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--text3); pointer-events:none; }
+.search-input{ width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:40px;
+  padding:8px 14px 8px 36px; color:var(--text); font-size:13px; font-family:inherit; outline:none; transition:.2s; }
+.search-input::placeholder{ color:var(--text3); }
+.search-input:focus{ border-color:rgba(223,242,13,.5); box-shadow:0 0 0 3px rgba(223,242,13,.1); }
+.hsel{ background:var(--bg3); border:1px solid var(--border); border-radius:20px; padding:7px 12px; color:var(--text2);
+  font-size:12px; font-family:inherit; font-weight:600; outline:none; max-width:220px; cursor:pointer; }
+.hsel:focus{ border-color:rgba(223,242,13,.5); color:var(--text); }
+.hbtn{ display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-family:inherit; font-size:12px; font-weight:600;
+  padding:7px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text2); transition:.2s; white-space:nowrap; text-decoration:none; }
+.hbtn:hover{ color:var(--text); border-color:var(--border-hover); background:var(--bg3); }
+.hbtn.active{ color:var(--text); background:var(--bg3); border-color:var(--border-hover); }
+.hbtn.primary{ background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border-color:transparent; box-shadow:0 0 12px var(--accent-glow); }
+.hbtn.primary:hover{ transform:translateY(-1px); box-shadow:0 4px 20px var(--accent-glow); }
+.who{ display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text2); padding:5px 10px;
+  border-radius:20px; border:1px solid var(--border); white-space:nowrap; flex-shrink:0; }
+.avatar{ width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; font-size:10px; font-weight:800; flex-shrink:0; }
+
+.wrap{ max-width:1560px; margin:0 auto; padding:18px 24px 80px; position:relative; z-index:1; }
+
+.stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+.stat{ background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; position:relative; overflow:hidden; }
+.stat::after{ content:''; position:absolute; inset:0 auto 0 0; width:3px; background:var(--accent); opacity:.8; }
+.stat.green::after{ background:var(--green); } .stat.orange::after{ background:var(--orange); } .stat.red::after{ background:var(--red); }
+.stat .lbl{ font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--text3); font-weight:700; margin-bottom:6px; }
+.stat .val{ font-size:20px; font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:-.5px; }
+.stat .sub{ font-size:11px; color:var(--text3); margin-top:3px; }
+.stat.green .val{ color:#eaff6b; } .stat.orange .val{ color:#ffffff; } .stat.red .val{ color:#ff8f8f; }
+
+.toolbar{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+.toolbar .spacer{ flex:1; }
+.pill{ white-space:nowrap; padding:7px 14px; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer;
+  border:1px solid var(--border); background:var(--bg2); color:var(--text2); transition:.2s; font-family:inherit; display:inline-flex; align-items:center; gap:6px; }
+.pill:hover{ border-color:var(--border-hover); color:var(--text); }
+.pill.active{ background:var(--accent); border-color:var(--accent); color:#fff; box-shadow:0 0 14px var(--accent-glow); }
+.pill .n{ font-size:10px; font-weight:700; background:rgba(255,255,255,.14); padding:1px 7px; border-radius:20px; }
+.pill.active .n{ background:rgba(255,255,255,.26); }
+
+.tbl-wrap{ overflow-x:auto; border-radius:var(--radius); border:1px solid var(--border); }
+table.t{ width:100%; border-collapse:collapse; font-size:12.5px; min-width:1120px; }
+table.t thead th{ text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; color:var(--text3);
+  font-weight:700; padding:10px 12px; background:var(--bg2); border-bottom:1px solid var(--border); white-space:nowrap; }
+table.t tbody td{ padding:10px 12px; border-bottom:1px solid var(--border); background:var(--bg2); vertical-align:middle; }
+table.t tbody tr.inv{ transition:background .15s; cursor:pointer; }
+table.t tbody tr.inv:hover td{ background:var(--bg3); }
+table.t tbody tr.overdue td{ background:rgba(255,77,77,.05); }
+table.t tbody tr.overdue:hover td{ background:rgba(255,77,77,.1); }
+table.t tbody tr.done td{ opacity:.62; }
+.num{ text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; font-weight:600; }
+.num.zero{ color:var(--text3); font-weight:400; }
+.nm{ font-weight:700; }
+.sm{ color:var(--text2); font-size:11.5px; }
+.xs{ color:var(--text3); font-size:11px; }
+.caret{ color:var(--text3); font-size:10px; display:inline-block; transition:transform .2s; }
+tr.open .caret{ transform:rotate(90deg); color:var(--accent2); }
+.chip{ display:inline-block; font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:20px; white-space:nowrap; }
+.chip.unpaid{ color:#e6e6e6; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); }
+.chip.partial{ color:#eaff6b; background:rgba(223,242,13,.15); border:1px solid rgba(223,242,13,.36); }
+.chip.paid{ color:#eaff6b; background:rgba(223,242,13,.14); border:1px solid rgba(223,242,13,.34); }
+.chip.od{ color:#ff8f8f; background:rgba(255,77,77,.15); border:1px solid rgba(255,77,77,.36); }
+.actions-cell{ white-space:nowrap; text-align:right; }
+.act{ width:27px; height:27px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center;
+  background:transparent; border:1px solid transparent; color:var(--text3); cursor:pointer; font-size:12px; transition:.15s; }
+.act:hover{ color:#fff; background:var(--accent); border-color:var(--accent); }
+.act.pay:hover{ background:var(--green); border-color:var(--green); }
+.act.del:hover{ background:var(--red); border-color:var(--red); }
+
+tr.paylist > td{ padding:0 !important; background:var(--bg) !important; }
+.paybox{ padding:12px 16px 14px 44px; }
+.paybox .ph{ font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--text3); font-weight:700; margin-bottom:8px; }
+table.pt{ width:100%; border-collapse:collapse; font-size:12px; }
+table.pt th{ text-align:left; font-size:10px; text-transform:uppercase; color:var(--text3); font-weight:700; padding:5px 10px; }
+table.pt td{ padding:6px 10px; border-top:1px solid var(--border); background:transparent; }
+.pay-none{ font-size:12px; color:var(--text3); font-style:italic; }
+
+.empty{ text-align:center; padding:80px 24px; color:var(--text3); }
+.empty .ico{ font-size:52px; margin-bottom:16px; }
+.empty h3{ font-size:17px; color:var(--text2); font-weight:600; margin-bottom:8px; }
+.empty p{ font-size:13px; line-height:1.7; max-width:440px; margin:0 auto; }
+
+.ov{ display:none; position:fixed; inset:0; background:rgba(0,0,0,.78); backdrop-filter:blur(8px);
+  z-index:300; align-items:center; justify-content:center; padding:24px; overflow-y:auto; }
+.ov.open{ display:flex; }
+#pyOv, #cfOv{ z-index:700; }
+.modal{ background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:30px; width:100%; max-width:620px; position:relative; margin:auto; }
+.modal.narrow{ max-width:440px; }
+.modal h2{ font-size:19px; font-weight:700; margin-bottom:6px; }
+.modal .sub{ font-size:12.5px; color:var(--text2); margin-bottom:22px; }
+.x{ position:absolute; top:14px; right:14px; width:31px; height:31px; border-radius:50%; background:var(--bg3);
+  border:1px solid var(--border); color:var(--text2); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:.2s; }
+.x:hover{ color:var(--text); background:var(--border); }
+.fg{ margin-bottom:14px; }
+.fg label{ display:block; font-size:11px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+.fg input, .fg textarea, .fg select{ width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:10px;
+  padding:9px 13px; color:var(--text); font-size:13.5px; font-family:inherit; outline:none; transition:border-color .2s; resize:vertical; }
+.fg input:focus, .fg textarea:focus, .fg select:focus{ border-color:rgba(223,242,13,.5); }
+.fg .hint{ font-size:11px; color:var(--text3); margin-top:5px; line-height:1.5; }
+.fg .money-hint{ color:var(--accent2); font-weight:600; }
+.row2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.row3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+.quick{ display:flex; gap:6px; flex-wrap:wrap; margin-top:7px; }
+.quick button{ font-size:11px; font-weight:600; padding:4px 10px; border-radius:20px; cursor:pointer; font-family:inherit;
+  border:1px solid var(--border); background:var(--bg3); color:var(--text2); transition:.15s; }
+.quick button:hover{ color:#fff; background:var(--accent); border-color:var(--accent); }
+.recap{ background:var(--bg3); border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin-bottom:18px; font-size:12.5px; line-height:1.9; }
+.recap b{ color:var(--text); }
+.recap .r{ display:flex; justify-content:space-between; gap:12px; }
+.recap .r span:last-child{ font-variant-numeric:tabular-nums; font-weight:700; }
+.btn{ width:100%; padding:12px; border:none; border-radius:10px; font-size:14px; font-weight:600; font-family:inherit;
+  cursor:pointer; transition:.2s; margin-top:6px; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; box-shadow:0 0 20px var(--accent-glow); }
+.btn:hover{ transform:translateY(-1px); box-shadow:0 4px 24px var(--accent-glow); }
+.btn:disabled{ opacity:.5; cursor:not-allowed; transform:none; }
+.btn.green{ background:linear-gradient(135deg,#b9cc00,#dff20d); box-shadow:0 0 20px rgba(223,242,13,.3); }
+.btn.ghost{ background:transparent; border:1px solid var(--border); color:var(--text2); box-shadow:none; }
+.btn.ghost:hover{ color:var(--text); border-color:var(--border-hover); background:var(--bg3); }
+.btn.danger{ background:transparent; border:1px solid rgba(255,77,77,.4); color:#ff6b6b; box-shadow:none; }
+.btn.danger:hover{ background:rgba(255,77,77,.12); border-color:var(--red); }
+.toast{ position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(90px); background:var(--bg3);
+  border:1px solid var(--border); border-radius:12px; padding:12px 20px; font-size:13px; font-weight:500; z-index:900;
+  transition:transform .3s cubic-bezier(.4,0,.2,1); box-shadow:0 12px 40px rgba(0,0,0,.5); max-width:88vw; text-align:center; }
+.toast.show{ transform:translateX(-50%) translateY(0); }
+.toast.err{ border-color:rgba(255,77,77,.5); color:#ff8f8f; }
+.toast.ok{ border-color:rgba(223,242,13,.5); color:#eaff6b; }
+.bar{ position:fixed; top:0; left:0; height:3px; width:0; background:linear-gradient(90deg,var(--accent),var(--accent2)); z-index:999; transition:width .25s; }
+@media(max-width:900px){
+  header{ padding:8px 12px; gap:8px; flex-wrap:wrap; height:auto; }
+  .header-search{ flex-basis:100%; max-width:none; order:6; }
+  .wrap{ padding:14px 14px 70px; }
+  .stats{ grid-template-columns:1fr 1fr; }
+  .modal{ padding:22px 18px; }
+  .row2, .row3{ grid-template-columns:1fr; }
+}
+
+/* ── Bổ sung cho trang công nợ theo khách hàng ─────────────── */
+.legend{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; font-size:11.5px; color:var(--text3);
+  background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:9px 14px; margin-bottom:14px; }
+.legend b{ color:var(--text2); font-weight:700; }
+.legend .lg{ display:inline-flex; align-items:center; gap:6px; }
+.dot{ width:9px; height:9px; border-radius:50%; display:inline-block; }
+.dot.yellow{ background:#ffd54a; }
+.dot.orange{ background:#ff9f43; }
+.dot.red{ background:#ff4d4d; }
+
+tr.al-yellow td{ background:rgba(255,213,74,.07) !important; }
+tr.al-yellow:hover td{ background:rgba(255,213,74,.13) !important; }
+tr.al-orange td{ background:rgba(255,159,67,.09) !important; }
+tr.al-orange:hover td{ background:rgba(255,159,67,.15) !important; }
+tr.al-red td{ background:rgba(255,77,77,.10) !important; }
+tr.al-red:hover td{ background:rgba(255,77,77,.16) !important; }
+tr.al-yellow td:first-child{ box-shadow:inset 3px 0 0 #ffd54a; }
+tr.al-orange td:first-child{ box-shadow:inset 3px 0 0 #ff9f43; }
+tr.al-red td:first-child{ box-shadow:inset 3px 0 0 #ff4d4d; }
+tr.flash td{ animation:flash 1.1s ease-out; }
+@keyframes flash{ 0%{ background:rgba(223,242,13,.22); } 100%{ } }
+
+.chip.yellow{ color:#ffd54a; background:rgba(255,213,74,.14); border:1px solid rgba(255,213,74,.4); }
+.chip.orange{ color:#ff9f43; background:rgba(255,159,67,.14); border:1px solid rgba(255,159,67,.4); }
+.chip.red   { color:#ff8f8f; background:rgba(255,77,77,.15);  border:1px solid rgba(255,77,77,.4); }
+.chip.ok    { color:#9a9a9a; background:rgba(255,255,255,.06); border:1px solid var(--border); }
+
+.qcell{ white-space:nowrap; }
+.qform{ display:inline-flex; align-items:center; gap:4px; }
+.qin{ width:118px; background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:6px 9px;
+  color:var(--text); font-size:12px; font-family:inherit; outline:none; text-align:right; font-variant-numeric:tabular-nums; transition:.15s; }
+.qin::placeholder{ color:var(--text3); font-weight:400; }
+.qin:focus{ border-color:rgba(223,242,13,.55); box-shadow:0 0 0 3px rgba(223,242,13,.09); }
+.qin.pay:focus{ border-color:rgba(120,255,150,.5); box-shadow:0 0 0 3px rgba(120,255,150,.09); }
+.qbtn{ width:27px; height:27px; border-radius:8px; border:1px solid var(--border); background:var(--bg3); color:var(--text2);
+  cursor:pointer; font-size:12px; display:inline-flex; align-items:center; justify-content:center; transition:.15s; flex-shrink:0; }
+.qbtn:hover{ color:#000; background:var(--accent); border-color:var(--accent); }
+.qbtn.pay:hover{ background:#8ee06a; border-color:#8ee06a; }
+.qbtn:disabled{ opacity:.4; cursor:not-allowed; }
+.qhint{ font-size:10px; color:var(--text3); margin-top:3px; display:block; }
+
+/* Drawer lịch sử */
+.drawer{ position:fixed; top:0; right:0; bottom:0; width:440px; max-width:94vw; background:var(--bg2);
+  border-left:1px solid var(--border); z-index:800; transform:translateX(105%); transition:transform .28s cubic-bezier(.4,0,.2,1);
+  display:flex; flex-direction:column; box-shadow:-20px 0 60px rgba(0,0,0,.6); }
+.drawer.open{ transform:translateX(0); }
+.drawer .dh{ padding:16px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+.drawer .dh h3{ font-size:15px; font-weight:700; flex:1; }
+.drawer .db{ overflow-y:auto; padding:8px 0 24px; flex:1; }
+.log{ padding:11px 18px; border-bottom:1px solid var(--border); font-size:12.5px; line-height:1.55; }
+.log:hover{ background:var(--bg3); }
+.log .lt{ font-size:10.5px; color:var(--text3); display:flex; gap:8px; margin-bottom:3px; }
+.log .ls{ color:var(--text); }
+.log .lc{ font-size:11px; color:var(--text2); margin-top:2px; }
+.log .tag{ display:inline-block; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.4px;
+  padding:1px 7px; border-radius:20px; border:1px solid var(--border); color:var(--text3); }
+.log .tag.pay{ color:#a7e07a; border-color:rgba(167,224,122,.4); background:rgba(167,224,122,.1); }
+.log .tag.create{ color:#eaff6b; border-color:rgba(223,242,13,.4); background:rgba(223,242,13,.1); }
+.log .tag.delete, .log .tag.purge{ color:#ff8f8f; border-color:rgba(255,77,77,.4); background:rgba(255,77,77,.1); }
+.log .tag.update{ color:#8fd0ff; border-color:rgba(143,208,255,.4); background:rgba(143,208,255,.1); }
+
+.sect{ margin-top:22px; }
+.sect .sh{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.sect .sh h2{ font-size:14px; font-weight:700; letter-spacing:.3px; }
+.sect .sh .cnt2{ font-size:10.5px; font-weight:700; color:var(--text3); background:var(--bg3);
+  border:1px solid var(--border); padding:2px 9px; border-radius:20px; }
+.sect .sh .spacer{ flex:1; }
+.custcard{ background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; margin-bottom:16px;
+  display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
+.custcard .nm2{ font-size:19px; font-weight:800; }
+.custcard .meta{ font-size:12.5px; color:var(--text2); }
+.custcard .meta span{ margin-right:14px; }
+table.t tfoot td{ padding:10px 12px; background:var(--bg3); border-top:1px solid var(--border-hover); font-weight:800; }
+
+table.t thead th.num{ text-align:right; }
+
+.hbtn.green-b{ border-color:rgba(167,224,122,.4); color:#a7e07a; }
+.hbtn.green-b:hover{ background:rgba(167,224,122,.12); color:#c6f2a5; }
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/theme.css?v=11" />
+<script src="/apsa-ui.js?v=4"></script>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" id="apsa-ui-sprite" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><symbol id="i-tent" viewBox="0 0 48 48"><path d="M24 4 44 39H4L24 4Z" fill="#ffffff"/><path d="M24 4 31 39H17L24 4Z" fill="#dff20d"/><path d="M24 21c3.1 0 5.2 3.6 5.2 9v9H18.8v-9c0-5.4 2.1-9 5.2-9Z" fill="#0d0d0d"/><rect x="2" y="39" width="44" height="5" rx="2.5" fill="#5e5e5e"/></symbol><symbol id="i-video" viewBox="0 0 48 48"><rect x="2" y="13" width="29" height="23" rx="4" fill="#ffffff"/><path d="M33 22.5 45 14v21l-12-8.5v-4Z" fill="#5e5e5e"/><circle cx="16.5" cy="24.5" r="6.5" fill="#dff20d"/><circle cx="16.5" cy="24.5" r="2.6" fill="#0d0d0d"/></symbol><symbol id="i-printer" viewBox="0 0 48 48"><rect x="12" y="3" width="24" height="12" fill="#5e5e5e"/><rect x="2" y="15" width="44" height="19" rx="4" fill="#ffffff"/><circle cx="39" cy="21.5" r="2.8" fill="#0d0d0d"/><rect x="12" y="29" width="24" height="16" rx="2" fill="#dff20d"/><rect x="16" y="34" width="16" height="3" fill="#0d0d0d"/><rect x="16" y="39" width="11" height="3" fill="#0d0d0d"/></symbol><symbol id="i-box" viewBox="0 0 48 48"><path d="M24 3 44 12.5 24 22 4 12.5 24 3Z" fill="#ffffff"/><path d="M4 12.5 24 22v23L4 35.5v-23Z" fill="#5e5e5e"/><path d="M44 12.5 24 22v23l20-9.5v-23Z" fill="#dff20d"/></symbol><symbol id="i-trash" viewBox="0 0 48 48"><rect x="18" y="3" width="12" height="7" rx="2.5" fill="#dff20d"/><rect x="6" y="11" width="36" height="6.5" rx="3.25" fill="#5e5e5e"/><path d="M10 19h28l-2.4 23.5a3.2 3.2 0 0 1-3.2 2.9H15.6a3.2 3.2 0 0 1-3.2-2.9L10 19Z" fill="#ffffff"/><rect x="17.5" y="24" width="4" height="15" rx="2" fill="#0d0d0d"/><rect x="26.5" y="24" width="4" height="15" rx="2" fill="#0d0d0d"/></symbol><symbol id="i-clock" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="#dff20d"/><circle cx="24" cy="24" r="15.5" fill="#ffffff"/><path d="M24 13.5V25h8.5" fill="none" stroke="#0d0d0d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-download" viewBox="0 0 48 48"><path d="M19.5 3h9v18H39L24 39 9 21h10.5V3Z" fill="#dff20d"/><rect x="6" y="39" width="36" height="6" rx="3" fill="#ffffff"/></symbol><symbol id="i-upload" viewBox="0 0 48 48"><path d="M24 3 39 21H28.5v18h-9V21H9L24 3Z" fill="#dff20d"/><rect x="6" y="39" width="36" height="6" rx="3" fill="#ffffff"/></symbol><symbol id="i-warning" viewBox="0 0 48 48"><path d="M20.5 6.5a4 4 0 0 1 7 0l17.5 31A4 4 0 0 1 41.5 44h-35a4 4 0 0 1-3.5-6l17.5-31.5Z" fill="#dff20d"/><rect x="21.3" y="16" width="5.4" height="15" rx="2.7" fill="#0d0d0d"/><circle cx="24" cy="36.5" r="3.1" fill="#0d0d0d"/></symbol><symbol id="i-check" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20.5" fill="#dff20d"/><path d="M13.5 24.5 21 32l14-14.5" fill="none" stroke="#0d0d0d" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-link" viewBox="0 0 48 48"><path d="M28 13.5 32.5 9a10.5 10.5 0 0 1 15 15L43 28.5a10.5 10.5 0 0 1-15 0" fill="none" stroke="#dff20d" stroke-width="5.5" stroke-linecap="round"/><path d="M20 34.5 15.5 39a10.5 10.5 0 0 1-15-15L5 19.5a10.5 10.5 0 0 1 15 0" fill="none" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/><path d="M17 31 31 17" stroke="#5e5e5e" stroke-width="5.5" stroke-linecap="round"/></symbol><symbol id="i-mail" viewBox="0 0 48 48"><rect x="2" y="9" width="44" height="30" rx="4" fill="#ffffff"/><path d="M2 13a4 4 0 0 1 4-4h36a4 4 0 0 1 4 4L24 28.5 2 13Z" fill="#dff20d"/><path d="M2 17.5 24 33l22-15.5v4L24 37 2 21.5v-4Z" fill="#5e5e5e"/></symbol><symbol id="i-refresh" viewBox="0 0 48 48"><path d="M40 24a16 16 0 1 1-5.6-12.2" fill="none" stroke="#dff20d" stroke-width="6" stroke-linecap="round"/><path d="M36 2.5 39.5 15 27 12.5 36 2.5Z" fill="#ffffff"/></symbol><symbol id="i-file" viewBox="0 0 48 48"><path d="M10 3h19l9 9v33H10V3Z" fill="#ffffff"/><path d="M29 3l9 9h-9V3Z" fill="#5e5e5e"/><rect x="10" y="27" width="28" height="12" fill="#dff20d"/><rect x="14" y="31" width="5" height="4.5" fill="#0d0d0d"/><rect x="21.5" y="31" width="5" height="4.5" fill="#0d0d0d"/><rect x="29" y="31" width="5" height="4.5" fill="#0d0d0d"/></symbol><symbol id="i-eye" viewBox="0 0 48 48"><path d="M24 10c11.5 0 20 8.5 22.5 14C44 29.5 35.5 38 24 38S4 29.5 1.5 24C4 18.5 12.5 10 24 10Z" fill="#ffffff"/><circle cx="24" cy="24" r="9" fill="#dff20d"/><circle cx="24" cy="24" r="4.2" fill="#0d0d0d"/></symbol><symbol id="i-heart" viewBox="0 0 48 48"><path d="M24 43.5C8.5 32 2.5 26 2.5 17.6A10.8 10.8 0 0 1 24 11.8a10.8 10.8 0 0 1 21.5 5.8C45.5 26 39.5 32 24 43.5Z" fill="#dff20d"/></symbol><symbol id="i-pin" viewBox="0 0 48 48"><circle cx="24" cy="14" r="11.5" fill="#dff20d"/><rect x="18" y="22" width="12" height="7.5" rx="1.5" fill="#5e5e5e"/><path d="M24 45.5 20.4 29.5h7.2L24 45.5Z" fill="#ffffff"/></symbol><symbol id="i-camera" viewBox="0 0 48 48"><path d="M17.5 7h13l3.2 5.5H42a3.5 3.5 0 0 1 3.5 3.5v22a3.5 3.5 0 0 1-3.5 3.5H6A3.5 3.5 0 0 1 2.5 38V16A3.5 3.5 0 0 1 6 12.5h8.3L17.5 7Z" fill="#ffffff"/><circle cx="24" cy="27" r="10" fill="#dff20d"/><circle cx="24" cy="27" r="4.6" fill="#0d0d0d"/></symbol><symbol id="i-folder" viewBox="0 0 48 48"><path d="M3 8h14.5l5 6H42a3 3 0 0 1 3 3v6H3V8Z" fill="#5e5e5e"/><path d="M3 17h42a3 3 0 0 1 3 3l-3.2 17.5a3 3 0 0 1-3 2.5H3V17Z" fill="#ffffff"/><rect x="3" y="17" width="42" height="6" fill="#dff20d"/></symbol><symbol id="i-phone" viewBox="0 0 48 48"><rect x="12" y="2" width="24" height="44" rx="5" fill="#ffffff"/><rect x="16" y="9" width="16" height="26" rx="2" fill="#dff20d"/><circle cx="24" cy="40.5" r="2.8" fill="#5e5e5e"/></symbol><symbol id="i-target" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="#ffffff"/><circle cx="24" cy="24" r="13.5" fill="#5e5e5e"/><circle cx="24" cy="24" r="6" fill="#dff20d"/></symbol><symbol id="i-calendar" viewBox="0 0 48 48"><rect x="3" y="7" width="42" height="38" rx="4" fill="#ffffff"/><path d="M3 11a4 4 0 0 1 4-4h34a4 4 0 0 1 4 4v7H3v-7Z" fill="#dff20d"/><rect x="12" y="2" width="5.5" height="10" rx="2.75" fill="#5e5e5e"/><rect x="30.5" y="2" width="5.5" height="10" rx="2.75" fill="#5e5e5e"/><rect x="10" y="24" width="7" height="6" fill="#0d0d0d"/><rect x="20.5" y="24" width="7" height="6" fill="#0d0d0d"/><rect x="31" y="24" width="7" height="6" fill="#5e5e5e"/><rect x="10" y="34" width="7" height="6" fill="#5e5e5e"/><rect x="20.5" y="34" width="7" height="6" fill="#5e5e5e"/></symbol><symbol id="i-search" viewBox="0 0 48 48"><rect x="27" y="30" width="18" height="8.5" rx="4.25" transform="rotate(45 27 30)" fill="#5e5e5e"/><circle cx="20" cy="20" r="16.5" fill="#dff20d"/><circle cx="20" cy="20" r="10" fill="#ffffff"/></symbol><symbol id="i-bolt" viewBox="0 0 48 48"><path d="M28 2 9 27h11.5L18 46 39 20H26.5L28 2Z" fill="#dff20d"/></symbol><symbol id="i-clip" viewBox="0 0 48 48"><path d="M34 14.5v18.8a11 11 0 0 1-22 0V12a6.8 6.8 0 0 1 13.6 0v20.6a2.9 2.9 0 0 1-5.8 0V15" fill="none" stroke="#dff20d" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-copy" viewBox="0 0 48 48"><rect x="7" y="4" width="24" height="32" rx="3" fill="#5e5e5e"/><rect x="17" y="12" width="24" height="32" rx="3" fill="#ffffff"/><rect x="22" y="20" width="14" height="3.6" fill="#5e5e5e"/><rect x="22" y="28" width="10" height="3.6" fill="#dff20d"/></symbol><symbol id="i-money" viewBox="0 0 48 48"><rect x="2" y="10" width="44" height="28" rx="4" fill="#ffffff"/><circle cx="24" cy="24" r="8.5" fill="#dff20d"/><rect x="22.2" y="16" width="3.6" height="16" rx="1.8" fill="#0d0d0d"/><rect x="6" y="14" width="5" height="5" fill="#5e5e5e"/><rect x="37" y="29" width="5" height="5" fill="#5e5e5e"/></symbol><symbol id="i-block" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20.5" fill="#ffffff"/><circle cx="24" cy="24" r="14.5" fill="#0d0d0d"/><path d="M13.5 13.5 34.5 34.5" stroke="#dff20d" stroke-width="6" stroke-linecap="round"/></symbol><symbol id="i-qr" viewBox="0 0 48 48"><rect x="5" y="5" width="16" height="16" rx="2" fill="#dff20d"/><rect x="10" y="10" width="6" height="6" fill="#0d0d0d"/><rect x="27" y="5" width="16" height="16" rx="2" fill="#ffffff"/><rect x="32" y="10" width="6" height="6" fill="#0d0d0d"/><rect x="5" y="27" width="16" height="16" rx="2" fill="#ffffff"/><rect x="10" y="32" width="6" height="6" fill="#0d0d0d"/><rect x="27" y="27" width="7" height="7" fill="#dff20d"/><rect x="36" y="27" width="7" height="7" fill="#5e5e5e"/><rect x="27" y="36" width="7" height="7" fill="#5e5e5e"/><rect x="36" y="36" width="7" height="7" fill="#dff20d"/></symbol><symbol id="i-tag" viewBox="0 0 48 48"><path d="M18 9h18a3 3 0 0 1 3 3v18L22 47 3 28 18 9Z" fill="#5e5e5e" opacity=".55"/><path d="M23 4h18a3 3 0 0 1 3 3v18L26 43 6 23 23 4Z" fill="#dff20d"/><circle cx="35" cy="13" r="4.5" fill="#0d0d0d"/></symbol><symbol id="i-book" viewBox="0 0 48 48"><rect x="5" y="8" width="17" height="32" rx="2" fill="#ffffff"/><rect x="26" y="8" width="17" height="32" rx="2" fill="#dff20d"/><rect x="22" y="6" width="4" height="36" fill="#5e5e5e"/><rect x="9" y="16" width="9" height="3" fill="#0d0d0d"/><rect x="9" y="23" width="9" height="3" fill="#0d0d0d"/><rect x="30" y="16" width="9" height="3" fill="#0d0d0d"/></symbol><symbol id="i-key" viewBox="0 0 48 48"><circle cx="24" cy="13" r="9.5" fill="#dff20d"/><circle cx="24" cy="13" r="3.6" fill="#0d0d0d"/><rect x="20.8" y="21" width="6.4" height="23" rx="1" fill="#ffffff"/><rect x="27.2" y="27" width="9" height="5" fill="#ffffff"/><rect x="27.2" y="36" width="6.5" height="5" fill="#ffffff"/></symbol><symbol id="i-image" viewBox="0 0 48 48"><rect x="4" y="9" width="40" height="30" rx="3" fill="#ffffff"/><circle cx="15" cy="19" r="4.5" fill="#dff20d"/><path d="M4 34l11-11 9 9 7-6 13 12v1H4z" fill="#5e5e5e"/><rect x="4" y="35" width="40" height="4" fill="#5e5e5e"/></symbol><symbol id="i-spark" viewBox="0 0 48 48"><path d="M20 3c1.7 10 4.5 12.8 14.5 14.5C24.5 19.2 21.7 22 20 32 18.3 22 15.5 19.2 5.5 17.5 15.5 15.8 18.3 13 20 3Z" fill="#dff20d"/><path d="M36 26c.9 5.6 2.4 7.1 8 8-5.6.9-7.1 2.4-8 8-.9-5.6-2.4-7.1-8-8 5.6-.9 7.1-2.4 8-8Z" fill="#ffffff"/></symbol><symbol id="i-bulb" viewBox="0 0 48 48"><path d="M24 4c-8.3 0-15 6.7-15 15 0 5.7 3.2 10.6 7.9 13.2V37h14.2v-4.8C35.8 29.6 39 24.7 39 19c0-8.3-6.7-15-15-15Z" fill="#dff20d"/><rect x="17" y="38.5" width="14" height="4" rx="2" fill="#ffffff"/><rect x="19.5" y="43.5" width="9" height="3.5" rx="1.75" fill="#5e5e5e"/></symbol><symbol id="i-price" viewBox="0 0 48 48"><rect x="3" y="12" width="34" height="22" rx="3" fill="#ffffff"/><rect x="3" y="12" width="34" height="5" fill="#5e5e5e"/><rect x="7" y="22" width="13" height="3" fill="#5e5e5e"/><rect x="7" y="28" width="9" height="3" fill="#5e5e5e"/><circle cx="33" cy="31" r="12" fill="#dff20d"/><rect x="31.6" y="22" width="2.8" height="18" fill="#0d0d0d"/><rect x="27" y="26" width="12" height="3" rx="1.5" fill="#0d0d0d"/><rect x="27" y="33" width="12" height="3" rx="1.5" fill="#0d0d0d"/></symbol><symbol id="i-shield" viewBox="0 0 48 48"><path d="M24 3 42 9.5V23c0 10.4-7.3 18.4-18 22-10.7-3.6-18-11.6-18-22V9.5L24 3Z" fill="#dff20d"/><rect x="17" y="22" width="14" height="11" rx="2" fill="#0d0d0d"/><path d="M20 22v-3.5a4 4 0 0 1 8 0V22" fill="none" stroke="#0d0d0d" stroke-width="3.2"/></symbol><symbol id="i-shuttle" viewBox="0 0 48 48"><path d="M24 2 8 28h32L24 2Z" fill="#ffffff"/><path d="M24 3v25M15.5 16 18.5 28M32.5 16 29.5 28" stroke="#0d0d0d" stroke-width="2.2"/><rect x="8" y="26" width="32" height="3" fill="#5e5e5e"/><circle cx="24" cy="37" r="9" fill="#dff20d"/></symbol><symbol id="i-people" viewBox="0 0 48 48"><circle cx="34" cy="17" r="7" fill="#ffffff"/><path d="M23 43c0-6.6 4.9-12 11-12s11 5.4 11 12H23Z" fill="#ffffff"/><circle cx="18" cy="15" r="8.5" fill="#dff20d"/><path d="M3 43c0-8.3 6.7-15 15-15s15 6.7 15 15H3Z" fill="#dff20d"/></symbol><symbol id="i-card" viewBox="0 0 48 48"><rect x="3" y="10" width="42" height="28" rx="4" fill="#ffffff"/><rect x="3" y="16" width="42" height="6" fill="#0d0d0d"/><rect x="8" y="28" width="15" height="4" rx="2" fill="#5e5e5e"/><circle cx="35" cy="30" r="5.5" fill="#dff20d"/></symbol><symbol id="i-chart" viewBox="0 0 48 48"><rect x="4" y="27" width="10" height="17" fill="#ffffff"/><rect x="19" y="16" width="10" height="28" fill="#dff20d"/><rect x="34" y="6" width="10" height="38" fill="#5e5e5e"/></symbol><symbol id="i-signal" viewBox="0 0 48 48"><circle cx="24" cy="34" r="6" fill="#dff20d"/><path d="M13 26a15 15 0 0 1 22 0" fill="none" stroke="#ffffff" stroke-width="5"/><path d="M6 18a25 25 0 0 1 36 0" fill="none" stroke="#5e5e5e" stroke-width="5"/></symbol><symbol id="i-doc" viewBox="0 0 48 48"><path d="M9 4h20l10 10v30H9V4Z" fill="#ffffff"/><path d="M29 4l10 10H29V4Z" fill="#5e5e5e"/><rect x="15" y="22" width="18" height="3.4" fill="#0d0d0d"/><rect x="15" y="30" width="12" height="3.4" fill="#0d0d0d"/><rect x="15" y="38" width="18" height="3.4" fill="#dff20d"/></symbol><symbol id="i-grid" viewBox="0 0 48 48"><rect x="5" y="5" width="17" height="17" rx="2" fill="#dff20d"/><rect x="26" y="5" width="17" height="17" rx="2" fill="#ffffff"/><rect x="5" y="26" width="17" height="17" rx="2" fill="#5e5e5e"/><rect x="26" y="26" width="17" height="17" rx="2" fill="#dff20d"/></symbol><symbol id="i-palette" viewBox="0 0 48 48"><path d="M24 4C12.4 4 3 12.7 3 23.5S12.4 43 24 43c3 0 5-1.8 5-4.3 0-1.3-.6-2.3-1.4-3.2-.8-.9-1.3-1.8-1.3-3 0-2.4 2-4.3 4.5-4.3H36c5.5 0 9-3.6 9-9C45 11.4 35.6 4 24 4Z" fill="#ffffff"/><circle cx="13" cy="20" r="3.6" fill="#dff20d"/><circle cx="21" cy="13" r="3.6" fill="#5e5e5e"/><circle cx="31" cy="14" r="3.6" fill="#dff20d"/><circle cx="12" cy="30" r="3.6" fill="#5e5e5e"/></symbol><symbol id="i-pen" viewBox="0 0 48 48"><path d="M33 4l11 11-4.5 4.5-11-11L33 4Z" fill="#5e5e5e"/><path d="M26 11l11 11L16 43H5v-11L26 11Z" fill="#dff20d"/><path d="M5 32h11v11" fill="#ffffff"/></symbol><symbol id="i-gear" viewBox="0 0 48 48"><path d="M20 3h8l1.2 6.1 4.6 2.7 5.6-2.6 4 6.9-4.4 4.3v5.2l4.4 4.3-4 6.9-5.6-2.6-4.6 2.7L28 45h-8l-1.2-6.1-4.6-2.7-5.6 2.6-4-6.9 4.4-4.3v-5.2L4.6 18l4-6.9 5.6 2.6 4.6-2.7L20 3Z" fill="#dff20d"/><circle cx="24" cy="24" r="7.5" fill="#0d0d0d"/><circle cx="24" cy="24" r="3.6" fill="#ffffff"/></symbol><symbol id="i-wrench" viewBox="0 0 48 48"><path d="M31 4a13 13 0 0 0-11.6 18.8L4 38.2 9.8 44l15.4-15.4A13 13 0 1 0 31 4Zm0 8a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z" fill="#dff20d"/><rect x="6" y="34" width="8" height="4" rx="2" transform="rotate(-45 10 36)" fill="#ffffff"/></symbol><symbol id="i-cap" viewBox="0 0 48 48"><path d="M24 6 46 17 24 28 2 17 24 6Z" fill="#dff20d"/><path d="M11 22v11c0 3.9 5.8 7 13 7s13-3.1 13-7V22l-13 6.5L11 22Z" fill="#ffffff"/><rect x="42" y="17" width="3" height="15" fill="#5e5e5e"/><circle cx="43.5" cy="34" r="3.2" fill="#5e5e5e"/></symbol><symbol id="i-building" viewBox="0 0 48 48"><rect x="3" y="17" width="15" height="27" rx="2" fill="#5e5e5e"/><rect x="7" y="22" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="12.4" y="22" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="7" y="29" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="12.4" y="29" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="7" y="36" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="12.4" y="36" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="19" y="4" width="26" height="40" rx="2" fill="#ffffff"/><rect x="24" y="10" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="34.5" y="10" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="24" y="19" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="34.5" y="19" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="24" y="28" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="34.5" y="28" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="27" y="36" width="10" height="8" rx="1" fill="#dff20d"/></symbol><symbol id="i-invoice" viewBox="0 0 48 48"><path d="M7 3h21l10 10v19H7V3Z" fill="#ffffff"/><path d="M28 3l10 10H28V3Z" fill="#5e5e5e"/><rect x="13" y="17" width="19" height="3.2" fill="#5e5e5e"/><rect x="13" y="24" width="12" height="3.2" fill="#5e5e5e"/><circle cx="33" cy="34" r="13" fill="#dff20d"/><path d="M27 34.4l4 4 8-8.4" fill="none" stroke="#0d0d0d" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-album" viewBox="0 0 48 48"><rect x="11" y="3" width="30" height="21" rx="2" fill="#5e5e5e"/><rect x="3" y="10" width="33" height="26" rx="3" fill="#ffffff"/><path d="M3 30.5 12 21l6.5 6.5L24 22l12 12v2H3v-5.5Z" fill="#5e5e5e"/><circle cx="11.5" cy="18" r="3.4" fill="#dff20d"/><path d="M35 47c-7.2-5.1-10.8-8.2-10.8-12A5.4 5.4 0 0 1 35 32.6a5.4 5.4 0 0 1 10.8 2.4c0 3.8-3.6 6.9-10.8 12Z" fill="#dff20d" stroke="#0d0d0d" stroke-width="2.4" stroke-linejoin="round"/></symbol><symbol id="i-map" viewBox="0 0 48 48"><path d="M24 3c-8.8 0-16 7.2-16 16 0 11.5 16 26 16 26s16-14.5 16-26c0-8.8-7.2-16-16-16Z" fill="#dff20d"/><circle cx="24" cy="19" r="6.5" fill="#0d0d0d"/></symbol><symbol id="i-globe" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20.5" fill="#ffffff"/><path d="M24 3.5c-6 5-9 11.6-9 20.5s3 15.5 9 20.5c6-5 9-11.6 9-20.5s-3-15.5-9-20.5Z" fill="#dff20d"/><rect x="4" y="15" width="40" height="4" fill="#5e5e5e"/><rect x="4" y="29" width="40" height="4" fill="#5e5e5e"/></symbol><symbol id="i-music" viewBox="0 0 48 48"><path d="M20 8 42 4v26h-6V11L26 12.8V36h-6V8Z" fill="#ffffff"/><circle cx="13" cy="36" r="8.5" fill="#dff20d"/><circle cx="36" cy="30" r="7.5" fill="#dff20d"/></symbol><symbol id="i-chat" viewBox="0 0 48 48"><path d="M6 6h36a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H20L9 44v-10H6a4 4 0 0 1-4-4V10a4 4 0 0 1 4-4Z" fill="#ffffff"/><circle cx="15" cy="20" r="3.4" fill="#5e5e5e"/><circle cx="24" cy="20" r="3.4" fill="#dff20d"/><circle cx="33" cy="20" r="3.4" fill="#5e5e5e"/></symbol></svg>
+
+
+<div class="bar" id="bar"></div>
+
+<header>
+  <a class="back" href="./debts.html">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Công nợ
+  </a>
+  <div class="page-title"><svg class="ttl-ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="10" width="42" height="28" rx="4" fill="#ffffff"/>
+<rect x="3" y="16" width="42" height="6" fill="#0d0d0d"/>
+<rect x="8" y="28" width="15" height="4" rx="2" fill="#5e5e5e"/>
+<circle cx="35" cy="30" r="5.5" fill="#dff20d"/></svg> Chi tiết công nợ</div>
+  <div class="spacer" style="flex:1"></div>
+  <button class="hbtn" onclick="exportCsv()"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-download"/></svg> CSV</button>
+  <button class="hbtn green-b" onclick="openPy(0)">＋ Thanh toán</button>
+  <button class="hbtn primary" onclick="openInv(0)">＋ Khoản nợ</button>
+  <div class="who"><div class="avatar" id="av">?</div><span id="uname">…</span></div>
+</header>
+
+<div class="wrap">
+
+  <div class="custcard" id="custCard">
+    <div style="flex:1">
+      <div class="nm2" id="cName">…</div>
+      <div class="meta" id="cMeta"></div>
+    </div>
+    <div id="cAlert"></div>
+    <a class="hbtn" id="cContacts" href="./customers.html"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><circle cx="34" cy="17" r="7" fill="#ffffff"/>
+<path d="M23 43c0-6.6 4.9-12 11-12s11 5.4 11 12H23Z" fill="#ffffff"/>
+<circle cx="18" cy="15" r="8.5" fill="#dff20d"/>
+<path d="M3 43c0-8.3 6.7-15 15-15s15 6.7 15 15H3Z" fill="#dff20d"/></svg> Người liên hệ</a>
+    <a class="hbtn" id="cEdit" href="./companies.html">✎ Sửa công ty</a>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="lbl">Tổng giá trị khoản nợ</div><div class="val" id="sTotal">0</div><div class="sub" id="sTotalSub">0 khoản nợ</div></div>
+    <div class="stat green"><div class="lbl">Đã trả</div><div class="val" id="sPaid">0</div><div class="sub" id="sPaidSub">0 lần thanh toán</div></div>
+    <div class="stat orange"><div class="lbl">Còn lại phải thu</div><div class="val" id="sOut">0</div><div class="sub" id="sOutSub">—</div></div>
+    <div class="stat red"><div class="lbl">Trong đó quá hạn</div><div class="val" id="sOd">0</div><div class="sub" id="sOdSub">0 khoản quá hạn</div></div>
+  </div>
+
+  <!-- Người liên hệ -->
+  <div class="sect">
+    <div class="sh">
+      <h2><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-people"/></svg> Người liên hệ</h2><span class="cnt2" id="nCt">0</span>
+      <div class="spacer"></div>
+      <a class="hbtn" id="btnAddCt" href="./customers.html">＋ Thêm người liên hệ</a>
+    </div>
+    <div class="tbl-wrap" id="ctWrap">
+      <table class="t" style="min-width:760px">
+        <thead>
+          <tr>
+            <th style="width:24%">Tên</th>
+            <th style="width:150px">Bộ phận</th>
+            <th style="width:230px">Email</th>
+            <th style="width:140px">Điện thoại</th>
+            <th>Lưu ý</th>
+          </tr>
+        </thead>
+        <tbody id="ctBody"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="ctEmpty" style="display:none;padding:34px 20px">
+      <div class="ico"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-people"/></svg></div><h3>Chưa có người liên hệ</h3>
+      <p>Thêm người liên hệ của công ty này ở trang Khách hàng.</p>
+    </div>
+  </div>
+
+  <!-- Danh sách khoản nợ -->
+  <div class="sect">
+    <div class="sh">
+      <h2><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-card"/></svg> Danh sách khoản nợ</h2><span class="cnt2" id="nInv">0</span>
+      <div class="spacer"></div>
+      <button class="hbtn" onclick="openInv(0)">＋ Thêm khoản nợ</button>
+    </div>
+    <div class="tbl-wrap" id="invWrap">
+      <table class="t" style="min-width:1000px">
+        <thead>
+          <tr>
+            <th style="width:130px">Số HĐ</th>
+            <th>Dự án / Nội dung</th>
+            <th style="width:140px">Người liên hệ</th>
+            <th style="width:105px">Ngày xuất</th>
+            <th style="width:105px">Hạn TT</th>
+            <th class="num">Giá trị</th>
+            <th class="num">Đã trả</th>
+            <th class="num">Còn lại</th>
+            <th style="width:130px">Trạng thái</th>
+            <th style="width:110px"></th>
+          </tr>
+        </thead>
+        <tbody id="invBody"></tbody>
+        <tfoot id="invFoot"></tfoot>
+      </table>
+    </div>
+    <div class="empty" id="invEmpty" style="display:none;padding:44px 20px">
+      <div class="ico"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-card"/></svg></div><h3>Chưa có khoản nợ nào</h3>
+      <p>Bấm “＋ Thêm khoản nợ” để ghi nhận khoản khách hàng phải thanh toán.</p>
+    </div>
+  </div>
+
+  <!-- Danh sách thanh toán -->
+  <div class="sect">
+    <div class="sh">
+      <h2><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-check"/></svg> Danh sách đã trả</h2><span class="cnt2" id="nPay">0</span>
+      <div class="spacer"></div>
+      <button class="hbtn" onclick="openPy(0)">＋ Ghi nhận thanh toán</button>
+    </div>
+    <div class="tbl-wrap" id="payWrap">
+      <table class="t" style="min-width:840px">
+        <thead>
+          <tr>
+            <th style="width:110px">Ngày trả</th>
+            <th class="num" style="width:150px">Số tiền</th>
+            <th style="width:130px">Hình thức</th>
+            <th>Trừ vào khoản nợ</th>
+            <th>Ghi chú</th>
+            <th style="width:120px">Người nhập</th>
+            <th style="width:60px"></th>
+          </tr>
+        </thead>
+        <tbody id="payBody"></tbody>
+        <tfoot id="payFoot"></tfoot>
+      </table>
+    </div>
+    <div class="empty" id="payEmpty" style="display:none;padding:44px 20px">
+      <div class="ico"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-check"/></svg></div><h3>Chưa có lần thanh toán nào</h3>
+      <p>Ghi nhận khi công ty chuyển tiền — hệ thống tự trừ vào khoản nợ cũ nhất.</p>
+    </div>
+  </div>
+
+  <!-- Lịch sử thay đổi -->
+  <div class="sect">
+    <div class="sh">
+      <h2><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-clock"/></svg> Lịch sử thay đổi</h2><span class="cnt2" id="nLog">0</span>
+      <div class="spacer"></div>
+      <button class="hbtn" onclick="loadLog()">⟳ Làm mới</button>
+    </div>
+    <div class="tbl-wrap" style="border-radius:var(--radius)">
+      <div id="logBody" style="background:var(--bg2)"><div class="log">Đang tải…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal khoản nợ -->
+<div class="ov" id="invOv" onclick="if(event.target===this)closeInv()">
+  <div class="modal">
+    <button class="x" onclick="closeInv()">✕</button>
+    <h2 id="invTitle">Thêm khoản nợ</h2>
+    <p class="sub" id="invSub">—</p>
+    <input type="hidden" id="iId" />
+    <div class="fg">
+      <label>Người liên hệ</label>
+      <select id="iCt"></select>
+      <div class="hint">Tuỳ chọn — khoản nợ luôn thuộc về công ty.</div>
+    </div>
+    <div class="row2">
+      <div class="fg"><label>Số hoá đơn / hợp đồng</label><input type="text" id="iNo" placeholder="VD: HD-2026-014" /></div>
+      <div class="fg">
+        <label>Giá trị (VND) *</label>
+        <input type="text" id="iAmount" inputmode="numeric" placeholder="VD: 150tr hoặc 1.5e8" oninput="fmtInput(this,'iAmountHint')" />
+        <div class="hint money-hint" id="iAmountHint">—</div>
+      </div>
+    </div>
+    <div class="fg"><label>Dự án / Nội dung</label><input type="text" id="iProject" placeholder="VD: Hội nghị khoa học Q3" /></div>
+    <div class="row2">
+      <div class="fg"><label>Ngày xuất hoá đơn</label><input type="date" id="iIssue" onchange="autoDue()" /></div>
+      <div class="fg">
+        <label>Hạn thanh toán</label>
+        <input type="date" id="iDue" />
+        <div class="quick">
+          <button type="button" onclick="setDue(15)">+15 ngày</button>
+          <button type="button" onclick="setDue(30)">+30 ngày</button>
+          <button type="button" onclick="setDue(45)">+45 ngày</button>
+          <button type="button" onclick="setDue(60)">+60 ngày</button>
+        </div>
+      </div>
+    </div>
+    <div class="fg"><label>Ghi chú</label><textarea id="iNote" rows="2"></textarea></div>
+    <button class="btn" id="btnInvSave" onclick="saveInv()">✓ Lưu khoản nợ</button>
+  </div>
+</div>
+
+<!-- Modal thanh toán -->
+<div class="ov" id="pyOv" onclick="if(event.target===this)closePy()">
+  <div class="modal narrow">
+    <button class="x" onclick="closePy()">✕</button>
+    <h2>Ghi nhận thanh toán</h2>
+    <p class="sub" id="pySub">—</p>
+    <div class="recap" id="pyRecap"></div>
+    <div class="fg">
+      <label>Trừ vào khoản nợ</label>
+      <select id="pInv" onchange="onPyInvChange()"></select>
+      <div class="hint" id="pInvHint">Tự động trừ vào khoản nợ có hạn thanh toán cũ nhất trước.</div>
+    </div>
+    <div class="fg">
+      <label>Số tiền đã trả (VND) *</label>
+      <input type="text" id="pAmount" inputmode="numeric" placeholder="0" oninput="fmtInput(this,'pAmountHint')" />
+      <div class="hint money-hint" id="pAmountHint">—</div>
+      <div class="quick">
+        <button type="button" onclick="payAll()">Trả hết</button>
+        <button type="button" onclick="payPart(.5)">50%</button>
+        <button type="button" onclick="payPart(.3)">30%</button>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="fg"><label>Ngày thanh toán</label><input type="date" id="pDate" /></div>
+      <div class="fg">
+        <label>Hình thức</label>
+        <select id="pMethod">
+          <option value="Chuyển khoản">Chuyển khoản</option>
+          <option value="Tiền mặt">Tiền mặt</option>
+          <option value="Bù trừ">Bù trừ</option>
+          <option value="Khác">Khác</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label>Ghi chú</label><input type="text" id="pNote" placeholder="VD: UNC ngày 12/09" /></div>
+    <button class="btn green" id="btnPySave" onclick="savePy()">✓ Ghi nhận</button>
+  </div>
+</div>
+
+<!-- Confirm -->
+<div class="ov" id="cfOv" onclick="if(event.target===this)closeCf()">
+  <div class="modal narrow">
+    <button class="x" onclick="closeCf()">✕</button>
+    <h2 id="cfTitle">Xác nhận</h2>
+    <p class="sub" id="cfMsg"></p>
+    <button class="btn danger" id="cfYes">Xoá</button>
+    <button class="btn ghost" onclick="closeCf()">Huỷ</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = './api/crm-api.php';
+const _qs = new URLSearchParams(location.search);
+const CID = Number(_qs.get('company')) || Number(_qs.get('customer')) || 0;
+const BY_CUSTOMER = !_qs.get('company') && !!_qs.get('customer');
+let DATA = null, CFG = { min_amount:40000000, yellow:90, orange:180, red:365 };
+
+const fmt  = n => (Number(n)||0).toLocaleString('vi-VN');
+const fmtS = n => { n = Number(n)||0;
+  if (Math.abs(n) >= 1e9) return (n/1e9).toFixed(n%1e9===0?0:1).replace('.',',') + ' tỷ';
+  if (Math.abs(n) >= 1e6) return (n/1e6).toFixed(n%1e6===0?0:1).replace('.',',') + ' tr';
+  return fmt(n); };
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dmy = d => { if (!d) return '—'; const p = String(d).slice(0,10).split('-'); return p.length===3 ? p[2]+'/'+p[1]+'/'+p[0] : d; };
+/* Nhập tắt kiểu Excel: 1e6 = 1.000.000 · 4tr = 4.000.000 · 1tr5 = 1.500.000 · 500k = 500.000 */
+function parseMoney(v){
+  let s = String(v ?? '').trim().toLowerCase().replace(/\s+/g,'').replace(/đ|vnd|vnđ/g,'');
+  if (!s) return 0;
+  const neg = s.startsWith('-'); if (neg) s = s.slice(1);
+  const MULT = { k:1e3, ng:1e3, ngan:1e3, nghin:1e3, tr:1e6, m:1e6, trieu:1e6, ty:1e9, 'tỷ':1e9, b:1e9 };
+  const suf = s.match(/^([\d.,]+)(k|ng|ngan|nghin|tr|trieu|m|ty|tỷ|b)(\d*)$/);
+  if (suf) {
+    let base = suf[1].replace(/,/g,'.');
+    if ((base.split('.').length - 1) > 1) base = base.replace(/\./g,'');
+    let val = (parseFloat(base) || 0) * (MULT[suf[2]] || 1);
+    if (suf[3]) val += (parseInt(suf[3],10) || 0) * (MULT[suf[2]] || 1) / Math.pow(10, suf[3].length);
+    return Math.round(neg ? -val : val);
+  }
+  const sci = s.match(/^([\d.,]+)e([+-]?\d+)$/);
+  if (sci) {
+    const val = (parseFloat(sci[1].replace(/,/g,'.')) || 0) * Math.pow(10, parseInt(sci[2],10) || 0);
+    return Math.round(neg ? -val : val);
+  }
+  const plain = Number(s.replace(/[^\d]/g,'')) || 0;
+  return neg ? -plain : plain;
+}
+const unfmt = v => parseMoney(v);
+const today = () => new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+const addDays = (d, n) => { const x = new Date(d + 'T00:00:00'); x.setDate(x.getDate()+n);
+  return new Date(x.getTime() - x.getTimezoneOffset()*60000).toISOString().slice(0,10); };
+
+function fmtInput(el, hintId){
+  const n = unfmt(el.value);
+  el.value = n ? n.toLocaleString('vi-VN') : '';
+  const h = hintId && document.getElementById(hintId);
+  if (h) h.textContent = n ? fmtS(n) + ' (' + fmt(n) + ' đ)' : '—';
+}
+function bar(p){ const b=document.getElementById('bar'); b.style.width=p+'%'; if(p>=100) setTimeout(()=>b.style.width='0',400); }
+function toast(msg, kind){ const t=document.getElementById('toast'); t.textContent=msg; t.className='toast show '+(kind||'');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.className='toast '+(kind||''), 3200); }
+
+async function api(action, opts){
+  opts = opts || {};
+  const res = await fetch(API + '?action=' + action + (opts.query || ''), {
+    method: opts.body ? 'POST' : 'GET',
+    credentials: 'same-origin',
+    headers: opts.body ? { 'Content-Type': 'application/json' } : {},
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+    cache: 'no-store'
+  });
+  let j = null;
+  try { j = await res.json(); } catch(e) { throw new Error('Lỗi máy chủ (' + res.status + ')'); }
+  if (res.status === 401) { location.replace('./login.html?next=' + encodeURIComponent(location.pathname + location.search)); throw new Error('Unauthorized'); }
+  if (!j.ok) throw new Error(j.error || 'Có lỗi xảy ra');
+  return j.data;
+}
+
+function COID(){ return (DATA && DATA.company) ? DATA.company.id : CID; }
+
+function initUser(){
+  const u = window.__APSA_USER || {};
+  const n = u.display_name || u.username || '?';
+  document.getElementById('uname').textContent = n;
+  document.getElementById('av').textContent = n.trim().slice(0,1).toUpperCase();
+}
+
+/* ── Tải dữ liệu ───────────────────────────────────────────── */
+async function load(){
+  bar(35);
+  try {
+    DATA = await api(BY_CUSTOMER ? 'customer-detail' : 'company-detail', { query: (BY_CUSTOMER ? '&customer_id=' : '&company_id=') + CID });
+    CFG = DATA.alert_config || CFG;
+    render();
+  } catch(e){ toast(e.message, 'err'); }
+  bar(100);
+}
+
+function alertChip(days, alert, out){
+  if (days <= 0) return out > 0.009 ? '<span class="chip ok">Trong hạn</span>' : '<span class="chip paid">Đã thu đủ</span>';
+  const m = Math.floor(days/30);
+  const label = m >= 1 ? m + ' tháng' : days + ' ngày';
+  return '<span class="chip ' + (alert || 'od') + '">' + (alert ? '<svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-warning"/></svg> ' : '') + 'Quá hạn ' + label + '</span>';
+}
+
+function render(){
+  const c = DATA.company, t = DATA.totals;
+  const contacts = DATA.contacts || [];
+  document.title = 'Công nợ — ' + c.name + ' — APSA';
+  document.getElementById('cName').textContent = c.name;
+  document.getElementById('cMeta').innerHTML = [
+    c.tax_code ? '<svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-invoice"/></svg> MST ' + esc(c.tax_code) : '',
+    c.address ? '<svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-map"/></svg> ' + esc(c.address) : '',
+    '<svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-people"/></svg> ' + contacts.length + ' người liên hệ',
+    c.note ? '<svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-pen"/></svg> ' + esc(c.note) : ''
+  ].filter(Boolean).map(x => '<span>' + x + '</span>').join('');
+  document.getElementById('cContacts').href = './customers.html?company=' + c.id;
+  document.getElementById('cAlert').innerHTML = alertChip(t.days_overdue, t.alert, t.outstanding);
+
+  document.getElementById('sTotal').textContent    = fmtS(t.total_amount);
+  document.getElementById('sTotalSub').textContent = t.invoice_count + ' khoản nợ';
+  document.getElementById('sPaid').textContent     = fmtS(t.total_paid);
+  document.getElementById('sPaidSub').textContent  = t.payment_count + ' lần thanh toán';
+  document.getElementById('sOut').textContent      = fmtS(t.outstanding);
+  document.getElementById('sOutSub').textContent   = (t.total_amount ? Math.round(t.outstanding/t.total_amount*100) : 0) + '% tổng giá trị';
+  document.getElementById('sOd').textContent       = fmtS(t.overdue_amount);
+  document.getElementById('sOdSub').textContent    = t.overdue_count + ' khoản quá hạn';
+
+  renderContacts();
+  renderInvoices();
+  renderPayments();
+}
+
+function renderContacts(){
+  const rows = DATA.contacts || [];
+  document.getElementById('nCt').textContent = rows.length;
+  document.getElementById('ctWrap').style.display  = rows.length ? '' : 'none';
+  document.getElementById('ctEmpty').style.display = rows.length ? 'none' : '';
+  document.getElementById('btnAddCt').href = './customers.html?company=' + COID();
+  document.getElementById('ctBody').innerHTML = rows.map(c =>
+    '<tr class="inv' + (c.active ? '' : ' done') + '">' +
+      '<td class="nm">' + esc(c.name) + '</td>' +
+      '<td class="sm">' + esc(c.dept || '—') + '</td>' +
+      '<td class="sm">' + (c.email ? '<a href="mailto:' + esc(c.email) + '" style="color:var(--accent2);text-decoration:none">' + esc(c.email) + '</a>' : '—') + '</td>' +
+      '<td class="sm">' + (c.phone ? '<a href="tel:' + esc(String(c.phone).replace(/\s/g,'')) + '" style="color:var(--text);text-decoration:none">' + esc(c.phone) + '</a>' : '—') + '</td>' +
+      '<td class="xs">' + esc(c.note || '') + '</td>' +
+    '</tr>').join('');
+}
+
+function renderInvoices(){
+  const rows = DATA.invoices || [];
+  document.getElementById('nInv').textContent = rows.length;
+  document.getElementById('invWrap').style.display  = rows.length ? '' : 'none';
+  document.getElementById('invEmpty').style.display = rows.length ? 'none' : '';
+  const stLabel = { unpaid:'Chưa trả', partial:'Trả một phần', paid:'Đã trả đủ' };
+
+  document.getElementById('invBody').innerHTML = rows.map(r => {
+    const od = r.is_overdue && r.remaining > 0.009;
+    const badge = od
+      ? '<span class="chip od">Quá hạn ' + r.days_overdue + ' ngày</span>'
+      : '<span class="chip ' + r.status + '">' + stLabel[r.status] + '</span>';
+    return '<tr class="inv' + (od ? ' overdue' : '') + (r.status === 'paid' ? ' done' : '') + '">' +
+      '<td class="nm">' + esc(r.invoice_no || '—') + '</td>' +
+      '<td class="sm">' + esc(r.project || '—') + (r.note ? '<div class="xs"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-pen"/></svg> ' + esc(r.note) + '</div>' : '') + '</td>' +
+      '<td class="sm">' + esc(r.customer_name || '—') + '</td>' +
+      '<td class="sm">' + dmy(r.issue_date) + '</td>' +
+      '<td class="sm">' + dmy(r.due_date) + '</td>' +
+      '<td class="num">' + fmt(r.amount) + '</td>' +
+      '<td class="num' + (r.paid ? '' : ' zero') + '">' + fmt(r.paid) + '</td>' +
+      '<td class="num" style="font-weight:800' + (r.remaining > 0 ? ';color:#ffd54a' : '') + '">' + fmt(r.remaining) + '</td>' +
+      '<td>' + badge + '</td>' +
+      '<td class="actions-cell">' +
+        (r.remaining > 0.009 ? '<button class="act pay" title="Ghi nhận đã trả" onclick="openPy(' + r.id + ')"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-money"/></svg></button>' : '') +
+        '<button class="act" title="Sửa" onclick="openInv(' + r.id + ')">✎</button>' +
+        '<button class="act del" title="Xoá" onclick="delInv(' + r.id + ')"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-trash"/></svg></button>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+
+  if (rows.length) {
+    const t = DATA.totals;
+    document.getElementById('invFoot').innerHTML =
+      '<tr><td colspan="5">Tổng cộng ' + rows.length + ' khoản nợ</td>' +
+      '<td class="num">' + fmt(t.total_amount) + '</td>' +
+      '<td class="num">' + fmt(t.total_paid) + '</td>' +
+      '<td class="num" style="color:#ffd54a">' + fmt(t.outstanding) + '</td>' +
+      '<td colspan="2"></td></tr>';
+  } else document.getElementById('invFoot').innerHTML = '';
+}
+
+function invName(inv){
+  if (!inv) return '—';
+  return inv.invoice_no || inv.project || ('HĐ #' + inv.invoice_id);
+}
+
+function renderPayments(){
+  const rows = DATA.payments || [];
+  document.getElementById('nPay').textContent = rows.length;
+  document.getElementById('payWrap').style.display  = rows.length ? '' : 'none';
+  document.getElementById('payEmpty').style.display = rows.length ? 'none' : '';
+
+  document.getElementById('payBody').innerHTML = rows.map(p =>
+    '<tr class="inv">' +
+      '<td class="sm">' + dmy(p.pay_date) + '</td>' +
+      '<td class="num" style="color:#a7e07a;font-weight:800">' + fmt(p.amount) + '</td>' +
+      '<td class="sm">' + esc(p.method || '—') + '</td>' +
+      '<td class="sm">' + esc(p.invoice_no || p.project || ('HĐ #' + p.invoice_id)) + '</td>' +
+      '<td class="xs">' + esc(p.note || '') + '</td>' +
+      '<td class="xs">' + esc(p.created_by || '') + '</td>' +
+      '<td class="actions-cell"><button class="act del" title="Xoá lần trả này" onclick="delPay(' + p.id + ',' + p.amount + ')"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-trash"/></svg></button></td>' +
+    '</tr>').join('');
+
+  if (rows.length) {
+    document.getElementById('payFoot').innerHTML =
+      '<tr><td>Tổng đã trả</td><td class="num" style="color:#a7e07a">' + fmt(DATA.totals.total_paid) + '</td><td colspan="5"></td></tr>';
+  } else document.getElementById('payFoot').innerHTML = '';
+}
+
+/* ── Modal khoản nợ ────────────────────────────────────────── */
+function openInv(id){
+  const r = id ? (DATA.invoices || []).find(x => x.id === id) : null;
+  document.getElementById('iId').value = id || '';
+  document.getElementById('invTitle').textContent = r ? 'Sửa khoản nợ' : 'Thêm khoản nợ';
+  document.getElementById('invSub').textContent = DATA.company.name + (DATA.company.tax_code ? ' — MST ' + DATA.company.tax_code : '');
+  const ctSel = document.getElementById('iCt');
+  ctSel.innerHTML = '<option value="">— Không gắn người liên hệ —</option>' +
+    (DATA.contacts || []).map(x => '<option value="' + x.id + '">' + esc(x.name + (x.dept ? ' — ' + x.dept : '')) + '</option>').join('');
+  ctSel.value = r && r.customer_id ? String(r.customer_id) : '';
+  document.getElementById('iNo').value      = r ? (r.invoice_no || '') : '';
+  document.getElementById('iAmount').value  = r ? Number(r.amount).toLocaleString('vi-VN') : '';
+  document.getElementById('iAmountHint').textContent = r ? fmtS(r.amount) + ' (' + fmt(r.amount) + ' đ)' : '—';
+  document.getElementById('iProject').value = r ? (r.project || '') : '';
+  document.getElementById('iIssue').value   = r ? (r.issue_date || '') : today();
+  document.getElementById('iDue').value     = r ? (r.due_date || '') : addDays(today(), 30);
+  document.getElementById('iNote').value    = r ? (r.note || '') : '';
+  document.getElementById('invOv').classList.add('open');
+  setTimeout(() => document.getElementById('iAmount').focus(), 60);
+}
+function closeInv(){ document.getElementById('invOv').classList.remove('open'); }
+function setDue(days){
+  const base = document.getElementById('iIssue').value || today();
+  document.getElementById('iDue').value = addDays(base, days);
+}
+function autoDue(){ if (!document.getElementById('iDue').value) setDue(30); }
+
+async function saveInv(){
+  const body = {
+    id:          Number(document.getElementById('iId').value) || 0,
+    company_id:  COID(),
+    customer_id: Number(document.getElementById('iCt').value) || 0,
+    invoice_no:  document.getElementById('iNo').value.trim(),
+    project:     document.getElementById('iProject').value.trim(),
+    amount:      unfmt(document.getElementById('iAmount').value),
+    issue_date:  document.getElementById('iIssue').value,
+    due_date:    document.getElementById('iDue').value,
+    note:        document.getElementById('iNote').value.trim()
+  };
+  if (body.amount <= 0) return toast('Nhập giá trị khoản nợ', 'err');
+  const btn = document.getElementById('btnInvSave'); btn.disabled = true;
+  try { const d = await api('invoice-save', { body }); toast(d.message, 'ok'); closeInv(); await load(); await loadLog(); }
+  catch(e){ toast(e.message, 'err'); }
+  btn.disabled = false;
+}
+
+/* ── Modal thanh toán ──────────────────────────────────────── */
+function openPy(invId){
+  const open = (DATA.invoices || []).filter(r => r.remaining > 0.009);
+  if (!open.length) return toast('Công ty này không còn khoản nợ nào', 'err');
+  const sel = document.getElementById('pInv');
+  sel.innerHTML = '<option value="0"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-bolt"/></svg> Tự động — trừ khoản nợ cũ nhất trước</option>' +
+    open.map(r => '<option value="' + r.id + '">' + esc(r.invoice_no || r.project || ('HĐ #' + r.id)) +
+      ' — còn ' + fmt(r.remaining) + ' đ</option>').join('');
+  sel.value = String(invId && open.some(r => r.id === invId) ? invId : 0);
+
+  document.getElementById('pySub').textContent = DATA.company.name + (DATA.company.tax_code ? ' — MST ' + DATA.company.tax_code : '');
+  document.getElementById('pAmount').value = '';
+  document.getElementById('pAmountHint').textContent = '—';
+  document.getElementById('pDate').value = today();
+  document.getElementById('pNote').value = '';
+  onPyInvChange();
+  document.getElementById('pyOv').classList.add('open');
+  setTimeout(() => document.getElementById('pAmount').focus(), 60);
+}
+function closePy(){ document.getElementById('pyOv').classList.remove('open'); }
+function pyTarget(){
+  const id = Number(document.getElementById('pInv').value) || 0;
+  if (!id) return { id:0, remaining: DATA.totals.outstanding, label: 'tổng công nợ' };
+  const r = (DATA.invoices || []).find(x => x.id === id);
+  return { id: id, remaining: r ? r.remaining : 0, label: r ? (r.invoice_no || r.project || ('HĐ #' + r.id)) : '' };
+}
+function onPyInvChange(){
+  const t = pyTarget();
+  document.getElementById('pyRecap').innerHTML =
+    '<div class="r"><span>Trừ vào</span><span>' + esc(t.label) + '</span></div>' +
+    '<div class="r"><span><b>Còn nợ</b></span><span style="color:#ffd54a">' + fmt(t.remaining) + ' đ</span></div>';
+  document.getElementById('pInvHint').textContent = t.id
+    ? 'Chỉ trừ vào đúng khoản nợ này.'
+    : 'Tự động trừ vào khoản nợ có hạn thanh toán cũ nhất trước.';
+}
+function payAll(){ const t = pyTarget();
+  document.getElementById('pAmount').value = Math.round(t.remaining).toLocaleString('vi-VN');
+  fmtInput(document.getElementById('pAmount'), 'pAmountHint'); }
+function payPart(k){ const t = pyTarget();
+  document.getElementById('pAmount').value = Math.round(t.remaining * k).toLocaleString('vi-VN');
+  fmtInput(document.getElementById('pAmount'), 'pAmountHint'); }
+
+async function savePy(){
+  const t = pyTarget();
+  const amount = unfmt(document.getElementById('pAmount').value);
+  if (amount <= 0) return toast('Nhập số tiền đã trả', 'err');
+  const common = {
+    amount: amount,
+    pay_date: document.getElementById('pDate').value,
+    method:   document.getElementById('pMethod').value,
+    note:     document.getElementById('pNote').value.trim()
+  };
+  const btn = document.getElementById('btnPySave'); btn.disabled = true;
+  try {
+    const d = t.id
+      ? await api('payment-add',   { body: Object.assign({ invoice_id: t.id }, common) })
+      : await api('payment-quick', { body: Object.assign({ company_id: COID() }, common) });
+    toast(d.message, 'ok'); closePy(); await load(); await loadLog();
+  } catch(e){ toast(e.message, 'err'); }
+  btn.disabled = false;
+}
+
+/* ── Xoá ───────────────────────────────────────────────────── */
+function confirmBox(title, msg, fn){
+  document.getElementById('cfTitle').textContent = title;
+  document.getElementById('cfMsg').textContent = msg;
+  const yes = document.getElementById('cfYes');
+  yes.onclick = async () => { closeCf(); await fn(); };
+  document.getElementById('cfOv').classList.add('open');
+}
+function closeCf(){ document.getElementById('cfOv').classList.remove('open'); }
+
+function delInv(id){
+  const r = (DATA.invoices || []).find(x => x.id === id); if (!r) return;
+  confirmBox('Xoá khoản nợ?', (r.invoice_no || r.project || ('HĐ #' + id)) + ' — ' + fmt(r.amount) + ' đ. Khoản nợ chuyển vào thùng rác, có thể khôi phục.', async () => {
+    try { const d = await api('invoice-delete', { body: { id } }); toast(d.message, 'ok'); await load(); await loadLog(); }
+    catch(e){ toast(e.message, 'err'); }
+  });
+}
+function delPay(id, amount){
+  confirmBox('Xoá lần thanh toán?', 'Số tiền ' + fmt(amount) + ' đ sẽ được cộng lại vào công nợ.', async () => {
+    try { const d = await api('payment-delete', { body: { id } }); toast(d.message, 'ok'); await load(); await loadLog(); }
+    catch(e){ toast(e.message, 'err'); }
+  });
+}
+
+/* ── Lịch sử thay đổi ──────────────────────────────────────── */
+function tagCls(a){ return ['pay','create','update','delete','purge','restore'].includes(a) ? a : 'update'; }
+function tagLabel(a){ return { pay:'Thanh toán', create:'Thêm mới', update:'Sửa', delete:'Xoá', purge:'Xoá hẳn', restore:'Khôi phục' }[a] || a; }
+async function loadLog(){
+  const box = document.getElementById('logBody');
+  try {
+    const rows = await api('audit-log', { query: '&company_id=' + COID() + '&limit=200' });
+    document.getElementById('nLog').textContent = rows.length;
+    if (!rows.length) { box.innerHTML = '<div class="log"><span class="xs">Chưa có thay đổi nào được ghi nhận.</span></div>'; return; }
+    box.innerHTML = rows.map(r => {
+      const t = String(r.created_at || '').replace('T',' ').slice(0,16);
+      const who = r.actor ? ' · ' + esc(r.actor) : '';
+      return '<div class="log">' +
+        '<div class="lt"><span class="tag ' + tagCls(r.action) + '">' + tagLabel(r.action) + '</span><span>' + esc(t) + who + '</span></div>' +
+        '<div class="ls">' + esc(r.summary || '') + '</div>' +
+      '</div>';
+    }).join('');
+  } catch(e){ box.innerHTML = '<div class="log"><span class="xs">' + esc(e.message) + '</span></div>'; }
+}
+
+/* ── CSV ───────────────────────────────────────────────────── */
+function exportCsv(){
+  const c = DATA.company;
+  const q = v => '"' + String(v ?? '').replace(/"/g,'""') + '"';
+  const lines = [];
+  lines.push(['KHOẢN NỢ CỦA', c.name, c.tax_code || '', c.address || ''].map(q).join(','));
+  lines.push('');
+  lines.push(['Số HĐ','Dự án','Người liên hệ','Ngày xuất','Hạn TT','Giá trị','Đã trả','Còn lại','Trạng thái','Ngày quá hạn'].map(q).join(','));
+  (DATA.invoices || []).forEach(r => lines.push([r.invoice_no, r.project, r.customer_name, r.issue_date, r.due_date, r.amount, r.paid, r.remaining, r.status, r.days_overdue].map(q).join(',')));
+  lines.push(['TỔNG','','','','', DATA.totals.total_amount, DATA.totals.total_paid, DATA.totals.outstanding, '', ''].map(q).join(','));
+  lines.push('');
+  lines.push(['LỊCH SỬ THANH TOÁN'].map(q).join(','));
+  lines.push(['Ngày trả','Số tiền','Hình thức','Khoản nợ','Ghi chú','Người nhập'].map(q).join(','));
+  (DATA.payments || []).forEach(p => lines.push([p.pay_date, p.amount, p.method, p.invoice_no || p.project, p.note, p.created_by].map(q).join(',')));
+  const blob = new Blob(['﻿' + lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'cong-no-' + (c.name || 'cong-ty').replace(/[^\w]+/g,'-').toLowerCase() + '-' + today() + '.csv';
+  a.click();
+  toast('Đã xuất CSV', 'ok');
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeInv(); closePy(); closeCf(); } });
+
+async function boot(){
+  initUser();
+  if (!CID) { toast('Thiếu mã công ty', 'err'); setTimeout(() => location.replace('./debts.html'), 1200); return; }
+  await load();
+  await loadLog();
+}
+if (window.__APSA_USER) boot(); else window.addEventListener('apsa-auth-ready', boot);
+</script>
+</body>
+</html>

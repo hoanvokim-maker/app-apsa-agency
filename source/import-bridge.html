@@ -1,0 +1,32 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>APSA · cầu nhập dữ liệu</title>
+<style>body{font:13px/1.5 system-ui;background:#0b0b0b;color:#ddd;padding:20px}</style>
+<body>
+<p id="s">Sẵn sàng nhận dữ liệu từ manage.apsa.agency…</p>
+<script>
+// Trang tạm: nhận dữ liệu dự án do manage.apsa.agency gửi sang rồi ghi vào app.
+// Chỉ chấp nhận đúng một nguồn. Dùng xong sẽ xoá file này.
+var ORIGIN = 'https://manage.apsa.agency';
+var el = document.getElementById('s');
+window.addEventListener('message', async function (e) {
+  if (e.origin !== ORIGIN) return;
+  var m = e.data;
+  if (!m || (m.type !== 'APSA_IMPORT' && m.type !== 'APSA_VERIFY') || !Array.isArray(m.list)) return;
+  var act = m.type === 'APSA_VERIFY' ? 'manage-verify' : 'manage-import';
+  el.textContent = 'Đang ghi ' + m.list.length + ' dự án…';
+  try {
+    var r = await fetch('./api/quotation-api.php?action=' + act, {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ list: m.list, dry: m.dry ? 1 : 0 })
+    });
+    var j = await r.json();
+    el.textContent = 'Xong lô ' + (m.batch || '') + ': ' + JSON.stringify(j.data && j.data.thanhCong);
+    e.source.postMessage({ type: 'APSA_IMPORT_RESULT', batch: m.batch, ok: !!j.ok, data: j.data || null, error: j.error || null }, ORIGIN);
+  } catch (err) {
+    e.source.postMessage({ type: 'APSA_IMPORT_RESULT', batch: m.batch, ok: false, error: String(err) }, ORIGIN);
+  }
+});
+if (window.parent !== window) window.parent.postMessage({ type: 'APSA_BRIDGE_READY' }, ORIGIN);
+</script>

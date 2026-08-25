@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=1">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=1">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#dff20d">
+<meta http-equiv="refresh" content="0;url=./event-qr-generator.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tạo mã QR – APSA</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Oxanium', -apple-system, sans-serif;
+    background: #000000;
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  .back {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #9a9a9a;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1px solid #2b2b2b;
+    transition: all 0.2s;
+  }
+  .back:hover { color: #ffffff; border-color: #4d4d4d; }
+  .card {
+    background: #141414;
+    border: 1px solid #2b2b2b;
+    border-radius: 20px;
+    padding: 48px 40px;
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+  }
+  .icon { font-size: 52px; margin-bottom: 20px; display: block; }
+  .icon-svg { width: 60px; height: 60px; display: block; margin: 0 auto 20px; }
+  h1 { font-size: 22px; font-weight: 800; margin-bottom: 10px; color: #fff; }
+  .badge {
+    display: inline-block;
+    background: rgba(223,242,13,0.15);
+    border: 1px solid rgba(223,242,13,0.35);
+    color: #c9dd00;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+  p { color: #888; font-size: 15px; line-height: 1.6; }
+  .divider { height: 1px; background: #2b2b2b; margin: 28px 0; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #dff20d, #a8bb00);
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 12px;
+    transition: opacity 0.2s;
+  }
+  .btn:hover { opacity: 0.85; }
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/theme.css?v=11" />
+<script src="/apsa-ui.js?v=4"></script>
+</head>
+<body>
+<a class="back" href="./index.html">
+  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+  Trang chủ
+</a>
+
+<div class="card">
+  <svg class="icon-svg" viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="5" width="16" height="16" rx="2" fill="#dff20d"/><rect x="10" y="10" width="6" height="6" fill="#0d0d0d"/>
+<rect x="27" y="5" width="16" height="16" rx="2" fill="#ffffff"/><rect x="32" y="10" width="6" height="6" fill="#0d0d0d"/>
+<rect x="5" y="27" width="16" height="16" rx="2" fill="#ffffff"/><rect x="10" y="32" width="6" height="6" fill="#0d0d0d"/>
+<rect x="27" y="27" width="7" height="7" fill="#dff20d"/><rect x="36" y="27" width="7" height="7" fill="#5e5e5e"/>
+<rect x="27" y="36" width="7" height="7" fill="#5e5e5e"/><rect x="36" y="36" width="7" height="7" fill="#dff20d"/></svg>
+  <h1>Tạo mã QR</h1>
+  <span class="badge">🚧 Đang cập nhật</span>
+  <p>Chức năng tạo QR code tùy chỉnh từ link, WiFi, danh thiếp đang được phát triển.<br><br>Đang cập nhật chức năng này.</p>
+  <div class="divider"></div>
+  <a class="btn" href="./event-qr-generator.html">
+    <svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="5" width="16" height="16" rx="2" fill="#dff20d"/><rect x="10" y="10" width="6" height="6" fill="#0d0d0d"/>
+<rect x="27" y="5" width="16" height="16" rx="2" fill="#ffffff"/><rect x="32" y="10" width="6" height="6" fill="#0d0d0d"/>
+<rect x="5" y="27" width="16" height="16" rx="2" fill="#ffffff"/><rect x="10" y="32" width="6" height="6" fill="#0d0d0d"/>
+<rect x="27" y="27" width="7" height="7" fill="#dff20d"/><rect x="36" y="27" width="7" height="7" fill="#5e5e5e"/>
+<rect x="27" y="36" width="7" height="7" fill="#5e5e5e"/><rect x="36" y="36" width="7" height="7" fill="#dff20d"/></svg> Thử QR Sự Kiện ngay
+  </a>
+</div>
+</body>
+</html>

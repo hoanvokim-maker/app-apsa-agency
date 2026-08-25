@@ -1,0 +1,324 @@
+/* ============================================================
+   APSA — Theme "Futuristic Lime"  /theme.css  (v7)
+   Bảng màu: Đen #000 · Xám #2B2B2B · Trắng #FFF · Xanh chanh #DFF20D
+   Font: Orbitron (số/Latin) + Oxanium (chữ Việt)
+   v4: nền texture cát đen-xám chuyển động nhẹ + bộ icon 2D
+   ============================================================ */
+
+:root{
+  --bg:#000000; --bg2:#0b0b0b; --bg3:#141414; --bg4:#2b2b2b;
+  --border:rgba(255,255,255,.10);
+  --border-hover:rgba(223,242,13,.55);
+  --text:#ffffff; --text2:#9a9a9a; --text3:#5e5e5e;
+  --accent:#dff20d; --accent2:#c9dd00; --accent-glow:rgba(223,242,13,.22);
+  --green:#dff20d; --cyan:#ffffff; --pink:#c9dd00; --yellow:#dff20d;
+  --orange:#ffffff; --red:#ff4d4d;
+  --radius:4px;
+  --font-display:'Orbitron','Oxanium',sans-serif;
+  --font-body:'Oxanium',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+
+/* ══ NỀN: TEXTURE CÁT ĐEN – XÁM, TRÔI NHẸ ═════════════════ */
+body{
+  background:#000 !important;
+  font-family:var(--font-body) !important;
+  letter-spacing:.01em;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* lớp cát thô */
+html::before{
+  content:'';
+  position:fixed; inset:-320px; z-index:0; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27300%27%20height%3D%27300%27%3E%3Cfilter%20id%3D%27n%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.32%27%20numOctaves%3D%273%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20type%3D%27matrix%27%20values%3D%270%200%200%200%201%20%200%200%200%200%201%20%200%200%200%200%201%20%200%200%200%201%200%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20filter%3D%27url%28%2523n%29%27%2F%3E%3C%2Fsvg%3E");
+  background-repeat:repeat;
+  background-size:300px 300px;
+  opacity:.15;
+  will-change:transform;
+  animation:apsaSandA 90s linear infinite;
+}
+/* lớp hạt mịn (ghi đè lớp noise cũ của từng trang) */
+body::before{
+  content:'' !important;
+  position:fixed !important; inset:-320px !important;
+  width:auto !important; height:auto !important;
+  z-index:0 !important; pointer-events:none !important;
+  background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27160%27%20height%3D%27160%27%3E%3Cfilter%20id%3D%27n%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.9%27%20numOctaves%3D%274%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20type%3D%27matrix%27%20values%3D%270%200%200%200%201%20%200%200%200%200%201%20%200%200%200%200%201%20%200%200%200%201%200%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20filter%3D%27url%28%2523n%29%27%2F%3E%3C%2Fsvg%3E") !important;
+  background-repeat:repeat !important;
+  background-size:160px 160px !important;
+  opacity:.085 !important;
+  will-change:transform;
+  animation:apsaSandB 55s linear infinite;
+}
+/* quầng sáng + vignette */
+body::after{
+  content:'';
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(120% 75% at 50% -12%, rgba(223,242,13,.075) 0%, transparent 58%),
+    radial-gradient(115% 105% at 50% 45%, transparent 62%, rgba(0,0,0,.42) 100%);
+}
+@keyframes apsaSandA{
+  from{ transform:translate3d(0,0,0); }
+  to  { transform:translate3d(-300px,-300px,0); }
+}
+@keyframes apsaSandB{
+  from{ transform:translate3d(0,0,0); }
+  to  { transform:translate3d(160px,-160px,0); }
+}
+@media (prefers-reduced-motion: reduce){
+  html::before, body::before{ animation:none !important; }
+}
+
+/* ══ CHỮ ══════════════════════════════════════════════════ */
+h1,h2,h3,.page-title,.sec-title,.modal h2,.fb-title,.card-title,.cat-name,.title{
+  font-family:var(--font-body) !important;
+  font-weight:800 !important;
+  letter-spacing:.055em !important;
+  text-transform:uppercase;
+  line-height:1.18;
+}
+h1{ font-size:clamp(26px,3.4vw,40px) !important; }
+h2{ font-size:clamp(19px,2.2vw,26px) !important; }
+.modal h2{ font-size:22px !important; }
+.page-title{ font-size:15px !important; letter-spacing:.12em !important; }
+.card-title{ font-size:15px !important; letter-spacing:.06em !important; }
+.fb-title{ font-size:15px !important; letter-spacing:.10em !important; }
+
+.fg label,.stat .lbl,.calc-field label,thead th,.divider-label,.ph,.card-cat,.card-tag{
+  text-transform:uppercase; letter-spacing:.16em !important; font-weight:700 !important;
+}
+
+/* Orbitron: chỉ cho số & Latin không dấu */
+/* Orbitron: chỉ cho CHỮ SỐ CỠ LỚN & chữ cái Latin — số nhỏ dùng Oxanium
+   (số 0 của Orbitron ở cỡ nhỏ bị bít, đọc thành ô vuông) */
+.stat .val,.avatar,.logo-mark,.calc-result b,.big-num,.kpi{
+  font-family:var(--font-display) !important;
+  font-variant-numeric:tabular-nums;
+}
+.stat .val{ font-size:32px !important; font-weight:600 !important; letter-spacing:.01em !important; }
+.num,.count,.pill .n,.tab .n,.price-cell,.card-arrow,.fb-dot,td .num,.chip{
+  font-variant-numeric:tabular-nums;
+}
+.num,.price-cell{ font-family:var(--font-body) !important; font-weight:700 !important; letter-spacing:.02em; }
+.count,.pill .n,.tab .n{ font-family:var(--font-body) !important; font-weight:700 !important; }
+
+/* ══ BỘ ICON 2D ═══════════════════════════════════════════ */
+.card-icon{
+  width:46px !important; height:46px !important;
+  border-radius:4px !important;
+  background:#0f0f0f !important;
+  border:1px solid rgba(255,255,255,.10);
+  display:flex !important; align-items:center; justify-content:center;
+  transition:border-color .2s, box-shadow .2s;
+}
+.card-icon .ico{ width:27px; height:27px; display:block; }
+.card:hover .card-icon{
+  border-color:rgba(223,242,13,.55);
+  box-shadow:0 0 18px rgba(223,242,13,.16);
+}
+.ico-emoji{ font-size:20px; line-height:1; }
+.ttl-ico{ width:19px; height:19px; vertical-align:-4px; flex-shrink:0; }
+h1 .ttl-ico{ width:30px; height:30px; vertical-align:-6px; }
+.title .ttl-ico{ width:22px; height:22px; vertical-align:-5px; }
+.fb-svg{ width:20px; height:20px; vertical-align:-4px; }
+.pill-ico{ width:15px; height:15px; vertical-align:-3px; margin-right:3px; flex-shrink:0; }
+/* ── Icon 2D trong nút / chip / trang trống — xem [[apsa-bo-icon]] ── */
+.empty .ico > svg{ width:46px; height:46px; }
+.chip .pill-ico{ width:12px; height:12px; vertical-align:-2px; margin-right:2px; }
+/* Nút/chip nền lime → lót nền tối sau icon để không bị chìm
+   (danh sách chọn khớp với khối "NÚT NỀN CHANH" bên dưới) */
+.btn:not(.ghost):not(.danger) .pill-ico,
+.btn-primary .pill-ico,.btn-accent .pill-ico,.btn-add .pill-ico,.btn-p .pill-ico,
+.btn-green .pill-ico,.btn.green .pill-ico,.btn-view .pill-ico,
+.filter-pill.active .pill-ico,.pill.active .pill-ico,.tab.active .pill-ico,
+.hbtn.primary .pill-ico,.hbtn.green-b .pill-ico{
+  background:#0d0d0d; border-radius:5px; padding:1.5px; box-sizing:content-box;
+}
+.filter-pill{ display:inline-flex !important; align-items:center; gap:2px; }
+.fb-icon{ display:inline-flex; align-items:center; }
+
+/* ══ KHỐI / VIỀN ══════════════════════════════════════════ */
+.card,.stat,.modal,.tbl-wrap,.calc-box,.banner-inner,.recap,.paybox,
+.fg input,.fg textarea,.fg select,.search-input,.hsel,.btn,.hbtn,.pill,.tab,
+.filter-pill,.act,.chip,.badge,.btn-primary,.btn-accent,.btn-add{
+  border-radius:var(--radius) !important;
+}
+.avatar,.logo-mark{ border-radius:50% !important; }
+.search-input,.hsel{ border-radius:2px !important; }
+
+.card,.stat,.modal,.tbl-wrap{
+  background:rgba(11,11,11,.86) !important;
+  backdrop-filter:blur(2px);
+  border:1px solid rgba(255,255,255,.09) !important;
+  box-shadow:none !important;
+}
+.card:hover,.stat:hover{
+  border-color:rgba(223,242,13,.45) !important;
+  box-shadow:0 0 0 1px rgba(223,242,13,.12), 0 0 34px rgba(223,242,13,.07) !important;
+}
+header{
+  background:rgba(0,0,0,.88) !important;
+  border-bottom:1px solid rgba(255,255,255,.09) !important;
+}
+
+/* ══ NÚT NỀN CHANH → CHỮ ĐEN ══════════════════════════════ */
+.btn:not(.ghost):not(.danger),
+.btn-primary,.btn-accent,.btn-add,.btn-p,.btn-green,.btn.green,.btn-view,
+.btn-new-empty,.history-empty .btn-new-empty,.badge-new,.fb-btn,
+.filter-pill.active,.pill.active,.tab.active,.cat-code,
+.hbtn.primary,.avatar,.logo-mark,.btn-dl:hover,.act:hover,.quick button:hover,
+.card:hover .card-arrow{
+  background:var(--accent) !important;
+  background-image:none !important;
+  color:#000 !important;
+  border-color:var(--accent) !important;
+  font-weight:700 !important;
+  text-shadow:none !important;
+  box-shadow:0 0 22px rgba(223,242,13,.20) !important;
+}
+.btn:not(.ghost):not(.danger):hover,
+.btn-primary:hover,.hbtn.primary:hover,.fb-btn:hover{
+  background:#eaff4a !important;
+  box-shadow:0 0 30px rgba(223,242,13,.34) !important;
+  transform:translateY(-1px);
+}
+.btn.ghost,.btn.danger{ background:transparent !important; background-image:none !important; }
+
+/* ══ Ô NHẬP ═══════════════════════════════════════════════ */
+.fg input,.fg textarea,.fg select,.search-input,.hsel,input[type=text],
+input[type=date],input[type=number],input[type=password],select,textarea{
+  background:#111111 !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  color:#fff !important;
+  font-family:var(--font-body) !important;
+}
+.fg input:focus,.fg textarea:focus,.fg select:focus,.search-input:focus,
+input:focus,select:focus,textarea:focus{
+  border-color:var(--accent) !important;
+  box-shadow:0 0 0 2px rgba(223,242,13,.16) !important;
+  outline:none !important;
+}
+
+/* ══ BẢNG ═════════════════════════════════════════════════ */
+table thead th{
+  background:#000 !important; color:#5e5e5e !important;
+  border-bottom:1px solid rgba(223,242,13,.22) !important;
+}
+table tbody td{ background:rgba(11,11,11,.88) !important; border-bottom:1px solid rgba(255,255,255,.07) !important; }
+table tbody tr:hover td{ background:#141414 !important; }
+
+/* ══ CHI TIẾT ═════════════════════════════════════════════ */
+a{ text-decoration:none; }
+::selection{ background:var(--accent); color:#000; }
+*::-webkit-scrollbar{ width:9px; height:9px; }
+*::-webkit-scrollbar-track{ background:#000; }
+*::-webkit-scrollbar-thumb{ background:#2b2b2b; }
+*::-webkit-scrollbar-thumb:hover{ background:var(--accent); }
+footer{ border-top:1px solid rgba(255,255,255,.08) !important; letter-spacing:.06em; }
+
+@media(max-width:900px){
+  h1{ font-size:26px !important; }
+  .stat .val{ font-size:24px !important; }
+}
+
+/* ══════════ CỠ CHỮ THEO USER (apsa-ui.js) ══════════ */
+:root{ --fs:12.5px; --fs-sm:11.5px; --fs-xs:10.5px; --fs-lg:14px; }
+
+/* Bề mặt dữ liệu — chỉ phóng chữ, không đụng tiêu đề/nhãn */
+table td, table th,
+table input, table select, table textarea,
+.fg input, .fg select, .fg textarea,
+.tbl-wrap table, .task-cell, .who-cell .nm, .desc-cell, .item-cell,
+.notes-cell, .unit-cell, .price-cell, .profit-cell{
+  font-size:var(--fs) !important;
+}
+table th, .who-cell .meta, .psub, .pmeta, .due-cell .soon{
+  font-size:var(--fs-xs) !important;
+}
+.pos-pill, .type-pill, .status-pill, .sttp, .fl-tag, .noteam{
+  font-size:var(--fs-xs) !important;
+}
+
+/* ══════════ MENU CÀI ĐẶT Ở CHIP TÊN USER ══════════ */
+.who.has-menu{ position:relative; cursor:pointer; transition:.2s; }
+.who.has-menu:hover{ color:var(--text); border-color:var(--border-hover); background:var(--bg3); }
+.umenu{
+  display:none; position:absolute; top:calc(100% + 8px); right:0; z-index:300;
+  min-width:212px; padding:7px; border-radius:14px; cursor:default;
+  background:#0b0b0b; border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 18px 44px rgba(0,0,0,.6);
+}
+.umenu.open{ display:block; }
+.umhead{
+  font-size:10px; font-weight:800; letter-spacing:.7px; text-transform:uppercase;
+  color:#5e5e5e; padding:7px 10px 6px;
+}
+.umenu .fsopt{
+  width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px;
+  background:transparent; border:1px solid transparent; color:#9a9a9a; cursor:pointer;
+  font-family:inherit; font-size:12.5px; font-weight:600; text-align:left;
+  padding:8px 10px; border-radius:9px; transition:.15s;
+}
+.umenu .fsopt em{ font-style:normal; font-size:10.5px; color:#5e5e5e; font-weight:700; }
+.umenu .fsopt:hover{ background:#141414; color:#fff; }
+.umenu .fsopt.on{ background:rgba(223,242,13,.14); border-color:rgba(223,242,13,.45); color:#dff20d; }
+.umenu .fsopt.on em{ color:#dff20d; opacity:.8; }
+.umsep{ height:1px; background:rgba(255,255,255,.09); margin:7px 4px; }
+.umenu .umlog{ display:flex; align-items:center; gap:8px; width:100%; text-align:left;
+  padding:8px 10px; border-radius:9px; border:1px solid transparent; background:transparent;
+  color:var(--text2); font-family:inherit; font-size:12.5px; font-weight:600; cursor:pointer; transition:.15s; }
+.umenu .umlog:hover{ background:#141414; color:#fff; }
+.umenu .umlog em{ margin-left:auto; font-style:normal; font-family:'Orbitron',sans-serif;
+  font-size:10px; font-weight:800; color:#000; background:var(--accent); border-radius:20px; padding:2px 7px; }
+.umenu .umout{
+  width:100%; background:transparent; border:none; color:#9a9a9a; cursor:pointer;
+  font-family:inherit; font-size:12.5px; font-weight:600; text-align:left;
+  padding:8px 10px; border-radius:9px; transition:.15s;
+}
+.umenu .umout:hover{ background:rgba(255,77,77,.12); color:#ff8f8f; }
+
+/* ══════════ ACTION BUTTONS TRÊN NAVIGATION ══════════ */
+header .hact{ display:flex; align-items:center; gap:8px; min-width:0; }
+header .hact[hidden]{ display:none !important; }
+header .hgrow{ flex:1 1 auto; min-width:8px; }
+header .hscroll{
+  display:flex; align-items:center; gap:8px; min-width:0;
+  overflow-x:auto; overflow-y:hidden; scrollbar-width:none; padding:2px 0;
+}
+header .hscroll::-webkit-scrollbar{ display:none; }
+header .hsep{ width:1px; height:22px; background:var(--border); flex-shrink:0; }
+.hmeta{
+  display:flex; align-items:center; gap:8px; min-width:0; flex-shrink:1;
+  font-size:11.5px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+/* Chip hiển thị tự gắn cho trang chưa có chip user */
+header .who{
+  display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text2);
+  padding:5px 10px; border-radius:20px; border:1px solid var(--border);
+  white-space:nowrap; flex-shrink:0;
+}
+header .who .ulabel{ font-weight:600; }
+#apsaUserBadge.has-menu{ position:relative; cursor:pointer; }
+
+/* Nút trong nav gọn hơn để đủ chỗ mọi thao tác */
+header .hscroll .hbtn{ padding:7px 11px; gap:5px; }
+header .hact .hbtn.primary{ padding:7px 15px; }
+
+/* Menu ⋯ thao tác khác trên navigation */
+header .hmore{ position:relative; flex-shrink:0; }
+header #btnMore{ padding:7px 12px; font-size:15px; line-height:1; letter-spacing:1px; }
+header .hmenu{
+  display:none; position:absolute; top:calc(100% + 8px); right:0; z-index:300;
+  min-width:206px; padding:7px; border-radius:14px;
+  background:#0b0b0b; border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 18px 44px rgba(0,0,0,.6);
+}
+header .hmenu.open{ display:block; }
+header .hmenu button{
+  width:100%; display:flex; align-items:center; gap:9px;
+  background:transparent; border:none; color:#9a9a9a; cursor:pointer;
+  font-family:inherit; font-size:12.5px; font-weight:600; text-align:left;
+  padding:9px 10px; border-radius:9px; transition:.15s; white-space:nowrap;
+}
+header .hmenu button:hover{ background:#141414; color:#fff; }

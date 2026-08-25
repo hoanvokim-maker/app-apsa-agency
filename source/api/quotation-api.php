@@ -1,0 +1,2310 @@
+<?php
+// ============================================================
+// APSA — Báo giá API   /api/quotation-api.php
+//
+// Tạo / lưu / sửa báo giá và XUẤT FILE EXCEL đúng format mẫu của APSA
+// (Times New Roman, header xanh #284CB7, logo APSA, công thức TOTAL → MA → VAT).
+// Không dùng thư viện ngoài: file .xlsx được sinh trực tiếp bằng PHP.
+//
+//  GET  ?action=list[&q=&trash=1]
+//  GET  ?action=get&id=
+//  POST ?action=save        {id?, ...thông tin..., items:[{kind,name,description,qty,unit,unit_price,remark}]}
+//  POST ?action=delete|restore|duplicate   {id}
+//  GET  ?action=export&id=              → tải file .xlsx
+//  GET  ?action=ratecard[&sheet=media]  → danh mục hạng mục để chọn nhanh
+// ============================================================
+
+@ini_set('display_errors', '0');
+
+require_once __DIR__ . '/db-config.php';
+require_once __DIR__ . '/session-boot.php';
+
+function q_ok($data)             { header('Content-Type: application/json; charset=utf-8'); echo json_encode(['ok' => true, 'data' => $data], JSON_UNESCAPED_UNICODE); exit; }
+function q_fail($msg, $code=400) { header('Content-Type: application/json; charset=utf-8'); http_response_code($code); echo json_encode(['ok'=>false,'error'=>$msg], JSON_UNESCAPED_UNICODE); exit; }
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
+
+function body_json() {
+    $raw = file_get_contents('php://input');
+    if ($raw === '' || $raw === false) return [];
+    $j = json_decode($raw, true);
+    return is_array($j) ? $j : [];
+}
+function s($v, $len = 255) { return mb_substr(trim((string)($v ?? '')), 0, $len); }
+function num($v) {
+    if ($v === '' || $v === null) return 0.0;
+    $v = str_replace([',', ' '], ['', ''], (string)$v);
+    return is_numeric($v) ? (float)$v : 0.0;
+}
+function dateOrNull($v) {
+    $v = trim((string)($v ?? ''));
+    if ($v === '') return null;
+    $d = date_create($v);
+    return $d ? $d->format('Y-m-d') : null;
+}
+
+try {
+    $pdo = new PDO(
+        'mysql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME . ';charset=utf8mb4',
+        DB_USER, DB_PASS,
+        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
+    );
+} catch (PDOException $e) { q_fail('DB connection failed', 500); }
+
+// ── Auth ─────────────────────────────────────────────────────
+function currentUser($pdo) {
+    if (empty($_SESSION['user_id'])) return null;
+    try {
+        $st = $pdo->prepare("SELECT id, username, display_name, role FROM `app_users` WHERE id = ? AND active = 1");
+        $st->execute([$_SESSION['user_id']]);
+        return $st->fetch() ?: null;
+    } catch (PDOException $e) { return null; }
+}
+$ME = currentUser($pdo);
+if (!$ME) q_fail('Unauthorized — vui lòng đăng nhập', 401);
+$WHO = $ME['display_name'] ?: $ME['username'];
+
+// ── Migrate schema: chỉ chạy 1 lần sau mỗi lần deploy file này ──
+// Trước đây mọi request đều chạy lại ~15 câu lệnh kiểm tra bảng/cột.
+$MIG_LOCK   = sys_get_temp_dir() . '/apsa_mig_quo_' . md5(__FILE__) . '.lock';
+$DO_MIGRATE = !is_file($MIG_LOCK) || filemtime($MIG_LOCK) < filemtime(__FILE__);
+function q_mig(PDO $pdo, $sql) {
+    global $DO_MIGRATE;
+    if ($DO_MIGRATE) $pdo->exec($sql);
+}
+
+// ── Giao việc: người thực hiện của từng dự án ────────────────
+q_mig($pdo, "CREATE TABLE IF NOT EXISTS `quotation_assignees` (
+  `id`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `quotation_id`  INT UNSIGNED NOT NULL,
+  `user_id`       INT UNSIGNED NOT NULL,
+  `position`      VARCHAR(20)  DEFAULT NULL COMMENT 'account|admin|designer|editor — chốt lúc giao',
+  `task`          VARCHAR(300) DEFAULT NULL COMMENT 'Phần việc',
+  `due_date`      DATE         DEFAULT NULL,
+  `status`        VARCHAR(12)  NOT NULL DEFAULT 'todo' COMMENT 'todo|doing|review|done',
+  `sort_order`    INT          NOT NULL DEFAULT 0,
+  `assigned_by`   VARCHAR(120) DEFAULT NULL,
+  `created_at`    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_quo`  (`quotation_id`),
+  INDEX `idx_user` (`user_id`),
+  INDEX `idx_stat` (`status`),
+  INDEX `idx_due`  (`due_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+$ASSIGN_STATUS = [
+    'todo'   => 'Chưa làm',
+    'doing'  => 'Đang làm',
+    'review' => 'Chờ duyệt',
+    'done'   => 'Xong',
+];
+$ASSIGN_POS = [
+    'account'  => 'Account',
+    'admin'    => 'Admin',
+    'designer' => 'Designer',
+    'editor'   => 'Video editor',
+];
+function q_asgStatus($v) { global $ASSIGN_STATUS; $v = strtolower(trim((string)$v)); return isset($ASSIGN_STATUS[$v]) ? $v : 'todo'; }
+function q_asgPos($v)    { global $ASSIGN_POS;    $v = strtolower(trim((string)$v)); return isset($ASSIGN_POS[$v]) ? $v : null; }
+
+/** Danh sách người thực hiện của 1 báo giá (kèm tên + vị trí hiện tại của user). */
+function loadAssignees(PDO $pdo, $qid) {
+    $st = $pdo->prepare("SELECT a.*, u.display_name, u.staff_type, u.position AS user_position,
+                                u.phone, u.email, u.active
+                           FROM `quotation_assignees` a
+                           JOIN `app_users` u ON u.id = a.user_id
+                          WHERE a.quotation_id = ?
+                          ORDER BY a.sort_order ASC, a.id ASC");
+    $st->execute([(int)$qid]);
+    $rows = $st->fetchAll();
+    global $ASSIGN_STATUS, $ASSIGN_POS;
+    $today = date('Y-m-d');
+    foreach ($rows as &$r) {
+        $r['id']            = (int)$r['id'];
+        $r['user_id']       = (int)$r['user_id'];
+        $r['quotation_id']  = (int)$r['quotation_id'];
+        $r['status_label']  = $ASSIGN_STATUS[$r['status']] ?? $r['status'];
+        $r['position_label'] = $r['position'] ? ($ASSIGN_POS[$r['position']] ?? $r['position']) : '';
+        $r['overdue']       = ($r['due_date'] && $r['status'] !== 'done' && $r['due_date'] < $today) ? 1 : 0;
+    }
+    return $rows;
+}
+
+// ── Chi phí thực tế của dự án (đồng bộ khái niệm "expenditure" trên manage.apsa.agency) ──
+q_mig($pdo, "CREATE TABLE IF NOT EXISTS `quotation_expenses` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `quotation_id` INT UNSIGNED NOT NULL,
+  `kind` VARCHAR(8) NOT NULL DEFAULT 'item' COMMENT 'group | item',
+  `category` VARCHAR(200) DEFAULT NULL COMMENT 'tên nhóm chi phí',
+  `name` VARCHAR(300) DEFAULT NULL,
+  `description` TEXT DEFAULT NULL,
+  `qty` DECIMAL(14,2) NOT NULL DEFAULT 0,
+  `unit` VARCHAR(60) DEFAULT NULL,
+  `price` DECIMAL(16,2) NOT NULL DEFAULT 0,
+  `vat_percent` DECIMAL(6,2) NOT NULL DEFAULT 0,
+  `sort_order` INT NOT NULL DEFAULT 0,
+  `src_id` VARCHAR(80) DEFAULT NULL COMMENT 'react_id bên manage.apsa.agency',
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX idx_quo (`quotation_id`),
+  INDEX idx_sort (`quotation_id`, `sort_order`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+// Gom chi phí của 1 báo giá thành cây nhóm → hạng mục + tổng
+function loadExpenses(PDO $pdo, $qid) {
+    $st = $pdo->prepare("SELECT * FROM `quotation_expenses` WHERE quotation_id = ? ORDER BY sort_order ASC, id ASC");
+    $st->execute([(int)$qid]);
+    $rows = $st->fetchAll();
+    $out = [];
+    foreach ($rows as $r) {
+        $out[] = [
+            'id'          => (int)$r['id'],
+            'kind'        => $r['kind'] === 'group' ? 'group' : 'item',
+            'category'    => (string)($r['category'] ?? ''),
+            'name'        => (string)($r['name'] ?? ''),
+            'description' => (string)($r['description'] ?? ''),
+            'qty'         => (float)$r['qty'],
+            'unit'        => (string)($r['unit'] ?? ''),
+            'price'       => (float)$r['price'],
+            'vat_percent' => (float)$r['vat_percent'],
+            'sort_order'  => (int)$r['sort_order'],
+        ];
+    }
+    return $out;
+}
+
+// Tổng chi phí: trước VAT, VAT, sau VAT
+function expenseTotals(array $rows) {
+    $sub = 0.0; $vat = 0.0;
+    foreach ($rows as $r) {
+        if (($r['kind'] ?? 'item') === 'group') continue;
+        $amt  = (float)$r['qty'] * (float)$r['price'];
+        $sub += $amt;
+        $vat += $amt * (float)$r['vat_percent'] / 100;
+    }
+    return ['subtotal' => round($sub, 2), 'vat' => round($vat, 2), 'total' => round($sub + $vat, 2)];
+}
+
+// ── File đính kèm (PDF) ──────────────────────────────────────
+define('QUO_FILE_DIR', dirname(__DIR__) . '/uploads/quotations');
+define('QUO_MAX_FILE', 20 * 1024 * 1024);   // 20MB / file
+
+/** Thư mục của 1 báo giá, kèm .htaccess chặn truy cập thẳng qua URL */
+function q_fileDir($qid, $create = false) {
+    $dir = QUO_FILE_DIR . '/' . (int)$qid;
+    if ($create && !is_dir($dir)) {
+        @mkdir($dir, 0755, true);
+        $ht = QUO_FILE_DIR . '/.htaccess';
+        if (!file_exists($ht)) {
+            @file_put_contents($ht, "Require all denied\n<IfModule !mod_authz_core.c>\nOrder allow,deny\nDeny from all\n</IfModule>\n");
+        }
+    }
+    return $dir;
+}
+function q_safeName($name) {
+    $name = preg_replace('/\.pdf$/i', '', (string)$name);
+    $name = preg_replace('/[^\p{L}\p{N}\-_. ]+/u', '-', $name);
+    $name = trim(preg_replace('/\s+/', ' ', $name));
+    if ($name === '') $name = 'file';
+    return mb_substr($name, 0, 90) . '.pdf';
+}
+/** Kiểm tra file upload có đúng là PDF không */
+// Giới hạn thực tế = min(giới hạn của app, giới hạn PHP của máy chủ)
+function q_uploadCap($appMax) {
+    $ini = function($k) {
+        $v = trim((string)ini_get($k));
+        if ($v === '') return 0;
+        $u = strtolower(substr($v, -1));
+        $n = (float)$v;
+        if ($u === 'g') $n *= 1024 * 1024 * 1024;
+        elseif ($u === 'm') $n *= 1024 * 1024;
+        elseif ($u === 'k') $n *= 1024;
+        return (int)$n;
+    };
+    $caps = array_filter([$appMax, $ini('upload_max_filesize'), $ini('post_max_size')]);
+    return $caps ? min($caps) : $appMax;
+}
+
+function q_checkPdf($f, $appMax = null) {
+    $max = q_uploadCap($appMax ?: QUO_MAX_FILE);
+    if (empty($f) || !isset($f['error'])) return 'Không nhận được file';
+    if ($f['error'] !== UPLOAD_ERR_OK)    return 'Tải file lên thất bại (mã ' . $f['error'] . ')';
+    if ($f['size'] <= 0)                  return 'File rỗng';
+    if ($f['size'] > $max)                return 'File quá lớn (tối đa ' . round($max / 1048576) . 'MB)';
+    if (!preg_match('/\.pdf$/i', (string)$f['name'])) return 'Chỉ nhận file PDF';
+    $fh = @fopen($f['tmp_name'], 'rb');
+    if (!$fh) return 'Không đọc được file';
+    $head = fread($fh, 5); fclose($fh);
+    if (strpos((string)$head, '%PDF') !== 0) return 'File không phải PDF hợp lệ';
+    return '';
+}
+
+// ── Trạng thái dự án (theo manage.apsa.agency) ───────────────
+$Q_STATUS = [
+    'request'          => 'Nhận yêu cầu',
+    'quote'            => 'Báo giá',
+    'order'            => 'Đặt hàng',
+    'confirmed'        => 'Xác nhận báo giá',
+    'running'          => 'Đang thực hiện',
+    'service_done'     => 'Hoàn thành dịch vụ',
+    'liq_sent'         => 'Gửi nghiệm thu',
+    'awaiting_payment' => 'Chờ thanh toán',
+    'done'             => 'Hoàn thành',
+    'lost'             => 'Trượt Bidding',
+];
+function q_status($v) {
+    global $Q_STATUS;
+    $v = trim((string)$v);
+    if (isset($Q_STATUS[$v])) return $v;
+    foreach ($Q_STATUS as $k => $label) if (mb_strtolower($label) === mb_strtolower($v)) return $k;
+    return 'request';
+}
+
+// ── Thông tin APSA in trên đầu báo giá ───────────────────────
+define('APSA_ADDRESS', '26 Ung Văn Khiêm, Phường Thạnh Mỹ Tây, TP Hồ Chí Minh, Việt Nam');
+define('APSA_EMAIL',   'Email: hello@apsa.agency');
+define('APSA_TAX',     'MST: 0317301221');
+
+// Logo APSA (PNG 144x48) nhúng sẵn để file Excel xuất ra có logo như file mẫu
+define('APSA_LOGO_B64', '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');
+
+// ── Bảng ─────────────────────────────────────────────────────
+q_mig($pdo, "CREATE TABLE IF NOT EXISTS `quotations` (
+  `id`             INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  `code`           VARCHAR(60)   DEFAULT NULL COMMENT 'Event Code',
+  `title`          VARCHAR(300)  DEFAULT NULL COMMENT 'Dòng tiêu đề: Báo giá ...',
+  `company_id`     INT UNSIGNED  DEFAULT NULL,
+  `customer_id`    INT UNSIGNED  DEFAULT NULL,
+  `client_name`    VARCHAR(300)  DEFAULT NULL,
+  `client_email`   VARCHAR(200)  DEFAULT NULL,
+  `client_tax`     VARCHAR(60)   DEFAULT NULL,
+  `client_address` VARCHAR(500)  DEFAULT NULL,
+  `quotation_date` DATE          DEFAULT NULL,
+  `event_date`     VARCHAR(120)  DEFAULT NULL,
+  `currency`       VARCHAR(10)   NOT NULL DEFAULT 'VND',
+  `ma_percent`     DECIMAL(6,2)  NOT NULL DEFAULT 10,
+  `vat_percent`    DECIMAL(6,2)  NOT NULL DEFAULT 8,
+  `show_ma`        TINYINT(1)    NOT NULL DEFAULT 1,
+  `show_vat`       TINYINT(1)    NOT NULL DEFAULT 1,
+  `note`           TEXT          DEFAULT NULL,
+  `created_by`     VARCHAR(120)  DEFAULT NULL,
+  `deleted_at`     DATETIME      DEFAULT NULL,
+  `created_at`     TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`     TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_company` (`company_id`),
+  INDEX `idx_deleted` (`deleted_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+q_mig($pdo, "CREATE TABLE IF NOT EXISTS `quotation_items` (
+  `id`            INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  `quotation_id`  INT UNSIGNED  NOT NULL,
+  `kind`          VARCHAR(10)   NOT NULL DEFAULT 'item' COMMENT 'section | item',
+  `name`          VARCHAR(300)  DEFAULT NULL,
+  `description`   TEXT          DEFAULT NULL,
+  `qty`           DECIMAL(12,2) NOT NULL DEFAULT 0,
+  `unit`          VARCHAR(50)   DEFAULT NULL,
+  `unit_price`    DECIMAL(16,2) NOT NULL DEFAULT 0,
+  `remark`        VARCHAR(300)  DEFAULT NULL,
+  `sort_order`    INT           NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  INDEX `idx_quotation` (`quotation_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+// ── Nâng cấp: cột `kind` (event | media | other) ─────────────
+function q_hasColumn($pdo, $table, $col) {
+    global $DO_MIGRATE;
+    if (!$DO_MIGRATE) return true;          // đã migrate rồi, coi như cột đã có
+    try {
+        $st = $pdo->prepare("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+                              WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?");
+        $st->execute([$table, $col]);
+        return (int)$st->fetchColumn() > 0;
+    } catch (PDOException $e) { return true; }
+}
+if (!q_hasColumn($pdo, 'quotations', 'kind')) {
+    q_mig($pdo, "ALTER TABLE `quotations` ADD COLUMN `kind` VARCHAR(20) NOT NULL DEFAULT 'media'
+                COMMENT 'event | media | other' AFTER `id`, ADD INDEX `idx_kind` (`kind`)");
+}
+// ── Nâng cấp: các cột NGHIỆM THU (liquidation) ──────────────
+if (!q_hasColumn($pdo, 'quotations', 'has_liquidation')) {
+    q_mig($pdo, "ALTER TABLE `quotations`
+        ADD COLUMN `has_liquidation` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1 = đã bật phần nghiệm thu',
+        ADD COLUMN `liq_date` DATE DEFAULT NULL COMMENT 'Ngày nghiệm thu'");
+}
+if (!q_hasColumn($pdo, 'quotations', 'po_file')) {
+    q_mig($pdo, "ALTER TABLE `quotations`
+        ADD COLUMN `po_file` VARCHAR(200) DEFAULT NULL COMMENT 'Tên file PO đã lưu',
+        ADD COLUMN `po_name` VARCHAR(200) DEFAULT NULL COMMENT 'Tên file PO gốc'");
+}
+if (!q_hasColumn($pdo, 'quotations', 'inv_file')) {
+    q_mig($pdo, "ALTER TABLE `quotations`
+        ADD COLUMN `inv_file` VARCHAR(200) DEFAULT NULL COMMENT 'File hóa đơn tổng hợp đã lưu',
+        ADD COLUMN `inv_name` VARCHAR(200) DEFAULT NULL COMMENT 'Tên file hóa đơn gốc'");
+}
+if (!q_hasColumn($pdo, 'quotation_items', 'act_file')) {
+    q_mig($pdo, "ALTER TABLE `quotation_items`
+        ADD COLUMN `act_file` VARCHAR(200) DEFAULT NULL COMMENT 'File PDF chứng từ đã lưu',
+        ADD COLUMN `act_file_name` VARCHAR(200) DEFAULT NULL COMMENT 'Tên file gốc'");
+}
+if (!q_hasColumn($pdo, 'quotations', 'manage_id')) {
+    q_mig($pdo, "ALTER TABLE `quotations`
+        ADD COLUMN `manage_id` VARCHAR(40) DEFAULT NULL COMMENT 'ID dự án bên manage.apsa.agency',
+        ADD KEY `idx_manage_id` (`manage_id`)");
+}
+if (!q_hasColumn($pdo, 'quotations', 'src_link')) {
+    q_mig($pdo, "ALTER TABLE `quotations`
+        ADD COLUMN `src_link` VARCHAR(600) DEFAULT NULL COMMENT 'Link chứa toàn bộ file của dự án'");
+}
+if (!q_hasColumn($pdo, 'quotations', 'status')) {
+    q_mig($pdo, "ALTER TABLE `quotations`
+        ADD COLUMN `status` VARCHAR(30) NOT NULL DEFAULT 'request' COMMENT 'Trạng thái dự án',
+        ADD KEY `idx_status` (`status`)");
+    // Lấy lại trạng thái đã ghi trong ghi chú lúc đồng bộ từ manage.apsa.agency
+    $backfill = [
+        'Nhận yêu cầu'       => 'request',
+        'Báo giá'            => 'quote',
+        'Đặt hàng'           => 'order',
+        'Xác nhận báo giá'   => 'confirmed',
+        'Đang thực hiện'     => 'running',
+        'Gửi nghiệm thu'     => 'liq_sent',
+        'Chờ thanh toán'     => 'awaiting_payment',
+        // 'Hoàn thành' phải chạy TRƯỚC 'Hoàn thành dịch vụ' vì LIKE %...% khớp cả hai
+        'Hoàn thành'         => 'done',
+        'Hoàn thành dịch vụ' => 'service_done',
+        'Trượt Bidding'      => 'lost',
+    ];
+    foreach ($backfill as $label => $key) {
+        $st = $pdo->prepare("UPDATE `quotations` SET `status` = ? WHERE `note` LIKE ?");
+        $st->execute([$key, '%trạng thái: ' . $label . '%']);
+    }
+}
+if (!q_hasColumn($pdo, 'quotation_items', 'act_qty')) {
+    q_mig($pdo, "ALTER TABLE `quotation_items`
+        ADD COLUMN `act_qty`    DECIMAL(12,2) NOT NULL DEFAULT 0 COMMENT 'Số lượng thực tế',
+        ADD COLUMN `act_unit`   VARCHAR(50)   DEFAULT NULL        COMMENT 'ĐVT thực tế',
+        ADD COLUMN `act_price`  DECIMAL(16,2) NOT NULL DEFAULT 0 COMMENT 'Đơn giá thực tế',
+        ADD COLUMN `act_amount` DECIMAL(16,2) NOT NULL DEFAULT 0 COMMENT 'Thành tiền thực tế nhập tay (0 = tự tính)',
+        ADD COLUMN `act_remark` VARCHAR(300)  DEFAULT NULL        COMMENT 'Chứng từ / ghi chú nghiệm thu'");
+}
+
+function q_kind($v) {
+    $v = strtolower(trim((string)$v));
+    return in_array($v, ['event','media','other'], true) ? $v : 'media';
+}
+
+if ($DO_MIGRATE) @touch($MIG_LOCK);         // đánh dấu đã migrate cho lần sau
+
+// ── Helper tính tổng ─────────────────────────────────────────
+/** Thành tiền thực tế của 1 dòng: ưu tiên số nhập tay, không có thì SL × đơn giá */
+function actAmount($it) {
+    $manual = (float)($it['act_amount'] ?? 0);
+    if ($manual > 0.009) return round($manual, 2);
+    return round(((float)($it['act_qty'] ?? 0)) * ((float)($it['act_price'] ?? 0)), 2);
+}
+
+function calcLiqTotals($quo, $items) {
+    $sub = 0.0;
+    foreach ($items as $it) {
+        if (($it['kind'] ?? 'item') === 'item') $sub += actAmount($it);
+    }
+    $sub = round($sub, 2);
+    $ma  = !empty($quo['show_ma'])  ? round($sub * (float)$quo['ma_percent'] / 100, 2) : 0.0;
+    $afterMa = round($sub + $ma, 2);
+    $vat = !empty($quo['show_vat']) ? round($afterMa * (float)$quo['vat_percent'] / 100, 2) : 0.0;
+    return [
+        'subtotal'    => $sub,
+        'ma'          => $ma,
+        'after_ma'    => $afterMa,
+        'vat'         => $vat,
+        'grand_total' => round($afterMa + $vat, 2),
+    ];
+}
+
+function calcTotals($quo, $items) {
+    $sub = 0.0;
+    foreach ($items as $it) {
+        if (($it['kind'] ?? 'item') === 'item') $sub += ((float)$it['qty']) * ((float)$it['unit_price']);
+    }
+    $sub = round($sub, 2);
+    $ma  = !empty($quo['show_ma'])  ? round($sub * (float)$quo['ma_percent'] / 100, 2) : 0.0;
+    $afterMa = round($sub + $ma, 2);
+    $vat = !empty($quo['show_vat']) ? round($afterMa * (float)$quo['vat_percent'] / 100, 2) : 0.0;
+    return [
+        'subtotal'   => $sub,
+        'ma'         => $ma,
+        'after_ma'   => $afterMa,
+        'vat'        => $vat,
+        'grand_total'=> round($afterMa + $vat, 2),
+    ];
+}
+
+/** Số thứ tự kế tiếp trong năm — đếm chung mọi loại báo giá, sang năm mới tự về 1 */
+function q_nextSeq($pdo, $year) {
+    $max = 0;
+    try {
+        $st = $pdo->prepare("SELECT code FROM quotations WHERE code LIKE ?");
+        $st->execute(['____' . $year . '-%']);
+        foreach ($st->fetchAll() as $r) {
+            if (preg_match('/^(\d{2})(\d{2})(\d{4})-(\d+)$/', (string)$r['code'], $m) && (int)$m[3] === (int)$year) {
+                $n = (int)$m[4];
+                if ($n > $max) $max = $n;
+            }
+        }
+    } catch (PDOException $e) { $max = 0; }
+    return $max + 1;
+}
+
+/** Mã báo giá dạng ddMMyyyy-N theo ngày báo giá */
+function q_makeCode($pdo, $dateStr = '') {
+    $ts = $dateStr ? strtotime($dateStr) : 0;
+    if (!$ts) $ts = time();
+    return date('dmY', $ts) . '-' . q_nextSeq($pdo, (int)date('Y', $ts));
+}
+
+/** Đảm bảo mã không trùng — trùng thì cấp mã mới */
+function q_uniqueCode($pdo, $code, $id, $dateStr = '') {
+    $code = trim((string)$code);
+    if ($code !== '') {
+        $st = $pdo->prepare("SELECT id FROM quotations WHERE code = ? AND id <> ? LIMIT 1");
+        $st->execute([$code, (int)$id]);
+        if (!$st->fetch()) return $code;
+    }
+    for ($i = 0; $i < 50; $i++) {
+        $c = q_makeCode($pdo, $dateStr);
+        $st = $pdo->prepare("SELECT id FROM quotations WHERE code = ? AND id <> ? LIMIT 1");
+        $st->execute([$c, (int)$id]);
+        if (!$st->fetch()) return $c;
+        $dateStr = $dateStr ?: date('Y-m-d');
+    }
+    return $code !== '' ? $code : date('dmY') . '-' . time();
+}
+
+/** Dòng nghiệm thu có khác báo giá không (SL / ĐVT / đơn giá / thành tiền) */
+function itemChanged($it) {
+    if (($it['kind'] ?? 'item') !== 'item') return false;
+    $q  = (float)($it['qty'] ?? 0);        $aq = (float)($it['act_qty'] ?? 0);
+    $p  = (float)($it['unit_price'] ?? 0); $ap = (float)($it['act_price'] ?? 0);
+    $u  = trim((string)($it['unit'] ?? '')); $au = trim((string)($it['act_unit'] ?? ''));
+    $amt = round($q * $p, 2);
+    $aAmt = actAmount($it);
+    if ($aq == 0.0 && $ap == 0.0 && $aAmt == 0.0) return false;   // chưa nhập nghiệm thu
+    if (abs($q - $aq) > 0.0001)  return true;
+    if (abs($p - $ap) > 0.009 && !(((float)($it['act_amount'] ?? 0)) > 0.009)) return true;
+    if (abs($amt - $aAmt) > 0.009) return true;
+    if ($au !== '' && mb_strtolower($au) !== mb_strtolower($u)) return true;
+    return false;
+}
+
+function loadItems($pdo, $qid) {
+    $st = $pdo->prepare("SELECT * FROM quotation_items WHERE quotation_id = ? ORDER BY sort_order ASC, id ASC");
+    $st->execute([$qid]);
+    $rows = $st->fetchAll();
+    foreach ($rows as &$r) {
+        $r['id']         = (int)$r['id'];
+        $r['qty']        = (float)$r['qty'];
+        $r['unit_price'] = (float)$r['unit_price'];
+        $r['amount']     = round($r['qty'] * $r['unit_price'], 2);
+        $r['act_qty']    = (float)($r['act_qty'] ?? 0);
+        $r['act_price']  = (float)($r['act_price'] ?? 0);
+        $r['act_amount'] = (float)($r['act_amount'] ?? 0);
+        $r['act_total']  = actAmount($r);
+        $r['act_file']      = $r['act_file'] ?? null;
+        $r['act_file_name'] = $r['act_file_name'] ?? null;
+        $r['changed']       = itemChanged($r) ? 1 : 0;
+    }
+    unset($r);
+    return $rows;
+}
+
+function loadQuotation($pdo, $id) {
+    $st = $pdo->prepare("SELECT q.*, co.name AS company_name FROM quotations q
+                          LEFT JOIN crm_companies co ON co.id = q.company_id
+                         WHERE q.id = ?");
+    $st->execute([$id]);
+    $q = $st->fetch();
+    if (!$q) return null;
+    $q['id']          = (int)$q['id'];
+    $q['company_id']  = $q['company_id']  === null ? null : (int)$q['company_id'];
+    $q['customer_id'] = $q['customer_id'] === null ? null : (int)$q['customer_id'];
+    $q['ma_percent']  = (float)$q['ma_percent'];
+    $q['vat_percent'] = (float)$q['vat_percent'];
+    $q['show_ma']     = (int)$q['show_ma'];
+    $q['show_vat']    = (int)$q['show_vat'];
+    $q['has_liquidation'] = (int)($q['has_liquidation'] ?? 0);
+    return $q;
+}
+
+// ════════════════════════════════════════════════════════════
+//  BỘ SINH FILE XLSX (không cần thư viện ngoài)
+// ════════════════════════════════════════════════════════════
+class ApsaZip {
+    private $files = [];
+    public function add($name, $content) { $this->files[] = [$name, $content]; }
+    public function build() {
+        $out = ''; $central = ''; $offset = 0;
+        foreach ($this->files as $f) {
+            list($name, $data) = $f;
+            $crc  = crc32($data);
+            $usize = strlen($data);
+            $comp = gzdeflate($data, 6);
+            $csize = strlen($comp);
+            $local = "PK\x03\x04" . pack('v', 20) . pack('v', 0) . pack('v', 8)
+                   . pack('v', 0) . pack('v', 0)
+                   . pack('V', $crc) . pack('V', $csize) . pack('V', $usize)
+                   . pack('v', strlen($name)) . pack('v', 0) . $name . $comp;
+            $out .= $local;
+            $central .= "PK\x01\x02" . pack('v', 20) . pack('v', 20) . pack('v', 0) . pack('v', 8)
+                     . pack('v', 0) . pack('v', 0)
+                     . pack('V', $crc) . pack('V', $csize) . pack('V', $usize)
+                     . pack('v', strlen($name)) . pack('v', 0) . pack('v', 0)
+                     . pack('v', 0) . pack('v', 0) . pack('V', 0)
+                     . pack('V', $offset) . $name;
+            $offset += strlen($local);
+        }
+        $n = count($this->files);
+        return $out . $central . "PK\x05\x06" . pack('v', 0) . pack('v', 0)
+             . pack('v', $n) . pack('v', $n)
+             . pack('V', strlen($central)) . pack('V', $offset) . pack('v', 0);
+    }
+}
+
+function xesc($s) { return htmlspecialchars((string)$s, ENT_QUOTES | ENT_XML1, 'UTF-8'); }
+
+/** Ô chữ */
+function cS($ref, $style, $text) {
+    if ($text === null || $text === '') return '<c r="' . $ref . '" s="' . $style . '"/>';
+    return '<c r="' . $ref . '" s="' . $style . '" t="inlineStr"><is><t xml:space="preserve">' . xesc($text) . '</t></is></c>';
+}
+/** Ô số */
+function cN($ref, $style, $val) {
+    return '<c r="' . $ref . '" s="' . $style . '"><v>' . (0 + $val) . '</v></c>';
+}
+/** Ô công thức (kèm giá trị đã tính sẵn để Excel/Numbers hiện ngay) */
+function cF($ref, $style, $formula, $val) {
+    return '<c r="' . $ref . '" s="' . $style . '"><f>' . xesc($formula) . '</f><v>' . (0 + $val) . '</v></c>';
+}
+
+/* ══════════ ĐỌC FILE XLSX (thuần PHP, không cần extension ngoài zlib) ══════════ */
+
+// Lấy nội dung 1 entry trong file zip. Ưu tiên ZipArchive, không có thì tự đọc.
+function xl_zipRead($zipPath, $want, $prefixMatch = false) {
+    $out = [];
+    if (class_exists('ZipArchive')) {
+        $z = new ZipArchive();
+        if ($z->open($zipPath) === true) {
+            for ($i = 0; $i < $z->numFiles; $i++) {
+                $n = $z->getNameIndex($i);
+                $hit = $prefixMatch ? (strpos($n, $want) === 0) : ($n === $want);
+                if ($hit) $out[$n] = $z->getFromIndex($i);
+            }
+            $z->close();
+            return $out;
+        }
+    }
+    // Fallback: đọc central directory thủ công
+    $data = @file_get_contents($zipPath);
+    if ($data === false) return $out;
+    $eocd = strrpos($data, "PK\x05\x06");
+    if ($eocd === false) return $out;
+    $cdOff = unpack('V', substr($data, $eocd + 16, 4))[1];
+    $cnt   = unpack('v', substr($data, $eocd + 10, 2))[1];
+    $p = $cdOff;
+    for ($i = 0; $i < $cnt; $i++) {
+        if (substr($data, $p, 4) !== "PK\x01\x02") break;
+        $method  = unpack('v', substr($data, $p + 10, 2))[1];
+        $csize   = unpack('V', substr($data, $p + 20, 4))[1];
+        $nameLen = unpack('v', substr($data, $p + 28, 2))[1];
+        $extLen  = unpack('v', substr($data, $p + 30, 2))[1];
+        $cmtLen  = unpack('v', substr($data, $p + 32, 2))[1];
+        $lhOff   = unpack('V', substr($data, $p + 42, 4))[1];
+        $name    = substr($data, $p + 46, $nameLen);
+        $p += 46 + $nameLen + $extLen + $cmtLen;
+
+        $hit = $prefixMatch ? (strpos($name, $want) === 0) : ($name === $want);
+        if (!$hit) continue;
+        if (substr($data, $lhOff, 4) !== "PK\x03\x04") continue;
+        $lNameLen = unpack('v', substr($data, $lhOff + 26, 2))[1];
+        $lExtLen  = unpack('v', substr($data, $lhOff + 28, 2))[1];
+        $start    = $lhOff + 30 + $lNameLen + $lExtLen;
+        $raw      = substr($data, $start, $csize);
+        $out[$name] = ($method === 8) ? (@gzinflate($raw) ?: '') : $raw;
+    }
+    return $out;
+}
+
+// sharedStrings.xml -> mảng chuỗi
+function xl_sharedStrings($xml) {
+    $out = [];
+    if ($xml === '') return $out;
+    if (preg_match_all('#<si\b[^>]*>(.*?)</si>#s', $xml, $m)) {
+        foreach ($m[1] as $si) {
+            $s = '';
+            if (preg_match_all('#<t\b[^>]*>(.*?)</t>#s', $si, $tm)) {
+                foreach ($tm[1] as $t) $s .= $t;
+            }
+            $out[] = html_entity_decode($s, ENT_QUOTES | ENT_XML1, 'UTF-8');
+        }
+    }
+    return $out;
+}
+
+// sheet xml -> [ rowNumber => [ 'A' => value, ... ] ]
+function xl_sheetCells($xml, array $shared) {
+    $grid = [];
+    if (!preg_match_all('#<row\b([^>]*)>(.*?)</row>#s', $xml, $rm, PREG_SET_ORDER)) return $grid;
+    foreach ($rm as $row) {
+        if (!preg_match('#\br="(\d+)"#', $row[1], $rn)) continue;
+        $rowNo = (int)$rn[1];
+        $cells = [];
+        // attrs phải "lười" để ô tự đóng <c .../> không nuốt mất dấu / rồi lệch cột
+        if (preg_match_all('#<c\b([^>]*?)(?:/>|>(.*?)</c>)#s', $row[2], $cm, PREG_SET_ORDER)) {
+            foreach ($cm as $c) {
+                if (!preg_match('#\br="([A-Z]+)\d+"#', $c[1], $ref)) continue;
+                $col  = $ref[1];
+                $type = preg_match('#\bt="([^"]+)"#', $c[1], $tm) ? $tm[1] : 'n';
+                $inner = $c[2] ?? '';
+                $val = '';
+                if ($type === 'inlineStr') {
+                    if (preg_match_all('#<t\b[^>]*>(.*?)</t>#s', $inner, $im)) $val = implode('', $im[1]);
+                    $val = html_entity_decode($val, ENT_QUOTES | ENT_XML1, 'UTF-8');
+                } elseif (preg_match('#<v\b[^>]*>(.*?)</v>#s', $inner, $vm)) {
+                    $raw = html_entity_decode($vm[1], ENT_QUOTES | ENT_XML1, 'UTF-8');
+                    if ($type === 's') {
+                        $idx = (int)$raw;
+                        $val = $shared[$idx] ?? '';
+                    } else {
+                        $val = $raw;                       // n | str | b | e
+                    }
+                }
+                $cells[$col] = $val;
+                if ($inner !== '' && preg_match('#<f\b[^>]*>(.*?)</f>#s', $inner, $fm)) {
+                    $cells['__f'][$col] = html_entity_decode($fm[1], ENT_QUOTES | ENT_XML1, 'UTF-8');
+                }
+            }
+        }
+        $grid[$rowNo] = $cells;
+    }
+    return $grid;
+}
+
+// Mở file xlsx -> lưới ô của sheet đầu tiên
+function xl_readGrid($path) {
+    $shared = xl_sharedStrings(xl_zipRead($path, 'xl/sharedStrings.xml')['xl/sharedStrings.xml'] ?? '');
+    $sheets = xl_zipRead($path, 'xl/worksheets/', true);
+    // chỉ giữ file sheet thật (bỏ thư mục _rels)
+    foreach (array_keys($sheets) as $n) {
+        if (!preg_match('#^xl/worksheets/[^/]+\.xml$#', $n)) unset($sheets[$n]);
+    }
+    if (!$sheets) return null;
+    ksort($sheets);
+    $xml = reset($sheets);
+    return xl_sheetCells($xml, $shared);
+}
+
+// Chuỗi "3.888.000" / "1,234.5" / số thuần -> float
+function xl_num($v) {
+    if ($v === null || $v === '') return 0.0;
+    if (is_numeric($v)) return (float)$v;
+    $s = trim((string)$v);
+    $s = preg_replace('/[^\d,.\-]/u', '', $s);
+    if ($s === '' || $s === '-') return 0.0;
+    $lastDot = strrpos($s, '.');
+    $lastCom = strrpos($s, ',');
+    if ($lastDot !== false && $lastCom !== false) {
+        // dấu nào đứng sau là dấu thập phân
+        if ($lastCom > $lastDot) { $s = str_replace('.', '', $s); $s = str_replace(',', '.', $s); }
+        else                     { $s = str_replace(',', '', $s); }
+    } elseif ($lastCom !== false) {
+        // chỉ có dấu phẩy: 3 số sau -> ngăn cách nghìn, ngược lại -> thập phân
+        $s = (strlen($s) - $lastCom - 1) === 3 ? str_replace(',', '', $s) : str_replace(',', '.', $s);
+    } elseif ($lastDot !== false) {
+        $s = (strlen($s) - $lastDot - 1) === 3 && substr_count($s, '.') >= 1 && strlen($s) - $lastDot - 1 === 3
+             ? str_replace('.', '', $s) : $s;
+    }
+    return (float)$s;
+}
+
+function xl_cell(array $grid, $row, $col) {
+    return isset($grid[$row][$col]) ? trim((string)$grid[$row][$col]) : '';
+}
+
+const XL_ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV',
+                  'XVI','XVII','XVIII','XIX','XX','XXI','XXII','XXIII','XXIV','XXV'];
+
+
+// File tải về có thể là .xlsx trần HOẶC gói .zip nghiệm thu (xlsx + PO + chứng từ).
+// Trả về đường dẫn tới file xlsx thật (có thể là file tạm), và tên file bên trong.
+function xl_resolveWorkbook($path, &$tmpOut = null, &$innerName = null) {
+    if (xl_readGrid($path)) return $path;                 // đã là xlsx
+    $all = xl_zipRead($path, '', true);                   // liệt kê toàn bộ entry
+    foreach ($all as $name => $bytes) {
+        if (strtolower(substr($name, -5)) !== '.xlsx' || $bytes === '') continue;
+        $tmp = tempnam(sys_get_temp_dir(), 'apsaxl');
+        if ($tmp === false) continue;
+        file_put_contents($tmp, $bytes);
+        if (xl_readGrid($tmp)) { $tmpOut = $tmp; $innerName = $name; return $tmp; }
+        @unlink($tmp);
+    }
+    return null;
+}
+
+/* Đọc lưới -> ['items'=>[], 'liq'=>bool, 'meta'=>[], 'warnings'=>[]] */
+function xl_parseQuotation(array $grid) {
+    $warn = [];
+    // 1) tìm hàng tiêu đề bảng
+    $hdr = 0;
+    foreach ($grid as $rn => $cells) {
+        $a = strtolower(trim((string)($cells['A'] ?? '')));
+        $b = strtolower(trim((string)($cells['B'] ?? '')));
+        if ($a === 'no' && $b === 'name') { $hdr = $rn; break; }
+        if ($rn > 60) break;
+    }
+    if (!$hdr) return ['error' => 'Không tìm thấy hàng tiêu đề (No / Name / Description) — file không đúng mẫu xuất của hệ thống.'];
+
+    // 2) có cột nghiệm thu không
+    $liq = strtolower(xl_cell($grid, $hdr, 'J')) === 'qty';
+
+    // 3) thông tin chung ở khối đầu
+    $meta = [];
+    for ($i = 1; $i < $hdr; $i++) {
+        $t = xl_cell($grid, $i, 'A');
+        if ($t === '') continue;
+        if (preg_match('/^Client:\s*(.*)$/iu', $t, $m))              $meta['client_name']    = trim($m[1]);
+        elseif (preg_match('/^Client Email:\s*(.*)$/iu', $t, $m))    $meta['client_email']   = trim($m[1]);
+        elseif (preg_match('/^Client MST:\s*(.*)$/iu', $t, $m))      $meta['client_tax']     = trim($m[1]);
+        elseif (preg_match('/^Client Address:\s*(.*)$/iu', $t, $m))  $meta['client_address'] = trim($m[1]);
+        elseif (preg_match('/^Quotation Date:\s*(.*)$/iu', $t, $m))  $meta['quotation_date'] = trim($m[1]);
+        elseif (preg_match('/^Currency:\s*(.*)$/iu', $t, $m))        $meta['currency']       = trim($m[1]);
+        elseif (preg_match('/^Event Code:\s*(.*)$/iu', $t, $m))      $meta['code']           = trim($m[1]);
+        elseif (preg_match('/^Event Date:\s*(.*)$/iu', $t, $m))      $meta['event_date']     = trim($m[1]);
+    }
+    // tiêu đề nằm ở hàng ngay trên chữ QUOTATION
+    for ($i = max(1, $hdr - 4); $i < $hdr; $i++) {
+        $v = xl_cell($grid, $i, 'A');
+        if ($v !== '' && !preg_match('/^(Client|Quotation Date|Currency|Event|MST|Email)/iu', $v)
+            && strtoupper($v) !== 'QUOTATION') { $meta['title'] = $v; }
+    }
+    if (!empty($meta['quotation_date']) && preg_match('#^(\d{1,2})/(\d{1,2})/(\d{4})$#', $meta['quotation_date'], $d)) {
+        $meta['quotation_date'] = sprintf('%04d-%02d-%02d', $d[3], $d[2], $d[1]);
+    }
+
+    // 4) thân bảng
+    $items = [];
+    $maxRow = max(array_keys($grid));
+    $blank  = 0;
+    for ($rn = $hdr + 1; $rn <= $maxRow; $rn++) {
+        $A = xl_cell($grid, $rn, 'A'); $B = xl_cell($grid, $rn, 'B');
+        $C = xl_cell($grid, $rn, 'C'); $D = xl_cell($grid, $rn, 'D');
+        $F = xl_cell($grid, $rn, 'F'); $H = xl_cell($grid, $rn, 'H');
+        $Fl = strtoupper(xl_cell($grid, $rn, 'F'));
+
+        // khối tổng bắt đầu: A..E trống và F là nhãn TOTAL / MA / VAT
+        if ($A === '' && $B === '' && $C === '' &&
+            (strpos($Fl, 'TOTAL') === 0 || strpos($Fl, 'MA (') === 0 || strpos($Fl, 'VAT') === 0)) break;
+
+        if ($A === '' && $B === '' && $C === '' && $D === '' && $F === '' && $H === '') {
+            if (++$blank >= 2) break;                    // 2 dòng trống liên tiếp = hết bảng
+            continue;
+        }
+        $blank = 0;
+
+        $isSection = ($A !== '' && in_array(strtoupper($A), XL_ROMAN, true));
+        if ($isSection) {
+            $items[] = ['kind' => 'section', 'name' => $B, 'description' => $C, 'remark' => $H,
+                        'qty' => 0, 'unit' => '', 'unit_price' => 0,
+                        'act_qty' => 0, 'act_unit' => '', 'act_price' => 0, 'act_amount' => 0, 'act_remark' => ''];
+            continue;
+        }
+        if ($B === '' && $C === '' && xl_num($F) == 0 && xl_num($D) == 0) continue;   // dòng rác
+
+        $row = [
+            'kind'        => 'item',
+            'name'        => $B,
+            'description' => $C,
+            'qty'         => xl_num($D),
+            'unit'        => xl_cell($grid, $rn, 'E'),
+            'unit_price'  => xl_num($F),
+            'remark'      => $H,
+            'act_qty' => 0, 'act_unit' => '', 'act_price' => 0, 'act_amount' => 0, 'act_remark' => '',
+        ];
+        if ($liq) {
+            $aQty   = xl_num(xl_cell($grid, $rn, 'J'));
+            $aPrice = xl_num(xl_cell($grid, $rn, 'L'));
+            $aAmt   = xl_num(xl_cell($grid, $rn, 'M'));
+            $row['act_qty']   = $aQty;
+            $row['act_unit']  = xl_cell($grid, $rn, 'K');
+            $row['act_price'] = $aPrice;
+            // Khi xuất, dòng nhập tay thành tiền có L = M/J (công thức) -> giữ nguyên kiểu nhập tay
+            $fL = $grid[$rn]['__f']['L'] ?? '';
+            $manual = ($fL !== '' && preg_match('#^\s*M\d+\s*/#i', $fL));
+            if ($manual) {
+                $row['act_price']  = 0;
+                $row['act_amount'] = $aAmt;
+            } else {
+                // hoặc khi người dùng sửa tay cột Thành tiền cho khác SL × Đơn giá
+                $calc = round($aQty * $aPrice, 2);
+                $row['act_amount'] = (abs($calc - $aAmt) > 0.01) ? $aAmt : 0;
+            }
+            $row['act_remark'] = xl_cell($grid, $rn, 'N');
+        }
+        $items[] = $row;
+    }
+
+    if (!$items) $warn[] = 'Không đọc được dòng hạng mục nào trong file.';
+    return ['items' => $items, 'liq' => $liq, 'meta' => $meta, 'warnings' => $warn];
+}
+
+function buildXlsx($quo, $items, $logoBinary, $withLiq = false) {
+    // Chỉ số style (khớp cellXfs bên dưới)
+    $S_INFO = 1; $S_INFO_B = 2; $S_TITLE = 3; $S_QUOT = 4; $S_TH = 5;
+    $S_SEC_L = 6; $S_SEC_C = 7; $S_SEC_N = 8;
+    $S_IT_C = 9; $S_IT_L = 10; $S_IT_N = 11;
+    $S_TEAL_L = 12; $S_TEAL_N = 13; $S_BLUE_L = 14; $S_BLUE_N = 15;
+    $S_TEAL_BLANK = 16; $S_BLUE_BLANK = 17;
+    $S_IT_C_R = 18; $S_IT_L_R = 19; $S_IT_N_R = 20;
+    $sp = $withLiq ? '1:14' : '1:8';
+
+    $qdate = $quo['quotation_date'] ? date('d/m/Y', strtotime($quo['quotation_date'])) : '';
+    $info = [
+        2  => [APSA_ADDRESS, $S_INFO],
+        3  => [APSA_EMAIL,   $S_INFO],
+        4  => [APSA_TAX,     $S_INFO],
+        5  => ['Client: ' . $quo['client_name'],       $S_INFO],
+        6  => ['Client Email: ' . $quo['client_email'], $S_INFO],
+        7  => ['Client MST: ' . $quo['client_tax'],     $S_INFO],
+        8  => ['Client Address: ' . $quo['client_address'], $S_INFO],
+        9  => ['Quotation Date: ' . $qdate,            $S_INFO_B],
+        10 => ['Currency: ' . $quo['currency'],        $S_INFO_B],
+        11 => ['Event Code: ' . $quo['code'],          $S_INFO_B],
+        12 => ['Event Date: ' . $quo['event_date'],    $S_INFO_B],
+    ];
+
+    $rows = [];
+    $rows[] = '<row r="1" spans="' . $sp . '" ht="80" customHeight="1"/>';
+    foreach ($info as $r => $pair) {
+        $rows[] = '<row r="' . $r . '" spans="' . $sp . '">' . cS('A' . $r, $pair[1], $pair[0]) . '</row>';
+    }
+    $rows[] = '<row r="13" spans="' . $sp . '"/>';
+    $rows[] = '<row r="14" spans="' . $sp . '" ht="16" customHeight="1">' . cS('A14', $S_TITLE, $quo['title']) . '</row>';
+    $row15 = cS('C15', $S_QUOT, 'QUOTATION');
+    if ($withLiq) $row15 .= cS('J15', $S_QUOT, 'LIQUIDATION');
+    $rows[] = '<row r="15" spans="' . $sp . '" ht="17" customHeight="1">' . $row15 . '</row>';
+
+    $head = ['No','Name','Description','Qty','Unit','Unit Price ' . $quo['currency'],'Sub-total Amount','Remark'];
+    $cells = '';
+    foreach ($head as $i => $h) $cells .= cS(chr(65 + $i) . '16', $S_TH, $h);
+    if ($withLiq) {
+        $lhead = ['J' => 'Qty', 'K' => 'Unit', 'L' => 'Unit Price ' . $quo['currency'],
+                  'M' => 'Sub-total Amount', 'N' => 'Remark'];
+        foreach ($lhead as $col => $h) $cells .= cS($col . '16', $S_TH, $h);
+    }
+    $rows[] = '<row r="16" spans="' . $sp . '">' . $cells . '</row>';
+
+    // ── Thân bảng ──
+    $r = 17;
+    $romans = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+    $sectionRefs = [];
+    $sectionIdx = 0;
+    $pending = null;   // ['row' => r, 'first' => r+1]
+    $itemNo = 0;
+    $body = [];
+
+    $liqSectionRefs = [];
+    $closeSection = function() use (&$pending, &$body, &$sectionRefs, &$liqSectionRefs, $S_SEC_N, &$r, $withLiq) {
+        if ($pending === null) return;
+        $last = $r - 1;
+        $sum  = 0.0; $formula = '0';
+        $lsum = 0.0; $lformula = '0';
+        if ($last >= $pending['first']) {
+            $formula  = 'SUM(G' . $pending['first'] . ':G' . $last . ')';
+            $lformula = 'SUM(M' . $pending['first'] . ':M' . $last . ')';
+            $sum  = $pending['sum'];
+            $lsum = $pending['lsum'];
+        }
+        $body[$pending['row']]['G'] = cF('G' . $pending['row'], $S_SEC_N, $formula, $sum);
+        $sectionRefs[] = 'G' . $pending['row'];
+        if ($withLiq) {
+            $body[$pending['row']]['M'] = cF('M' . $pending['row'], $S_SEC_N, $lformula, $lsum);
+            $liqSectionRefs[] = 'M' . $pending['row'];
+        }
+        $pending = null;
+    };
+
+    foreach ($items as $it) {
+        $kind = ($it['kind'] ?? 'item') === 'section' ? 'section' : 'item';
+        if ($kind === 'section') {
+            $closeSection();
+            $label = $romans[$sectionIdx] ?? (string)($sectionIdx + 1);
+            $sectionIdx++;
+            $itemNo = 0;
+            $body[$r] = [
+                'A' => cS('A' . $r, $S_SEC_C, $label),
+                'B' => cS('B' . $r, $S_SEC_L, $it['name']),
+                'C' => cS('C' . $r, $S_SEC_L, $it['description']),
+                'D' => cS('D' . $r, $S_SEC_C, ''),
+                'E' => cS('E' . $r, $S_SEC_C, ''),
+                'F' => cS('F' . $r, $S_SEC_C, ''),
+                'G' => '',
+                'H' => cS('H' . $r, $S_SEC_L, $it['remark']),
+            ];
+            if ($withLiq) {
+                $body[$r]['J'] = cS('J' . $r, $S_SEC_C, '');
+                $body[$r]['K'] = cS('K' . $r, $S_SEC_C, '');
+                $body[$r]['L'] = cS('L' . $r, $S_SEC_C, '');
+                $body[$r]['M'] = '';
+                $body[$r]['N'] = cS('N' . $r, $S_SEC_L, '');
+            }
+            $pending = ['row' => $r, 'first' => $r + 1, 'sum' => 0.0, 'lsum' => 0.0];
+            $r++;
+        } else {
+            $itemNo++;
+            $qty = (float)$it['qty']; $price = (float)$it['unit_price'];
+            $amount = round($qty * $price, 2);
+            if ($pending !== null) $pending['sum'] = round($pending['sum'] + $amount, 2);
+
+            $aQty   = (float)($it['act_qty'] ?? 0);
+            $aPrice = (float)($it['act_price'] ?? 0);
+            $aManual = ((float)($it['act_amount'] ?? 0)) > 0.009;
+            $aAmount = $aManual ? round((float)$it['act_amount'], 2) : round($aQty * $aPrice, 2);
+            if ($withLiq && $pending !== null) $pending['lsum'] = round($pending['lsum'] + $aAmount, 2);
+
+            // Dòng nghiệm thu khác báo giá -> tô chữ đỏ cả dòng
+            $red = ($withLiq && itemChanged($it));
+            $stC = $red ? $S_IT_C_R : $S_IT_C;
+            $stL = $red ? $S_IT_L_R : $S_IT_L;
+            $stN = $red ? $S_IT_N_R : $S_IT_N;
+
+            $body[$r] = [
+                'A' => cN('A' . $r, $stC, $itemNo),
+                'B' => cS('B' . $r, $stL, $it['name']),
+                'C' => cS('C' . $r, $stL, $it['description']),
+                'D' => cN('D' . $r, $stC, $qty),
+                'E' => cS('E' . $r, $stC, $it['unit']),
+                'F' => cN('F' . $r, $stN, $price),
+                'G' => cF('G' . $r, $stN, 'D' . $r . '*F' . $r, $amount),
+                'H' => cS('H' . $r, $stL, $it['remark']),
+            ];
+            if ($withLiq) {
+                $body[$r]['J'] = cN('J' . $r, $stC, $aQty);
+                $body[$r]['K'] = cS('K' . $r, $stC, $it['act_unit'] ?? '');
+                if ($aManual) {
+                    $body[$r]['M'] = cN('M' . $r, $stN, $aAmount);
+                    if ($aQty > 0.000001) {
+                        $body[$r]['L'] = cF('L' . $r, $stN, 'M' . $r . '/J' . $r, round($aAmount / $aQty, 2));
+                    } else {
+                        $body[$r]['L'] = cN('L' . $r, $stN, $aPrice);
+                    }
+                } else {
+                    $body[$r]['L'] = cN('L' . $r, $stN, $aPrice);
+                    $body[$r]['M'] = cF('M' . $r, $stN, 'J' . $r . '*L' . $r, $aAmount);
+                }
+                // Cột Remark nghiệm thu chỉ còn ghi chú (hóa đơn nay dùng 1 file tổng hợp cho cả dự án)
+                $body[$r]['N'] = cS('N' . $r, $stL, trim((string)($it['act_remark'] ?? '')));
+            }
+            $r++;
+        }
+    }
+    $closeSection();
+
+    foreach ($body as $rr => $cs) {
+        $rows[] = '<row r="' . $rr . '" spans="' . $sp . '">' . implode('', $cs) . '</row>';
+    }
+
+    // ── Khối tổng ──
+    $t  = calcTotals($quo, $items);
+    $lt = calcLiqTotals($quo, $items);
+    $rows[] = '<row r="' . $r . '" spans="' . $sp . '"/>';   // dòng trống
+    $r++;
+
+    $totalRow = $r;
+    $sumFormula = $sectionRefs ? implode('+', $sectionRefs) : '0';
+    $mk = function($row, $label, $formula, $value, $labelStyle, $numStyle, $blankStyle, $lFormula = '0', $lValue = 0)
+                   use ($withLiq, $sp) {
+        $c = '';
+        foreach (['A','B','C','D','E'] as $col) $c .= cS($col . $row, $blankStyle, '');
+        $c .= cS('F' . $row, $labelStyle, $label);
+        $c .= cF('G' . $row, $numStyle, $formula, $value);
+        if ($withLiq) {
+            $c .= cS('J' . $row, $blankStyle, '');
+            $c .= cS('K' . $row, $blankStyle, '');
+            $c .= cS('L' . $row, $labelStyle, $label);
+            $c .= cF('M' . $row, $numStyle, $lFormula, $lValue);
+        }
+        return '<row r="' . $row . '" spans="' . $sp . '">' . $c . '</row>';
+    };
+
+    $liqSumFormula = $liqSectionRefs ? implode('+', $liqSectionRefs) : '0';
+    $rows[] = $mk($totalRow, 'TOTAL', $sumFormula, $t['subtotal'], $S_TEAL_L, $S_TEAL_N, $S_TEAL_BLANK,
+                  $liqSumFormula, $lt['subtotal']);
+    $r++;
+    $baseRow = $totalRow;
+
+    if (!empty($quo['show_ma'])) {
+        $maRow = $r;
+        $maLabel = 'MA (' . rtrim(rtrim(number_format((float)$quo['ma_percent'], 2, '.', ''), '0'), '.') . '%)';
+        $rows[] = $mk($maRow, $maLabel, 'G' . $totalRow . '*' . (float)$quo['ma_percent'] . '/100', $t['ma'], $S_BLUE_L, $S_BLUE_N, $S_BLUE_BLANK,
+                      'M' . $totalRow . '*' . (float)$quo['ma_percent'] . '/100', $lt['ma']);
+        $r++;
+        $afterRow = $r;
+        $rows[] = $mk($afterRow, 'Total after MA', 'G' . $totalRow . '+G' . $maRow, $t['after_ma'], $S_BLUE_L, $S_BLUE_N, $S_BLUE_BLANK,
+                      'M' . $totalRow . '+M' . $maRow, $lt['after_ma']);
+        $r++;
+        $baseRow = $afterRow;
+    }
+    if (!empty($quo['show_vat'])) {
+        $vatRow = $r;
+        $vatLabel = 'VAT (' . rtrim(rtrim(number_format((float)$quo['vat_percent'], 2, '.', ''), '0'), '.') . '%)';
+        $rows[] = $mk($vatRow, $vatLabel, 'G' . $baseRow . '*' . (float)$quo['vat_percent'] . '/100', $t['vat'], $S_BLUE_L, $S_BLUE_N, $S_BLUE_BLANK,
+                      'M' . $baseRow . '*' . (float)$quo['vat_percent'] . '/100', $lt['vat']);
+        $r++;
+        $rows[] = $mk($r, 'TOTAL', 'G' . $baseRow . '+G' . $vatRow, $t['grand_total'], $S_BLUE_L, $S_BLUE_N, $S_BLUE_BLANK,
+                      'M' . $baseRow . '+M' . $vatRow, $lt['grand_total']);
+        $r++;
+    }
+    $lastRow = $r - 1;
+
+    // ── Cột I: dải đen ngăn cách bảng Báo giá và Nghiệm thu (từ hàng header tới hàng TOTAL cuối) ──
+    if ($withLiq) {
+        $S_SEP = 21;
+        foreach ($rows as $k => $rowXml) {
+            if (!preg_match('/<row r="(\d+)"/', $rowXml, $m)) continue;
+            $rn = (int)$m[1];
+            if ($rn < 16 || $rn > $lastRow) continue;
+            $cell = cS('I' . $rn, $S_SEP, '');
+            if (strpos($rowXml, '<c r="J' . $rn . '"') !== false) {
+                $rows[$k] = str_replace('<c r="J' . $rn . '"', $cell . '<c r="J' . $rn . '"', $rowXml);
+            } elseif (substr($rowXml, -2) === '/>') {
+                $rows[$k] = substr($rowXml, 0, -2) . '>' . $cell . '</row>';
+            } else {
+                $rows[$k] = str_replace('</row>', $cell . '</row>', $rowXml);
+            }
+        }
+    }
+
+    // ── sheet1.xml ──
+    $sheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+      . '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+      . '<dimension ref="A1:' . ($withLiq ? 'N' : 'H') . $lastRow . '"/>'
+      . '<sheetViews><sheetView tabSelected="1" workbookViewId="0"/></sheetViews>'
+      . '<sheetFormatPr baseColWidth="10" defaultColWidth="8.83203125" defaultRowHeight="15"/>'
+      . '<cols>'
+      . '<col min="1" max="1" width="5" customWidth="1"/>'
+      . '<col min="2" max="2" width="30" customWidth="1"/>'
+      . '<col min="3" max="3" width="25" customWidth="1"/>'
+      . '<col min="4" max="4" width="8" customWidth="1"/>'
+      . '<col min="5" max="5" width="10" customWidth="1"/>'
+      . '<col min="6" max="6" width="15" customWidth="1"/>'
+      . '<col min="7" max="7" width="15" customWidth="1"/>'
+      . '<col min="8" max="8" width="20" customWidth="1"/>'
+      . ($withLiq
+            ? '<col min="9" max="9" width="8.83203125" customWidth="1"/>'
+            . '<col min="12" max="12" width="19" customWidth="1"/>'
+            . '<col min="13" max="13" width="15.6640625" customWidth="1"/>'
+            : '')
+      . '</cols>'
+      . '<sheetData>' . implode('', $rows) . '</sheetData>'
+      . '<pageMargins left="0.7" right="0.7" top="0.75" bottom="0.75" header="0.3" footer="0.3"/>'
+      . '<drawing r:id="rId1"/>'
+      . '</worksheet>';
+
+    // ── styles.xml ──
+    $styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+      . '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+      . '<fonts count="7">'
+      . '<font><sz val="11"/><name val="Times New Roman"/></font>'
+      . '<font><b/><sz val="11"/><name val="Times New Roman"/></font>'
+      . '<font><b/><sz val="12"/><name val="Times New Roman"/></font>'
+      . '<font><b/><sz val="13"/><name val="Times New Roman"/></font>'
+      . '<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Times New Roman"/></font>'
+      . '<font><b/><sz val="11"/><color rgb="FF000000"/><name val="Times New Roman"/></font>'
+      . '<font><sz val="11"/><color rgb="FFFF0000"/><name val="Times New Roman"/></font>'
+      . '</fonts>'
+      . '<fills count="6">'
+      . '<fill><patternFill patternType="none"/></fill>'
+      . '<fill><patternFill patternType="gray125"/></fill>'
+      . '<fill><patternFill patternType="solid"><fgColor rgb="FF284CB7"/><bgColor indexed="64"/></patternFill></fill>'
+      . '<fill><patternFill patternType="solid"><fgColor rgb="FFBACEF9"/><bgColor indexed="64"/></patternFill></fill>'
+      . '<fill><patternFill patternType="solid"><fgColor rgb="FFA3D5DC"/><bgColor indexed="64"/></patternFill></fill>'
+      . '<fill><patternFill patternType="solid"><fgColor rgb="FF000000"/><bgColor indexed="64"/></patternFill></fill>'
+      . '</fills>'
+      . '<borders count="2">'
+      . '<border><left/><right/><top/><bottom/><diagonal/></border>'
+      . '<border><left style="thin"><color indexed="64"/></left><right style="thin"><color indexed="64"/></right>'
+      . '<top style="thin"><color indexed="64"/></top><bottom style="thin"><color indexed="64"/></bottom><diagonal/></border>'
+      . '</borders>'
+      . '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
+      . '<cellXfs count="22">'
+      . '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'                                                        // 0
+      . '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyFont="1"/>'                                          // 1 info
+      . '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>'                                          // 2 info bold
+      . '<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/>'                                          // 3 title
+      . '<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"/>'                                          // 4 QUOTATION
+      . '<xf numFmtId="0" fontId="4" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>' // 5 th
+      . '<xf numFmtId="0" fontId="5" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center"/></xf>'   // 6
+      . '<xf numFmtId="0" fontId="5" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' // 7
+      . '<xf numFmtId="3" fontId="5" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>' // 8
+      . '<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>'  // 9
+      . '<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center" wrapText="1"/></xf>' // 10
+      . '<xf numFmtId="3" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>' // 11
+      . '<xf numFmtId="0" fontId="5" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' // 12
+      . '<xf numFmtId="3" fontId="5" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>' // 13
+      . '<xf numFmtId="0" fontId="4" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' // 14
+      . '<xf numFmtId="3" fontId="4" fillId="2" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>' // 15
+      . '<xf numFmtId="0" fontId="5" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>' // 16
+      . '<xf numFmtId="0" fontId="4" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' // 17
+      . '<xf numFmtId="0" fontId="6" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' // 18
+      . '<xf numFmtId="0" fontId="6" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center" wrapText="1"/></xf>' // 19
+      . '<xf numFmtId="3" fontId="6" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>' // 20
+      . '<xf numFmtId="0" fontId="0" fillId="5" borderId="0" xfId="0" applyFill="1"/>' // 21 cột I ngăn cách, nền đen
+      . '</cellXfs>'
+      . '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'
+      . '</styleSheet>';
+
+    $zip = new ApsaZip();
+    $zip->add('[Content_Types].xml',
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+      . '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+      . '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+      . '<Default Extension="xml" ContentType="application/xml"/>'
+      . '<Default Extension="png" ContentType="image/png"/>'
+      . '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
+      . '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'
+      . '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'
+      . '<Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>'
+      . '</Types>');
+    $zip->add('_rels/.rels',
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+      . '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+      . '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'
+      . '</Relationships>');
+    $zip->add('xl/workbook.xml',
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+      . '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+      . '<sheets><sheet name="Báo giá" sheetId="1" r:id="rId1"/></sheets>'
+      . '<calcPr calcId="0" fullCalcOnLoad="1"/>'
+      . '</workbook>');
+    $zip->add('xl/_rels/workbook.xml.rels',
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+      . '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+      . '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>'
+      . '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
+      . '</Relationships>');
+    $zip->add('xl/styles.xml', $styles);
+    $zip->add('xl/worksheets/sheet1.xml', $sheet);
+    $zip->add('xl/worksheets/_rels/sheet1.xml.rels',
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+      . '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+      . '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing1.xml"/>'
+      . '</Relationships>');
+    $zip->add('xl/drawings/drawing1.xml',
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+      . '<xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
+      . '<xdr:oneCellAnchor><xdr:from><xdr:col>0</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>0</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from>'
+      . '<xdr:ext cx="1428750" cy="476250"/>'
+      . '<xdr:pic><xdr:nvPicPr><xdr:cNvPr id="2" name="Logo APSA"/><xdr:cNvPicPr><a:picLocks noChangeAspect="1"/></xdr:cNvPicPr></xdr:nvPicPr>'
+      . '<xdr:blipFill><a:blip xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:embed="rId1"/><a:stretch><a:fillRect/></a:stretch></xdr:blipFill>'
+      . '<xdr:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic>'
+      . '<xdr:clientData/></xdr:oneCellAnchor></xdr:wsDr>');
+    $zip->add('xl/drawings/_rels/drawing1.xml.rels',
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+      . '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+      . '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/image1.png"/>'
+      . '</Relationships>');
+    $zip->add('xl/media/image1.png', $logoBinary);
+    return $zip->build();
+}
+
+$action = $_GET['action'] ?? '';
+$B      = body_json();
+
+switch ($action) {
+
+case 'list': {
+    $trash = !empty($_GET['trash']);
+    $q     = trim((string)($_GET['q'] ?? ''));
+    $sql = "SELECT q.*, co.name AS company_name,
+                   (SELECT COUNT(*) FROM quotation_items i WHERE i.quotation_id = q.id AND i.kind = 'item') AS item_count,
+                   (SELECT COALESCE(SUM(i.qty * i.unit_price),0) FROM quotation_items i WHERE i.quotation_id = q.id AND i.kind = 'item') AS subtotal,
+                   (SELECT COALESCE(SUM(CASE WHEN i.act_amount > 0 THEN i.act_amount ELSE i.act_qty * i.act_price END),0)
+                      FROM quotation_items i WHERE i.quotation_id = q.id AND i.kind = 'item') AS liq_subtotal
+              FROM quotations q
+              LEFT JOIN crm_companies co ON co.id = q.company_id
+             WHERE q.deleted_at IS " . ($trash ? "NOT NULL" : "NULL");
+    $params = [];
+    if ($q !== '') {
+        $sql .= " AND (q.code LIKE :q OR q.title LIKE :q OR q.client_name LIKE :q OR co.name LIKE :q)";
+        $params[':q'] = '%' . $q . '%';
+    }
+    $kind = trim((string)($_GET['kind'] ?? ''));
+    if ($kind !== '' && $kind !== 'all') { $sql .= " AND q.kind = :kind"; $params[':kind'] = q_kind($kind); }
+    $stt = trim((string)($_GET['status'] ?? ''));
+    if ($stt !== '' && $stt !== 'all') { $sql .= " AND q.status = :stt"; $params[':stt'] = q_status($stt); }
+    $sql .= " ORDER BY q.quotation_date DESC, q.id DESC";
+    $st = $pdo->prepare($sql);
+    $st->execute($params);
+    $rows = $st->fetchAll();
+    foreach ($rows as &$r) {
+        $r['id']            = (int)$r['id'];
+        $r['status']        = q_status($r['status'] ?? '');
+        $r['status_label']  = $Q_STATUS[$r['status']];
+        $r['src_link']      = $r['src_link'] ?? '';
+        $r['item_count']    = (int)$r['item_count'];
+        $r['subtotal']     = (float)$r['subtotal'];
+        $r['liq_subtotal'] = (float)($r['liq_subtotal'] ?? 0);
+        $ma  = $r['show_ma']  ? $r['subtotal'] * (float)$r['ma_percent'] / 100 : 0;
+        $aft = $r['subtotal'] + $ma;
+        $vat = $r['show_vat'] ? $aft * (float)$r['vat_percent'] / 100 : 0;
+        $r['grand_total'] = round($aft + $vat, 2);
+        $lma  = $r['show_ma']  ? $r['liq_subtotal'] * (float)$r['ma_percent'] / 100 : 0;
+        $laft = $r['liq_subtotal'] + $lma;
+        $lvat = $r['show_vat'] ? $laft * (float)$r['vat_percent'] / 100 : 0;
+        $r['liq_grand_total'] = round($laft + $lvat, 2);
+    }
+    unset($r);
+
+    // Chỉ trả về những cột danh sách thực sự hiển thị — payload nhẹ hơn ~60%
+    $KEEP = ['id','kind','code','title','client_name','company_name','status','status_label',
+             'quotation_date','item_count','grand_total','liq_subtotal','liq_grand_total','has_liquidation'];
+    $slim = [];
+    foreach ($rows as $r) {
+        $o = [];
+        foreach ($KEEP as $k) if (array_key_exists($k, $r)) $o[$k] = $r[$k];
+        $slim[] = $o;
+    }
+    q_ok($slim);
+}
+
+case 'get': {
+    $id = (int)($_GET['id'] ?? 0);
+    // Cho phép mở theo mã báo giá: ?action=get&code=28072026-130
+    $code = trim((string)($_GET['code'] ?? ''));
+    if (!$id && $code !== '') {
+        $st = $pdo->prepare("SELECT id FROM quotations WHERE code = ? AND deleted_at IS NULL LIMIT 1");
+        $st->execute([$code]);
+        $id = (int)($st->fetchColumn() ?: 0);
+        if (!$id) q_fail('Không tìm thấy báo giá có mã ' . $code, 404);
+    }
+    if (!$id) q_fail('id is required');
+    $q = loadQuotation($pdo, $id);
+    if (!$q) q_fail('Không tìm thấy báo giá', 404);
+    $items = loadItems($pdo, $id);
+    q_ok(['quotation' => $q, 'items' => $items, 'totals' => calcTotals($q, $items),
+          'liq_totals' => calcLiqTotals($q, $items),
+          'assignees' => loadAssignees($pdo, $id),
+        'expenses'  => loadExpenses($pdo, $id)]);
+}
+
+// ══════════ GIAO VIỆC ══════════
+// Danh mục trạng thái + vị trí (UI đọc để dựng dropdown)
+case 'assign-meta': {
+    q_ok(['status' => $ASSIGN_STATUS, 'positions' => $ASSIGN_POS]);
+}
+
+// Người thực hiện của 1 báo giá
+case 'assignees': {
+    $id = (int)($_GET['id'] ?? 0);
+    if (!$id) q_fail('id is required');
+    q_ok(loadAssignees($pdo, $id));
+}
+
+// Lưu cả danh sách người thực hiện của 1 báo giá (thay thế toàn bộ)
+case 'assignees-save': {
+    $qid = (int)($B['quotation_id'] ?? 0);
+    if (!$qid) q_fail('Thiếu mã báo giá');
+    $st = $pdo->prepare("SELECT id FROM quotations WHERE id = ? AND deleted_at IS NULL");
+    $st->execute([$qid]);
+    if (!$st->fetchColumn()) q_fail('Không tìm thấy báo giá', 404);
+
+    $list = is_array($B['list'] ?? null) ? $B['list'] : [];
+    $pdo->beginTransaction();
+    try {
+        $pdo->prepare("DELETE FROM `quotation_assignees` WHERE quotation_id = ?")->execute([$qid]);
+        $ins = $pdo->prepare("INSERT INTO `quotation_assignees`
+            (quotation_id, user_id, position, task, due_date, status, sort_order, assigned_by)
+            VALUES (?,?,?,?,?,?,?,?)");
+        $n = 0;
+        foreach ($list as $i => $a) {
+            $uid = (int)($a['user_id'] ?? 0);
+            if (!$uid) continue;
+            $ins->execute([$qid, $uid, q_asgPos($a['position'] ?? ''),
+                           s($a['task'] ?? '', 300), dateOrNull($a['due_date'] ?? ''),
+                           q_asgStatus($a['status'] ?? 'todo'), $i, $WHO]);
+            $n++;
+        }
+        $pdo->commit();
+        q_ok(['count' => $n, 'list' => loadAssignees($pdo, $qid), 'message' => 'Đã lưu phân công']);
+    } catch (Exception $e) { $pdo->rollBack(); q_fail('Lưu phân công thất bại: ' . $e->getMessage(), 500); }
+}
+
+// Đổi nhanh trạng thái 1 dòng phân công (dùng ở trang Giao việc)
+case 'assign-status': {
+    $id = (int)($B['id'] ?? 0);
+    if (!$id) q_fail('Thiếu id phân công');
+    $pdo->prepare("UPDATE `quotation_assignees` SET status = ? WHERE id = ?")
+        ->execute([q_asgStatus($B['status'] ?? 'todo'), $id]);
+    $st = $pdo->prepare("SELECT quotation_id FROM `quotation_assignees` WHERE id = ?");
+    $st->execute([$id]);
+    q_ok(['id' => $id, 'quotation_id' => (int)$st->fetchColumn(), 'message' => 'Đã cập nhật trạng thái']);
+}
+
+// Bảng tổng: toàn bộ phân công kèm thông tin dự án — cho trang Giao việc
+// ── Chi phí thực tế ─────────────────────────────────────────
+case 'expenses': {
+    $id = (int)($_GET['id'] ?? 0);
+    if (!$id) q_fail('id is required');
+    $rows = loadExpenses($pdo, $id);
+    q_ok(['rows' => $rows, 'totals' => expenseTotals($rows)]);
+}
+
+// Lưu toàn bộ chi phí của 1 báo giá (thay thế hết)
+case 'expenses-save': {
+    $qid  = (int)($B['quotation_id'] ?? 0);
+    $list = is_array($B['list'] ?? null) ? $B['list'] : [];
+    if (!$qid) q_fail('Thiếu mã báo giá');
+    $chk = $pdo->prepare("SELECT id FROM `quotations` WHERE id = ? AND deleted_at IS NULL");
+    $chk->execute([$qid]);
+    if (!$chk->fetchColumn()) q_fail('Không tìm thấy báo giá');
+
+    $pdo->beginTransaction();
+    try {
+        $pdo->prepare("DELETE FROM `quotation_expenses` WHERE quotation_id = ?")->execute([$qid]);
+        $ins = $pdo->prepare(
+            "INSERT INTO `quotation_expenses`
+               (quotation_id, kind, category, name, description, qty, unit, price, vat_percent, sort_order, src_id)
+             VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+        $i = 0; $cat = '';
+        foreach ($list as $r) {
+            $kind = (($r['kind'] ?? 'item') === 'group') ? 'group' : 'item';
+            $name = mb_substr(trim((string)($r['name'] ?? '')), 0, 300);
+            if ($kind === 'group') {
+                if ($name === '') continue;
+                $cat = $name;
+            } elseif ($name === '' && (float)($r['price'] ?? 0) == 0 && (float)($r['qty'] ?? 0) == 0) {
+                continue;                                   // bỏ dòng rỗng
+            }
+            $ins->execute([
+                $qid, $kind,
+                mb_substr((string)($r['category'] ?? $cat), 0, 200),
+                $name,
+                mb_substr((string)($r['description'] ?? ''), 0, 5000),
+                num($r['qty'] ?? 0),
+                mb_substr((string)($r['unit'] ?? ''), 0, 60),
+                num($r['price'] ?? 0),
+                num($r['vat_percent'] ?? 0),
+                $i++,
+                mb_substr((string)($r['src_id'] ?? ''), 0, 80) ?: null,
+            ]);
+        }
+        $pdo->commit();
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        q_fail('Không lưu được chi phí: ' . $e->getMessage());
+    }
+    $rows = loadExpenses($pdo, $qid);
+    q_ok(['count' => count($rows), 'rows' => $rows, 'totals' => expenseTotals($rows)]);
+}
+
+// Nạp hàng loạt từ manage.apsa.agency — ghép theo MÃ báo giá
+case 'expenses-import': {
+    $items   = is_array($B['items'] ?? null) ? $B['items'] : [];
+    $replace = !empty($B['replace']);
+    if (!$items) q_fail('Không có dữ liệu để nạp');
+
+    $find = $pdo->prepare("SELECT id FROM `quotations` WHERE code = ? AND deleted_at IS NULL ORDER BY id ASC LIMIT 1");
+    $del  = $pdo->prepare("DELETE FROM `quotation_expenses` WHERE quotation_id = ?");
+    $cnt  = $pdo->prepare("SELECT COUNT(*) FROM `quotation_expenses` WHERE quotation_id = ?");
+    $ins  = $pdo->prepare(
+        "INSERT INTO `quotation_expenses`
+           (quotation_id, kind, category, name, description, qty, unit, price, vat_percent, sort_order, src_id)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+
+    $okN = 0; $skipNoQuo = []; $skipHas = []; $rowsN = 0;
+    foreach ($items as $it) {
+        $code = trim((string)($it['code'] ?? ''));
+        $cats = is_array($it['groups'] ?? null) ? $it['groups'] : [];
+        if ($code === '' || !$cats) continue;
+        $find->execute([$code]);
+        $qid = (int)$find->fetchColumn();
+        if (!$qid) { $skipNoQuo[] = $code; continue; }
+        $cnt->execute([$qid]);
+        $has = (int)$cnt->fetchColumn();
+        if ($has && !$replace) { $skipHas[] = $code; continue; }
+
+        $pdo->beginTransaction();
+        try {
+            if ($has) $del->execute([$qid]);
+            $i = 0;
+            foreach ($cats as $g) {
+                $gname = mb_substr(trim((string)($g['name'] ?? '')), 0, 200);
+                if ($gname !== '') {
+                    $ins->execute([$qid, 'group', $gname, $gname, '', 0, '', 0, 0, $i++, mb_substr((string)($g['src_id'] ?? ''), 0, 80) ?: null]);
+                }
+                foreach ((is_array($g['products'] ?? null) ? $g['products'] : []) as $p) {
+                    $ins->execute([
+                        $qid, 'item', $gname,
+                        mb_substr(trim((string)($p['name'] ?? '')), 0, 300),
+                        mb_substr((string)($p['description'] ?? ''), 0, 5000),
+                        num($p['quantity'] ?? 0),
+                        mb_substr((string)($p['unit'] ?? ''), 0, 60),
+                        num($p['price'] ?? 0),
+                        num($p['vat'] ?? 0),
+                        $i++,
+                        mb_substr((string)($p['src_id'] ?? ''), 0, 80) ?: null,
+                    ]);
+                    $rowsN++;
+                }
+            }
+            $pdo->commit();
+            $okN++;
+        } catch (Throwable $e) {
+            $pdo->rollBack();
+            q_fail('Lỗi khi nạp mã ' . $code . ': ' . $e->getMessage());
+        }
+    }
+    q_ok([
+        'imported'      => $okN,
+        'item_rows'     => $rowsN,
+        'skip_no_quote' => $skipNoQuo,
+        'skip_has_data' => $skipHas,
+    ]);
+}
+
+// Trang Làm việc: danh sách DỰ ÁN đang thực hiện + người thực hiện của từng dự án
+case 'project-board': {
+    global $Q_STATUS;
+    // Nhóm trạng thái cho trang Làm việc
+    $SCOPES = [
+        // Đã chốt và đang chạy — mặc định của trang Làm việc
+        'active'  => ['confirmed','order','running','service_done','liq_sent','awaiting_payment'],
+        // Chỉ đúng "Đang thực hiện"
+        'running' => ['running'],
+        // Chưa chốt: còn ở bước yêu cầu / báo giá
+        'presale' => ['request','quote'],
+        // Mọi dự án còn mở (bỏ Hoàn thành + Trượt Bidding)
+        'open'    => ['request','quote','confirmed','order','running','service_done','liq_sent','awaiting_payment'],
+    ];
+    $stt   = trim((string)($_GET['status'] ?? ''));
+    $scope = trim((string)($_GET['scope'] ?? ''));
+    if ($stt !== '' && $stt !== 'all' && isset($Q_STATUS[$stt]))      $statuses = [$stt];
+    elseif ($scope !== '' && isset($SCOPES[$scope]))                  $statuses = $SCOPES[$scope];
+    else                                                              $statuses = $SCOPES['active'];
+
+    $where  = ['q.deleted_at IS NULL'];
+    $params = [];
+    $where[] = 'q.status IN (' . implode(',', array_fill(0, count($statuses), '?')) . ')';
+    foreach ($statuses as $s) $params[] = $s;
+
+    if (!empty($_GET['kind'])) { $where[] = 'q.kind = ?'; $params[] = q_kind($_GET['kind']); }
+    if (!empty($_GET['q'])) {
+        $where[] = '(q.code LIKE ? OR q.title LIKE ? OR q.client_name LIKE ? OR c.name LIKE ?)';
+        $like = '%' . $_GET['q'] . '%';
+        array_push($params, $like, $like, $like, $like);
+    }
+    // lọc theo người / vị trí → chỉ giữ dự án có phân công khớp
+    if (!empty($_GET['user'])) {
+        $where[] = 'EXISTS (SELECT 1 FROM `quotation_assignees` x WHERE x.quotation_id = q.id AND x.user_id = ?)';
+        $params[] = (int)$_GET['user'];
+    }
+    if (!empty($_GET['pos'])) {
+        $where[] = 'EXISTS (SELECT 1 FROM `quotation_assignees` x WHERE x.quotation_id = q.id AND x.position = ?)';
+        $params[] = q_asgPos($_GET['pos']);
+    }
+
+    $sql = "SELECT q.id, q.code, q.title, q.kind, q.status, q.quotation_date, q.event_date,
+                   q.client_name, q.company_id, q.src_link, q.has_liquidation,
+                   c.name AS company_name
+              FROM `quotations` q
+         LEFT JOIN `crm_companies` c ON c.id = q.company_id
+             WHERE " . implode(' AND ', $where) . "
+          ORDER BY FIELD(q.status,'running','order','confirmed','service_done','liq_sent','awaiting_payment','quote','request') ASC,
+                   q.quotation_date DESC, q.id DESC";
+    $st = $pdo->prepare($sql);
+    $st->execute($params);
+    $rows = $st->fetchAll();
+    // đếm theo nhóm để hiện số trên bộ lọc (không phụ thuộc bộ lọc hiện tại)
+    $cw = ['q.deleted_at IS NULL']; $cp = [];
+    if (!empty($_GET['kind'])) { $cw[] = 'q.kind = ?'; $cp[] = q_kind($_GET['kind']); }
+    $cs = $pdo->prepare("SELECT q.status, COUNT(*) n FROM `quotations` q WHERE " . implode(' AND ', $cw) . " GROUP BY q.status");
+    $cs->execute($cp);
+    $byStatus = [];
+    foreach ($cs->fetchAll() as $c) $byStatus[$c['status']] = (int)$c['n'];
+    $scopeCount = [];
+    foreach ($SCOPES as $k => $ss) {
+        $n = 0; foreach ($ss as $x) $n += $byStatus[$x] ?? 0;
+        $scopeCount[$k] = $n;
+    }
+    $meta = ['status' => $ASSIGN_STATUS, 'positions' => $ASSIGN_POS, 'quo_status' => $Q_STATUS,
+             'scope_count' => $scopeCount, 'status_count' => $byStatus, 'scope' => $scope ?: 'active'];
+    if (!$rows) q_ok(array_merge(['rows' => []], $meta));
+
+    // nạp toàn bộ phân công của các dự án trên trong 1 truy vấn
+    $ids = array_map(fn($r) => (int)$r['id'], $rows);
+    $in  = implode(',', array_fill(0, count($ids), '?'));
+    $sa  = $pdo->prepare(
+        "SELECT a.*, u.display_name, u.staff_type, u.phone, u.email
+           FROM `quotation_assignees` a
+           JOIN `app_users` u ON u.id = a.user_id
+          WHERE a.quotation_id IN ($in)
+       ORDER BY (a.status='done') ASC, (a.due_date IS NULL) ASC, a.due_date ASC, a.sort_order ASC, a.id ASC");
+    $sa->execute($ids);
+    $today = date('Y-m-d');
+    $byQuo = [];
+    foreach ($sa->fetchAll() as $a) {
+        $a['id']            = (int)$a['id'];
+        $a['user_id']       = (int)$a['user_id'];
+        $a['quotation_id']  = (int)$a['quotation_id'];
+        $a['status_label']   = $ASSIGN_STATUS[$a['status']] ?? $a['status'];
+        $a['position_label'] = $a['position'] ? ($ASSIGN_POS[$a['position']] ?? $a['position']) : '';
+        $a['overdue'] = ($a['due_date'] && $a['status'] !== 'done' && $a['due_date'] < $today) ? 1 : 0;
+        $byQuo[$a['quotation_id']][] = $a;
+    }
+
+    foreach ($rows as &$r) {
+        $r['id'] = (int)$r['id'];
+        $list = $byQuo[$r['id']] ?? [];
+        $r['assignees']    = $list;
+        $r['task_total']   = count($list);
+        $r['task_done']    = count(array_filter($list, fn($a) => $a['status'] === 'done'));
+        $r['task_doing']   = count(array_filter($list, fn($a) => $a['status'] === 'doing'));
+        $r['task_overdue'] = count(array_filter($list, fn($a) => $a['overdue']));
+        $r['unassigned']   = $r['task_total'] === 0 ? 1 : 0;
+        $r['status_label'] = $Q_STATUS[$r['status']] ?? $r['status'];
+        // hạn gần nhất còn mở
+        $next = null;
+        foreach ($list as $a) {
+            if ($a['status'] === 'done' || !$a['due_date']) continue;
+            if ($next === null || $a['due_date'] < $next) $next = $a['due_date'];
+        }
+        $r['next_due'] = $next;
+    }
+    unset($r);
+    q_ok(array_merge(['rows' => $rows], $meta));
+}
+
+case 'assign-board': {
+    $where = ['q.deleted_at IS NULL']; $params = [];
+    if (!empty($_GET['user']))   { $where[] = 'a.user_id = ?';  $params[] = (int)$_GET['user']; }
+    if (!empty($_GET['status'])) { $where[] = 'a.status = ?';   $params[] = q_asgStatus($_GET['status']); }
+    if (!empty($_GET['pos']))    { $where[] = 'a.position = ?'; $params[] = q_asgPos($_GET['pos']); }
+    if (!empty($_GET['q'])) {
+        $where[] = '(q.code LIKE ? OR q.title LIKE ? OR u.display_name LIKE ? OR a.task LIKE ?)';
+        $like = '%' . $_GET['q'] . '%';
+        array_push($params, $like, $like, $like, $like);
+    }
+    $sql = "SELECT a.*, u.display_name, u.staff_type, u.phone, u.email,
+                   q.code, q.title, q.kind, q.quotation_date, q.event_date, q.status AS quo_status,
+                   c.name AS company_name
+              FROM `quotation_assignees` a
+              JOIN `app_users` u   ON u.id = a.user_id
+              JOIN `quotations` q  ON q.id = a.quotation_id
+         LEFT JOIN `crm_companies` c ON c.id = q.company_id
+             WHERE " . implode(' AND ', $where) . "
+          ORDER BY (a.status='done') ASC,
+                   (a.due_date IS NULL) ASC, a.due_date ASC, q.quotation_date DESC, a.id ASC";
+    $st = $pdo->prepare($sql);
+    $st->execute($params);
+    $rows = $st->fetchAll();
+    $today = date('Y-m-d');
+    foreach ($rows as &$r) {
+        $r['id'] = (int)$r['id']; $r['user_id'] = (int)$r['user_id'];
+        $r['quotation_id'] = (int)$r['quotation_id'];
+        $r['status_label']   = $ASSIGN_STATUS[$r['status']] ?? $r['status'];
+        $r['position_label'] = $r['position'] ? ($ASSIGN_POS[$r['position']] ?? $r['position']) : '';
+        $r['overdue'] = ($r['due_date'] && $r['status'] !== 'done' && $r['due_date'] < $today) ? 1 : 0;
+    }
+    q_ok(['rows' => $rows, 'status' => $ASSIGN_STATUS, 'positions' => $ASSIGN_POS]);
+}
+
+case 'save': {
+    $id = (int)($B['id'] ?? 0);
+    $data = [
+        'kind'           => q_kind($B['kind'] ?? 'media'),
+        'code'           => s($B['code'] ?? '', 60),
+        'title'          => s($B['title'] ?? '', 300),
+        'company_id'     => (int)($B['company_id'] ?? 0) ?: null,
+        'customer_id'    => (int)($B['customer_id'] ?? 0) ?: null,
+        'client_name'    => s($B['client_name'] ?? '', 300),
+        'client_email'   => s($B['client_email'] ?? '', 200),
+        'client_tax'     => s($B['client_tax'] ?? '', 60),
+        'client_address' => s($B['client_address'] ?? '', 500),
+        'quotation_date' => dateOrNull($B['quotation_date'] ?? '') ?: date('Y-m-d'),
+        'event_date'     => s($B['event_date'] ?? '', 120),
+        'currency'       => s($B['currency'] ?? 'VND', 10) ?: 'VND',
+        'ma_percent'     => num($B['ma_percent'] ?? 10),
+        'vat_percent'    => num($B['vat_percent'] ?? 8),
+        'show_ma'        => !empty($B['show_ma']) ? 1 : 0,
+        'show_vat'       => !empty($B['show_vat']) ? 1 : 0,
+        'note'           => mb_substr((string)($B['note'] ?? ''), 0, 5000),
+        'status'         => q_status($B['status'] ?? 'request'),
+        'src_link'       => mb_substr(trim((string)($B['src_link'] ?? '')), 0, 600),
+        'has_liquidation'=> !empty($B['has_liquidation']) ? 1 : 0,
+        'liq_date'       => dateOrNull($B['liq_date'] ?? ''),
+    ];
+    if ($data['title'] === '') q_fail('Vui lòng nhập tiêu đề báo giá');
+
+    // Mã báo giá ddMMyyyy-N: tự sinh khi tạo mới, giữ nguyên khi sửa, không cho trùng
+    if ($id) {
+        $old = $pdo->prepare("SELECT code FROM quotations WHERE id = ?");
+        $old->execute([$id]);
+        $oldCode = (string)($old->fetchColumn() ?: '');
+        if ($data['code'] === '') $data['code'] = $oldCode;
+    }
+    $data['code'] = q_uniqueCode($pdo, $data['code'], $id, $data['quotation_date']);
+
+    $items = is_array($B['items'] ?? null) ? $B['items'] : [];
+
+    $pdo->beginTransaction();
+    try {
+        if ($id) {
+            $st = $pdo->prepare("UPDATE quotations SET kind=?, code=?, title=?, company_id=?, customer_id=?, client_name=?, client_email=?,
+                                   client_tax=?, client_address=?, quotation_date=?, event_date=?, currency=?, ma_percent=?,
+                                   vat_percent=?, show_ma=?, show_vat=?, note=?, status=?, src_link=?, has_liquidation=?, liq_date=? WHERE id=?");
+            $st->execute(array_merge(array_values($data), [$id]));
+        } else {
+            $st = $pdo->prepare("INSERT INTO quotations (kind, code, title, company_id, customer_id, client_name, client_email,
+                                   client_tax, client_address, quotation_date, event_date, currency, ma_percent,
+                                   vat_percent, show_ma, show_vat, note, status, src_link, has_liquidation, liq_date, created_by)
+                                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            $st->execute(array_merge(array_values($data), [$WHO]));
+            $id = (int)$pdo->lastInsertId();
+        }
+
+        // Giữ lại file PDF đã đính kèm của từng dòng (dòng được nhận diện qua id client gửi lên)
+        $keepFiles = []; $usedFiles = [];
+        $old = $pdo->prepare("SELECT id, act_file, act_file_name FROM quotation_items WHERE quotation_id = ?");
+        $old->execute([$id]);
+        foreach ($old->fetchAll() as $o) {
+            if (!empty($o['act_file'])) $keepFiles[(int)$o['id']] = [$o['act_file'], $o['act_file_name']];
+        }
+        $pdo->prepare("DELETE FROM quotation_items WHERE quotation_id = ?")->execute([$id]);
+        $ins = $pdo->prepare("INSERT INTO quotation_items (quotation_id, kind, name, description, qty, unit, unit_price, remark, sort_order,
+                                act_qty, act_unit, act_price, act_amount, act_remark, act_file, act_file_name)
+                              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        $i = 0;
+        foreach ($items as $it) {
+            $kind = (($it['kind'] ?? 'item') === 'section') ? 'section' : 'item';
+            $oid  = (int)($it['id'] ?? 0);
+            $keep = ($oid && isset($keepFiles[$oid])) ? $keepFiles[$oid] : [null, null];
+            if ($keep[0]) $usedFiles[] = $keep[0];
+            $ins->execute([
+                $id, $kind,
+                s($it['name'] ?? '', 300),
+                mb_substr((string)($it['description'] ?? ''), 0, 2000),
+                $kind === 'item' ? num($it['qty'] ?? 0) : 0,
+                s($it['unit'] ?? '', 50),
+                $kind === 'item' ? num($it['unit_price'] ?? 0) : 0,
+                s($it['remark'] ?? '', 300),
+                $i++,
+                $kind === 'item' ? num($it['act_qty'] ?? 0) : 0,
+                s($it['act_unit'] ?? '', 50),
+                $kind === 'item' ? num($it['act_price'] ?? 0) : 0,
+                $kind === 'item' ? num($it['act_amount'] ?? 0) : 0,
+                s($it['act_remark'] ?? '', 300),
+                $keep[0], $keep[1],
+            ]);
+        }
+        $pdo->commit();
+
+        // Xoá file PDF của những dòng đã bị xoá khỏi báo giá
+        foreach ($keepFiles as $kf) {
+            if (!in_array($kf[0], $usedFiles, true)) @unlink(q_fileDir($id) . '/' . $kf[0]);
+        }
+    } catch (PDOException $e) {
+        $pdo->rollBack();
+        q_fail('Không lưu được: ' . $e->getMessage(), 500);
+    }
+
+    $q = loadQuotation($pdo, $id);
+    $its = loadItems($pdo, $id);
+    q_ok(['id' => $id, 'code' => $q['code'], 'message' => 'Đã lưu báo giá', 'totals' => calcTotals($q, $its),
+          'liq_totals' => calcLiqTotals($q, $its)]);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Nhập dự án từ manage.apsa.agency
+   Nhận token của phiên đăng nhập manage rồi gọi thẳng API bên đó,
+   dựng lại báo giá + nghiệm thu + chi phí thực tế trong app.
+   Dùng xong sẽ gỡ khối này ra.
+   ══════════════════════════════════════════════════════════════ */
+case 'manage-import': {
+    @set_time_limit(300);
+    $list = is_array($B['list'] ?? null) ? $B['list'] : [];
+    $dry  = !empty($B['dry']);
+    if (!$list) q_fail('Danh sách rỗng');
+
+    $KIND = ['event' => 'event', 'media' => 'media', 'design' => 'other', 'print' => 'other'];
+    $out  = [];
+
+    foreach ($list as $row) {
+        $mid   = preg_replace('/[^a-f0-9]/i', '', (string)($row['mid'] ?? ''));
+        $label = s($row['status'] ?? '', 60);
+        if ($mid === '') { $out[] = ['mid' => '', 'ok' => false, 'err' => 'thiếu id']; continue; }
+
+        // đã nhập rồi thì bỏ qua
+        $st = $pdo->prepare("SELECT id, code FROM quotations WHERE manage_id = ? AND deleted_at IS NULL LIMIT 1");
+        $st->execute([$mid]);
+        if ($ex = $st->fetch()) {
+            $out[] = ['mid' => $mid, 'ok' => true, 'skip' => true, 'id' => (int)$ex['id'], 'code' => $ex['code']];
+            continue;
+        }
+
+        $d = is_array($row['data'] ?? null) ? $row['data'] : null;
+        if (!is_array($d)) { $out[] = ['mid' => $mid, 'ok' => false, 'err' => 'thiếu dữ liệu dự án']; continue; }
+
+        $code  = s($d['code'] ?? ($row['code'] ?? ''), 60);
+        $title = s($d['project_name'] ?? ($row['title'] ?? ''), 300);
+        if ($title === '') $title = $code !== '' ? $code : ('Dự án ' . $mid);
+
+        // ngày báo giá lấy từ mã ddMMyyyy, không có thì lấy ngày tạo
+        $date = '';
+        if (preg_match('/^(\d{2})(\d{2})(\d{4})-/', $code, $m)) $date = $m[3] . '-' . $m[2] . '-' . $m[1];
+        if ($date === '' && !empty($d['createdAt'])) $date = substr((string)$d['createdAt'], 0, 10);
+        if ($date === '') $date = date('Y-m-d');
+
+        $quote = is_array($d['quote'] ?? null) ? $d['quote'] : [];
+        $acc   = is_array($d['acceptance_reports'] ?? null) ? $d['acceptance_reports'] : [];
+        $exps  = is_array($d['expenditures'] ?? null) ? $d['expenditures'] : [];
+
+        // % MA và VAT lấy từ dòng hàng đầu tiên có số liệu
+        $ma = null; $vat = null;
+        foreach ($quote as $g) foreach (($g['products'] ?? []) as $p) {
+            if ($ma  === null && isset($p['mafee'])) $ma  = num($p['mafee']);
+            if ($vat === null && isset($p['vat']))   $vat = num($p['vat']);
+        }
+        if ($ma === null)  $ma = 10;
+        if ($vat === null) $vat = 8;
+
+        // dựng danh sách dòng: ưu tiên bảng nghiệm thu vì có cả số báo giá lẫn số thực tế
+        $items = [];
+        if ($acc) {
+            foreach ($acc as $g) {
+                $items[] = ['kind' => 'section', 'name' => s($g['name'] ?? '', 300)];
+                foreach (($g['products'] ?? []) as $p) {
+                    $items[] = [
+                        'kind' => 'item',
+                        'name' => s($p['name'] ?? '', 300),
+                        'description' => (string)($p['description'] ?? ''),
+                        'qty' => num($p['quote_quantity'] ?? 0),
+                        'unit' => s($p['quote_unit'] ?? '', 50),
+                        'unit_price' => num($p['quote_price'] ?? 0),
+                        'remark' => s($p['quote_remark'] ?? '', 300),
+                        'act_qty' => num($p['acceptance_quantity'] ?? 0),
+                        'act_unit' => s($p['acceptance_unit'] ?? '', 50),
+                        'act_price' => num($p['acceptance_price'] ?? 0),
+                        'act_amount' => num($p['acceptance_subtotal'] ?? 0),
+                        'act_remark' => s($p['acceptance_remark'] ?? '', 300),
+                    ];
+                }
+            }
+        } else {
+            foreach ($quote as $g) {
+                $items[] = ['kind' => 'section', 'name' => s($g['name'] ?? '', 300)];
+                foreach (($g['products'] ?? []) as $p) {
+                    $items[] = [
+                        'kind' => 'item',
+                        'name' => s($p['name'] ?? '', 300),
+                        'description' => (string)($p['description'] ?? ''),
+                        'qty' => num($p['quantity'] ?? 0),
+                        'unit' => s($p['unit'] ?? '', 50),
+                        'unit_price' => num($p['price'] ?? 0),
+                        'remark' => '',
+                    ];
+                }
+            }
+        }
+
+        // chi phí thực tế
+        $expRows = [];
+        foreach ($exps as $g) {
+            $cat = s($g['name'] ?? '', 200);
+            if ($cat !== '') $expRows[] = ['kind' => 'group', 'name' => $cat, 'category' => $cat];
+            foreach (($g['products'] ?? []) as $p) {
+                $expRows[] = [
+                    'kind' => 'item', 'category' => $cat,
+                    'name' => s($p['name'] ?? '', 300),
+                    'description' => (string)($p['description'] ?? ''),
+                    'qty' => num($p['quantity'] ?? 0),
+                    'unit' => s($p['unit'] ?? '', 50),
+                    'price' => num($p['price'] ?? 0),
+                    'vat_percent' => num($p['vat'] ?? 0),
+                ];
+            }
+        }
+
+        $client = s($d['client'] ?? ($row['client'] ?? ''), 300);
+        if ($client === '') $client = s($d['customer_name'] ?? '', 300);
+
+        // ghép công ty trong CRM theo tên nếu khớp
+        $companyId = null;
+        if ($client !== '') {
+            $cs = $pdo->prepare("SELECT id FROM `crm_companies` WHERE deleted_at IS NULL AND name = ? LIMIT 1");
+            $cs->execute([$client]);
+            $companyId = ($v = $cs->fetchColumn()) ? (int)$v : null;
+        }
+
+        if ($dry) {
+            $out[] = ['mid' => $mid, 'ok' => true, 'dry' => true, 'code' => $code, 'title' => $title,
+                      'items' => count($items), 'exp' => count($expRows), 'ma' => $ma, 'vat' => $vat,
+                      'liq' => $acc ? 1 : 0, 'status' => q_status($label)];
+            continue;
+        }
+
+        $newCode = q_uniqueCode($pdo, $code, 0, $date);
+        $pdo->beginTransaction();
+        try {
+            $ins = $pdo->prepare("INSERT INTO quotations
+                (kind, code, title, company_id, client_name, quotation_date, currency,
+                 ma_percent, vat_percent, show_ma, show_vat, status, has_liquidation, manage_id, created_by)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            $ins->execute([
+                $KIND[(string)($d['project_type'] ?? '')] ?? 'other',
+                $newCode, $title, $companyId, $client, $date, 'VND',
+                $ma, $vat, $ma > 0 ? 1 : 0, $vat > 0 ? 1 : 0,
+                q_status($label), $acc ? 1 : 0, $mid, $WHO,
+            ]);
+            $qid = (int)$pdo->lastInsertId();
+
+            $ii = $pdo->prepare("INSERT INTO quotation_items
+                (quotation_id, kind, name, description, qty, unit, unit_price, remark, sort_order,
+                 act_qty, act_unit, act_price, act_amount, act_remark)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            $k = 0;
+            foreach ($items as $it) {
+                $isItem = ($it['kind'] === 'item');
+                $ii->execute([$qid, $it['kind'],
+                    $it['name'], (string)($it['description'] ?? ''),
+                    $isItem ? num($it['qty'] ?? 0) : 0, s($it['unit'] ?? '', 50),
+                    $isItem ? num($it['unit_price'] ?? 0) : 0, s($it['remark'] ?? '', 300), $k++,
+                    $isItem ? num($it['act_qty'] ?? 0) : 0, s($it['act_unit'] ?? '', 50),
+                    $isItem ? num($it['act_price'] ?? 0) : 0, $isItem ? num($it['act_amount'] ?? 0) : 0,
+                    s($it['act_remark'] ?? '', 300)]);
+            }
+
+            if ($expRows) {
+                $ie = $pdo->prepare("INSERT INTO `quotation_expenses`
+                    (quotation_id, kind, category, name, description, qty, unit, price, vat_percent, sort_order)
+                    VALUES (?,?,?,?,?,?,?,?,?,?)");
+                $k = 0;
+                foreach ($expRows as $r) {
+                    $ie->execute([$qid, $r['kind'], $r['category'], $r['name'],
+                        (string)($r['description'] ?? ''), num($r['qty'] ?? 0), s($r['unit'] ?? '', 50),
+                        num($r['price'] ?? 0), num($r['vat_percent'] ?? 0), $k++]);
+                }
+            }
+            $pdo->commit();
+            $out[] = ['mid' => $mid, 'ok' => true, 'id' => $qid, 'code' => $newCode,
+                      'codeGoc' => $code, 'doiMa' => $newCode !== $code, 'title' => $title,
+                      'items' => count($items), 'exp' => count($expRows), 'liq' => $acc ? 1 : 0];
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            $out[] = ['mid' => $mid, 'ok' => false, 'err' => mb_substr($e->getMessage(), 0, 160)];
+        }
+    }
+
+    q_ok(['results' => $out,
+          'thanhCong' => count(array_filter($out, fn($r) => !empty($r['ok']) && empty($r['skip']))),
+          'boQua'     => count(array_filter($out, fn($r) => !empty($r['skip']))),
+          'loi'       => count(array_filter($out, fn($r) => empty($r['ok'])))]);
+}
+
+/* Đối chiếu sau khi nhập: so số dòng và tổng tiền với bên manage */
+case 'manage-verify': {
+    @set_time_limit(300);
+    $list = is_array($B['list'] ?? null) ? $B['list'] : [];
+    $out = [];
+    foreach ($list as $row) {
+        $mid = preg_replace('/[^a-f0-9]/i', '', (string)($row['mid'] ?? ''));
+        $st = $pdo->prepare("SELECT id, code, title FROM quotations WHERE manage_id = ? AND deleted_at IS NULL LIMIT 1");
+        $st->execute([$mid]);
+        $q = $st->fetch();
+        if (!$q) { $out[] = ['mid' => $mid, 'ok' => false, 'err' => 'chưa có trong app']; continue; }
+
+        $it = $pdo->prepare("SELECT kind, qty, unit_price, act_qty, act_price, act_amount FROM quotation_items WHERE quotation_id = ?");
+        $it->execute([(int)$q['id']]);
+        $rows = $it->fetchAll();
+        $nItem = 0; $sub = 0.0;
+        foreach ($rows as $r) {
+            if ($r['kind'] !== 'item') continue;
+            $nItem++;
+            $sub += round((float)$r['qty'] * (float)$r['unit_price'], 2);
+        }
+        $ex = $pdo->prepare("SELECT COUNT(*) FROM `quotation_expenses` WHERE quotation_id = ? AND kind = 'item'");
+        $ex->execute([(int)$q['id']]);
+        $nExp = (int)$ex->fetchColumn();
+
+        $eItem = (int)($row['nItem'] ?? 0);
+        $eSub  = round((float)($row['sub'] ?? 0), 2);
+        $eExp  = (int)($row['nExp'] ?? 0);
+        $lech  = abs($sub - $eSub);
+        $out[] = ['mid' => $mid, 'code' => $q['code'],
+                  'ok' => ($nItem === $eItem && $lech < 1 && $nExp === $eExp),
+                  'dong' => [$nItem, $eItem], 'tien' => [$sub, $eSub], 'chi' => [$nExp, $eExp]];
+    }
+    q_ok(['results' => $out,
+          'khop' => count(array_filter($out, fn($r) => !empty($r['ok']))),
+          'lech' => count(array_filter($out, fn($r) => empty($r['ok'])))]);
+}
+
+case 'delete': {
+    $id = (int)($B['id'] ?? 0);
+    if (!$id) q_fail('id is required');
+    $pdo->prepare("UPDATE quotations SET deleted_at = NOW() WHERE id = ?")->execute([$id]);
+    q_ok(['message' => 'Đã chuyển vào thùng rác']);
+}
+
+case 'restore': {
+    $id = (int)($B['id'] ?? 0);
+    if (!$id) q_fail('id is required');
+    $pdo->prepare("UPDATE quotations SET deleted_at = NULL WHERE id = ?")->execute([$id]);
+    q_ok(['message' => 'Đã khôi phục']);
+}
+
+case 'duplicate': {
+    $id = (int)($B['id'] ?? 0);
+    if (!$id) q_fail('id is required');
+    $q = loadQuotation($pdo, $id);
+    if (!$q) q_fail('Không tìm thấy báo giá', 404);
+    $st = $pdo->prepare("INSERT INTO quotations (kind, code, title, company_id, customer_id, client_name, client_email,
+                           client_tax, client_address, quotation_date, event_date, currency, ma_percent,
+                           vat_percent, show_ma, show_vat, note, status, src_link, has_liquidation, liq_date, created_by)
+                         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+    $newCode = q_uniqueCode($pdo, '', 0, date('Y-m-d'));
+    $st->execute([$q['kind'] ?? 'media', $newCode, $q['title'] . ' (bản sao)', $q['company_id'], $q['customer_id'], $q['client_name'],
+                  $q['client_email'], $q['client_tax'], $q['client_address'], date('Y-m-d'), $q['event_date'],
+                  $q['currency'], $q['ma_percent'], $q['vat_percent'], $q['show_ma'], $q['show_vat'], $q['note'],
+                  'request', $q['src_link'] ?? null, $q['has_liquidation'] ?? 0, $q['liq_date'], $WHO]);
+    $newId = (int)$pdo->lastInsertId();
+    $pdo->prepare("INSERT INTO quotation_items (quotation_id, kind, name, description, qty, unit, unit_price, remark, sort_order,
+                     act_qty, act_unit, act_price, act_amount, act_remark)
+                   SELECT ?, kind, name, description, qty, unit, unit_price, remark, sort_order,
+                     act_qty, act_unit, act_price, act_amount, act_remark
+                     FROM quotation_items WHERE quotation_id = ?")->execute([$newId, $id]);
+    q_ok(['id' => $newId, 'message' => 'Đã nhân bản báo giá']);
+}
+
+case 'ratecard': {
+    $sheet = preg_replace('/[^a-z]/', '', (string)($_GET['sheet'] ?? 'media'));
+    if ($sheet === '') $sheet = 'media';
+    try {
+        $st = $pdo->prepare("SELECT id, cat_code, cat_vn, cat_en, item_vn, item_en, desc_vn, desc_en,
+                                    unit_vn, unit_en, basic, standard, premium
+                               FROM ratecard_items WHERE sheet_key = ? ORDER BY cat_code ASC, sort_order ASC");
+        $st->execute([$sheet]);
+        $rows = $st->fetchAll();
+    } catch (PDOException $e) { $rows = []; }
+    foreach ($rows as &$r) {
+        $r['id']       = (int)$r['id'];
+        $r['basic']    = (float)$r['basic'];
+        $r['standard'] = (float)$r['standard'];
+        $r['premium']  = (float)$r['premium'];
+    }
+    unset($r);
+    q_ok($rows);
+}
+
+/* ── Tạo file .eml (mail nháp Outlook, đính kèm sẵn Excel) ────────── */
+case 'eml': {
+    $id = (int)($_GET['id'] ?? 0);
+    if (!$id) q_fail('id is required');
+    $q = loadQuotation($pdo, $id);
+    if (!$q) q_fail('Không tìm thấy báo giá', 404);
+    $items = loadItems($pdo, $id);
+
+    $to      = trim((string)($_GET['to']  ?? ''));
+    $cc      = trim((string)($_GET['cc']  ?? ''));
+    $subject = trim((string)($_GET['subject'] ?? ''));
+    $body    = (string)($_GET['body'] ?? '');
+    $withLiq = !empty($_GET['liq']) && !empty($q['has_liquidation']);
+
+    if ($subject === '') $subject = 'Báo giá ' . ($q['code'] ?: '') . ' — ' . $q['title'];
+
+    $logo = base64_decode(APSA_LOGO_B64);
+    $baseName = preg_replace('/[^A-Za-z0-9\-_]+/', '-', $q['code'] ? $q['code'] : ('bao-gia-' . $id));
+    $baseName = trim($baseName, '-');
+
+    $files = [];
+    $files[] = ['name' => 'APSA-QUOTATION-' . $baseName . '-' . date('Ymd') . '.xlsx',
+                'data' => buildXlsx($q, $items, $logo, false)];
+    if ($withLiq) {
+        $files[] = ['name' => 'APSA-LIQUIDATION-' . $baseName . '-' . date('Ymd') . '.xlsx',
+                    'data' => buildXlsx($q, $items, $logo, true)];
+    }
+
+    // Header có dấu tiếng Việt → mã hoá RFC 2047
+    $enc = function ($t) { return '=?UTF-8?B?' . base64_encode($t) . '?='; };
+    $bnd = 'APSA-' . bin2hex(random_bytes(12));
+    $XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+    // Outlook sẽ tự thay bằng tài khoản mặc định khi gửi
+    $eml  = "From: " . $enc($WHO . ' — APSA') . " <hello@apsa.agency>\r\n";
+    if ($to !== '') $eml .= "To: " . $to . "\r\n";
+    if ($cc !== '') $eml .= "Cc: " . $cc . "\r\n";
+    $eml .= "Subject: " . $enc($subject) . "\r\n";
+    $eml .= "Date: " . date('r') . "\r\n";
+    $eml .= "X-Unsent: 1\r\n";                 // Outlook mở như thư nháp, có nút Send
+    $eml .= "MIME-Version: 1.0\r\n";
+    $eml .= "Content-Type: multipart/mixed; boundary=\"" . $bnd . "\"\r\n\r\n";
+    $eml .= "This is a multi-part message in MIME format.\r\n\r\n";
+
+    $eml .= "--" . $bnd . "\r\n";
+    $eml .= "Content-Type: text/plain; charset=UTF-8\r\n";
+    $eml .= "Content-Transfer-Encoding: base64\r\n\r\n";
+    $eml .= chunk_split(base64_encode(str_replace("\r\n", "\n", $body)), 76, "\r\n") . "\r\n";
+
+    foreach ($files as $f) {
+        $eml .= "--" . $bnd . "\r\n";
+        $eml .= "Content-Type: " . $XLSX_MIME . "; name=\"" . $f['name'] . "\"\r\n";
+        $eml .= "Content-Transfer-Encoding: base64\r\n";
+        $eml .= "Content-Disposition: attachment; filename=\"" . $f['name'] . "\"\r\n\r\n";
+        $eml .= chunk_split(base64_encode($f['data']), 76, "\r\n") . "\r\n";
+    }
+    $eml .= "--" . $bnd . "--\r\n";
+
+    $fname = 'MAIL-' . $baseName . '-' . date('Ymd') . '.eml';
+    while (ob_get_level()) { ob_end_clean(); }
+    header('Content-Type: message/rfc822');
+    header('Content-Disposition: attachment; filename="' . $fname . '"');
+    header('Content-Length: ' . strlen($eml));
+    header('Cache-Control: no-store');
+    echo $eml;
+    exit;
+}
+
+case 'export': {
+    $id = (int)($_GET['id'] ?? 0);
+    if (!$id) q_fail('id is required');
+    $q = loadQuotation($pdo, $id);
+    if (!$q) q_fail('Không tìm thấy báo giá', 404);
+    $items = loadItems($pdo, $id);
+
+    $withLiq = in_array(strtolower((string)($_GET['mode'] ?? '')), ['liq', 'liquidation', 'nghiemthu'], true);
+
+    $logo = base64_decode(APSA_LOGO_B64);
+    $xlsx = buildXlsx($q, $items, $logo, $withLiq);
+
+    $name = $q['code'] ? $q['code'] : ('bao-gia-' . $id);
+    $name = preg_replace('/[^A-Za-z0-9\-_]+/', '-', $name);
+    $base  = ($withLiq ? 'APSA-LIQUIDATION-' : 'APSA-QUOTATION-') . trim($name, '-') . '-' . date('Ymd');
+    $fname = $base . '.xlsx';
+
+    // Nghiệm thu: nếu có file đính kèm (chứng từ từng dòng / PO) thì đóng gói .zip
+    $attach = [];
+    if ($withLiq) {
+        $dir = q_fileDir($id);
+        if (!empty($q['inv_file']) && is_file($dir . '/' . $q['inv_file'])) {
+            $attach[] = ['Hoa-don/' . ($q['inv_name'] ?: 'Hoa-don.pdf'), $dir . '/' . $q['inv_file']];
+        }
+        if (!empty($q['po_file']) && is_file($dir . '/' . $q['po_file'])) {
+            $attach[] = ['PO/' . ($q['po_name'] ?: 'PO.pdf'), $dir . '/' . $q['po_file']];
+        }
+        $no = 0;
+        foreach ($items as $it) {
+            if (($it['kind'] ?? 'item') !== 'item') continue;
+            $no++;
+            if (empty($it['act_file'])) continue;
+            $path = $dir . '/' . $it['act_file'];
+            if (!is_file($path)) continue;
+            $attach[] = ['Chung-tu/' . str_pad((string)$no, 2, '0', STR_PAD_LEFT) . '-' . ($it['act_file_name'] ?: 'file.pdf'), $path];
+        }
+    }
+
+    while (ob_get_level()) { ob_end_clean(); }
+
+    if ($attach) {
+        $zip = new ApsaZip();
+        $zip->add($fname, $xlsx);
+        $used = [];
+        foreach ($attach as $a) {
+            $n = $a[0];
+            if (isset($used[$n])) { $n = preg_replace('/\.pdf$/i', '', $n) . '-' . (++$used[$a[0]]) . '.pdf'; }
+            else $used[$a[0]] = 1;
+            $zip->add($n, (string)@file_get_contents($a[1]));
+        }
+        $bin = $zip->build();
+        header('Content-Type: application/zip');
+        header('Content-Disposition: attachment; filename="' . $base . '.zip"');
+        header('Content-Length: ' . strlen($bin));
+        header('Cache-Control: no-store');
+        echo $bin;
+        exit;
+    }
+
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . $fname . '"');
+    header('Content-Length: ' . strlen($xlsx));
+    header('Cache-Control: no-store');
+    echo $xlsx;
+    exit;
+}
+
+/* ── Nạp ngược file Excel đã xuất: CHỈ ĐỌC, trả về để xem trước rồi mới lưu ── */
+case 'import-xlsx': {
+    $f = $_FILES['file'] ?? null;
+    if (!$f || !is_uploaded_file($f['tmp_name'] ?? '')) q_fail('Chưa chọn file');
+    if (($f['error'] ?? 1) !== UPLOAD_ERR_OK)          q_fail('Tải file lên thất bại');
+    if (($f['size'] ?? 0) > 15 * 1024 * 1024)          q_fail('File quá lớn (tối đa 15MB)');
+    $ext = strtolower(pathinfo($f['name'] ?? '', PATHINFO_EXTENSION));
+    if (!in_array($ext, ['xlsx', 'zip'], true)) {
+        q_fail('Chỉ nhận file .xlsx hoặc gói .zip nghiệm thu do hệ thống xuất ra');
+    }
+    if (@file_get_contents($f['tmp_name'], false, null, 0, 2) !== 'PK') q_fail('File không phải Excel hợp lệ');
+
+    $tmp = null; $inner = null;
+    $book = xl_resolveWorkbook($f['tmp_name'], $tmp, $inner);
+    if (!$book) { if ($tmp) @unlink($tmp); q_fail('Không đọc được nội dung file Excel'); }
+
+    $grid = xl_readGrid($book);
+    $res  = xl_parseQuotation($grid);
+    if ($tmp) @unlink($tmp);
+    if (!empty($res['error'])) q_fail($res['error']);
+
+    $sub = 0.0; $lsub = 0.0;
+    foreach ($res['items'] as $it) {
+        if (($it['kind'] ?? 'item') !== 'item') continue;
+        $sub += (float)$it['qty'] * (float)$it['unit_price'];
+        $lsub += ((float)$it['act_amount'] > 0.009)
+                 ? (float)$it['act_amount']
+                 : (float)$it['act_qty'] * (float)$it['act_price'];
+    }
+    $nSec = 0; $nItem = 0;
+    foreach ($res['items'] as $it) { if (($it['kind'] ?? 'item') === 'section') $nSec++; else $nItem++; }
+
+    q_ok([
+        'items'    => $res['items'],
+        'liq'      => $res['liq'] ? 1 : 0,
+        'meta'     => $res['meta'],
+        'warnings' => $res['warnings'],
+        'summary'  => ['sections' => $nSec, 'items' => $nItem,
+                       'subtotal' => round($sub, 2), 'liq_subtotal' => round($lsub, 2)],
+        'file'     => $inner ? ($f['name'] . ' → ' . basename($inner)) : $f['name'],
+    ]);
+}
+
+/* ── Đính kèm PDF: PO của dự án (item=0) hoặc chứng từ của 1 dòng hạng mục ── */
+case 'upload-file': {
+    $qid  = (int)($_POST['quotation_id'] ?? 0);
+    $item = (int)($_POST['item_id'] ?? 0);
+    $slot = (($_POST['slot'] ?? 'po') === 'inv') ? 'inv' : 'po';
+    if (!$qid) q_fail('Thiếu mã báo giá');
+    $q = loadQuotation($pdo, $qid);
+    if (!$q) q_fail('Không tìm thấy báo giá', 404);
+
+    $f   = $_FILES['file'] ?? null;
+    // hóa đơn tổng hợp thường nặng hơn -> cho phép tới 40MB (nếu máy chủ cho)
+    $err = q_checkPdf($f, $slot === 'inv' && !$item ? 40 * 1024 * 1024 : null);
+    if ($err !== '') q_fail($err);
+
+    if ($item) {
+        $chk = $pdo->prepare("SELECT id, act_file FROM quotation_items WHERE id = ? AND quotation_id = ?");
+        $chk->execute([$item, $qid]);
+        $row = $chk->fetch();
+        if (!$row) q_fail('Không tìm thấy dòng hạng mục', 404);
+        $oldFile = $row['act_file'];
+    } else {
+        $oldFile = $slot === 'inv' ? ($q['inv_file'] ?? null) : ($q['po_file'] ?? null);
+    }
+
+    $dir = q_fileDir($qid, true);
+    if (!is_dir($dir)) q_fail('Không tạo được thư mục lưu file', 500);
+
+    $orig = q_safeName($f['name']);
+    $stored = ($item ? ('item' . $item) : $slot) . '-' . date('YmdHis') . '-' . bin2hex(random_bytes(3)) . '.pdf';
+    if (!@move_uploaded_file($f['tmp_name'], $dir . '/' . $stored)) q_fail('Không lưu được file', 500);
+    @chmod($dir . '/' . $stored, 0644);
+    if ($oldFile) @unlink($dir . '/' . $oldFile);
+
+    if ($item) {
+        $pdo->prepare("UPDATE quotation_items SET act_file = ?, act_file_name = ? WHERE id = ?")
+            ->execute([$stored, $orig, $item]);
+    } elseif ($slot === 'inv') {
+        $pdo->prepare("UPDATE quotations SET inv_file = ?, inv_name = ? WHERE id = ?")
+            ->execute([$stored, $orig, $qid]);
+    } else {
+        $pdo->prepare("UPDATE quotations SET po_file = ?, po_name = ? WHERE id = ?")
+            ->execute([$stored, $orig, $qid]);
+    }
+    $label = $item ? 'Đã đính kèm ' : ($slot === 'inv' ? 'Đã đính kèm hóa đơn: ' : 'Đã đính kèm PO: ');
+    q_ok(['item_id' => $item, 'slot' => $slot, 'file' => $stored, 'name' => $orig,
+          'size' => filesize($dir . '/' . $stored),
+          'message' => $label . $orig]);
+}
+
+case 'delete-file': {
+    $qid  = (int)($B['quotation_id'] ?? 0);
+    $item = (int)($B['item_id'] ?? 0);
+    $slot = (($B['slot'] ?? 'po') === 'inv') ? 'inv' : 'po';
+    if (!$qid) q_fail('Thiếu mã báo giá');
+    $dir = q_fileDir($qid);
+    if ($item) {
+        $st = $pdo->prepare("SELECT act_file FROM quotation_items WHERE id = ? AND quotation_id = ?");
+        $st->execute([$item, $qid]);
+        $old = $st->fetchColumn();
+        if ($old) @unlink($dir . '/' . $old);
+        $pdo->prepare("UPDATE quotation_items SET act_file = NULL, act_file_name = NULL WHERE id = ?")->execute([$item]);
+    } else {
+        $col = $slot === 'inv' ? 'inv_file' : 'po_file';
+        $nm  = $slot === 'inv' ? 'inv_name' : 'po_name';
+        $st = $pdo->prepare("SELECT `$col` FROM quotations WHERE id = ?");
+        $st->execute([$qid]);
+        $old = $st->fetchColumn();
+        if ($old) @unlink($dir . '/' . $old);
+        $pdo->prepare("UPDATE quotations SET `$col` = NULL, `$nm` = NULL WHERE id = ?")->execute([$qid]);
+    }
+    q_ok(['message' => 'Đã gỡ file đính kèm']);
+}
+
+case 'file': {
+    $qid  = (int)($_GET['id'] ?? 0);
+    $item = (int)($_GET['item'] ?? 0);
+    if (!$qid) q_fail('Thiếu mã báo giá');
+    if ($item) {
+        $st = $pdo->prepare("SELECT act_file AS f, act_file_name AS n FROM quotation_items WHERE id = ? AND quotation_id = ?");
+        $st->execute([$item, $qid]);
+    } elseif (($_GET['slot'] ?? 'po') === 'inv') {
+        $st = $pdo->prepare("SELECT inv_file AS f, inv_name AS n FROM quotations WHERE id = ?");
+        $st->execute([$qid]);
+    } else {
+        $st = $pdo->prepare("SELECT po_file AS f, po_name AS n FROM quotations WHERE id = ?");
+        $st->execute([$qid]);
+    }
+    $row = $st->fetch();
+    if (!$row || empty($row['f'])) q_fail('Không có file đính kèm', 404);
+    $path = q_fileDir($qid) . '/' . $row['f'];
+    if (!is_file($path)) q_fail('File không còn trên máy chủ', 404);
+
+    while (ob_get_level()) { ob_end_clean(); }
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: ' . (empty($_GET['dl']) ? 'inline' : 'attachment')
+           . '; filename="' . ($row['n'] ?: 'file.pdf') . '"');
+    header('Content-Length: ' . filesize($path));
+    header('Cache-Control: private, no-store');
+    readfile($path);
+    exit;
+}
+
+case 'statuses':
+    q_ok($Q_STATUS);
+
+case 'set-status': {
+    $id = (int)($B['id'] ?? 0);
+    if (!$id) q_fail('id is required');
+    $stt = q_status($B['status'] ?? '');
+    $st = $pdo->prepare("UPDATE quotations SET status = ? WHERE id = ?");
+    $st->execute([$stt, $id]);
+    q_ok(['id' => $id, 'status' => $stt, 'status_label' => $Q_STATUS[$stt], 'message' => 'Đã đổi trạng thái: ' . $Q_STATUS[$stt]]);
+}
+
+case 'next-code': {
+    $date = dateOrNull($_GET['date'] ?? '') ?: date('Y-m-d');
+    q_ok(['code' => q_makeCode($pdo, $date), 'date' => $date]);
+}
+
+case 'me':
+    q_ok(['id' => (int)$ME['id'], 'display_name' => $ME['display_name'], 'role' => $ME['role']]);
+
+default:
+    q_fail('Unknown action', 404);
+}

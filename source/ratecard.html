@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script>
+  document.documentElement.style.visibility = 'hidden';
+  fetch('./api/auth-api.php?action=me', { credentials: 'same-origin' })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(res => {
+      if (!res.ok) throw new Error();
+      window.__APSA_USER = res.data;
+      document.documentElement.style.visibility = 'visible';
+    })
+    .catch(() => {
+      location.replace('./login.html?next=' + encodeURIComponent(location.pathname + location.search));
+    });
+</script>
+<meta charset="UTF-8" />
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=1">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=1">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#dff20d">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rate Card — APSA</title>
+<meta name="description" content="Bảng giá tham khảo APSA: Event, Design, Media, Printing — xem, thêm, sửa, xoá theo 3 hạng BASIC / STANDARD / PREMIUM." />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root{
+  --bg:#000000; --bg2:#0b0b0b; --bg3:#141414;
+  --border:rgba(255,255,255,.08); --border-hover:rgba(255,255,255,.18);
+  --text:#ffffff; --text2:#9a9a9a; --text3:#5e5e5e;
+  --accent:#dff20d; --accent2:#c9dd00; --accent-glow:rgba(223,242,13,.35);
+  --green:#dff20d; --orange:#ffffff; --pink:#c9dd00; --cyan:#ffffff; --red:#ff4d4d; --yellow:#dff20d;
+  --radius:14px;
+}
+
+body{
+  font-family:'Oxanium', sans-serif; background:var(--bg); color:var(--text);
+  min-height:100vh; overflow-x:hidden;
+}
+body::before{
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* ─── Header ─── */
+header{
+  position:sticky; top:0; z-index:100; height:56px; padding:0 20px;
+  background:rgba(0,0,0,.85); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border); display:flex; align-items:center; gap:14px;
+}
+.back{
+  display:flex; align-items:center; gap:7px; text-decoration:none; color:var(--text2);
+  font-size:13px; font-weight:600; padding:6px 12px; border-radius:20px;
+  border:1px solid var(--border); transition:.2s; flex-shrink:0; white-space:nowrap;
+}
+.back:hover{ color:var(--text); border-color:var(--border-hover); background:var(--bg3); }
+.page-title{ font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px; flex-shrink:0; white-space:nowrap; }
+.page-title .count{
+  font-size:11px; font-weight:600; color:var(--text3); background:var(--bg3);
+  border:1px solid var(--border); padding:2px 8px; border-radius:20px;
+}
+.header-search{ flex:1; max-width:320px; position:relative; }
+.header-search svg{ position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--text3); pointer-events:none; }
+.search-input{
+  width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:40px;
+  padding:8px 14px 8px 36px; color:var(--text); font-size:13px; font-family:inherit; outline:none;
+  transition:border-color .2s, box-shadow .2s;
+}
+.search-input::placeholder{ color:var(--text3); }
+.search-input:focus{ border-color:rgba(223,242,13,.5); box-shadow:0 0 0 3px rgba(223,242,13,.1); }
+
+.hbtn{
+  display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-family:inherit;
+  font-size:12px; font-weight:600; padding:7px 14px; border-radius:20px;
+  border:1px solid var(--border); background:transparent; color:var(--text2); transition:.2s; white-space:nowrap;
+}
+.hbtn:hover{ color:var(--text); border-color:var(--border-hover); background:var(--bg3); }
+.hbtn.primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border-color:transparent;
+  box-shadow:0 0 12px var(--accent-glow);
+}
+.hbtn.primary:hover{ transform:translateY(-1px); box-shadow:0 4px 20px var(--accent-glow); }
+
+.who{
+  display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text2);
+  cursor:pointer; padding:5px 10px; border-radius:20px; border:1px solid var(--border); white-space:nowrap; flex-shrink:0;
+}
+.who:hover{ color:var(--text); background:var(--bg3); }
+.avatar{
+  width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; font-size:10px; font-weight:800; flex-shrink:0;
+}
+
+/* ─── Sheet tabs ─── */
+.tabbar{
+  max-width:1500px; margin:0 auto; padding:16px 24px 0;
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap; position:relative; z-index:2;
+}
+.tab{
+  white-space:nowrap; padding:8px 16px; border-radius:20px; font-size:13px; font-weight:600;
+  cursor:pointer; border:1px solid var(--border); background:var(--bg2); color:var(--text2);
+  transition:.2s; font-family:inherit; display:inline-flex; align-items:center; gap:7px;
+}
+.tab:hover{ border-color:var(--border-hover); color:var(--text); }
+.tab.active{ background:var(--accent); border-color:var(--accent); color:#fff; box-shadow:0 0 16px var(--accent-glow); }
+.tab .n{ font-size:10.5px; opacity:.75; font-weight:700; background:rgba(255,255,255,.15); padding:1px 7px; border-radius:20px; }
+.tab.active .n{ background:rgba(255,255,255,.25); }
+
+/* ─── Info banner ─── */
+.banner{
+  max-width:1500px; margin:14px auto 0; padding:0 24px; position:relative; z-index:2;
+}
+.banner-inner{
+  background:linear-gradient(100deg, rgba(223,242,13,.12) 0%, rgba(223,242,13,.05) 45%, transparent 100%);
+  border:1px solid rgba(223,242,13,.28); border-radius:12px; padding:12px 16px;
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap; font-size:12.5px; color:var(--text2);
+}
+.banner-inner b{ color:var(--text); }
+.banner-inner .formula{ font-family:ui-monospace,monospace; background:var(--bg3); padding:3px 9px; border-radius:8px; color:var(--accent2); font-size:12px; }
+.calc-toggle{ margin-left:auto; }
+
+.calc-panel{
+  display:none; max-width:1500px; margin:10px auto 0; padding:0 24px; position:relative; z-index:2;
+}
+.calc-panel.open{ display:block; }
+.calc-box{
+  background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:16px;
+  display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap;
+}
+.calc-field label{ display:block; font-size:11px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+.calc-field input{
+  background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:9px 12px;
+  color:var(--text); font-size:13px; font-family:inherit; outline:none; width:170px;
+}
+.calc-field input:focus{ border-color:rgba(223,242,13,.5); }
+.calc-result{ font-size:13px; color:var(--text2); line-height:1.8; }
+.calc-result b{ color:var(--accent2); font-size:15px; }
+
+/* ─── Content ─── */
+.wrap{ max-width:1500px; margin:0 auto; padding:16px 24px 80px; position:relative; z-index:1; }
+
+.cat-section{ margin-bottom:26px; }
+.cat-head{
+  display:flex; align-items:baseline; gap:10px; margin-bottom:10px; padding-bottom:8px;
+  border-bottom:1px solid var(--border);
+}
+.cat-code{
+  width:26px; height:26px; border-radius:8px; background:var(--accent); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; flex-shrink:0;
+}
+.cat-name{ font-size:14.5px; font-weight:700; }
+.cat-name .vn{ font-weight:500; color:var(--text2); font-size:12.5px; margin-left:8px; }
+.cat-count{ font-size:11px; color:var(--text3); margin-left:auto; }
+
+.tbl-wrap{ overflow-x:auto; border-radius:var(--radius); border:1px solid var(--border); }
+table.rc{ width:100%; border-collapse:collapse; font-size:12.5px; min-width:920px; }
+table.rc thead th{
+  text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; color:var(--text3);
+  font-weight:700; padding:9px 12px; background:var(--bg2); border-bottom:1px solid var(--border); white-space:nowrap;
+}
+table.rc tbody td{ padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:top; background:var(--bg2); }
+table.rc tbody tr:last-child td{ border-bottom:none; }
+table.rc tbody tr{ transition:background .15s; cursor:pointer; }
+table.rc tbody tr:hover td{ background:var(--bg3); }
+table.rc tbody tr.pending td{ background:rgba(223,242,13,.06); }
+table.rc tbody tr.pending:hover td{ background:rgba(223,242,13,.1); }
+
+.no-cell{ color:var(--text3); font-size:11px; width:26px; }
+.item-cell .en{ font-weight:600; }
+.item-cell .vn{ color:var(--text2); font-size:11.5px; font-style:italic; margin-top:2px; }
+.desc-cell{ max-width:260px; color:var(--text2); font-size:11.5px; line-height:1.5; }
+.desc-cell .vn{ font-style:italic; color:var(--text3); margin-top:2px; }
+.unit-cell{ white-space:nowrap; color:var(--text2); font-size:11.5px; }
+.price-cell{ text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; font-weight:600; }
+.price-cell.zero{ color:var(--text3); font-weight:400; }
+.notes-cell{ max-width:200px; color:var(--text3); font-size:11px; line-height:1.5; }
+.actions-cell{ white-space:nowrap; text-align:right; }
+
+/* ─── VFR: lợi nhuận + file sản xuất ─── */
+.profit-cell{ text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; font-weight:700; }
+.profit-cell.up{ color:#7ee787; }
+.profit-cell.down{ color:#ff6b6b; }
+.profit-cell.flat{ color:var(--text3); font-weight:400; }
+.profit-cell .pct{ display:block; font-size:10.5px; font-weight:600; opacity:.75; margin-top:2px; }
+.zip-cell{ white-space:nowrap; }
+.zipbtn{
+  font-size:11px; font-weight:700; font-family:inherit; cursor:pointer; white-space:nowrap;
+  color:var(--text3); background:var(--bg3); border:1px dashed var(--border-hover);
+  border-radius:8px; padding:5px 9px; transition:.15s;
+}
+.zipbtn:hover{ color:var(--accent); border-color:rgba(223,242,13,.5); background:rgba(223,242,13,.08); }
+.zipchip{
+  display:inline-flex; align-items:center; gap:6px; max-width:230px;
+  font-size:11px; font-weight:700; padding:4px 8px; border-radius:8px;
+  background:rgba(126,231,135,.12); border:1px solid rgba(126,231,135,.35);
+}
+.zipchip a{ color:#9ff0a6; text-decoration:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.zipchip a:hover{ text-decoration:underline; }
+.zipchip .sz{ color:var(--text3); font-weight:600; flex-shrink:0; }
+.zipchip .zx{ background:none; border:none; cursor:pointer; color:var(--text3); font-size:11px; padding:0 1px; }
+.zipchip .zx:hover{ color:#ff6b6b; }
+.zip-cell .again{ display:block; margin-top:4px; }
+.zipbox{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:12.5px;
+}
+.zipbox .hint{ color:var(--text3); font-size:12px; }
+.act{
+  width:26px; height:26px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center;
+  background:transparent; border:1px solid transparent; color:var(--text3); cursor:pointer; font-size:12px; transition:.15s;
+}
+.act:hover{ color:#fff; background:var(--accent); border-color:var(--accent); }
+.act.del:hover{ background:var(--red); border-color:var(--red); }
+
+.badge-pending{
+  display:inline-block; margin-left:6px; font-size:9px; font-weight:700; letter-spacing:.3px;
+  color:#eaff6b; background:rgba(223,242,13,.18); border:1px solid rgba(223,242,13,.4);
+  padding:1px 6px; border-radius:10px; vertical-align:middle;
+}
+
+.empty{ text-align:center; padding:90px 24px; color:var(--text3); }
+.empty .ico{ font-size:52px; margin-bottom:16px; }
+.empty h3{ font-size:17px; color:var(--text2); font-weight:600; margin-bottom:8px; }
+.empty p{ font-size:13px; line-height:1.7; max-width:420px; margin:0 auto; }
+
+/* ─── Modal ─── */
+.ov{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.78); backdrop-filter:blur(8px);
+  z-index:300; align-items:center; justify-content:center; padding:24px; overflow-y:auto;
+}
+.ov.open{ display:flex; }
+#nmOv, #cfOv{ z-index:700; }
+.modal{
+  background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:30px;
+  width:100%; max-width:640px; position:relative; margin:auto;
+}
+.modal.narrow{ max-width:400px; }
+.modal h2{ font-size:19px; font-weight:700; margin-bottom:6px; }
+.modal .sub{ font-size:12.5px; color:var(--text2); margin-bottom:22px; }
+.x{
+  position:absolute; top:14px; right:14px; width:31px; height:31px; border-radius:50%;
+  background:var(--bg3); border:1px solid var(--border); color:var(--text2); cursor:pointer;
+  display:flex; align-items:center; justify-content:center; font-size:16px; transition:.2s;
+}
+.x:hover{ color:var(--text); background:var(--border); }
+
+.fg{ margin-bottom:14px; }
+.fg label{ display:block; font-size:11px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+.fg input, .fg textarea, .fg select{
+  width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:10px;
+  padding:9px 13px; color:var(--text); font-size:13.5px; font-family:inherit; outline:none;
+  transition:border-color .2s; resize:vertical;
+}
+.fg input:focus, .fg textarea:focus, .fg select:focus{ border-color:rgba(223,242,13,.5); }
+.fg .hint{ font-size:11px; color:var(--text3); margin-top:5px; line-height:1.5; }
+.row2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.row3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+.divider{ border-top:1px dashed var(--border); margin:18px 0; padding-top:4px; }
+.divider-label{ font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--text3); font-weight:700; margin-bottom:10px; }
+
+.btn{
+  width:100%; padding:12px; border:none; border-radius:10px; font-size:14px; font-weight:600;
+  font-family:inherit; cursor:pointer; transition:.2s; margin-top:6px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; box-shadow:0 0 20px var(--accent-glow);
+}
+.btn:hover{ transform:translateY(-1px); box-shadow:0 4px 24px var(--accent-glow); }
+.btn:disabled{ opacity:.5; cursor:not-allowed; transform:none; }
+.btn.ghost{ background:transparent; border:1px solid var(--border); color:var(--text2); box-shadow:none; }
+.btn.ghost:hover{ color:var(--text); border-color:var(--border-hover); background:var(--bg3); }
+.btn.danger{ background:transparent; border:1px solid rgba(255,77,77,.4); color:#ff6b6b; box-shadow:none; }
+.btn.danger:hover{ background:rgba(255,77,77,.12); border-color:var(--red); }
+
+/* ─── Toast / progress ─── */
+.toast{
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(90px);
+  background:var(--bg3); border:1px solid var(--border); border-radius:12px; padding:12px 20px;
+  font-size:13px; font-weight:500; z-index:900; transition:transform .3s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 12px 40px rgba(0,0,0,.5); max-width:88vw; text-align:center;
+}
+.toast.show{ transform:translateX(-50%) translateY(0); }
+.toast.err{ border-color:rgba(255,77,77,.5); color:#ff8f8f; }
+.toast.ok{ border-color:rgba(223,242,13,.5); color:#eaff6b; }
+.bar{ position:fixed; top:0; left:0; height:3px; width:0; background:linear-gradient(90deg,var(--accent),var(--accent2));
+  z-index:999; transition:width .25s; box-shadow:0 0 12px var(--accent-glow); }
+
+@media(max-width:900px){
+  header{ padding:0 12px; gap:8px; flex-wrap:wrap; height:auto; padding-top:8px; padding-bottom:8px; }
+  .page-title{ order:1; }
+  .header-search{ order:3; flex-basis:100%; max-width:none; }
+  .hbtn.primary{ order:2; }
+  .who{ order:4; }
+  .wrap{ padding:12px 14px 70px; }
+  .tabbar, .banner, .calc-panel{ padding-left:14px; padding-right:14px; }
+  .modal{ padding:22px 18px; }
+  .row2, .row3{ grid-template-columns:1fr; }
+}
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/theme.css?v=11" />
+<script src="/apsa-ui.js?v=4"></script>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" id="apsa-ui-sprite" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><symbol id="i-tent" viewBox="0 0 48 48"><path d="M24 4 44 39H4L24 4Z" fill="#ffffff"/><path d="M24 4 31 39H17L24 4Z" fill="#dff20d"/><path d="M24 21c3.1 0 5.2 3.6 5.2 9v9H18.8v-9c0-5.4 2.1-9 5.2-9Z" fill="#0d0d0d"/><rect x="2" y="39" width="44" height="5" rx="2.5" fill="#5e5e5e"/></symbol><symbol id="i-video" viewBox="0 0 48 48"><rect x="2" y="13" width="29" height="23" rx="4" fill="#ffffff"/><path d="M33 22.5 45 14v21l-12-8.5v-4Z" fill="#5e5e5e"/><circle cx="16.5" cy="24.5" r="6.5" fill="#dff20d"/><circle cx="16.5" cy="24.5" r="2.6" fill="#0d0d0d"/></symbol><symbol id="i-printer" viewBox="0 0 48 48"><rect x="12" y="3" width="24" height="12" fill="#5e5e5e"/><rect x="2" y="15" width="44" height="19" rx="4" fill="#ffffff"/><circle cx="39" cy="21.5" r="2.8" fill="#0d0d0d"/><rect x="12" y="29" width="24" height="16" rx="2" fill="#dff20d"/><rect x="16" y="34" width="16" height="3" fill="#0d0d0d"/><rect x="16" y="39" width="11" height="3" fill="#0d0d0d"/></symbol><symbol id="i-box" viewBox="0 0 48 48"><path d="M24 3 44 12.5 24 22 4 12.5 24 3Z" fill="#ffffff"/><path d="M4 12.5 24 22v23L4 35.5v-23Z" fill="#5e5e5e"/><path d="M44 12.5 24 22v23l20-9.5v-23Z" fill="#dff20d"/></symbol><symbol id="i-trash" viewBox="0 0 48 48"><rect x="18" y="3" width="12" height="7" rx="2.5" fill="#dff20d"/><rect x="6" y="11" width="36" height="6.5" rx="3.25" fill="#5e5e5e"/><path d="M10 19h28l-2.4 23.5a3.2 3.2 0 0 1-3.2 2.9H15.6a3.2 3.2 0 0 1-3.2-2.9L10 19Z" fill="#ffffff"/><rect x="17.5" y="24" width="4" height="15" rx="2" fill="#0d0d0d"/><rect x="26.5" y="24" width="4" height="15" rx="2" fill="#0d0d0d"/></symbol><symbol id="i-clock" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="#dff20d"/><circle cx="24" cy="24" r="15.5" fill="#ffffff"/><path d="M24 13.5V25h8.5" fill="none" stroke="#0d0d0d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-download" viewBox="0 0 48 48"><path d="M19.5 3h9v18H39L24 39 9 21h10.5V3Z" fill="#dff20d"/><rect x="6" y="39" width="36" height="6" rx="3" fill="#ffffff"/></symbol><symbol id="i-upload" viewBox="0 0 48 48"><path d="M24 3 39 21H28.5v18h-9V21H9L24 3Z" fill="#dff20d"/><rect x="6" y="39" width="36" height="6" rx="3" fill="#ffffff"/></symbol><symbol id="i-warning" viewBox="0 0 48 48"><path d="M20.5 6.5a4 4 0 0 1 7 0l17.5 31A4 4 0 0 1 41.5 44h-35a4 4 0 0 1-3.5-6l17.5-31.5Z" fill="#dff20d"/><rect x="21.3" y="16" width="5.4" height="15" rx="2.7" fill="#0d0d0d"/><circle cx="24" cy="36.5" r="3.1" fill="#0d0d0d"/></symbol><symbol id="i-check" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20.5" fill="#dff20d"/><path d="M13.5 24.5 21 32l14-14.5" fill="none" stroke="#0d0d0d" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-link" viewBox="0 0 48 48"><path d="M28 13.5 32.5 9a10.5 10.5 0 0 1 15 15L43 28.5a10.5 10.5 0 0 1-15 0" fill="none" stroke="#dff20d" stroke-width="5.5" stroke-linecap="round"/><path d="M20 34.5 15.5 39a10.5 10.5 0 0 1-15-15L5 19.5a10.5 10.5 0 0 1 15 0" fill="none" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/><path d="M17 31 31 17" stroke="#5e5e5e" stroke-width="5.5" stroke-linecap="round"/></symbol><symbol id="i-mail" viewBox="0 0 48 48"><rect x="2" y="9" width="44" height="30" rx="4" fill="#ffffff"/><path d="M2 13a4 4 0 0 1 4-4h36a4 4 0 0 1 4 4L24 28.5 2 13Z" fill="#dff20d"/><path d="M2 17.5 24 33l22-15.5v4L24 37 2 21.5v-4Z" fill="#5e5e5e"/></symbol><symbol id="i-refresh" viewBox="0 0 48 48"><path d="M40 24a16 16 0 1 1-5.6-12.2" fill="none" stroke="#dff20d" stroke-width="6" stroke-linecap="round"/><path d="M36 2.5 39.5 15 27 12.5 36 2.5Z" fill="#ffffff"/></symbol><symbol id="i-file" viewBox="0 0 48 48"><path d="M10 3h19l9 9v33H10V3Z" fill="#ffffff"/><path d="M29 3l9 9h-9V3Z" fill="#5e5e5e"/><rect x="10" y="27" width="28" height="12" fill="#dff20d"/><rect x="14" y="31" width="5" height="4.5" fill="#0d0d0d"/><rect x="21.5" y="31" width="5" height="4.5" fill="#0d0d0d"/><rect x="29" y="31" width="5" height="4.5" fill="#0d0d0d"/></symbol><symbol id="i-eye" viewBox="0 0 48 48"><path d="M24 10c11.5 0 20 8.5 22.5 14C44 29.5 35.5 38 24 38S4 29.5 1.5 24C4 18.5 12.5 10 24 10Z" fill="#ffffff"/><circle cx="24" cy="24" r="9" fill="#dff20d"/><circle cx="24" cy="24" r="4.2" fill="#0d0d0d"/></symbol><symbol id="i-heart" viewBox="0 0 48 48"><path d="M24 43.5C8.5 32 2.5 26 2.5 17.6A10.8 10.8 0 0 1 24 11.8a10.8 10.8 0 0 1 21.5 5.8C45.5 26 39.5 32 24 43.5Z" fill="#dff20d"/></symbol><symbol id="i-pin" viewBox="0 0 48 48"><circle cx="24" cy="14" r="11.5" fill="#dff20d"/><rect x="18" y="22" width="12" height="7.5" rx="1.5" fill="#5e5e5e"/><path d="M24 45.5 20.4 29.5h7.2L24 45.5Z" fill="#ffffff"/></symbol><symbol id="i-camera" viewBox="0 0 48 48"><path d="M17.5 7h13l3.2 5.5H42a3.5 3.5 0 0 1 3.5 3.5v22a3.5 3.5 0 0 1-3.5 3.5H6A3.5 3.5 0 0 1 2.5 38V16A3.5 3.5 0 0 1 6 12.5h8.3L17.5 7Z" fill="#ffffff"/><circle cx="24" cy="27" r="10" fill="#dff20d"/><circle cx="24" cy="27" r="4.6" fill="#0d0d0d"/></symbol><symbol id="i-folder" viewBox="0 0 48 48"><path d="M3 8h14.5l5 6H42a3 3 0 0 1 3 3v6H3V8Z" fill="#5e5e5e"/><path d="M3 17h42a3 3 0 0 1 3 3l-3.2 17.5a3 3 0 0 1-3 2.5H3V17Z" fill="#ffffff"/><rect x="3" y="17" width="42" height="6" fill="#dff20d"/></symbol><symbol id="i-phone" viewBox="0 0 48 48"><rect x="12" y="2" width="24" height="44" rx="5" fill="#ffffff"/><rect x="16" y="9" width="16" height="26" rx="2" fill="#dff20d"/><circle cx="24" cy="40.5" r="2.8" fill="#5e5e5e"/></symbol><symbol id="i-target" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="#ffffff"/><circle cx="24" cy="24" r="13.5" fill="#5e5e5e"/><circle cx="24" cy="24" r="6" fill="#dff20d"/></symbol><symbol id="i-calendar" viewBox="0 0 48 48"><rect x="3" y="7" width="42" height="38" rx="4" fill="#ffffff"/><path d="M3 11a4 4 0 0 1 4-4h34a4 4 0 0 1 4 4v7H3v-7Z" fill="#dff20d"/><rect x="12" y="2" width="5.5" height="10" rx="2.75" fill="#5e5e5e"/><rect x="30.5" y="2" width="5.5" height="10" rx="2.75" fill="#5e5e5e"/><rect x="10" y="24" width="7" height="6" fill="#0d0d0d"/><rect x="20.5" y="24" width="7" height="6" fill="#0d0d0d"/><rect x="31" y="24" width="7" height="6" fill="#5e5e5e"/><rect x="10" y="34" width="7" height="6" fill="#5e5e5e"/><rect x="20.5" y="34" width="7" height="6" fill="#5e5e5e"/></symbol><symbol id="i-search" viewBox="0 0 48 48"><rect x="27" y="30" width="18" height="8.5" rx="4.25" transform="rotate(45 27 30)" fill="#5e5e5e"/><circle cx="20" cy="20" r="16.5" fill="#dff20d"/><circle cx="20" cy="20" r="10" fill="#ffffff"/></symbol><symbol id="i-bolt" viewBox="0 0 48 48"><path d="M28 2 9 27h11.5L18 46 39 20H26.5L28 2Z" fill="#dff20d"/></symbol><symbol id="i-clip" viewBox="0 0 48 48"><path d="M34 14.5v18.8a11 11 0 0 1-22 0V12a6.8 6.8 0 0 1 13.6 0v20.6a2.9 2.9 0 0 1-5.8 0V15" fill="none" stroke="#dff20d" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-copy" viewBox="0 0 48 48"><rect x="7" y="4" width="24" height="32" rx="3" fill="#5e5e5e"/><rect x="17" y="12" width="24" height="32" rx="3" fill="#ffffff"/><rect x="22" y="20" width="14" height="3.6" fill="#5e5e5e"/><rect x="22" y="28" width="10" height="3.6" fill="#dff20d"/></symbol><symbol id="i-money" viewBox="0 0 48 48"><rect x="2" y="10" width="44" height="28" rx="4" fill="#ffffff"/><circle cx="24" cy="24" r="8.5" fill="#dff20d"/><rect x="22.2" y="16" width="3.6" height="16" rx="1.8" fill="#0d0d0d"/><rect x="6" y="14" width="5" height="5" fill="#5e5e5e"/><rect x="37" y="29" width="5" height="5" fill="#5e5e5e"/></symbol><symbol id="i-block" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20.5" fill="#ffffff"/><circle cx="24" cy="24" r="14.5" fill="#0d0d0d"/><path d="M13.5 13.5 34.5 34.5" stroke="#dff20d" stroke-width="6" stroke-linecap="round"/></symbol><symbol id="i-qr" viewBox="0 0 48 48"><rect x="5" y="5" width="16" height="16" rx="2" fill="#dff20d"/><rect x="10" y="10" width="6" height="6" fill="#0d0d0d"/><rect x="27" y="5" width="16" height="16" rx="2" fill="#ffffff"/><rect x="32" y="10" width="6" height="6" fill="#0d0d0d"/><rect x="5" y="27" width="16" height="16" rx="2" fill="#ffffff"/><rect x="10" y="32" width="6" height="6" fill="#0d0d0d"/><rect x="27" y="27" width="7" height="7" fill="#dff20d"/><rect x="36" y="27" width="7" height="7" fill="#5e5e5e"/><rect x="27" y="36" width="7" height="7" fill="#5e5e5e"/><rect x="36" y="36" width="7" height="7" fill="#dff20d"/></symbol><symbol id="i-tag" viewBox="0 0 48 48"><path d="M18 9h18a3 3 0 0 1 3 3v18L22 47 3 28 18 9Z" fill="#5e5e5e" opacity=".55"/><path d="M23 4h18a3 3 0 0 1 3 3v18L26 43 6 23 23 4Z" fill="#dff20d"/><circle cx="35" cy="13" r="4.5" fill="#0d0d0d"/></symbol><symbol id="i-book" viewBox="0 0 48 48"><rect x="5" y="8" width="17" height="32" rx="2" fill="#ffffff"/><rect x="26" y="8" width="17" height="32" rx="2" fill="#dff20d"/><rect x="22" y="6" width="4" height="36" fill="#5e5e5e"/><rect x="9" y="16" width="9" height="3" fill="#0d0d0d"/><rect x="9" y="23" width="9" height="3" fill="#0d0d0d"/><rect x="30" y="16" width="9" height="3" fill="#0d0d0d"/></symbol><symbol id="i-key" viewBox="0 0 48 48"><circle cx="24" cy="13" r="9.5" fill="#dff20d"/><circle cx="24" cy="13" r="3.6" fill="#0d0d0d"/><rect x="20.8" y="21" width="6.4" height="23" rx="1" fill="#ffffff"/><rect x="27.2" y="27" width="9" height="5" fill="#ffffff"/><rect x="27.2" y="36" width="6.5" height="5" fill="#ffffff"/></symbol><symbol id="i-image" viewBox="0 0 48 48"><rect x="4" y="9" width="40" height="30" rx="3" fill="#ffffff"/><circle cx="15" cy="19" r="4.5" fill="#dff20d"/><path d="M4 34l11-11 9 9 7-6 13 12v1H4z" fill="#5e5e5e"/><rect x="4" y="35" width="40" height="4" fill="#5e5e5e"/></symbol><symbol id="i-spark" viewBox="0 0 48 48"><path d="M20 3c1.7 10 4.5 12.8 14.5 14.5C24.5 19.2 21.7 22 20 32 18.3 22 15.5 19.2 5.5 17.5 15.5 15.8 18.3 13 20 3Z" fill="#dff20d"/><path d="M36 26c.9 5.6 2.4 7.1 8 8-5.6.9-7.1 2.4-8 8-.9-5.6-2.4-7.1-8-8 5.6-.9 7.1-2.4 8-8Z" fill="#ffffff"/></symbol><symbol id="i-bulb" viewBox="0 0 48 48"><path d="M24 4c-8.3 0-15 6.7-15 15 0 5.7 3.2 10.6 7.9 13.2V37h14.2v-4.8C35.8 29.6 39 24.7 39 19c0-8.3-6.7-15-15-15Z" fill="#dff20d"/><rect x="17" y="38.5" width="14" height="4" rx="2" fill="#ffffff"/><rect x="19.5" y="43.5" width="9" height="3.5" rx="1.75" fill="#5e5e5e"/></symbol><symbol id="i-price" viewBox="0 0 48 48"><rect x="3" y="12" width="34" height="22" rx="3" fill="#ffffff"/><rect x="3" y="12" width="34" height="5" fill="#5e5e5e"/><rect x="7" y="22" width="13" height="3" fill="#5e5e5e"/><rect x="7" y="28" width="9" height="3" fill="#5e5e5e"/><circle cx="33" cy="31" r="12" fill="#dff20d"/><rect x="31.6" y="22" width="2.8" height="18" fill="#0d0d0d"/><rect x="27" y="26" width="12" height="3" rx="1.5" fill="#0d0d0d"/><rect x="27" y="33" width="12" height="3" rx="1.5" fill="#0d0d0d"/></symbol><symbol id="i-shield" viewBox="0 0 48 48"><path d="M24 3 42 9.5V23c0 10.4-7.3 18.4-18 22-10.7-3.6-18-11.6-18-22V9.5L24 3Z" fill="#dff20d"/><rect x="17" y="22" width="14" height="11" rx="2" fill="#0d0d0d"/><path d="M20 22v-3.5a4 4 0 0 1 8 0V22" fill="none" stroke="#0d0d0d" stroke-width="3.2"/></symbol><symbol id="i-shuttle" viewBox="0 0 48 48"><path d="M24 2 8 28h32L24 2Z" fill="#ffffff"/><path d="M24 3v25M15.5 16 18.5 28M32.5 16 29.5 28" stroke="#0d0d0d" stroke-width="2.2"/><rect x="8" y="26" width="32" height="3" fill="#5e5e5e"/><circle cx="24" cy="37" r="9" fill="#dff20d"/></symbol><symbol id="i-people" viewBox="0 0 48 48"><circle cx="34" cy="17" r="7" fill="#ffffff"/><path d="M23 43c0-6.6 4.9-12 11-12s11 5.4 11 12H23Z" fill="#ffffff"/><circle cx="18" cy="15" r="8.5" fill="#dff20d"/><path d="M3 43c0-8.3 6.7-15 15-15s15 6.7 15 15H3Z" fill="#dff20d"/></symbol><symbol id="i-card" viewBox="0 0 48 48"><rect x="3" y="10" width="42" height="28" rx="4" fill="#ffffff"/><rect x="3" y="16" width="42" height="6" fill="#0d0d0d"/><rect x="8" y="28" width="15" height="4" rx="2" fill="#5e5e5e"/><circle cx="35" cy="30" r="5.5" fill="#dff20d"/></symbol><symbol id="i-chart" viewBox="0 0 48 48"><rect x="4" y="27" width="10" height="17" fill="#ffffff"/><rect x="19" y="16" width="10" height="28" fill="#dff20d"/><rect x="34" y="6" width="10" height="38" fill="#5e5e5e"/></symbol><symbol id="i-signal" viewBox="0 0 48 48"><circle cx="24" cy="34" r="6" fill="#dff20d"/><path d="M13 26a15 15 0 0 1 22 0" fill="none" stroke="#ffffff" stroke-width="5"/><path d="M6 18a25 25 0 0 1 36 0" fill="none" stroke="#5e5e5e" stroke-width="5"/></symbol><symbol id="i-doc" viewBox="0 0 48 48"><path d="M9 4h20l10 10v30H9V4Z" fill="#ffffff"/><path d="M29 4l10 10H29V4Z" fill="#5e5e5e"/><rect x="15" y="22" width="18" height="3.4" fill="#0d0d0d"/><rect x="15" y="30" width="12" height="3.4" fill="#0d0d0d"/><rect x="15" y="38" width="18" height="3.4" fill="#dff20d"/></symbol><symbol id="i-grid" viewBox="0 0 48 48"><rect x="5" y="5" width="17" height="17" rx="2" fill="#dff20d"/><rect x="26" y="5" width="17" height="17" rx="2" fill="#ffffff"/><rect x="5" y="26" width="17" height="17" rx="2" fill="#5e5e5e"/><rect x="26" y="26" width="17" height="17" rx="2" fill="#dff20d"/></symbol><symbol id="i-palette" viewBox="0 0 48 48"><path d="M24 4C12.4 4 3 12.7 3 23.5S12.4 43 24 43c3 0 5-1.8 5-4.3 0-1.3-.6-2.3-1.4-3.2-.8-.9-1.3-1.8-1.3-3 0-2.4 2-4.3 4.5-4.3H36c5.5 0 9-3.6 9-9C45 11.4 35.6 4 24 4Z" fill="#ffffff"/><circle cx="13" cy="20" r="3.6" fill="#dff20d"/><circle cx="21" cy="13" r="3.6" fill="#5e5e5e"/><circle cx="31" cy="14" r="3.6" fill="#dff20d"/><circle cx="12" cy="30" r="3.6" fill="#5e5e5e"/></symbol><symbol id="i-pen" viewBox="0 0 48 48"><path d="M33 4l11 11-4.5 4.5-11-11L33 4Z" fill="#5e5e5e"/><path d="M26 11l11 11L16 43H5v-11L26 11Z" fill="#dff20d"/><path d="M5 32h11v11" fill="#ffffff"/></symbol><symbol id="i-gear" viewBox="0 0 48 48"><path d="M20 3h8l1.2 6.1 4.6 2.7 5.6-2.6 4 6.9-4.4 4.3v5.2l4.4 4.3-4 6.9-5.6-2.6-4.6 2.7L28 45h-8l-1.2-6.1-4.6-2.7-5.6 2.6-4-6.9 4.4-4.3v-5.2L4.6 18l4-6.9 5.6 2.6 4.6-2.7L20 3Z" fill="#dff20d"/><circle cx="24" cy="24" r="7.5" fill="#0d0d0d"/><circle cx="24" cy="24" r="3.6" fill="#ffffff"/></symbol><symbol id="i-wrench" viewBox="0 0 48 48"><path d="M31 4a13 13 0 0 0-11.6 18.8L4 38.2 9.8 44l15.4-15.4A13 13 0 1 0 31 4Zm0 8a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z" fill="#dff20d"/><rect x="6" y="34" width="8" height="4" rx="2" transform="rotate(-45 10 36)" fill="#ffffff"/></symbol><symbol id="i-cap" viewBox="0 0 48 48"><path d="M24 6 46 17 24 28 2 17 24 6Z" fill="#dff20d"/><path d="M11 22v11c0 3.9 5.8 7 13 7s13-3.1 13-7V22l-13 6.5L11 22Z" fill="#ffffff"/><rect x="42" y="17" width="3" height="15" fill="#5e5e5e"/><circle cx="43.5" cy="34" r="3.2" fill="#5e5e5e"/></symbol><symbol id="i-building" viewBox="0 0 48 48"><rect x="3" y="17" width="15" height="27" rx="2" fill="#5e5e5e"/><rect x="7" y="22" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="12.4" y="22" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="7" y="29" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="12.4" y="29" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="7" y="36" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="12.4" y="36" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="19" y="4" width="26" height="40" rx="2" fill="#ffffff"/><rect x="24" y="10" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="34.5" y="10" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="24" y="19" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="34.5" y="19" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="24" y="28" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="34.5" y="28" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="27" y="36" width="10" height="8" rx="1" fill="#dff20d"/></symbol><symbol id="i-invoice" viewBox="0 0 48 48"><path d="M7 3h21l10 10v19H7V3Z" fill="#ffffff"/><path d="M28 3l10 10H28V3Z" fill="#5e5e5e"/><rect x="13" y="17" width="19" height="3.2" fill="#5e5e5e"/><rect x="13" y="24" width="12" height="3.2" fill="#5e5e5e"/><circle cx="33" cy="34" r="13" fill="#dff20d"/><path d="M27 34.4l4 4 8-8.4" fill="none" stroke="#0d0d0d" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-album" viewBox="0 0 48 48"><rect x="11" y="3" width="30" height="21" rx="2" fill="#5e5e5e"/><rect x="3" y="10" width="33" height="26" rx="3" fill="#ffffff"/><path d="M3 30.5 12 21l6.5 6.5L24 22l12 12v2H3v-5.5Z" fill="#5e5e5e"/><circle cx="11.5" cy="18" r="3.4" fill="#dff20d"/><path d="M35 47c-7.2-5.1-10.8-8.2-10.8-12A5.4 5.4 0 0 1 35 32.6a5.4 5.4 0 0 1 10.8 2.4c0 3.8-3.6 6.9-10.8 12Z" fill="#dff20d" stroke="#0d0d0d" stroke-width="2.4" stroke-linejoin="round"/></symbol><symbol id="i-map" viewBox="0 0 48 48"><path d="M24 3c-8.8 0-16 7.2-16 16 0 11.5 16 26 16 26s16-14.5 16-26c0-8.8-7.2-16-16-16Z" fill="#dff20d"/><circle cx="24" cy="19" r="6.5" fill="#0d0d0d"/></symbol><symbol id="i-globe" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20.5" fill="#ffffff"/><path d="M24 3.5c-6 5-9 11.6-9 20.5s3 15.5 9 20.5c6-5 9-11.6 9-20.5s-3-15.5-9-20.5Z" fill="#dff20d"/><rect x="4" y="15" width="40" height="4" fill="#5e5e5e"/><rect x="4" y="29" width="40" height="4" fill="#5e5e5e"/></symbol><symbol id="i-music" viewBox="0 0 48 48"><path d="M20 8 42 4v26h-6V11L26 12.8V36h-6V8Z" fill="#ffffff"/><circle cx="13" cy="36" r="8.5" fill="#dff20d"/><circle cx="36" cy="30" r="7.5" fill="#dff20d"/></symbol><symbol id="i-chat" viewBox="0 0 48 48"><path d="M6 6h36a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H20L9 44v-10H6a4 4 0 0 1-4-4V10a4 4 0 0 1 4-4Z" fill="#ffffff"/><circle cx="15" cy="20" r="3.4" fill="#5e5e5e"/><circle cx="24" cy="20" r="3.4" fill="#dff20d"/><circle cx="33" cy="20" r="3.4" fill="#5e5e5e"/></symbol><symbol id="i-calc" viewBox="0 0 48 48"><rect x="7" y="2" width="34" height="44" rx="4" fill="#ffffff"/><rect x="12" y="7" width="24" height="9" rx="2" fill="#0d0d0d"/><rect x="12" y="21" width="7" height="6" fill="#5e5e5e"/><rect x="22" y="21" width="7" height="6" fill="#5e5e5e"/><rect x="32" y="21" width="4" height="19" rx="2" fill="#dff20d"/><rect x="12" y="31" width="7" height="6" fill="#5e5e5e"/><rect x="22" y="31" width="7" height="6" fill="#5e5e5e"/></symbol></svg>
+
+
+<div class="bar" id="bar"></div>
+
+<!-- ─── HEADER ─── -->
+<header>
+  <a class="back" href="./index.html">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Công cụ
+  </a>
+  <div class="page-title"><svg class="ttl-ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="12" width="34" height="22" rx="3" fill="#ffffff"/>
+<rect x="3" y="12" width="34" height="5" fill="#5e5e5e"/>
+<rect x="7" y="22" width="13" height="3" fill="#5e5e5e"/><rect x="7" y="28" width="9" height="3" fill="#5e5e5e"/>
+<circle cx="33" cy="31" r="12" fill="#dff20d"/>
+<rect x="31.6" y="22" width="2.8" height="18" fill="#0d0d0d"/>
+<rect x="27" y="26" width="12" height="3" rx="1.5" fill="#0d0d0d"/>
+<rect x="27" y="33" width="12" height="3" rx="1.5" fill="#0d0d0d"/></svg> Rate Card <span class="count" id="cnt">0</span></div>
+  <div class="header-search">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input class="search-input" id="q" type="text" placeholder="Tìm hạng mục, mô tả, ghi chú..." />
+  </div>
+  <button class="hbtn primary" id="addBtn" onclick="openAdd()">＋ Thêm hạng mục</button>
+  <div class="who" onclick="askName(true)" title="Đổi tên hiển thị">
+    <div class="avatar" id="av">?</div><span id="uname">Khách</span>
+  </div>
+</header>
+
+<!-- ─── SHEET TABS ─── -->
+<div class="tabbar" id="tabbar"></div>
+
+<!-- ─── INFO BANNER ─── -->
+<div class="banner">
+  <div class="banner-inner">
+    <span><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-bulb"/></svg> Toàn bộ giá là <b>giá NET</b>, chưa gồm phí quản lý (MA) & VAT.</span>
+    <span class="formula" id="formulaText">TOTAL = NET × (1 + MA%) × 1.08</span>
+    <button class="hbtn calc-toggle" onclick="toggleCalc()"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-calc"/></svg> Tính tổng thanh toán</button>
+  </div>
+</div>
+<div class="calc-panel" id="calcPanel">
+  <div class="calc-box">
+    <div class="calc-field">
+      <label>Tổng giá NET (VND)</label>
+      <input type="text" id="calcNet" placeholder="VD: 150000000" oninput="runCalc()" />
+    </div>
+    <div class="calc-field">
+      <label>Phí quản lý MA (%)</label>
+      <input type="number" id="calcMa" value="10" min="0" max="100" oninput="runCalc()" />
+    </div>
+    <div class="calc-field">
+      <label>VAT (%)</label>
+      <input type="number" id="calcVat" value="8" min="0" max="100" oninput="runCalc()" />
+    </div>
+    <div class="calc-result" id="calcResult">Nhập tổng NET để tính tổng thanh toán.</div>
+  </div>
+</div>
+
+<!-- ─── CONTENT ─── -->
+<div class="wrap">
+  <div id="content"></div>
+  <div class="empty" id="empty" style="display:none">
+    <div class="ico" id="emptyIco"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-price"/></svg></div>
+    <h3 id="emptyH">Chưa có hạng mục nào</h3>
+    <p id="emptyP">Bấm <b>＋ Thêm hạng mục</b> để bắt đầu xây bảng giá tham khảo cho nhóm dịch vụ này.</p>
+  </div>
+</div>
+
+<!-- ─── ADD / EDIT MODAL ─── -->
+<div class="ov" id="itOv" onclick="if(event.target===this)closeIt()">
+  <div class="modal">
+    <button class="x" onclick="closeIt()">✕</button>
+    <h2 id="itTitle">Thêm hạng mục</h2>
+    <div class="sub">Điền song ngữ nếu có thể — bản tiếng Việt sẽ hiển thị nghiêng bên dưới bản tiếng Anh.</div>
+
+    <div class="row2">
+      <div class="fg">
+        <label>Nhóm dịch vụ *</label>
+        <select id="itSheet" onchange="onSheetChangeInModal()">
+          <option value="event"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-tent"/></svg> Event Production — Sự kiện</option>
+          <option value="design"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-palette"/></svg> Design &amp; Creative — Thiết kế</option>
+          <option value="media"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-video"/></svg> Media &amp; Livestream — Media</option>
+          <option value="printing"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-printer"/></svg> Printing — In ấn</option>
+          <option value="vfr"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-box"/></svg> VFR Products — Sản phẩm VFR</option>
+        </select>
+      </div>
+      <div class="fg" id="catFg">
+        <label>Danh mục con</label>
+        <select id="itCatSelect" onchange="onCatSelectChange()"></select>
+      </div>
+    </div>
+
+    <div class="row2" id="newCatRow" style="display:none">
+      <div class="fg">
+        <label>Mã danh mục mới (1 chữ cái)</label>
+        <input type="text" id="itCatCode" maxlength="2" placeholder="VD: J" style="text-transform:uppercase" />
+      </div>
+      <div class="fg">
+        <label>Tên danh mục (EN)</label>
+        <input type="text" id="itCatEn" placeholder="VD: NEW SERVICE GROUP" />
+      </div>
+    </div>
+    <div class="fg" id="newCatVnRow" style="display:none">
+      <label>Tên danh mục (VN)</label>
+      <input type="text" id="itCatVn" placeholder="VD: Nhóm dịch vụ mới" />
+    </div>
+
+    <div class="divider"><div class="divider-label" id="itemDivLabel">Hạng mục</div></div>
+
+    <div class="row2">
+      <div class="fg"><label id="lbItemEn">Tên hạng mục (EN) *</label><input type="text" id="itItemEn" placeholder="VD: LED screen P3" /></div>
+      <div class="fg"><label id="lbItemVn">Tên hạng mục (VN)</label><input type="text" id="itItemVn" placeholder="VD: Màn hình LED P3" /></div>
+    </div>
+    <div class="row2">
+      <div class="fg"><label>Mô tả / quy cách (EN)</label><textarea id="itDescEn" rows="2"></textarea></div>
+      <div class="fg"><label>Mô tả / quy cách (VN)</label><textarea id="itDescVn" rows="2"></textarea></div>
+    </div>
+    <div class="row2">
+      <div class="fg"><label>Đơn vị tính (EN)</label><input type="text" id="itUnitEn" placeholder="VD: m², Pc, Package" /></div>
+      <div class="fg"><label>Đơn vị tính (VN)</label><input type="text" id="itUnitVn" placeholder="VD: Cái, Gói" /></div>
+    </div>
+
+    <div class="divider" id="stdPriceDiv"><div class="divider-label">Đơn giá (VND, giá NET)</div></div>
+    <div class="row3" id="stdPriceRow">
+      <div class="fg"><label>Basic</label><input type="number" id="itBasic" min="0" step="1000" /></div>
+      <div class="fg"><label>Standard</label><input type="number" id="itStandard" min="0" step="1000" /></div>
+      <div class="fg"><label>Premium</label><input type="number" id="itPremium" min="0" step="1000" /></div>
+    </div>
+
+    <div class="divider" id="vfrPriceDiv" style="display:none"><div class="divider-label">Giá sản phẩm (VND, giá NET)</div></div>
+    <div class="row3" id="vfrPriceRow" style="display:none">
+      <div class="fg"><label>Giá bán</label><input type="number" id="itSell" min="0" step="1000" oninput="updProfitHint()" /></div>
+      <div class="fg"><label>Giá vốn sản xuất</label><input type="number" id="itCost" min="0" step="1000" oninput="updProfitHint()" /></div>
+      <div class="fg"><label>Lợi nhuận</label><input type="text" id="itProfit" readonly style="background:var(--bg2);color:var(--text2)" /></div>
+    </div>
+
+    <div class="fg" id="vfrZipRow" style="display:none">
+      <label>File sản xuất (.zip)</label>
+      <div id="vfrZipBox"></div>
+    </div>
+
+    <div class="row2">
+      <div class="fg"><label>Ghi chú (EN)</label><textarea id="itNotesEn" rows="2"></textarea></div>
+      <div class="fg"><label>Ghi chú (VN)</label><textarea id="itNotesVn" rows="2"></textarea></div>
+    </div>
+
+    <button class="btn" id="itSaveBtn" onclick="submitIt()">✓ Lưu hạng mục</button>
+    <button class="btn danger" id="itDelBtn" style="display:none" onclick="delFromModal()"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-trash"/></svg> Xoá hạng mục</button>
+  </div>
+</div>
+
+<!-- ─── NAME MODAL ─── -->
+<div class="ov" id="nmOv">
+  <div class="modal narrow">
+    <h2>Bạn là ai?</h2>
+    <div class="sub">Tên sẽ hiển thị cạnh hạng mục bạn thêm/sửa — chỉ cần nhập một lần.</div>
+    <div class="fg">
+      <label>Tên hiển thị</label>
+      <input type="text" id="nmInput" placeholder="VD: Harris" onkeydown="if(event.key==='Enter')nameDone(true)" />
+    </div>
+    <button class="btn" onclick="nameDone(true)">✓ Xong</button>
+    <button class="btn ghost" style="margin-top:8px" onclick="nameDone(false)">Bỏ qua</button>
+  </div>
+</div>
+
+<!-- ─── CONFIRM MODAL ─── -->
+<div class="ov" id="cfOv">
+  <div class="modal narrow">
+    <h2>Xác nhận</h2>
+    <div class="sub" id="cfMsg"></div>
+    <button class="btn danger" onclick="cfDone(true)">Đồng ý</button>
+    <button class="btn ghost" style="margin-top:8px" onclick="cfDone(false)">Huỷ</button>
+  </div>
+</div>
+
+<input type="file" id="zipInput" accept=".zip,application/zip" style="display:none" />
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = './api/ratecard-api.php';
+
+const SHEETS = [
+  { key:'event',    ico:'tent',    en:'Event Production',  vn:'Sự kiện' },
+  { key:'design',   ico:'palette', en:'Design & Creative',  vn:'Thiết kế' },
+  { key:'media',    ico:'video',   en:'Media & Livestream', vn:'Media' },
+  { key:'printing', ico:'printer', en:'Printing',           vn:'In ấn' },
+  { key:'vfr',      ico:'box',     en:'VFR Products',       vn:'VFR' },
+];
+/* icon 2D dùng chung — xem [[apsa-bo-icon]] */
+const ICO = k => '<svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-' + k + '"/></svg>';
+const VFR = 'vfr';
+
+let items = [], sheetCounts = {}, curSheet = 'event', inTrash = false, curQ = '';
+let editing = null, nameResolve = null, cfResolve = null, qTimer = null;
+
+/* ── Tên người dùng (dùng chung key với Inspiration) ───────── */
+function me(){ return localStorage.getItem('apsa_user_name') || ''; }
+function askName(force){
+  const cu = me();
+  if (cu && !force) return Promise.resolve(cu);
+  document.getElementById('nmInput').value = cu;
+  document.getElementById('nmOv').classList.add('open');
+  setTimeout(() => document.getElementById('nmInput').focus(), 60);
+  return new Promise(res => { nameResolve = res; });
+}
+function nameDone(save){
+  const v = document.getElementById('nmInput').value.trim();
+  if (save && v){ localStorage.setItem('apsa_user_name', v); paintName(); }
+  document.getElementById('nmOv').classList.remove('open');
+  const r = nameResolve; nameResolve = null;
+  if (r) r(me());
+}
+function paintName(){
+  const n = me() || 'Khách';
+  document.getElementById('uname').textContent = n;
+  document.getElementById('av').textContent = n.trim().charAt(0).toUpperCase() || '?';
+}
+
+function ask(msg){
+  document.getElementById('cfMsg').textContent = msg;
+  document.getElementById('cfOv').classList.add('open');
+  return new Promise(res => { cfResolve = res; });
+}
+function cfDone(v){
+  document.getElementById('cfOv').classList.remove('open');
+  const r = cfResolve; cfResolve = null;
+  if (r) r(v);
+}
+
+/* ── Tiện ích ───────────────────────────────── */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(msg, kind){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + (kind || '');
+  clearTimeout(t._t); t._t = setTimeout(() => t.className = 'toast ' + (kind || ''), 3200);
+}
+function bar(p){ document.getElementById('bar').style.width = p + '%'; if (p >= 100) setTimeout(() => document.getElementById('bar').style.width = '0', 400); }
+function fmtVnd(n){
+  const v = Math.round(parseFloat(n || 0));
+  return v.toLocaleString('vi-VN');
+}
+async function api(path, opts){
+  const r = await fetch(API + path, opts);
+  let j;
+  try { j = await r.json(); } catch(e){ throw new Error('Máy chủ trả về dữ liệu không hợp lệ'); }
+  if (!j.ok) throw new Error(j.error || 'Lỗi không xác định');
+  return j.data;
+}
+
+/* ── Tải dữ liệu ────────────────────────────── */
+async function loadCounts(){
+  try {
+    const rows = await api('?action=sheets');
+    sheetCounts = {};
+    rows.forEach(r => sheetCounts[r.key] = r.count);
+  } catch(e) {}
+  renderTabs();
+}
+
+async function load(){
+  const p = new URLSearchParams({ action:'list' });
+  if (!inTrash) p.set('sheet', curSheet);
+  if (curQ) p.set('q', curQ);
+  if (inTrash) p.set('trash', '1');
+
+  bar(35);
+  try {
+    const d = await api('?' + p.toString());
+    items = d.items || [];
+    render();
+    document.getElementById('cnt').textContent = items.length;
+  } catch(e){
+    toast('Không tải được dữ liệu: ' + e.message, 'err');
+    document.getElementById('content').innerHTML = '';
+    document.getElementById('empty').style.display = 'block';
+  }
+  bar(100);
+  if (!inTrash) loadCounts();
+}
+
+/* ── Tabs ───────────────────────────────────── */
+function renderTabs(){
+  const el = document.getElementById('tabbar');
+  el.innerHTML = SHEETS.map(s => `
+    <button class="tab ${!inTrash && curSheet===s.key ? 'active':''}" onclick="setSheet('${s.key}')">
+      ${ICO(s.ico)} ${esc(s.vn)} <span class="n">${sheetCounts[s.key] ?? 0}</span>
+    </button>
+  `).join('') + `<button class="tab ${inTrash?'active':''}" onclick="setTrash()"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-trash"/></svg> Thùng rác</button>`;
+}
+function setSheet(key){ curSheet = key; inTrash = false; syncAddBtn(); load(); }
+function syncAddBtn(){
+  const v = (!inTrash && curSheet === VFR);
+  const b = document.getElementById('addBtn');
+  if (b) b.textContent = v ? '＋ Thêm sản phẩm' : '＋ Thêm hạng mục';
+  const ico = document.getElementById('emptyIco'), h = document.getElementById('emptyH'), p = document.getElementById('emptyP');
+  if (ico) ico.innerHTML = v ? '<svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-box"/></svg>' : '<svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-price"/></svg>';
+  if (h) h.textContent = v ? 'Chưa có sản phẩm VFR nào' : 'Chưa có hạng mục nào';
+  if (p) p.innerHTML = v
+    ? 'Bấm <b>＋ Thêm sản phẩm</b> để thêm sản phẩm VFR — tên song ngữ, giá bán, giá vốn và file .zip sản xuất.'
+    : 'Bấm <b>＋ Thêm hạng mục</b> để bắt đầu xây bảng giá tham khảo cho nhóm dịch vụ này.';
+}
+function setTrash(){ inTrash = true; syncAddBtn(); load(); }
+
+/* ── Render nội dung theo danh mục ──────────── */
+function render(){
+  const content = document.getElementById('content');
+  document.getElementById('empty').style.display = items.length ? 'none' : 'block';
+  if (!items.length){ content.innerHTML = ''; return; }
+
+  if (inTrash){
+    content.innerHTML = trashTableHtml(items);
+    return;
+  }
+
+  if (curSheet === VFR){ content.innerHTML = vfrTableHtml(items); return; }
+
+  // nhóm theo cat_code, giữ thứ tự xuất hiện
+  const cats = [];
+  const byCat = {};
+  items.forEach(it => {
+    const code = it.cat_code || '—';
+    if (!byCat[code]){ byCat[code] = []; cats.push(code); }
+    byCat[code].push(it);
+  });
+
+  content.innerHTML = cats.map(code => {
+    const rows = byCat[code];
+    const first = rows[0];
+    return `
+    <div class="cat-section">
+      <div class="cat-head">
+        <div class="cat-code">${esc(code)}</div>
+        <div class="cat-name">${esc(first.cat_en || '')}${first.cat_vn ? `<span class="vn">${esc(first.cat_vn)}</span>` : ''}</div>
+        <div class="cat-count">${rows.length} hạng mục</div>
+      </div>
+      <div class="tbl-wrap">
+        <table class="rc">
+          <thead><tr>
+            <th>#</th><th>Hạng mục</th><th>Mô tả</th><th>ĐVT</th>
+            <th style="text-align:right">Basic</th><th style="text-align:right">Standard</th><th style="text-align:right">Premium</th>
+            <th>Ghi chú</th><th></th>
+          </tr></thead>
+          <tbody>${rows.map(rowHtml).join('')}</tbody>
+        </table>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function priceCell(v){
+  const n = parseFloat(v || 0);
+  return `<td class="price-cell ${n===0?'zero':''}">${n===0 ? '—' : fmtVnd(n) + ' đ'}</td>`;
+}
+
+/* ── VFR: bảng sản phẩm ─────────────────────── */
+function fmtSize(b){
+  b = Number(b) || 0;
+  if (!b) return '';
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b / 1024).toFixed(0) + ' KB';
+  if (b < 1073741824) return (b / 1048576).toFixed(b < 10485760 ? 1 : 0) + ' MB';
+  return (b / 1073741824).toFixed(2) + ' GB';
+}
+
+function profitCell(it){
+  const sell = parseFloat(it.basic || 0), cost = parseFloat(it.cost_price || 0);
+  if (!sell && !cost) return '<td class="profit-cell flat">—</td>';
+  const d = sell - cost;
+  const pct = sell > 0 ? Math.round(d / sell * 1000) / 10 : null;
+  const cls = d > 0 ? 'up' : (d < 0 ? 'down' : 'flat');
+  return `<td class="profit-cell ${cls}">${d > 0 ? '+' : ''}${fmtVnd(d)} đ` +
+         (pct === null ? '' : `<span class="pct">${d > 0 ? '+' : ''}${pct}% biên</span>`) + `</td>`;
+}
+
+function zipCell(it){
+  if (it.zip_name){
+    return `<td class="zip-cell">
+      <span class="zipchip" title="${esc(it.zip_name)}">
+        <a href="${API}?action=zip&id=${it.id}" onclick="event.stopPropagation()"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-box"/></svg> ${esc(it.zip_name)}</a>
+        <span class="sz">${fmtSize(it.zip_size)}</span>
+        <button class="zx" title="Gỡ file" onclick="event.stopPropagation();removeZip(${it.id})">✕</button>
+      </span>
+      <button class="zipbtn again" onclick="event.stopPropagation();pickZip(${it.id})"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-refresh"/></svg> Thay file khác</button>
+    </td>`;
+  }
+  return `<td class="zip-cell"><button class="zipbtn" onclick="event.stopPropagation();pickZip(${it.id})"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-upload"/></svg> Tải file ZIP</button></td>`;
+}
+
+function vfrRowHtml(it){
+  const noPrice = parseFloat(it.basic || 0) === 0;
+  return `
+  <tr class="${noPrice?'pending':''}" onclick="openEdit(${it.id})">
+    <td class="no-cell">${esc(it.no_label || '')}</td>
+    <td class="item-cell">
+      <div class="en">${esc(it.item_en)}${noPrice ? '<span class="badge-pending">CHƯA CÓ GIÁ</span>' : ''}</div>
+      ${it.item_vn ? `<div class="vn">${esc(it.item_vn)}</div>` : ''}
+    </td>
+    <td class="desc-cell">
+      ${it.desc_en ? esc(it.desc_en) : ''}
+      ${it.desc_vn ? `<div class="vn">${esc(it.desc_vn)}</div>` : ''}
+    </td>
+    <td class="unit-cell">${esc([it.unit_en, it.unit_vn].filter(Boolean).join(' / '))}</td>
+    ${priceCell(it.basic)}${priceCell(it.cost_price)}${profitCell(it)}
+    ${zipCell(it)}
+    <td class="notes-cell">${esc(it.notes_en || '')}${it.notes_vn ? `<div class="vn" style="font-style:italic">${esc(it.notes_vn)}</div>` : ''}</td>
+    <td class="actions-cell">
+      <span class="act" title="Sửa" onclick="event.stopPropagation();openEdit(${it.id})">✎</span>
+      <span class="act del" title="Xoá" onclick="event.stopPropagation();delItem(${it.id})"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-trash"/></svg></span>
+    </td>
+  </tr>`;
+}
+
+function vfrTableHtml(rows){
+  const sell = rows.reduce((a,r) => a + (parseFloat(r.basic)||0), 0);
+  const cost = rows.reduce((a,r) => a + (parseFloat(r.cost_price)||0), 0);
+  const withZip = rows.filter(r => r.zip_name).length;
+  return `
+  <div class="cat-section">
+    <div class="cat-head">
+      <div class="cat-code"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-box"/></svg></div>
+      <div class="cat-name">VFR Products<span class="vn">Sản phẩm VFR — giá bán, giá vốn và file sản xuất</span></div>
+      <div class="cat-count">${rows.length} sản phẩm · ${withZip} có file</div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="rc">
+        <thead><tr>
+          <th>#</th><th>Sản phẩm</th><th>Mô tả</th><th>ĐVT</th>
+          <th style="text-align:right">Giá bán</th><th style="text-align:right">Giá vốn</th><th style="text-align:right">Lợi nhuận</th>
+          <th>File sản xuất</th><th>Ghi chú</th><th></th>
+        </tr></thead>
+        <tbody>${rows.map(vfrRowHtml).join('')}</tbody>
+        ${rows.length > 1 ? `<tfoot><tr>
+          <td colspan="4" style="text-align:right;color:var(--text2);font-weight:700">Tổng cộng</td>
+          <td class="price-cell">${fmtVnd(sell)} đ</td>
+          <td class="price-cell">${fmtVnd(cost)} đ</td>
+          ${profitCell({ basic: sell, cost_price: cost })}
+          <td colspan="3"></td>
+        </tr></tfoot>` : ''}
+      </table>
+    </div>
+  </div>`;
+}
+
+function rowHtml(it){
+  const pending = (parseFloat(it.basic)===0 && parseFloat(it.standard)===0 && parseFloat(it.premium)===0);
+  return `
+  <tr class="${pending?'pending':''}" onclick="openEdit(${it.id})">
+    <td class="no-cell">${esc(it.no_label || '')}</td>
+    <td class="item-cell">
+      <div class="en">${esc(it.item_en)}${pending ? '<span class="badge-pending">CHƯA CÓ GIÁ</span>' : ''}</div>
+      ${it.item_vn ? `<div class="vn">${esc(it.item_vn)}</div>` : ''}
+    </td>
+    <td class="desc-cell">
+      ${it.desc_en ? esc(it.desc_en) : ''}
+      ${it.desc_vn ? `<div class="vn">${esc(it.desc_vn)}</div>` : ''}
+    </td>
+    <td class="unit-cell">${esc(it.unit_en || '')}${it.unit_vn ? ' / ' + esc(it.unit_vn) : ''}</td>
+    ${priceCell(it.basic)}${priceCell(it.standard)}${priceCell(it.premium)}
+    <td class="notes-cell">${esc(it.notes_en || '')}${it.notes_vn ? `<div class="vn" style="font-style:italic">${esc(it.notes_vn)}</div>` : ''}</td>
+    <td class="actions-cell">
+      <span class="act" title="Sửa" onclick="event.stopPropagation();openEdit(${it.id})">✎</span>
+      <span class="act del" title="Xoá" onclick="event.stopPropagation();delItem(${it.id})"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-trash"/></svg></span>
+    </td>
+  </tr>`;
+}
+
+function trashTableHtml(rows){
+  return `
+    <div class="tbl-wrap">
+      <table class="rc">
+        <thead><tr><th>Nhóm</th><th>Hạng mục</th><th style="text-align:right">Basic</th><th style="text-align:right">Standard</th><th style="text-align:right">Premium</th><th></th></tr></thead>
+        <tbody>
+        ${rows.map(it => `
+          <tr>
+            <td>${esc(sheetLabel(it.sheet_key))}</td>
+            <td class="item-cell"><div class="en">${esc(it.item_en)}</div>${it.item_vn?`<div class="vn">${esc(it.item_vn)}</div>`:''}</td>
+            ${priceCell(it.basic)}${priceCell(it.standard)}${priceCell(it.premium)}
+            <td class="actions-cell"><span class="act" title="Khôi phục" onclick="restoreItem(${it.id})">↩</span></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+function sheetLabel(key){ const s = SHEETS.find(x => x.key===key); return s ? ICO(s.ico) + ' ' + esc(s.vn) : esc(key); }
+
+/* ── Tìm kiếm ───────────────────────────────── */
+document.getElementById('q').addEventListener('input', e => {
+  clearTimeout(qTimer);
+  qTimer = setTimeout(() => { curQ = e.target.value.trim(); load(); }, 350);
+});
+
+/* ── Modal thêm/sửa ─────────────────────────── */
+function catsForSheet(sheetKey){
+  // Lấy danh mục hiện có từ dữ liệu đã tải cho sheet hiện tại; nếu khác sheet đang xem, dùng cache rỗng.
+  const map = {};
+  if (!inTrash && sheetKey === curSheet){
+    items.forEach(it => {
+      if (it.cat_code && !map[it.cat_code]) map[it.cat_code] = { code: it.cat_code, en: it.cat_en, vn: it.cat_vn };
+    });
+  }
+  return Object.values(map).sort((a,b) => a.code.localeCompare(b.code));
+}
+
+function fillCatSelect(sheetKey, selectedCode){
+  const sel = document.getElementById('itCatSelect');
+  const cats = catsForSheet(sheetKey);
+  sel.innerHTML = cats.map(c => `<option value="${esc(c.code)}">${esc(c.code)} — ${esc(c.en)}</option>`).join('')
+    + `<option value="__new__">➕ Danh mục mới…</option>`;
+  if (selectedCode && cats.some(c => c.code === selectedCode)) sel.value = selectedCode;
+  else if (selectedCode) sel.value = '__new__';
+  onCatSelectChange();
+}
+function onSheetChangeInModal(){
+  fillCatSelect(document.getElementById('itSheet').value, null);
+  applyVfrMode();
+}
+
+/* ── VFR: tải file ZIP sản xuất ──────────────── */
+let zipTarget = 0, maxUploadMb = 0;
+
+async function loadLimits(){
+  try { const d = await api('?action=limits'); maxUploadMb = d.max_mb || 0; } catch(e){}
+}
+
+function pickZip(id){
+  zipTarget = id;
+  const inp = document.getElementById('zipInput');
+  inp.value = '';
+  inp.click();
+}
+
+document.getElementById('zipInput').addEventListener('change', async e => {
+  const f = e.target.files && e.target.files[0];
+  const id = zipTarget;
+  e.target.value = '';
+  if (!f || !id) return;
+  if (!/\.zip$/i.test(f.name)){ toast('Chỉ nhận file .zip', 'err'); return; }
+  if (maxUploadMb && f.size > maxUploadMb * 1048576){
+    toast(`File ${fmtSize(f.size)} — máy chủ chỉ nhận tối đa ${maxUploadMb}MB`, 'err'); return;
+  }
+  await uploadZip(id, f);
+});
+
+async function uploadZip(id, file){
+  bar(30);
+  toast('Đang tải ' + file.name + ' …', 'ok');
+  try {
+    const fd = new FormData();
+    fd.append('id', String(id));
+    fd.append('file', file, file.name);
+    const r = await fetch(API + '?action=upload-zip', { method:'POST', body: fd, credentials:'same-origin' });
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || 'Tải file thất bại');
+    const it = items.find(x => x.id == id);
+    if (it){ it.zip_file = j.data.zip_file; it.zip_name = j.data.zip_name; it.zip_size = j.data.zip_size; }
+    if (editing && editing.id == id){ editing.zip_file = j.data.zip_file; editing.zip_name = j.data.zip_name; editing.zip_size = j.data.zip_size; renderZipBox(); }
+    render();
+    toast('' + j.data.message, 'ok');
+  } catch(err){ toast('Lỗi: ' + err.message, 'err'); }
+  bar(100);
+}
+
+async function removeZip(id){
+  if (!(await ask('Gỡ file sản xuất của sản phẩm này?'))) return;
+  try {
+    await api('?action=delete-zip', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id }) });
+    const it = items.find(x => x.id == id);
+    if (it){ it.zip_file = null; it.zip_name = null; it.zip_size = 0; }
+    if (editing && editing.id == id){ editing.zip_file = null; editing.zip_name = null; editing.zip_size = 0; renderZipBox(); }
+    render();
+    toast('Đã gỡ file', 'ok');
+  } catch(e){ toast('Lỗi: ' + e.message, 'err'); }
+}
+
+/* ── VFR: chế độ form ────────────────────────── */
+function isVfrForm(){ return document.getElementById('itSheet').value === VFR; }
+
+function applyVfrMode(){
+  const v = isVfrForm();
+  document.getElementById('catFg').style.display       = v ? 'none' : 'block';
+  if (v){
+    document.getElementById('newCatRow').style.display = 'none';
+    document.getElementById('newCatVnRow').style.display = 'none';
+  } else { onCatSelectChange(); }
+  document.getElementById('stdPriceDiv').style.display = v ? 'none' : 'flex';
+  document.getElementById('stdPriceRow').style.display = v ? 'none' : 'grid';
+  document.getElementById('vfrPriceDiv').style.display = v ? 'flex' : 'none';
+  document.getElementById('vfrPriceRow').style.display = v ? 'grid' : 'none';
+  document.getElementById('vfrZipRow').style.display   = v ? 'block' : 'none';
+  document.getElementById('itemDivLabel').textContent  = v ? 'Sản phẩm' : 'Hạng mục';
+  document.getElementById('lbItemEn').textContent      = v ? 'Tên sản phẩm (EN) *' : 'Tên hạng mục (EN) *';
+  document.getElementById('lbItemVn').textContent      = v ? 'Tên sản phẩm (VN)' : 'Tên hạng mục (VN)';
+  document.getElementById('itItemEn').placeholder      = v ? 'VD: Acrylic award trophy' : 'VD: LED screen P3';
+  document.getElementById('itItemVn').placeholder      = v ? 'VD: Kỷ niệm chương mica' : 'VD: Màn hình LED P3';
+  document.getElementById('itTitle').textContent =
+    (editing ? 'Sửa ' : 'Thêm ') + (v ? 'sản phẩm VFR' : 'hạng mục');
+  document.getElementById('itSaveBtn').textContent = v ? '✓ Lưu sản phẩm' : '✓ Lưu hạng mục';
+  document.getElementById('itDelBtn').innerHTML   = v ? '<svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-trash"/></svg> Xoá sản phẩm' : '<svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-trash"/></svg> Xoá hạng mục';
+  if (v){ updProfitHint(); renderZipBox(); }
+}
+
+function updProfitHint(){
+  const sell = parseFloat(document.getElementById('itSell').value || 0);
+  const cost = parseFloat(document.getElementById('itCost').value || 0);
+  const box  = document.getElementById('itProfit');
+  if (!sell && !cost){ box.value = '—'; box.style.color = 'var(--text3)'; return; }
+  const d = sell - cost;
+  const pct = sell > 0 ? Math.round(d / sell * 1000) / 10 : null;
+  box.value = (d > 0 ? '+' : '') + fmtVnd(d) + ' đ' + (pct === null ? '' : `  (${d>0?'+':''}${pct}% biên)`);
+  box.style.color = d > 0 ? '#7ee787' : (d < 0 ? '#ff6b6b' : 'var(--text2)');
+}
+
+function renderZipBox(){
+  const box = document.getElementById('vfrZipBox');
+  if (!box) return;
+  const capNote = maxUploadMb ? ` · tối đa ${maxUploadMb}MB` : '';
+  if (!editing){
+    box.innerHTML = `<div class="zipbox"><span class="hint">Lưu sản phẩm trước, sau đó tải file .zip lên${capNote}.</span></div>`;
+    return;
+  }
+  if (editing.zip_name){
+    box.innerHTML = `<div class="zipbox">
+      <span class="zipchip" title="${esc(editing.zip_name)}">
+        <a href="${API}?action=zip&id=${editing.id}"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-box"/></svg> ${esc(editing.zip_name)}</a>
+        <span class="sz">${fmtSize(editing.zip_size)}</span>
+      </span>
+      <button class="zipbtn" onclick="pickZip(${editing.id})"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-refresh"/></svg> Thay file khác</button>
+      <button class="zipbtn" onclick="removeZip(${editing.id})">✕ Gỡ file</button>
+    </div>`;
+  } else {
+    box.innerHTML = `<div class="zipbox">
+      <button class="zipbtn" onclick="pickZip(${editing.id})"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-upload"/></svg> Tải file ZIP lên</button>
+      <span class="hint">File .zip chứa toàn bộ file sản xuất của sản phẩm${capNote}.</span>
+    </div>`;
+  }
+}
+function onCatSelectChange(){
+  const isNew = document.getElementById('itCatSelect').value === '__new__';
+  document.getElementById('newCatRow').style.display = isNew ? 'grid' : 'none';
+  document.getElementById('newCatVnRow').style.display = isNew ? 'block' : 'none';
+}
+
+function openAdd(){
+  editing = null;
+  document.getElementById('itDelBtn').style.display = 'none';
+  ['itCatCode','itCatEn','itCatVn','itItemEn','itItemVn','itDescEn','itDescVn','itUnitEn','itUnitVn','itNotesEn','itNotesVn'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('itBasic').value = '';
+  document.getElementById('itStandard').value = '';
+  document.getElementById('itPremium').value = '';
+  document.getElementById('itSell').value = '';
+  document.getElementById('itCost').value = '';
+  document.getElementById('itSheet').value = inTrash ? 'event' : curSheet;
+  fillCatSelect(document.getElementById('itSheet').value, null);
+  applyVfrMode();
+  document.getElementById('itOv').classList.add('open');
+  setTimeout(() => document.getElementById('itItemEn').focus(), 60);
+}
+
+function openEdit(id){
+  const it = items.find(x => x.id == id); if (!it) return;
+  editing = it;
+  document.getElementById('itDelBtn').style.display = 'block';
+  document.getElementById('itSheet').value = it.sheet_key;
+  fillCatSelect(it.sheet_key, it.cat_code);
+  document.getElementById('itCatCode').value = it.cat_code || '';
+  document.getElementById('itCatEn').value = it.cat_en || '';
+  document.getElementById('itCatVn').value = it.cat_vn || '';
+  document.getElementById('itItemEn').value = it.item_en || '';
+  document.getElementById('itItemVn').value = it.item_vn || '';
+  document.getElementById('itDescEn').value = it.desc_en || '';
+  document.getElementById('itDescVn').value = it.desc_vn || '';
+  document.getElementById('itUnitEn').value = it.unit_en || '';
+  document.getElementById('itUnitVn').value = it.unit_vn || '';
+  const nz = v => { const n = parseFloat(v || 0); return n ? String(n) : ''; };
+  document.getElementById('itBasic').value = nz(it.basic);
+  document.getElementById('itStandard').value = nz(it.standard);
+  document.getElementById('itPremium').value = nz(it.premium);
+  document.getElementById('itSell').value = nz(it.basic);
+  document.getElementById('itCost').value = nz(it.cost_price);
+  document.getElementById('itNotesEn').value = it.notes_en || '';
+  document.getElementById('itNotesVn').value = it.notes_vn || '';
+  applyVfrMode();
+  document.getElementById('itOv').classList.add('open');
+}
+function closeIt(){ document.getElementById('itOv').classList.remove('open'); editing = null; }
+
+async function submitIt(){
+  const itemEn = document.getElementById('itItemEn').value.trim();
+  if (!itemEn){ toast('Tên hạng mục (EN) là bắt buộc.', 'err'); return; }
+
+  const vfrMode = isVfrForm();
+  const catSel = vfrMode ? '' : document.getElementById('itCatSelect').value;
+  let catCode = '', catEn = '', catVn = '';
+  if (vfrMode){
+    catCode = ''; catEn = ''; catVn = '';
+  } else if (catSel === '__new__'){
+    catCode = document.getElementById('itCatCode').value.trim().toUpperCase();
+    catEn   = document.getElementById('itCatEn').value.trim();
+    catVn   = document.getElementById('itCatVn').value.trim();
+    if (!catCode || !catEn){ toast('Danh mục mới cần Mã + Tên (EN).', 'err'); return; }
+  } else {
+    const existing = catsForSheet(document.getElementById('itSheet').value).find(c => c.code === catSel);
+    catCode = catSel; catEn = existing ? existing.en : ''; catVn = existing ? existing.vn : '';
+  }
+
+  const name = await askName(false);
+  const payload = {
+    sheet_key: document.getElementById('itSheet').value,
+    cat_code: catCode, cat_en: catEn, cat_vn: catVn,
+    item_en: itemEn, item_vn: document.getElementById('itItemVn').value.trim(),
+    desc_en: document.getElementById('itDescEn').value.trim(), desc_vn: document.getElementById('itDescVn').value.trim(),
+    unit_en: document.getElementById('itUnitEn').value.trim(), unit_vn: document.getElementById('itUnitVn').value.trim(),
+    basic: (vfrMode ? document.getElementById('itSell').value : document.getElementById('itBasic').value) || 0,
+    standard: vfrMode ? 0 : (document.getElementById('itStandard').value || 0),
+    premium:  vfrMode ? 0 : (document.getElementById('itPremium').value || 0),
+    cost_price: vfrMode ? (document.getElementById('itCost').value || 0) : 0,
+    notes_en: document.getElementById('itNotesEn').value.trim(), notes_vn: document.getElementById('itNotesVn').value.trim(),
+    updated_by: name,
+  };
+
+  const btn = document.getElementById('itSaveBtn');
+  btn.disabled = true; btn.textContent = 'Đang lưu…';
+  try {
+    if (editing){
+      payload.id = editing.id;
+      await api('?action=update', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    } else {
+      await api('?action=create', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    }
+    toast('Đã lưu ✓', 'ok');
+    closeIt();
+    curSheet = payload.sheet_key; inTrash = false;
+    load();
+  } catch(e){ toast('Lỗi: ' + e.message, 'err'); }
+  btn.disabled = false; btn.textContent = vfrMode ? '✓ Lưu sản phẩm' : '✓ Lưu hạng mục';
+}
+
+async function delFromModal(){ if (editing) { await delItem(editing.id); closeIt(); } }
+
+async function delItem(id){
+  if (!(await ask('Xoá hạng mục này khỏi rate card? Bạn có thể khôi phục lại sau trong Thùng rác.'))) return;
+  try {
+    await api('?action=delete', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id}) });
+    toast('Đã chuyển vào thùng rác', 'ok');
+    load();
+  } catch(e){ toast('Lỗi: ' + e.message, 'err'); }
+}
+async function restoreItem(id){
+  try {
+    await api('?action=restore', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id}) });
+    toast('Đã khôi phục ✓', 'ok');
+    load();
+  } catch(e){ toast('Lỗi: ' + e.message, 'err'); }
+}
+
+/* ── Calculator ─────────────────────────────── */
+function toggleCalc(){ document.getElementById('calcPanel').classList.toggle('open'); }
+function runCalc(){
+  const net = parseFloat((document.getElementById('calcNet').value || '0').replace(/[^\d.]/g, '')) || 0;
+  const ma  = parseFloat(document.getElementById('calcMa').value || '0') / 100;
+  const vat = parseFloat(document.getElementById('calcVat').value || '0') / 100;
+  const afterMa = net * (1 + ma);
+  const total = afterMa * (1 + vat);
+  document.getElementById('calcResult').innerHTML = net > 0
+    ? `NET: <b>${fmtVnd(net)} đ</b> → +MA: ${fmtVnd(afterMa)} đ → +VAT: <b>${fmtVnd(total)} đ</b>`
+    : 'Nhập tổng NET để tính tổng thanh toán.';
+}
+
+/* ── Phím tắt ───────────────────────────────── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape'){
+    if (document.getElementById('cfOv').classList.contains('open')) return cfDone(false);
+    if (document.getElementById('nmOv').classList.contains('open')) return nameDone(false);
+    if (document.getElementById('itOv').classList.contains('open')) return closeIt();
+  }
+  if (e.key === 'n' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName) && !document.querySelector('.ov.open')){
+    e.preventDefault(); openAdd();
+  }
+  if (e.key === '/' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){
+    e.preventDefault(); document.getElementById('q').focus();
+  }
+});
+
+/* ── Khởi động ──────────────────────────────── */
+paintName();
+renderTabs();
+syncAddBtn();
+load();
+loadLimits();
+/* Mở thẳng tab VFR bằng ?sheet=vfr */
+(function(){
+  const k = new URLSearchParams(location.search).get('sheet');
+  if (k && SHEETS.some(x => x.key === k) && k !== curSheet) setSheet(k);
+})();
+</script>
+</body>
+</html>

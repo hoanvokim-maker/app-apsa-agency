@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script>
+  document.documentElement.style.visibility = 'hidden';
+  fetch('./api/auth-api.php?action=me', { credentials: 'same-origin' })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(res => {
+      if (!res.ok) throw new Error();
+      window.__APSA_USER = res.data;
+      document.documentElement.style.visibility = 'visible';
+    })
+    .catch(() => {
+      location.replace('./login.html?next=' + encodeURIComponent(location.pathname + location.search));
+    });
+</script>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=1">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=1">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#dff20d">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quản lý User — APSA</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #000000; --bg2: #0b0b0b; --bg3: #141414;
+      --border: rgba(255,255,255,0.08); --border-hover: rgba(255,255,255,0.18);
+      --text: #ffffff; --text2: #9a9a9a; --text3: #5e5e5e;
+      --accent: #dff20d; --accent2: #c9dd00; --accent-glow: rgba(223,242,13,0.35);
+      --green: #dff20d; --red: #ff4d4d; --yellow: #dff20d; --radius: 14px;
+    }
+    body { font-family: 'Oxanium', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px; height: 56px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .back { color: var(--text2); text-decoration: none; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+    .back:hover { color: var(--text); }
+    .title { font-size: 15px; font-weight: 700; flex-shrink: 0; }
+    .badge { background: var(--bg3); color: var(--text2); font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 20px; }
+    .spacer { flex: 1; }
+    .btn-add {
+      background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white;
+      padding: 7px 16px; border-radius: 20px; font-weight: 600; font-size: 13px;
+      border: none; cursor: pointer; font-family: inherit; box-shadow: 0 0 12px var(--accent-glow);
+    }
+    .btn-add:hover { transform: translateY(-1px); }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 24px 24px 48px; }
+
+    .info-banner {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px 16px; font-size: 13px; color: var(--text2); margin-bottom: 20px;
+    }
+
+    table { width: 100%; border-collapse: collapse; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    thead th {
+      text-align: left; font-size: 11px; font-weight: 700; color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.04em; padding: 12px 16px;
+      border-bottom: 1px solid var(--border); background: var(--bg3);
+    }
+    tbody td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    .uname { font-weight: 600; }
+    .dname { color: var(--text2); font-size: 12px; }
+    .role-pill { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+    .role-admin { background: rgba(223,242,13,0.15); color: #c9dd00; }
+    .role-member { background: rgba(255,255,255,0.15); color: #ffffff; }
+    .status-pill { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+    .role-pill { white-space: nowrap; }
+    .status-active { background: rgba(223,242,13,0.15); color: var(--green); }
+    .status-inactive { background: rgba(255,77,77,0.15); color: var(--red); }
+    /* Vị trí công việc + loại nhân sự */
+    .pos-pill { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+      background: rgba(255,255,255,.08); color: var(--text2); white-space: nowrap; }
+    .pos-account  { background: rgba(127,215,255,.16); color: #7fd7ff; }
+    .pos-admin    { background: rgba(223,242,13,.15);  color: #c9dd00; }
+    .pos-designer { background: rgba(255,138,220,.16); color: #ff8adc; }
+    .pos-editor   { background: rgba(160,140,255,.18); color: #b7a6ff; }
+    .pos-none     { background: rgba(255,255,255,.06); color: var(--text3); font-weight: 600; }
+    .type-pill { font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+    .type-inhouse    { background: rgba(255,255,255,.1);  color: var(--text2); }
+    .type-freelancer { background: rgba(255,176,32,.16);  color: #ffc357; }
+    .nologin { font-size: 10.5px; color: var(--text3); }
+    .contact { color: var(--text3); font-size: 11.5px; margin-top: 3px; }
+    /* Thanh lọc */
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; }
+    .fpill { font-size: 12.5px; font-weight: 600; padding: 7px 14px; border-radius: 20px; cursor: pointer;
+      border: 1px solid var(--border); background: var(--bg2); color: var(--text2); font-family: inherit; }
+    .fpill:hover { border-color: var(--border-hover); color: var(--text); }
+    .fpill.on { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 700; }
+    .fpill .n { font-size: 10.5px; opacity: .75; margin-left: 5px; }
+    .fsep { width: 1px; height: 22px; background: var(--border); margin: 0 4px; }
+    .row2col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+    .actions { display: flex; gap: 6px; justify-content: flex-end; }
+    .icon-btn {
+      background: transparent; border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text2); width: 30px; height: 30px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+    }
+    .icon-btn:hover { border-color: var(--border-hover); color: var(--text); }
+    .icon-btn.danger:hover { border-color: var(--red); color: var(--red); }
+    .icon-btn.key:hover { border-color: var(--accent); color: var(--accent); }
+    .apsa-toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(90px);
+      background: #141414; border: 1px solid rgba(255,255,255,.12); border-radius: 12px;
+      padding: 11px 20px; font-size: 13px; color: #fff; z-index: 950; max-width: 90vw; text-align: center;
+      transition: transform .3s cubic-bezier(.4,0,.2,1); box-shadow: 0 12px 40px rgba(0,0,0,.5);
+    }
+    .apsa-toast.show { transform: translateX(-50%) translateY(0); }
+    .apsa-toast.err { border-color: rgba(255,77,77,.5); color: #ff8f8f; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px); z-index: 200; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+      width: 100%; max-width: 420px; padding: 24px;
+    }
+    .modal h2 { font-size: 16px; margin-bottom: 18px; }
+    .modal label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin: 14px 0 6px; }
+    .modal label:first-of-type { margin-top: 0; }
+    .modal input, .modal select {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+      padding: 9px 12px; color: var(--text); font-size: 13px; font-family: inherit; outline: none;
+    }
+    .modal input:focus, .modal select:focus { border-color: rgba(223,242,13,0.5); }
+    .modal-actions { display: flex; gap: 8px; margin-top: 22px; }
+    .modal-actions .btn-add { flex: 1; text-align: center; }
+    .btn-cancel {
+      flex: 1; background: var(--bg3); color: var(--text2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 9px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+    }
+    .btn-cancel:hover { color: var(--text); }
+    .hint { font-size: 11px; color: var(--text3); margin-top: 4px; }
+    .modal-error {
+      display: none; margin-top: 14px; background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.3);
+      color: var(--red); font-size: 12px; padding: 8px 10px; border-radius: 8px;
+    }
+
+    .denied { max-width: 480px; margin: 80px auto; text-align: center; color: var(--text2); font-size: 14px; }
+  </style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/theme.css?v=11" />
+<script src="/apsa-ui.js?v=4"></script>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" id="apsa-ui-sprite" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><symbol id="i-tent" viewBox="0 0 48 48"><path d="M24 4 44 39H4L24 4Z" fill="#ffffff"/><path d="M24 4 31 39H17L24 4Z" fill="#dff20d"/><path d="M24 21c3.1 0 5.2 3.6 5.2 9v9H18.8v-9c0-5.4 2.1-9 5.2-9Z" fill="#0d0d0d"/><rect x="2" y="39" width="44" height="5" rx="2.5" fill="#5e5e5e"/></symbol><symbol id="i-video" viewBox="0 0 48 48"><rect x="2" y="13" width="29" height="23" rx="4" fill="#ffffff"/><path d="M33 22.5 45 14v21l-12-8.5v-4Z" fill="#5e5e5e"/><circle cx="16.5" cy="24.5" r="6.5" fill="#dff20d"/><circle cx="16.5" cy="24.5" r="2.6" fill="#0d0d0d"/></symbol><symbol id="i-printer" viewBox="0 0 48 48"><rect x="12" y="3" width="24" height="12" fill="#5e5e5e"/><rect x="2" y="15" width="44" height="19" rx="4" fill="#ffffff"/><circle cx="39" cy="21.5" r="2.8" fill="#0d0d0d"/><rect x="12" y="29" width="24" height="16" rx="2" fill="#dff20d"/><rect x="16" y="34" width="16" height="3" fill="#0d0d0d"/><rect x="16" y="39" width="11" height="3" fill="#0d0d0d"/></symbol><symbol id="i-box" viewBox="0 0 48 48"><path d="M24 3 44 12.5 24 22 4 12.5 24 3Z" fill="#ffffff"/><path d="M4 12.5 24 22v23L4 35.5v-23Z" fill="#5e5e5e"/><path d="M44 12.5 24 22v23l20-9.5v-23Z" fill="#dff20d"/></symbol><symbol id="i-trash" viewBox="0 0 48 48"><rect x="18" y="3" width="12" height="7" rx="2.5" fill="#dff20d"/><rect x="6" y="11" width="36" height="6.5" rx="3.25" fill="#5e5e5e"/><path d="M10 19h28l-2.4 23.5a3.2 3.2 0 0 1-3.2 2.9H15.6a3.2 3.2 0 0 1-3.2-2.9L10 19Z" fill="#ffffff"/><rect x="17.5" y="24" width="4" height="15" rx="2" fill="#0d0d0d"/><rect x="26.5" y="24" width="4" height="15" rx="2" fill="#0d0d0d"/></symbol><symbol id="i-clock" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="#dff20d"/><circle cx="24" cy="24" r="15.5" fill="#ffffff"/><path d="M24 13.5V25h8.5" fill="none" stroke="#0d0d0d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-download" viewBox="0 0 48 48"><path d="M19.5 3h9v18H39L24 39 9 21h10.5V3Z" fill="#dff20d"/><rect x="6" y="39" width="36" height="6" rx="3" fill="#ffffff"/></symbol><symbol id="i-upload" viewBox="0 0 48 48"><path d="M24 3 39 21H28.5v18h-9V21H9L24 3Z" fill="#dff20d"/><rect x="6" y="39" width="36" height="6" rx="3" fill="#ffffff"/></symbol><symbol id="i-warning" viewBox="0 0 48 48"><path d="M20.5 6.5a4 4 0 0 1 7 0l17.5 31A4 4 0 0 1 41.5 44h-35a4 4 0 0 1-3.5-6l17.5-31.5Z" fill="#dff20d"/><rect x="21.3" y="16" width="5.4" height="15" rx="2.7" fill="#0d0d0d"/><circle cx="24" cy="36.5" r="3.1" fill="#0d0d0d"/></symbol><symbol id="i-check" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20.5" fill="#dff20d"/><path d="M13.5 24.5 21 32l14-14.5" fill="none" stroke="#0d0d0d" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-link" viewBox="0 0 48 48"><path d="M28 13.5 32.5 9a10.5 10.5 0 0 1 15 15L43 28.5a10.5 10.5 0 0 1-15 0" fill="none" stroke="#dff20d" stroke-width="5.5" stroke-linecap="round"/><path d="M20 34.5 15.5 39a10.5 10.5 0 0 1-15-15L5 19.5a10.5 10.5 0 0 1 15 0" fill="none" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/><path d="M17 31 31 17" stroke="#5e5e5e" stroke-width="5.5" stroke-linecap="round"/></symbol><symbol id="i-mail" viewBox="0 0 48 48"><rect x="2" y="9" width="44" height="30" rx="4" fill="#ffffff"/><path d="M2 13a4 4 0 0 1 4-4h36a4 4 0 0 1 4 4L24 28.5 2 13Z" fill="#dff20d"/><path d="M2 17.5 24 33l22-15.5v4L24 37 2 21.5v-4Z" fill="#5e5e5e"/></symbol><symbol id="i-refresh" viewBox="0 0 48 48"><path d="M40 24a16 16 0 1 1-5.6-12.2" fill="none" stroke="#dff20d" stroke-width="6" stroke-linecap="round"/><path d="M36 2.5 39.5 15 27 12.5 36 2.5Z" fill="#ffffff"/></symbol><symbol id="i-file" viewBox="0 0 48 48"><path d="M10 3h19l9 9v33H10V3Z" fill="#ffffff"/><path d="M29 3l9 9h-9V3Z" fill="#5e5e5e"/><rect x="10" y="27" width="28" height="12" fill="#dff20d"/><rect x="14" y="31" width="5" height="4.5" fill="#0d0d0d"/><rect x="21.5" y="31" width="5" height="4.5" fill="#0d0d0d"/><rect x="29" y="31" width="5" height="4.5" fill="#0d0d0d"/></symbol><symbol id="i-eye" viewBox="0 0 48 48"><path d="M24 10c11.5 0 20 8.5 22.5 14C44 29.5 35.5 38 24 38S4 29.5 1.5 24C4 18.5 12.5 10 24 10Z" fill="#ffffff"/><circle cx="24" cy="24" r="9" fill="#dff20d"/><circle cx="24" cy="24" r="4.2" fill="#0d0d0d"/></symbol><symbol id="i-heart" viewBox="0 0 48 48"><path d="M24 43.5C8.5 32 2.5 26 2.5 17.6A10.8 10.8 0 0 1 24 11.8a10.8 10.8 0 0 1 21.5 5.8C45.5 26 39.5 32 24 43.5Z" fill="#dff20d"/></symbol><symbol id="i-pin" viewBox="0 0 48 48"><circle cx="24" cy="14" r="11.5" fill="#dff20d"/><rect x="18" y="22" width="12" height="7.5" rx="1.5" fill="#5e5e5e"/><path d="M24 45.5 20.4 29.5h7.2L24 45.5Z" fill="#ffffff"/></symbol><symbol id="i-camera" viewBox="0 0 48 48"><path d="M17.5 7h13l3.2 5.5H42a3.5 3.5 0 0 1 3.5 3.5v22a3.5 3.5 0 0 1-3.5 3.5H6A3.5 3.5 0 0 1 2.5 38V16A3.5 3.5 0 0 1 6 12.5h8.3L17.5 7Z" fill="#ffffff"/><circle cx="24" cy="27" r="10" fill="#dff20d"/><circle cx="24" cy="27" r="4.6" fill="#0d0d0d"/></symbol><symbol id="i-folder" viewBox="0 0 48 48"><path d="M3 8h14.5l5 6H42a3 3 0 0 1 3 3v6H3V8Z" fill="#5e5e5e"/><path d="M3 17h42a3 3 0 0 1 3 3l-3.2 17.5a3 3 0 0 1-3 2.5H3V17Z" fill="#ffffff"/><rect x="3" y="17" width="42" height="6" fill="#dff20d"/></symbol><symbol id="i-phone" viewBox="0 0 48 48"><rect x="12" y="2" width="24" height="44" rx="5" fill="#ffffff"/><rect x="16" y="9" width="16" height="26" rx="2" fill="#dff20d"/><circle cx="24" cy="40.5" r="2.8" fill="#5e5e5e"/></symbol><symbol id="i-target" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="#ffffff"/><circle cx="24" cy="24" r="13.5" fill="#5e5e5e"/><circle cx="24" cy="24" r="6" fill="#dff20d"/></symbol><symbol id="i-calendar" viewBox="0 0 48 48"><rect x="3" y="7" width="42" height="38" rx="4" fill="#ffffff"/><path d="M3 11a4 4 0 0 1 4-4h34a4 4 0 0 1 4 4v7H3v-7Z" fill="#dff20d"/><rect x="12" y="2" width="5.5" height="10" rx="2.75" fill="#5e5e5e"/><rect x="30.5" y="2" width="5.5" height="10" rx="2.75" fill="#5e5e5e"/><rect x="10" y="24" width="7" height="6" fill="#0d0d0d"/><rect x="20.5" y="24" width="7" height="6" fill="#0d0d0d"/><rect x="31" y="24" width="7" height="6" fill="#5e5e5e"/><rect x="10" y="34" width="7" height="6" fill="#5e5e5e"/><rect x="20.5" y="34" width="7" height="6" fill="#5e5e5e"/></symbol><symbol id="i-search" viewBox="0 0 48 48"><rect x="27" y="30" width="18" height="8.5" rx="4.25" transform="rotate(45 27 30)" fill="#5e5e5e"/><circle cx="20" cy="20" r="16.5" fill="#dff20d"/><circle cx="20" cy="20" r="10" fill="#ffffff"/></symbol><symbol id="i-bolt" viewBox="0 0 48 48"><path d="M28 2 9 27h11.5L18 46 39 20H26.5L28 2Z" fill="#dff20d"/></symbol><symbol id="i-clip" viewBox="0 0 48 48"><path d="M34 14.5v18.8a11 11 0 0 1-22 0V12a6.8 6.8 0 0 1 13.6 0v20.6a2.9 2.9 0 0 1-5.8 0V15" fill="none" stroke="#dff20d" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-copy" viewBox="0 0 48 48"><rect x="7" y="4" width="24" height="32" rx="3" fill="#5e5e5e"/><rect x="17" y="12" width="24" height="32" rx="3" fill="#ffffff"/><rect x="22" y="20" width="14" height="3.6" fill="#5e5e5e"/><rect x="22" y="28" width="10" height="3.6" fill="#dff20d"/></symbol><symbol id="i-money" viewBox="0 0 48 48"><rect x="2" y="10" width="44" height="28" rx="4" fill="#ffffff"/><circle cx="24" cy="24" r="8.5" fill="#dff20d"/><rect x="22.2" y="16" width="3.6" height="16" rx="1.8" fill="#0d0d0d"/><rect x="6" y="14" width="5" height="5" fill="#5e5e5e"/><rect x="37" y="29" width="5" height="5" fill="#5e5e5e"/></symbol><symbol id="i-block" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20.5" fill="#ffffff"/><circle cx="24" cy="24" r="14.5" fill="#0d0d0d"/><path d="M13.5 13.5 34.5 34.5" stroke="#dff20d" stroke-width="6" stroke-linecap="round"/></symbol><symbol id="i-qr" viewBox="0 0 48 48"><rect x="5" y="5" width="16" height="16" rx="2" fill="#dff20d"/><rect x="10" y="10" width="6" height="6" fill="#0d0d0d"/><rect x="27" y="5" width="16" height="16" rx="2" fill="#ffffff"/><rect x="32" y="10" width="6" height="6" fill="#0d0d0d"/><rect x="5" y="27" width="16" height="16" rx="2" fill="#ffffff"/><rect x="10" y="32" width="6" height="6" fill="#0d0d0d"/><rect x="27" y="27" width="7" height="7" fill="#dff20d"/><rect x="36" y="27" width="7" height="7" fill="#5e5e5e"/><rect x="27" y="36" width="7" height="7" fill="#5e5e5e"/><rect x="36" y="36" width="7" height="7" fill="#dff20d"/></symbol><symbol id="i-tag" viewBox="0 0 48 48"><path d="M18 9h18a3 3 0 0 1 3 3v18L22 47 3 28 18 9Z" fill="#5e5e5e" opacity=".55"/><path d="M23 4h18a3 3 0 0 1 3 3v18L26 43 6 23 23 4Z" fill="#dff20d"/><circle cx="35" cy="13" r="4.5" fill="#0d0d0d"/></symbol><symbol id="i-book" viewBox="0 0 48 48"><rect x="5" y="8" width="17" height="32" rx="2" fill="#ffffff"/><rect x="26" y="8" width="17" height="32" rx="2" fill="#dff20d"/><rect x="22" y="6" width="4" height="36" fill="#5e5e5e"/><rect x="9" y="16" width="9" height="3" fill="#0d0d0d"/><rect x="9" y="23" width="9" height="3" fill="#0d0d0d"/><rect x="30" y="16" width="9" height="3" fill="#0d0d0d"/></symbol><symbol id="i-key" viewBox="0 0 48 48"><circle cx="24" cy="13" r="9.5" fill="#dff20d"/><circle cx="24" cy="13" r="3.6" fill="#0d0d0d"/><rect x="20.8" y="21" width="6.4" height="23" rx="1" fill="#ffffff"/><rect x="27.2" y="27" width="9" height="5" fill="#ffffff"/><rect x="27.2" y="36" width="6.5" height="5" fill="#ffffff"/></symbol><symbol id="i-image" viewBox="0 0 48 48"><rect x="4" y="9" width="40" height="30" rx="3" fill="#ffffff"/><circle cx="15" cy="19" r="4.5" fill="#dff20d"/><path d="M4 34l11-11 9 9 7-6 13 12v1H4z" fill="#5e5e5e"/><rect x="4" y="35" width="40" height="4" fill="#5e5e5e"/></symbol><symbol id="i-spark" viewBox="0 0 48 48"><path d="M20 3c1.7 10 4.5 12.8 14.5 14.5C24.5 19.2 21.7 22 20 32 18.3 22 15.5 19.2 5.5 17.5 15.5 15.8 18.3 13 20 3Z" fill="#dff20d"/><path d="M36 26c.9 5.6 2.4 7.1 8 8-5.6.9-7.1 2.4-8 8-.9-5.6-2.4-7.1-8-8 5.6-.9 7.1-2.4 8-8Z" fill="#ffffff"/></symbol><symbol id="i-bulb" viewBox="0 0 48 48"><path d="M24 4c-8.3 0-15 6.7-15 15 0 5.7 3.2 10.6 7.9 13.2V37h14.2v-4.8C35.8 29.6 39 24.7 39 19c0-8.3-6.7-15-15-15Z" fill="#dff20d"/><rect x="17" y="38.5" width="14" height="4" rx="2" fill="#ffffff"/><rect x="19.5" y="43.5" width="9" height="3.5" rx="1.75" fill="#5e5e5e"/></symbol><symbol id="i-price" viewBox="0 0 48 48"><rect x="3" y="12" width="34" height="22" rx="3" fill="#ffffff"/><rect x="3" y="12" width="34" height="5" fill="#5e5e5e"/><rect x="7" y="22" width="13" height="3" fill="#5e5e5e"/><rect x="7" y="28" width="9" height="3" fill="#5e5e5e"/><circle cx="33" cy="31" r="12" fill="#dff20d"/><rect x="31.6" y="22" width="2.8" height="18" fill="#0d0d0d"/><rect x="27" y="26" width="12" height="3" rx="1.5" fill="#0d0d0d"/><rect x="27" y="33" width="12" height="3" rx="1.5" fill="#0d0d0d"/></symbol><symbol id="i-shield" viewBox="0 0 48 48"><path d="M24 3 42 9.5V23c0 10.4-7.3 18.4-18 22-10.7-3.6-18-11.6-18-22V9.5L24 3Z" fill="#dff20d"/><rect x="17" y="22" width="14" height="11" rx="2" fill="#0d0d0d"/><path d="M20 22v-3.5a4 4 0 0 1 8 0V22" fill="none" stroke="#0d0d0d" stroke-width="3.2"/></symbol><symbol id="i-shuttle" viewBox="0 0 48 48"><path d="M24 2 8 28h32L24 2Z" fill="#ffffff"/><path d="M24 3v25M15.5 16 18.5 28M32.5 16 29.5 28" stroke="#0d0d0d" stroke-width="2.2"/><rect x="8" y="26" width="32" height="3" fill="#5e5e5e"/><circle cx="24" cy="37" r="9" fill="#dff20d"/></symbol><symbol id="i-people" viewBox="0 0 48 48"><circle cx="34" cy="17" r="7" fill="#ffffff"/><path d="M23 43c0-6.6 4.9-12 11-12s11 5.4 11 12H23Z" fill="#ffffff"/><circle cx="18" cy="15" r="8.5" fill="#dff20d"/><path d="M3 43c0-8.3 6.7-15 15-15s15 6.7 15 15H3Z" fill="#dff20d"/></symbol><symbol id="i-card" viewBox="0 0 48 48"><rect x="3" y="10" width="42" height="28" rx="4" fill="#ffffff"/><rect x="3" y="16" width="42" height="6" fill="#0d0d0d"/><rect x="8" y="28" width="15" height="4" rx="2" fill="#5e5e5e"/><circle cx="35" cy="30" r="5.5" fill="#dff20d"/></symbol><symbol id="i-chart" viewBox="0 0 48 48"><rect x="4" y="27" width="10" height="17" fill="#ffffff"/><rect x="19" y="16" width="10" height="28" fill="#dff20d"/><rect x="34" y="6" width="10" height="38" fill="#5e5e5e"/></symbol><symbol id="i-signal" viewBox="0 0 48 48"><circle cx="24" cy="34" r="6" fill="#dff20d"/><path d="M13 26a15 15 0 0 1 22 0" fill="none" stroke="#ffffff" stroke-width="5"/><path d="M6 18a25 25 0 0 1 36 0" fill="none" stroke="#5e5e5e" stroke-width="5"/></symbol><symbol id="i-doc" viewBox="0 0 48 48"><path d="M9 4h20l10 10v30H9V4Z" fill="#ffffff"/><path d="M29 4l10 10H29V4Z" fill="#5e5e5e"/><rect x="15" y="22" width="18" height="3.4" fill="#0d0d0d"/><rect x="15" y="30" width="12" height="3.4" fill="#0d0d0d"/><rect x="15" y="38" width="18" height="3.4" fill="#dff20d"/></symbol><symbol id="i-grid" viewBox="0 0 48 48"><rect x="5" y="5" width="17" height="17" rx="2" fill="#dff20d"/><rect x="26" y="5" width="17" height="17" rx="2" fill="#ffffff"/><rect x="5" y="26" width="17" height="17" rx="2" fill="#5e5e5e"/><rect x="26" y="26" width="17" height="17" rx="2" fill="#dff20d"/></symbol><symbol id="i-palette" viewBox="0 0 48 48"><path d="M24 4C12.4 4 3 12.7 3 23.5S12.4 43 24 43c3 0 5-1.8 5-4.3 0-1.3-.6-2.3-1.4-3.2-.8-.9-1.3-1.8-1.3-3 0-2.4 2-4.3 4.5-4.3H36c5.5 0 9-3.6 9-9C45 11.4 35.6 4 24 4Z" fill="#ffffff"/><circle cx="13" cy="20" r="3.6" fill="#dff20d"/><circle cx="21" cy="13" r="3.6" fill="#5e5e5e"/><circle cx="31" cy="14" r="3.6" fill="#dff20d"/><circle cx="12" cy="30" r="3.6" fill="#5e5e5e"/></symbol><symbol id="i-pen" viewBox="0 0 48 48"><path d="M33 4l11 11-4.5 4.5-11-11L33 4Z" fill="#5e5e5e"/><path d="M26 11l11 11L16 43H5v-11L26 11Z" fill="#dff20d"/><path d="M5 32h11v11" fill="#ffffff"/></symbol><symbol id="i-gear" viewBox="0 0 48 48"><path d="M20 3h8l1.2 6.1 4.6 2.7 5.6-2.6 4 6.9-4.4 4.3v5.2l4.4 4.3-4 6.9-5.6-2.6-4.6 2.7L28 45h-8l-1.2-6.1-4.6-2.7-5.6 2.6-4-6.9 4.4-4.3v-5.2L4.6 18l4-6.9 5.6 2.6 4.6-2.7L20 3Z" fill="#dff20d"/><circle cx="24" cy="24" r="7.5" fill="#0d0d0d"/><circle cx="24" cy="24" r="3.6" fill="#ffffff"/></symbol><symbol id="i-wrench" viewBox="0 0 48 48"><path d="M31 4a13 13 0 0 0-11.6 18.8L4 38.2 9.8 44l15.4-15.4A13 13 0 1 0 31 4Zm0 8a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z" fill="#dff20d"/><rect x="6" y="34" width="8" height="4" rx="2" transform="rotate(-45 10 36)" fill="#ffffff"/></symbol><symbol id="i-cap" viewBox="0 0 48 48"><path d="M24 6 46 17 24 28 2 17 24 6Z" fill="#dff20d"/><path d="M11 22v11c0 3.9 5.8 7 13 7s13-3.1 13-7V22l-13 6.5L11 22Z" fill="#ffffff"/><rect x="42" y="17" width="3" height="15" fill="#5e5e5e"/><circle cx="43.5" cy="34" r="3.2" fill="#5e5e5e"/></symbol><symbol id="i-building" viewBox="0 0 48 48"><rect x="3" y="17" width="15" height="27" rx="2" fill="#5e5e5e"/><rect x="7" y="22" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="12.4" y="22" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="7" y="29" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="12.4" y="29" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="7" y="36" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="12.4" y="36" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="19" y="4" width="26" height="40" rx="2" fill="#ffffff"/><rect x="24" y="10" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="34.5" y="10" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="24" y="19" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="34.5" y="19" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="24" y="28" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="34.5" y="28" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="27" y="36" width="10" height="8" rx="1" fill="#dff20d"/></symbol><symbol id="i-invoice" viewBox="0 0 48 48"><path d="M7 3h21l10 10v19H7V3Z" fill="#ffffff"/><path d="M28 3l10 10H28V3Z" fill="#5e5e5e"/><rect x="13" y="17" width="19" height="3.2" fill="#5e5e5e"/><rect x="13" y="24" width="12" height="3.2" fill="#5e5e5e"/><circle cx="33" cy="34" r="13" fill="#dff20d"/><path d="M27 34.4l4 4 8-8.4" fill="none" stroke="#0d0d0d" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-album" viewBox="0 0 48 48"><rect x="11" y="3" width="30" height="21" rx="2" fill="#5e5e5e"/><rect x="3" y="10" width="33" height="26" rx="3" fill="#ffffff"/><path d="M3 30.5 12 21l6.5 6.5L24 22l12 12v2H3v-5.5Z" fill="#5e5e5e"/><circle cx="11.5" cy="18" r="3.4" fill="#dff20d"/><path d="M35 47c-7.2-5.1-10.8-8.2-10.8-12A5.4 5.4 0 0 1 35 32.6a5.4 5.4 0 0 1 10.8 2.4c0 3.8-3.6 6.9-10.8 12Z" fill="#dff20d" stroke="#0d0d0d" stroke-width="2.4" stroke-linejoin="round"/></symbol><symbol id="i-map" viewBox="0 0 48 48"><path d="M24 3c-8.8 0-16 7.2-16 16 0 11.5 16 26 16 26s16-14.5 16-26c0-8.8-7.2-16-16-16Z" fill="#dff20d"/><circle cx="24" cy="19" r="6.5" fill="#0d0d0d"/></symbol><symbol id="i-globe" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20.5" fill="#ffffff"/><path d="M24 3.5c-6 5-9 11.6-9 20.5s3 15.5 9 20.5c6-5 9-11.6 9-20.5s-3-15.5-9-20.5Z" fill="#dff20d"/><rect x="4" y="15" width="40" height="4" fill="#5e5e5e"/><rect x="4" y="29" width="40" height="4" fill="#5e5e5e"/></symbol><symbol id="i-music" viewBox="0 0 48 48"><path d="M20 8 42 4v26h-6V11L26 12.8V36h-6V8Z" fill="#ffffff"/><circle cx="13" cy="36" r="8.5" fill="#dff20d"/><circle cx="36" cy="30" r="7.5" fill="#dff20d"/></symbol><symbol id="i-chat" viewBox="0 0 48 48"><path d="M6 6h36a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H20L9 44v-10H6a4 4 0 0 1-4-4V10a4 4 0 0 1 4-4Z" fill="#ffffff"/><circle cx="15" cy="20" r="3.4" fill="#5e5e5e"/><circle cx="24" cy="20" r="3.4" fill="#dff20d"/><circle cx="33" cy="20" r="3.4" fill="#5e5e5e"/></symbol><symbol id="i-calc" viewBox="0 0 48 48"><rect x="7" y="2" width="34" height="44" rx="4" fill="#ffffff"/><rect x="12" y="7" width="24" height="9" rx="2" fill="#0d0d0d"/><rect x="12" y="21" width="7" height="6" fill="#5e5e5e"/><rect x="22" y="21" width="7" height="6" fill="#5e5e5e"/><rect x="32" y="21" width="4" height="19" rx="2" fill="#dff20d"/><rect x="12" y="31" width="7" height="6" fill="#5e5e5e"/><rect x="22" y="31" width="7" height="6" fill="#5e5e5e"/></symbol></svg>
+<header>
+  <a class="back" href="./index.html">← Công cụ</a>
+  <div class="title"><svg class="ttl-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 3 42 9.5V23c0 10.4-7.3 18.4-18 22-10.7-3.6-18-11.6-18-22V9.5L24 3Z" fill="#dff20d"/>
+<rect x="17" y="22" width="14" height="11" rx="2" fill="#0d0d0d"/>
+<path d="M20 22v-3.5a4 4 0 0 1 8 0V22" fill="none" stroke="#0d0d0d" stroke-width="3.2"/></svg> Quản lý User</div>
+  <div class="badge" id="countBadge">0</div>
+  <div class="spacer"></div>
+  <button class="btn-add" style="background:var(--bg3);color:var(--text);border:1px solid var(--border)" onclick="openCreateModal('freelancer')">+ Freelancer</button>
+  <button class="btn-add" onclick="openCreateModal('inhouse')">+ Nhân viên</button>
+</header>
+
+<div class="container">
+  <div class="info-banner">Chỉ <strong>Admin</strong> mới có thể tạo, sửa hoặc xoá tài khoản. Thành viên thường (Member) chỉ đăng nhập để dùng công cụ.<br>Nút <strong><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-key"/></svg></strong> ở mỗi dòng khôi phục mật khẩu của user đó về mặc định <strong>Password@123</strong>.</div>
+
+  <div class="filters" id="filters"></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="min-width:230px">Nhân sự</th>
+        <th>Vị trí</th>
+        <th>Loại</th>
+        <th>Quyền</th>
+        <th>Trạng thái</th>
+        <th>Đăng nhập gần nhất</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="userRows"></tbody>
+  </table>
+</div>
+
+<!-- ── Create/Edit Modal ── -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2 id="modalTitle">Thêm User</h2>
+    <form id="userForm">
+      <input type="hidden" id="editId" />
+
+      <label for="f_display">Tên hiển thị</label>
+      <input type="text" id="f_display" placeholder="vd: Nguyễn Trần Anh Thư" />
+
+      <label for="f_type">Loại nhân sự</label>
+      <select id="f_type" onchange="applyTypeUI()">
+        <option value="inhouse">Nhân viên APSA (đăng nhập được)</option>
+        <option value="freelancer">Freelancer (chỉ để giao việc)</option>
+      </select>
+
+      <label for="f_position">Vị trí</label>
+      <select id="f_position">
+        <option value="">— Chưa đặt —</option>
+        <option value="account">Account</option>
+        <option value="admin">Admin</option>
+        <option value="designer">Designer</option>
+        <option value="editor">Video editor</option>
+      </select>
+
+      <div class="row2col">
+        <div>
+          <label for="f_phone">Số điện thoại</label>
+          <input type="text" id="f_phone" placeholder="vd: 0901234567" />
+        </div>
+        <div>
+          <label for="f_email">Email</label>
+          <input type="text" id="f_email" placeholder="vd: ten@gmail.com" />
+        </div>
+      </div>
+
+      <label for="f_note">Ghi chú</label>
+      <input type="text" id="f_note" placeholder="vd: chuyên backdrop, làm việc cuối tuần…" />
+
+      <div id="loginBlock">
+        <label for="f_username">Username</label>
+        <input type="text" id="f_username" autocomplete="off" placeholder="vd: anhthu" />
+        <div class="hint">Chữ, số, dấu chấm, gạch dưới. Không đổi được sau khi tạo.</div>
+
+        <label for="f_password">Mật khẩu <span id="pwHint" style="font-weight:400;color:var(--text3);"></span></label>
+        <input type="password" id="f_password" autocomplete="new-password" placeholder="Tối thiểu 6 ký tự" />
+
+        <label for="f_role">Quyền</label>
+        <select id="f_role">
+          <option value="member">Member</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="hint" id="flHint" style="display:none">Freelancer không có mật khẩu và không đăng nhập được — chỉ hiện ra để chọn khi giao việc dự án.</div>
+
+      <label for="f_active">Trạng thái</label>
+      <select id="f_active">
+        <option value="1">Đang cộng tác</option>
+        <option value="0">Ngưng / Khoá</option>
+      </select>
+
+      <div class="modal-error" id="modalError"></div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeModal()">Huỷ</button>
+        <button type="submit" class="btn-add">Lưu</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  let ME = null;
+  let users = [];
+
+  function esc(s) { return (s ?? '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function fmtDate(s) { if (!s) return '—'; const d = new Date(s.replace(' ', 'T')); return d.toLocaleString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }); }
+
+  async function api(action, opts = {}) {
+    const res = await fetch('./api/auth-api.php?action=' + action, { credentials: 'same-origin', ...opts });
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error || 'Lỗi không xác định');
+    return json.data;
+  }
+
+  async function init() {
+    try {
+      ME = window.__APSA_USER || await api('me');
+      if (ME.role !== 'admin') {
+        document.body.innerHTML = '<div class="denied"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-block"/></svg> Trang này chỉ dành cho Admin.<br><br><a href="./index.html" style="color:var(--accent);">← Về trang chủ</a></div>';
+        return;
+      }
+      await loadUsers();
+    } catch (e) {
+      location.replace('./login.html?next=' + encodeURIComponent(location.pathname));
+    }
+  }
+
+  const POS_LABEL = { account:'Account', admin:'Admin', designer:'Designer', editor:'Video editor' };
+  let FILTER = 'all';   // all | inhouse | freelancer | pos:<key>
+
+  async function loadUsers() {
+    users = await api('list');
+    document.getElementById('countBadge').textContent = users.length;
+    renderFilters();
+    renderUsers();
+  }
+
+  function matchFilter(u) {
+    if (FILTER === 'all') return true;
+    if (FILTER === 'inhouse' || FILTER === 'freelancer') return (u.staff_type || 'inhouse') === FILTER;
+    if (FILTER.startsWith('pos:')) return (u.position || '') === FILTER.slice(4);
+    return true;
+  }
+
+  function renderFilters() {
+    const cnt = f => users.filter(u => {
+      if (f === 'all') return true;
+      if (f === 'inhouse' || f === 'freelancer') return (u.staff_type || 'inhouse') === f;
+      if (f.startsWith('pos:')) return (u.position || '') === f.slice(4);
+      return true;
+    }).length;
+    const pill = (f, label) => `<button class="fpill ${FILTER === f ? 'on' : ''}" onclick="setFilter('${f}')">${label} <span class="n">${cnt(f)}</span></button>`;
+    document.getElementById('filters').innerHTML =
+      pill('all', 'Tất cả') + pill('inhouse', 'Nhân viên') + pill('freelancer', 'Freelancer') +
+      '<span class="fsep"></span>' +
+      Object.entries(POS_LABEL).map(([k, v]) => pill('pos:' + k, v)).join('');
+  }
+  function setFilter(f) { FILTER = f; renderFilters(); renderUsers(); }
+
+  function renderUsers() {
+    const list = users.filter(matchFilter);
+    const rows = list.map(u => {
+      const type = u.staff_type || 'inhouse';
+      const pos  = u.position || '';
+      const contact = [u.phone, u.email].filter(Boolean).join(' · ');
+      return `
+      <tr>
+        <td>
+          <div class="uname">${esc(u.display_name)}</div>
+          <div class="dname">${Number(u.can_login) ? esc(u.username) : '<span class="nologin">không đăng nhập</span>'}</div>
+          ${contact ? `<div class="contact">${esc(contact)}</div>` : ''}
+          ${u.note ? `<div class="contact">${esc(u.note)}</div>` : ''}
+        </td>
+        <td><span class="pos-pill ${pos ? 'pos-' + pos : 'pos-none'}">${pos ? POS_LABEL[pos] : '— chưa đặt —'}</span></td>
+        <td><span class="type-pill type-${type}">${type === 'freelancer' ? 'Freelancer' : 'Nhân viên'}</span></td>
+        <td>${Number(u.can_login) ? `<span class="role-pill role-${u.role}">${u.role === 'admin' ? 'Admin' : 'Member'}</span>` : '<span class="nologin">—</span>'}</td>
+        <td><span class="status-pill ${u.active == 1 ? 'status-active' : 'status-inactive'}">${u.active == 1 ? 'Đang cộng tác' : 'Ngưng'}</span></td>
+        <td style="color:var(--text2);">${Number(u.can_login) ? fmtDate(u.last_login_at) : '—'}</td>
+        <td>
+          <div class="actions">
+            <button class="icon-btn" title="Sửa" onclick="openEditModal(${u.id})">✎</button>
+            ${Number(u.can_login) ? `<button class="icon-btn key" title="Khôi phục mật khẩu mặc định" onclick="resetPassword(${u.id}, '${esc(u.username)}')"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-key"/></svg></button>` : ''}
+            <button class="icon-btn danger" title="Xoá" onclick="deleteUser(${u.id}, '${esc(u.display_name)}')"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-trash"/></svg></button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+    document.getElementById('userRows').innerHTML = rows ||
+      '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:30px;">Không có nhân sự nào ở mục này.</td></tr>';
+  }
+
+  const $u = id => document.getElementById(id);
+
+  /* Freelancer thì ẩn hẳn phần đăng nhập */
+  function applyTypeUI() {
+    const fl = $u('f_type').value === 'freelancer';
+    $u('loginBlock').style.display = fl ? 'none' : 'block';
+    $u('flHint').style.display = fl ? 'block' : 'none';
+  }
+
+  function openCreateModal(type) {
+    $u('modalTitle').textContent = type === 'freelancer' ? 'Thêm Freelancer' : 'Thêm nhân viên';
+    $u('editId').value = '';
+    ['f_username','f_display','f_password','f_phone','f_email','f_note'].forEach(id => $u(id).value = '');
+    $u('f_username').disabled = false;
+    $u('pwHint').textContent = '';
+    $u('f_role').value = 'member';
+    $u('f_active').value = '1';
+    $u('f_type').value = type || 'inhouse';
+    $u('f_position').value = '';
+    $u('f_type').disabled = false;
+    applyTypeUI();
+    $u('modalError').style.display = 'none';
+    $u('modalOverlay').classList.add('open');
+    setTimeout(() => $u('f_display').focus(), 60);
+  }
+
+  function openEditModal(id) {
+    const u = users.find(x => x.id == id);
+    if (!u) return;
+    $u('modalTitle').textContent = 'Sửa nhân sự';
+    $u('editId').value = u.id;
+    $u('f_username').value = u.username;
+    $u('f_username').disabled = true;
+    $u('f_display').value = u.display_name;
+    $u('f_password').value = '';
+    $u('pwHint').textContent = '(để trống nếu không đổi)';
+    $u('f_role').value = u.role;
+    $u('f_active').value = String(u.active);
+    $u('f_type').value = u.staff_type || 'inhouse';
+    $u('f_position').value = u.position || '';
+    $u('f_phone').value = u.phone || '';
+    $u('f_email').value = u.email || '';
+    $u('f_note').value = u.note || '';
+    // Không đổi loại sau khi tạo (tránh phải sinh/xoá tài khoản đăng nhập)
+    $u('f_type').disabled = true;
+    applyTypeUI();
+    $u('modalError').style.display = 'none';
+    $u('modalOverlay').classList.add('open');
+  }
+
+  function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+
+  document.getElementById('userForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errBox = document.getElementById('modalError');
+    errBox.style.display = 'none';
+    const id = document.getElementById('editId').value;
+    const isFl = $u('f_type').value === 'freelancer';
+    const payload = {
+      display_name: $u('f_display').value.trim(),
+      position: $u('f_position').value,
+      staff_type: $u('f_type').value,
+      phone: $u('f_phone').value.trim(),
+      email: $u('f_email').value.trim(),
+      note:  $u('f_note').value.trim(),
+      active: Number($u('f_active').value),
+    };
+    if (!isFl) payload.role = $u('f_role').value;
+    const pw = isFl ? '' : $u('f_password').value;
+    if (pw) payload.password = pw;
+    if (!payload.display_name) { errBox.textContent = 'Vui lòng nhập tên hiển thị'; errBox.style.display = 'block'; return; }
+
+    try {
+      if (id) {
+        payload.id = Number(id);
+        delete payload.staff_type;                 // không đổi loại khi sửa
+        await api('update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      } else {
+        if (!isFl) {
+          payload.username = $u('f_username').value.trim();
+          if (!payload.username) throw new Error('Vui lòng nhập username');
+          if (!pw) throw new Error('Vui lòng nhập mật khẩu');
+        }
+        const d = await api('create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (d && d.message) toast(d.message, 'ok');
+      }
+      closeModal();
+      await loadUsers();
+    } catch (err) {
+      errBox.textContent = err.message;
+      errBox.style.display = 'block';
+    }
+  });
+
+  function toast(msg, kind) {
+    let t = document.getElementById('apsaToast');
+    if (!t) { t = document.createElement('div'); t.id = 'apsaToast'; t.className = 'apsa-toast'; document.body.appendChild(t); }
+    t.textContent = msg;
+    t.className = 'apsa-toast show ' + (kind || '');
+    clearTimeout(t._t); t._t = setTimeout(() => { t.className = 'apsa-toast ' + (kind || ''); }, 4000);
+  }
+
+  async function resetPassword(id, username) {
+    if (!confirm('Khôi phục mật khẩu của "' + username + '" về mặc định (Password@123)?\n\nNgười dùng sẽ đăng nhập bằng mật khẩu này cho tới khi tự đổi.')) return;
+    try {
+      const d = await api('reset-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
+      toast('' + username + ' → mật khẩu mới: ' + d.password);
+    } catch (err) {
+      toast('' + err.message, 'err');
+    }
+  }
+
+  async function deleteUser(id, username) {
+    if (!confirm(`Xoá user "${username}"? Không thể hoàn tác.`)) return;
+    try {
+      await api('delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
+      await loadUsers();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  document.getElementById('modalOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'modalOverlay') closeModal();
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+  init();
+</script>
+</body>
+</html>

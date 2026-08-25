@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>APSA Slide Tracking — Ví dụ tích hợp</title>
+<style>body{font-family:system-ui;max-width:760px;margin:40px auto;padding:0 16px}pre{background:#f4f4f4;padding:14px;border-radius:8px;overflow-x:auto}</style>
+</head>
+<body>
+<h1>APSA Slide Tracking — Cách gửi data từ trang web khác</h1>
+
+<h2>1. Gửi 1 lượt xem slide (không cần API key)</h2>
+<pre>
+fetch('https://manage.apsa.agency/api/tracking-api.php', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    project:      'Breztri Launch 2026',
+    user_name:    'BS. Nguyễn Văn A',
+    hospital:     'BV Nhân dân Gia Định',
+    started_at:   Date.now(),   // hoặc '2026-07-12 14:30:00' — bỏ trống = giờ hiện tại
+    slide:        '5',
+    view_seconds: 12.5
+    // ip: không cần gửi — server tự lấy IP người xem
+  })
+});
+</pre>
+
+<h2>2. Gửi nhiều record 1 lần (khi kết thúc phiên xem)</h2>
+<pre>
+fetch('https://manage.apsa.agency/api/tracking-api.php', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify([
+    { project: 'Breztri Launch 2026', user_name: 'BS. A', hospital: 'BV X', slide: '1', view_seconds: 8,  started_at: 1780000000000 },
+    { project: 'Breztri Launch 2026', user_name: 'BS. A', hospital: 'BV X', slide: '2', view_seconds: 15, started_at: 1780000008000 }
+  ])
+});
+</pre>
+
+<h2>3. Gửi tự động khi người dùng rời trang (khuyên dùng)</h2>
+<pre>
+// navigator.sendBeacon gửi được cả khi tab đang đóng
+const data = JSON.stringify({
+  project: 'Breztri Launch 2026',
+  user_name: 'BS. A',
+  hospital: 'BV X',
+  slide: currentSlide,
+  view_seconds: (Date.now() - slideStartTime) / 1000,
+  started_at: slideStartTime
+});
+navigator.sendBeacon(
+  'https://manage.apsa.agency/api/tracking-api.php',
+  new Blob([data], { type: 'application/json' })
+);
+</pre>
+
+<h2>4. Xem data đã lưu (cần API key — chỉ dùng nội bộ)</h2>
+<pre>
+fetch('https://manage.apsa.agency/api/tracking-api.php?project=Breztri%20Launch%202026&from=2026-07-01&to=2026-07-31', {
+  headers: { 'X-API-Key': 'API_SECRET_CỦA_BẠN' }
+}).then(r => r.json()).then(console.log);
+</pre>
+
+<h2>Test nhanh tại đây</h2>
+<button onclick="sendTest()">Gửi record test</button>
+<pre id="result">Kết quả sẽ hiện ở đây…</pre>
+<script>
+async function sendTest() {
+  const r = await fetch('https://manage.apsa.agency/api/tracking-api.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      project: 'TEST', user_name: 'Test User', hospital: 'Test Hospital',
+      slide: '1', view_seconds: 3.2
+    })
+  });
+  document.getElementById('result').textContent = JSON.stringify(await r.json(), null, 2);
+}
+</script>
+</body>
+</html>

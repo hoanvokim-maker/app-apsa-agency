@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script>
+  document.documentElement.style.visibility = 'hidden';
+  fetch('./api/auth-api.php?action=me', { credentials: 'same-origin' })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(res => {
+      if (!res.ok) throw new Error();
+      window.__APSA_USER = res.data;
+      document.documentElement.style.visibility = 'visible';
+    })
+    .catch(() => {
+      location.replace('./login.html?next=' + encodeURIComponent(location.pathname + location.search));
+      return;
+    })
+    .then(() => { if (window.__APSA_USER) window.dispatchEvent(new Event('apsa-auth-ready')); });
+</script>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=1">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=1">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#dff20d">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>APSA — Bộ công cụ nội bộ</title>
+  <meta name="description" content="Bộ công cụ trực tuyến nội bộ của APSA Agency." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #000000;
+      --bg2: #0b0b0b;
+      --bg3: #141414;
+      --border: rgba(255,255,255,0.08);
+      --border-hover: rgba(255,255,255,0.18);
+      --text: #ffffff;
+      --text2: #9a9a9a;
+      --text3: #5e5e5e;
+      --accent: #dff20d;
+      --accent2: #c9dd00;
+      --accent-glow: rgba(223,242,13,0.35);
+      --green: #dff20d;
+      --orange: #ffffff;
+      --pink: #c9dd00;
+      --cyan: #ffffff;
+      --yellow: #dff20d;
+      --red: #ff4d4d;
+      --radius: 14px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Oxanium', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Noise texture ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Header ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .logo-mark {
+      display: none;
+    }
+
+    .logo { flex-shrink: 0; }
+
+    .logo-img {
+      height: 24px;
+      width: auto;
+      display: block;
+      filter: brightness(0) invert(1);
+      opacity: 0.92;
+    }
+
+    .logo-text {
+      display: none;
+    }
+
+    .logo-sub {
+      display: none;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    nav a {
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--text);
+      background: var(--bg3);
+    }
+
+    .btn-add {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white !important;
+      padding: 6px 14px !important;
+      border-radius: 20px !important;
+      font-weight: 600 !important;
+      font-size: 12px !important;
+      transition: all 0.2s !important;
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .btn-add:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px var(--accent-glow) !important;
+      background: var(--bg3) !important;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ── Search (in header) ── */
+    .header-search {
+      flex: 1;
+      max-width: 380px;
+      position: relative;
+    }
+
+    .header-search svg {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text3);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 40px;
+      padding: 8px 14px 8px 36px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-input::placeholder { color: var(--text3); }
+
+    .search-input:focus {
+      border-color: rgba(223,242,13,0.5);
+      box-shadow: 0 0 0 3px rgba(223,242,13,0.1);
+    }
+
+    /* ── Category filter ── */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 24px 12px;
+      max-width: 1200px;
+      margin: 0 auto;
+      overflow-x: auto;
+      scrollbar-width: none;
+      position: relative;
+      z-index: 1;
+    }
+
+    .filter-bar::-webkit-scrollbar { display: none; }
+
+    .filter-pill {
+      white-space: nowrap;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text2);
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .filter-pill:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    .filter-pill.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+      box-shadow: 0 0 16px var(--accent-glow);
+    }
+
+    /* ── Grid ── */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 48px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-title { display: none; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--card-color, var(--accent)) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
+
+    .card:hover::before { opacity: 0.06; }
+
+    .card-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      background: var(--icon-bg, rgba(223,242,13,0.15));
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-body { position: relative; z-index: 1; }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: var(--text2);
+      line-height: 1.5;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+      margin-top: auto;
+    }
+
+    .card-tag {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--text3);
+    }
+
+    .card-arrow {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      color: var(--text2);
+    }
+
+    .card:hover .card-arrow {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+      transform: translateX(2px);
+    }
+
+    /* ── Add card ── */
+    /* ── Icon công cụ to hơn cho dễ nhận dạng ─────────────────── */
+    .grid .card .card-icon { width:66px !important; height:66px !important; border-radius:8px !important; }
+    .grid .card .card-icon .ico { width:90% !important; height:90% !important; }
+    .grid .card .card-icon .ico-emoji { font-size:38px !important; line-height:1; }
+    .grid .card { padding:16px; gap:10px; }
+    .grid .card .card-title { font-size:13.5px; }
+    .grid .card .card-desc { font-size:11.5px; line-height:1.45; }
+    .grid.sorting .card::after { content:'⠿ kéo'; }
+
+    /* ── Cá nhân hoá: thanh công cụ + chế độ sắp xếp ─────────── */
+    .personal-bar { max-width:1400px; margin:0 auto 4px; padding:0 40px 14px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .pbtn { display:inline-flex; align-items:center; gap:7px; cursor:pointer; font-family:inherit; font-size:12px; font-weight:600;
+      padding:7px 14px; border-radius:20px; border:1px solid var(--border); background:var(--bg2); color:var(--text2); transition:.2s; }
+    .pbtn:hover { color:var(--text); border-color:var(--border-hover); background:var(--bg3); }
+    .pbtn.on { background:var(--accent); border-color:var(--accent); color:#0d0d0d; box-shadow:0 0 14px rgba(223,242,13,.3); }
+    .pbtn .n { font-size:10px; font-weight:700; background:rgba(255,255,255,.14); padding:1px 7px; border-radius:20px; }
+    .pbtn.on .n { background:rgba(0,0,0,.18); }
+    .phint { font-size:11.5px; color:var(--text3); }
+    .filter-bar.locked { opacity:.35; pointer-events:none; }
+
+    /* Chế độ sắp xếp */
+    .grid .card[data-id]:hover { cursor:grab; }
+    .grid.sorting .card { cursor:grab; touch-action:none; user-select:none; }
+    .grid.sorting .card:active { cursor:grabbing; }
+    .grid.sorting .card::after { content:'⠿ kéo để đổi chỗ'; position:absolute; bottom:11px; left:16px; font-size:10.5px; font-weight:600; color:var(--text3); }
+    .grid.sorting .card .card-tag, .grid.sorting .card .card-arrow { visibility:hidden; }
+    .grid.sorting .card-add { display:none; }
+    .card.is-hidden { opacity:.34; filter:grayscale(.7); }
+    .card.drag-placeholder { opacity:.25; }
+    .card-drag-ghost { position:fixed; z-index:900; pointer-events:none; opacity:.92;
+      box-shadow:0 24px 60px rgba(0,0,0,.65); transform:scale(1.03); }
+    .card-acts { position:absolute; top:8px; right:8px; display:none; gap:5px; z-index:5; }
+    .grid.sorting .card-acts { display:flex; }
+    .card-act { width:27px; height:27px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,.6);
+      color:var(--text2); cursor:pointer; font-size:12px; display:flex; align-items:center; justify-content:center; transition:.15s; }
+    .card-act:hover { color:#0d0d0d; background:var(--accent); border-color:var(--accent); }
+    .card-act.del:hover { color:#fff; background:#ff4d4d; border-color:#ff4d4d; }
+    /* ── Nhóm module ── */
+    .gsec { margin-bottom: 34px; }
+    .ghead { display:flex; align-items:center; gap:10px; margin:0 0 13px; }
+    .ghead .gttl { font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800;
+      letter-spacing:1.4px; text-transform:uppercase; color:var(--text2); white-space:nowrap; }
+    .ghead .gline { flex:1; height:1px; background:rgba(255,255,255,.10); }
+    .ghead .gnum { font-size:11px; color:var(--text3); font-weight:700; white-space:nowrap; }
+    .gsec.pin .ghead .gttl { color:var(--accent); }
+    .gsec .grid { margin-bottom:0; }
+    .gdrop { grid-column:1 / -1; border:1px dashed rgba(255,255,255,.16); border-radius:14px;
+      padding:20px; text-align:center; font-size:12.5px; color:var(--text3); }
+    /* Nút ghim ★ — luôn hiện khi đã ghim, hiện khi rê chuột nếu chưa */
+    .card-star { position:absolute; top:8px; left:8px; z-index:6; width:27px; height:27px; border-radius:8px;
+      border:1px solid var(--border); background:rgba(0,0,0,.6); color:var(--text3); cursor:pointer;
+      font-size:13px; line-height:1; display:flex; align-items:center; justify-content:center;
+      opacity:0; transition:.15s; }
+    .card:hover .card-star { opacity:1; }
+    .card-star:hover { color:#0d0d0d; background:var(--accent); border-color:var(--accent); }
+    .card-star.on { opacity:1; color:var(--accent); border-color:rgba(223,242,13,.5); background:rgba(223,242,13,.14); }
+    .card-star.on:hover { color:#0d0d0d; background:var(--accent); }
+    .apsa-toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(90px); background:#141414;
+      border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:11px 20px; font-size:13px; color:#fff; z-index:950;
+      transition:transform .3s cubic-bezier(.4,0,.2,1); box-shadow:0 12px 40px rgba(0,0,0,.5); }
+    .apsa-toast.show { transform:translateX(-50%) translateY(0); }
+    @media (max-width: 1500px) { .grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+    @media (max-width: 1240px) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+    @media (max-width: 980px)  { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (max-width: 760px)  { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media(max-width:768px){ .personal-bar { padding:0 16px 12px; } }
+
+    .card-add {
+      border: 2px dashed var(--border);
+      background: transparent;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 8px;
+      min-height: 140px;
+      color: var(--text3);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .card-add:hover {
+      border-color: var(--accent);
+      color: var(--accent2);
+      background: rgba(223,242,13,0.04);
+      transform: none;
+      box-shadow: none;
+    }
+
+    .card-add-icon {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .card-add-text {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    /* ── New tool badge ── */
+    .badge-new {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--accent);
+      color: white;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 10px;
+    }
+
+    /* ── Modal (Add Tool) ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      width: 100%;
+      max-width: 460px;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover { color: var(--text); background: var(--border); }
+
+    .modal h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .modal p {
+      font-size: 13px;
+      color: var(--text2);
+      margin-bottom: 24px;
+    }
+
+    .form-group { margin-bottom: 16px; }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+      resize: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: rgba(223,242,13,0.5);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .emoji-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 10px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .emoji-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      background: transparent;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .emoji-btn:hover, .emoji-btn.selected {
+      background: rgba(223,242,13,0.2);
+      border-color: var(--accent);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 24px var(--accent-glow); }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text3);
+      position: relative;
+      z-index: 1;
+    }
+
+    footer a { color: var(--text2); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+
+    /* ── Featured (thanh mỏng) ── */
+    .featured-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px 24px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .featured-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(100deg, rgba(223,242,13,0.14) 0%, rgba(223,242,13,0.06) 45%, transparent 100%);
+      border: 1px solid rgba(223,242,13,0.3);
+      border-radius: 12px;
+      padding: 10px 16px;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+
+    .featured-bar:hover {
+      border-color: rgba(223,242,13,0.6);
+      background: linear-gradient(100deg, rgba(223,242,13,0.22) 0%, rgba(223,242,13,0.08) 45%, transparent 100%);
+    }
+
+    .fb-icon { font-size: 17px; flex-shrink: 0; }
+
+    .fb-title {
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .fb-desc {
+      font-size: 12px;
+      color: var(--text2);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .fb-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+      animation: pulse 2s infinite;
+    }
+
+    .fb-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 640px) {
+      .fb-desc { display: none; }
+    }
+
+    /* ── Hidden ── */
+    .hidden { display: none !important; }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      header { padding: 0 14px; gap: 10px; }
+      .header-search { max-width: none; }
+      .featured-wrap { padding: 12px 16px 0; }
+      .filter-bar { padding: 12px 16px 10px; }
+      .container { padding: 0 16px 48px; }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid .card .card-icon { width:56px !important; height:56px !important; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/theme.css?v=11" />
+<script src="/apsa-ui.js?v=4"></script>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" id="apsa-sprite" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><symbol id="ico-qr" viewBox="0 0 48 48"><rect x="5" y="5" width="16" height="16" rx="2" fill="#dff20d"/><rect x="10" y="10" width="6" height="6" fill="#0d0d0d"/>
+<rect x="27" y="5" width="16" height="16" rx="2" fill="#ffffff"/><rect x="32" y="10" width="6" height="6" fill="#0d0d0d"/>
+<rect x="5" y="27" width="16" height="16" rx="2" fill="#ffffff"/><rect x="10" y="32" width="6" height="6" fill="#0d0d0d"/>
+<rect x="27" y="27" width="7" height="7" fill="#dff20d"/><rect x="36" y="27" width="7" height="7" fill="#5e5e5e"/>
+<rect x="27" y="36" width="7" height="7" fill="#5e5e5e"/><rect x="36" y="36" width="7" height="7" fill="#dff20d"/></symbol><symbol id="ico-tag" viewBox="0 0 48 48"><path d="M18 9h18a3 3 0 0 1 3 3v18L22 47 3 28 18 9Z" fill="#5e5e5e" opacity=".55"/>
+<path d="M23 4h18a3 3 0 0 1 3 3v18L26 43 6 23 23 4Z" fill="#dff20d"/>
+<circle cx="35" cy="13" r="4.5" fill="#0d0d0d"/></symbol><symbol id="ico-book" viewBox="0 0 48 48"><rect x="5" y="8" width="17" height="32" rx="2" fill="#ffffff"/>
+<rect x="26" y="8" width="17" height="32" rx="2" fill="#dff20d"/>
+<rect x="22" y="6" width="4" height="36" fill="#5e5e5e"/>
+<rect x="9" y="16" width="9" height="3" fill="#0d0d0d"/><rect x="9" y="23" width="9" height="3" fill="#0d0d0d"/>
+<rect x="30" y="16" width="9" height="3" fill="#0d0d0d"/></symbol><symbol id="ico-key" viewBox="0 0 48 48"><circle cx="24" cy="13" r="9.5" fill="#dff20d"/><circle cx="24" cy="13" r="3.6" fill="#0d0d0d"/>
+<rect x="20.8" y="21" width="6.4" height="23" rx="1" fill="#ffffff"/>
+<rect x="27.2" y="27" width="9" height="5" fill="#ffffff"/>
+<rect x="27.2" y="36" width="6.5" height="5" fill="#ffffff"/></symbol><symbol id="ico-image" viewBox="0 0 48 48"><rect x="4" y="9" width="40" height="30" rx="3" fill="#ffffff"/>
+<circle cx="15" cy="19" r="4.5" fill="#dff20d"/>
+<path d="M4 34l11-11 9 9 7-6 13 12v1H4z" fill="#5e5e5e"/>
+<rect x="4" y="35" width="40" height="4" fill="#5e5e5e"/></symbol><symbol id="ico-spark" viewBox="0 0 48 48"><path d="M20 3c1.7 10 4.5 12.8 14.5 14.5C24.5 19.2 21.7 22 20 32 18.3 22 15.5 19.2 5.5 17.5 15.5 15.8 18.3 13 20 3Z" fill="#dff20d"/>
+<path d="M36 26c.9 5.6 2.4 7.1 8 8-5.6.9-7.1 2.4-8 8-.9-5.6-2.4-7.1-8-8 5.6-.9 7.1-2.4 8-8Z" fill="#ffffff"/></symbol><symbol id="ico-bulb" viewBox="0 0 48 48"><path d="M24 4c-8.3 0-15 6.7-15 15 0 5.7 3.2 10.6 7.9 13.2V37h14.2v-4.8C35.8 29.6 39 24.7 39 19c0-8.3-6.7-15-15-15Z" fill="#dff20d"/>
+<rect x="17" y="38.5" width="14" height="4" rx="2" fill="#ffffff"/>
+<rect x="19.5" y="43.5" width="9" height="3.5" rx="1.75" fill="#5e5e5e"/></symbol><symbol id="ico-price" viewBox="0 0 48 48"><rect x="3" y="12" width="34" height="22" rx="3" fill="#ffffff"/>
+<rect x="3" y="12" width="34" height="5" fill="#5e5e5e"/>
+<rect x="7" y="22" width="13" height="3" fill="#5e5e5e"/><rect x="7" y="28" width="9" height="3" fill="#5e5e5e"/>
+<circle cx="33" cy="31" r="12" fill="#dff20d"/>
+<rect x="31.6" y="22" width="2.8" height="18" fill="#0d0d0d"/>
+<rect x="27" y="26" width="12" height="3" rx="1.5" fill="#0d0d0d"/>
+<rect x="27" y="33" width="12" height="3" rx="1.5" fill="#0d0d0d"/></symbol><symbol id="ico-shield" viewBox="0 0 48 48"><path d="M24 3 42 9.5V23c0 10.4-7.3 18.4-18 22-10.7-3.6-18-11.6-18-22V9.5L24 3Z" fill="#dff20d"/>
+<rect x="17" y="22" width="14" height="11" rx="2" fill="#0d0d0d"/>
+<path d="M20 22v-3.5a4 4 0 0 1 8 0V22" fill="none" stroke="#0d0d0d" stroke-width="3.2"/></symbol><symbol id="ico-shuttle" viewBox="0 0 48 48"><path d="M24 2 8 28h32L24 2Z" fill="#ffffff"/>
+<path d="M24 3v25M15.5 16 18.5 28M32.5 16 29.5 28" stroke="#0d0d0d" stroke-width="2.2"/>
+<rect x="8" y="26" width="32" height="3" fill="#5e5e5e"/>
+<circle cx="24" cy="37" r="9" fill="#dff20d"/></symbol><symbol id="ico-people" viewBox="0 0 48 48"><circle cx="34" cy="17" r="7" fill="#ffffff"/>
+<path d="M23 43c0-6.6 4.9-12 11-12s11 5.4 11 12H23Z" fill="#ffffff"/>
+<circle cx="18" cy="15" r="8.5" fill="#dff20d"/>
+<path d="M3 43c0-8.3 6.7-15 15-15s15 6.7 15 15H3Z" fill="#dff20d"/></symbol><symbol id="ico-card" viewBox="0 0 48 48"><rect x="3" y="10" width="42" height="28" rx="4" fill="#ffffff"/>
+<rect x="3" y="16" width="42" height="6" fill="#0d0d0d"/>
+<rect x="8" y="28" width="15" height="4" rx="2" fill="#5e5e5e"/>
+<circle cx="35" cy="30" r="5.5" fill="#dff20d"/></symbol><symbol id="ico-chart" viewBox="0 0 48 48"><rect x="4" y="27" width="10" height="17" fill="#ffffff"/>
+<rect x="19" y="16" width="10" height="28" fill="#dff20d"/>
+<rect x="34" y="6" width="10" height="38" fill="#5e5e5e"/></symbol><symbol id="ico-signal" viewBox="0 0 48 48"><circle cx="24" cy="34" r="6" fill="#dff20d"/>
+<path d="M13 26a15 15 0 0 1 22 0" fill="none" stroke="#ffffff" stroke-width="5"/>
+<path d="M6 18a25 25 0 0 1 36 0" fill="none" stroke="#5e5e5e" stroke-width="5"/></symbol><symbol id="ico-doc" viewBox="0 0 48 48"><path d="M9 4h20l10 10v30H9V4Z" fill="#ffffff"/><path d="M29 4l10 10H29V4Z" fill="#5e5e5e"/>
+<rect x="15" y="22" width="18" height="3.4" fill="#0d0d0d"/><rect x="15" y="30" width="12" height="3.4" fill="#0d0d0d"/>
+<rect x="15" y="38" width="18" height="3.4" fill="#dff20d"/></symbol><symbol id="ico-grid" viewBox="0 0 48 48"><rect x="5" y="5" width="17" height="17" rx="2" fill="#dff20d"/><rect x="26" y="5" width="17" height="17" rx="2" fill="#ffffff"/>
+<rect x="5" y="26" width="17" height="17" rx="2" fill="#5e5e5e"/><rect x="26" y="26" width="17" height="17" rx="2" fill="#dff20d"/></symbol><symbol id="ico-palette" viewBox="0 0 48 48"><path d="M24 4C12.4 4 3 12.7 3 23.5S12.4 43 24 43c3 0 5-1.8 5-4.3 0-1.3-.6-2.3-1.4-3.2-.8-.9-1.3-1.8-1.3-3 0-2.4 2-4.3 4.5-4.3H36c5.5 0 9-3.6 9-9C45 11.4 35.6 4 24 4Z" fill="#ffffff"/>
+<circle cx="13" cy="20" r="3.6" fill="#dff20d"/><circle cx="21" cy="13" r="3.6" fill="#5e5e5e"/>
+<circle cx="31" cy="14" r="3.6" fill="#dff20d"/><circle cx="12" cy="30" r="3.6" fill="#5e5e5e"/></symbol><symbol id="ico-pen" viewBox="0 0 48 48"><path d="M33 4l11 11-4.5 4.5-11-11L33 4Z" fill="#5e5e5e"/>
+<path d="M26 11l11 11L16 43H5v-11L26 11Z" fill="#dff20d"/>
+<path d="M5 32h11v11" fill="#ffffff"/></symbol><symbol id="ico-gear" viewBox="0 0 48 48"><path d="M20 3h8l1.2 6.1 4.6 2.7 5.6-2.6 4 6.9-4.4 4.3v5.2l4.4 4.3-4 6.9-5.6-2.6-4.6 2.7L28 45h-8l-1.2-6.1-4.6-2.7-5.6 2.6-4-6.9 4.4-4.3v-5.2L4.6 18l4-6.9 5.6 2.6 4.6-2.7L20 3Z" fill="#dff20d"/>
+<circle cx="24" cy="24" r="7.5" fill="#0d0d0d"/><circle cx="24" cy="24" r="3.6" fill="#ffffff"/></symbol><symbol id="ico-wrench" viewBox="0 0 48 48"><path d="M31 4a13 13 0 0 0-11.6 18.8L4 38.2 9.8 44l15.4-15.4A13 13 0 1 0 31 4Zm0 8a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z" fill="#dff20d"/>
+<rect x="6" y="34" width="8" height="4" rx="2" transform="rotate(-45 10 36)" fill="#ffffff"/></symbol><symbol id="ico-cap" viewBox="0 0 48 48"><path d="M24 6 46 17 24 28 2 17 24 6Z" fill="#dff20d"/>
+<path d="M11 22v11c0 3.9 5.8 7 13 7s13-3.1 13-7V22l-13 6.5L11 22Z" fill="#ffffff"/>
+<rect x="42" y="17" width="3" height="15" fill="#5e5e5e"/><circle cx="43.5" cy="34" r="3.2" fill="#5e5e5e"/></symbol>
+<symbol id="ico-building" viewBox="0 0 48 48"><rect x="3" y="17" width="15" height="27" rx="2" fill="#5e5e5e"/>
+<rect x="7" y="22" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="12.4" y="22" width="3.6" height="3.6" fill="#0d0d0d"/>
+<rect x="7" y="29" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="12.4" y="29" width="3.6" height="3.6" fill="#0d0d0d"/>
+<rect x="7" y="36" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="12.4" y="36" width="3.6" height="3.6" fill="#0d0d0d"/>
+<rect x="19" y="4" width="26" height="40" rx="2" fill="#ffffff"/>
+<rect x="24" y="10" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="34.5" y="10" width="5.5" height="5.5" fill="#0d0d0d"/>
+<rect x="24" y="19" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="34.5" y="19" width="5.5" height="5.5" fill="#0d0d0d"/>
+<rect x="24" y="28" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="34.5" y="28" width="5.5" height="5.5" fill="#0d0d0d"/>
+<rect x="27" y="36" width="10" height="8" rx="1" fill="#dff20d"/></symbol>
+
+<symbol id="ico-invoice" viewBox="0 0 48 48"><path d="M7 3h21l10 10v19H7V3Z" fill="#ffffff"/><path d="M28 3l10 10H28V3Z" fill="#5e5e5e"/>
+<rect x="13" y="17" width="19" height="3.2" fill="#5e5e5e"/><rect x="13" y="24" width="12" height="3.2" fill="#5e5e5e"/>
+<circle cx="33" cy="34" r="13" fill="#dff20d"/>
+<path d="M27 34.4l4 4 8-8.4" fill="none" stroke="#0d0d0d" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+
+<symbol id="ico-album" viewBox="0 0 48 48"><rect x="11" y="3" width="30" height="21" rx="2" fill="#5e5e5e"/>
+<rect x="3" y="10" width="33" height="26" rx="3" fill="#ffffff"/>
+<path d="M3 30.5 12 21l6.5 6.5L24 22l12 12v2H3v-5.5Z" fill="#5e5e5e"/>
+<circle cx="11.5" cy="18" r="3.4" fill="#dff20d"/>
+<path d="M35 47c-7.2-5.1-10.8-8.2-10.8-12A5.4 5.4 0 0 1 35 32.6a5.4 5.4 0 0 1 10.8 2.4c0 3.8-3.6 6.9-10.8 12Z" fill="#dff20d" stroke="#0d0d0d" stroke-width="2.4" stroke-linejoin="round"/></symbol>
+</svg>
+<!-- ── HEADER ── -->
+<header>
+  <a class="logo" href="/">
+    <img class="logo-img" src="./Logo rectange.png" alt="APSA Agency" onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';" />
+    <div id="logo-fallback" style="display:none; align-items:center; gap:10px;">
+      <div style="width:32px;height:32px;background:linear-gradient(135deg,#dff20d,#c9dd00);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:white;">AP</div>
+      <span style="font-weight:700;font-size:16px;">APSA</span>
+    </div>
+  </a>
+  <div class="header-search">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input class="search-input" type="text" placeholder="Tìm công cụ..." id="searchInput" oninput="filterCards()" />
+  </div>
+  <nav>
+    <span id="apsaUserBadge" style="color:var(--text2); font-size:12px; display:flex; align-items:center; gap:8px; margin-right:4px;"></span>
+    <a href="#" onclick="openModal(); return false;" class="btn-add">+ Thêm công cụ</a>
+  </nav>
+</header>
+
+<!-- ── FEATURED ── -->
+<div class="featured-wrap">
+  <a class="featured-bar" href="https://manage.apsa.agency" target="_blank" rel="noopener">
+    <span class="fb-icon"><svg class="fb-svg" viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="27" width="10" height="17" fill="#ffffff"/>
+<rect x="19" y="16" width="10" height="28" fill="#dff20d"/>
+<rect x="34" y="6" width="10" height="38" fill="#5e5e5e"/></svg></span>
+    <span class="fb-title">Manage Dashboard</span>
+    <span class="fb-desc">Quản lý dự án, khách hàng, công việc và hiệu suất team</span>
+    <span class="fb-dot"></span>
+    <span class="fb-btn">
+      Mở
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </span>
+  </a>
+</div>
+
+<!-- ── FILTER ── -->
+<div class="filter-bar" id="filterBar">
+  <button class="filter-pill active" onclick="setFilter('all', this)">Tất cả</button>
+  <button class="filter-pill" onclick="setFilter('design', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4C12.4 4 3 12.7 3 23.5S12.4 43 24 43c3 0 5-1.8 5-4.3 0-1.3-.6-2.3-1.4-3.2-.8-.9-1.3-1.8-1.3-3 0-2.4 2-4.3 4.5-4.3H36c5.5 0 9-3.6 9-9C45 11.4 35.6 4 24 4Z" fill="#ffffff"/>
+<circle cx="13" cy="20" r="3.6" fill="#dff20d"/><circle cx="21" cy="13" r="3.6" fill="#5e5e5e"/>
+<circle cx="31" cy="14" r="3.6" fill="#dff20d"/><circle cx="12" cy="30" r="3.6" fill="#5e5e5e"/></svg> Design</button>
+  <button class="filter-pill" onclick="setFilter('content', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M33 4l11 11-4.5 4.5-11-11L33 4Z" fill="#5e5e5e"/>
+<path d="M26 11l11 11L16 43H5v-11L26 11Z" fill="#dff20d"/>
+<path d="M5 32h11v11" fill="#ffffff"/></svg> Nội dung</button>
+  <button class="filter-pill" onclick="setFilter('data', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="27" width="10" height="17" fill="#ffffff"/>
+<rect x="19" y="16" width="10" height="28" fill="#dff20d"/>
+<rect x="34" y="6" width="10" height="38" fill="#5e5e5e"/></svg> Dữ liệu</button>
+  <button class="filter-pill" onclick="setFilter('quote', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M9 4h20l10 10v30H9V4Z" fill="#ffffff"/><path d="M29 4l10 10H29V4Z" fill="#5e5e5e"/>
+<rect x="15" y="22" width="18" height="3.4" fill="#0d0d0d"/><rect x="15" y="30" width="12" height="3.4" fill="#0d0d0d"/>
+<rect x="15" y="38" width="18" height="3.4" fill="#dff20d"/></svg> Báo giá</button>
+  <button class="filter-pill" onclick="setFilter('media', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="9" width="40" height="30" rx="3" fill="#ffffff"/>
+<circle cx="15" cy="19" r="4.5" fill="#dff20d"/>
+<path d="M4 34l11-11 9 9 7-6 13 12v1H4z" fill="#5e5e5e"/>
+<rect x="4" y="35" width="40" height="4" fill="#5e5e5e"/></svg> Media</button>
+  <button class="filter-pill" onclick="setFilter('dev', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M20 3h8l1.2 6.1 4.6 2.7 5.6-2.6 4 6.9-4.4 4.3v5.2l4.4 4.3-4 6.9-5.6-2.6-4.6 2.7L28 45h-8l-1.2-6.1-4.6-2.7-5.6 2.6-4-6.9 4.4-4.3v-5.2L4.6 18l4-6.9 5.6 2.6 4.6-2.7L20 3Z" fill="#dff20d"/>
+<circle cx="24" cy="24" r="7.5" fill="#0d0d0d"/><circle cx="24" cy="24" r="3.6" fill="#ffffff"/></svg> Dev</button>
+  <button class="filter-pill" onclick="setFilter('utility', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M31 4a13 13 0 0 0-11.6 18.8L4 38.2 9.8 44l15.4-15.4A13 13 0 1 0 31 4Zm0 8a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z" fill="#dff20d"/>
+<rect x="6" y="34" width="8" height="4" rx="2" transform="rotate(-45 10 36)" fill="#ffffff"/></svg> Tiện ích</button>
+  <button class="filter-pill" onclick="setFilter('docs', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M9 4h20l10 10v30H9V4Z" fill="#ffffff"/><path d="M29 4l10 10H29V4Z" fill="#5e5e5e"/>
+<rect x="15" y="22" width="18" height="3.4" fill="#0d0d0d"/><rect x="15" y="30" width="12" height="3.4" fill="#0d0d0d"/>
+<rect x="15" y="38" width="18" height="3.4" fill="#dff20d"/></svg> Tài liệu</button>
+  <button class="filter-pill" onclick="setFilter('training', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 6 46 17 24 28 2 17 24 6Z" fill="#dff20d"/>
+<path d="M11 22v11c0 3.9 5.8 7 13 7s13-3.1 13-7V22l-13 6.5L11 22Z" fill="#ffffff"/>
+<rect x="42" y="17" width="3" height="15" fill="#5e5e5e"/><circle cx="43.5" cy="34" r="3.2" fill="#5e5e5e"/></svg> Training</button>
+</div>
+
+<!-- ── CÁ NHÂN HOÁ ── -->
+<div class="personal-bar">
+  <button class="pbtn" id="btnSort" onclick="toggleSortMode()">⠿ Sắp xếp &amp; ẩn</button>
+  <button class="pbtn" id="btnReset" onclick="resetLayout()" style="display:none">↺ Về mặc định</button>
+  <span class="phint" id="sortHint">Bấm ☆ trên thẻ để đưa vào nhóm <b>Thường dùng</b> · kéo thả thẳng vào thẻ để đổi vị trí — tất cả lưu riêng cho tài khoản của bạn và áp dụng luôn cho thanh bên trái.</span>
+</div>
+
+<!-- ── GRID ── -->
+<div class="container">
+  <section class="gsec pin" id="secPin" style="display:none">
+    <div class="ghead"><span class="gttl">★ Thường dùng</span><span class="gline"></span><span class="gnum" id="pinNum"></span></div>
+    <div class="grid" id="gridPin"></div>
+  </section>
+  <section class="gsec" id="secAll">
+    <div class="ghead"><span class="gttl" id="allTtl">Tất cả công cụ</span><span class="gline"></span><span class="gnum" id="allNum"></span></div>
+  <div class="grid" id="toolGrid">
+    <!-- Cards rendered by JS -->
+  </div>
+  </section>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <p>© 2026 <a href="https://apsa.agency">APSA Agency</a> · hello@apsa.agency · Chỉ dành cho nội bộ</p>
+</footer>
+
+<!-- ── ADD TOOL MODAL ── -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2>Thêm công cụ mới</h2>
+    <p>Thêm link đến trang HTML tiện ích của bạn.</p>
+
+    <div class="form-group">
+      <label>Tên công cụ *</label>
+      <input type="text" id="toolName" placeholder="VD: Tạo mã QR" />
+    </div>
+
+    <div class="form-group">
+      <label>Mô tả ngắn</label>
+      <input type="text" id="toolDesc" placeholder="VD: Tạo QR code từ link, wifi, danh thiếp..." />
+    </div>
+
+    <div class="form-group">
+      <label>Đường dẫn / URL *</label>
+      <input type="text" id="toolUrl" placeholder="VD: ./qr-tool.html hoặc https://..." />
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Danh mục</label>
+        <select id="toolCat">
+          <option value="utility">🔧 Tiện ích</option>
+          <option value="design">🎨 Design</option>
+          <option value="content">✍️ Nội dung</option>
+          <option value="quote">Báo giá</option>
+          <option value="data">📊 Dữ liệu</option>
+          <option value="media">🖼️ Media</option>
+          <option value="dev">⚙️ Dev</option>
+          <option value="docs">📄 Tài liệu</option>
+          <option value="training">🎓 Training</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Màu sắc</label>
+        <select id="toolColor">
+          <option value="#dff20d">💜 Tím (mặc định)</option>
+          <option value="#dff20d">💚 Xanh lá</option>
+          <option value="#ffffff">🩵 Xanh dương</option>
+          <option value="#ffffff">🧡 Cam</option>
+          <option value="#c9dd00">💗 Hồng</option>
+          <option value="#dff20d">💛 Vàng</option>
+          <option value="#ff4d4d">❤️ Đỏ</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Biểu tượng (chọn hoặc gõ emoji)</label>
+      <div class="emoji-grid" id="emojiGrid">
+        <!-- populated by JS -->
+      </div>
+      <input type="text" id="toolEmoji" placeholder="Hoặc gõ emoji tại đây..." style="margin-top:8px; border-radius:10px;" />
+    </div>
+
+    <button class="btn-primary" onclick="saveTool()">✓ Lưu công cụ</button>
+  </div>
+</div>
+
+<script>
+  // ── DEFAULT TOOLS ──────────────────────────────────────────────
+  const DEFAULT_TOOLS = [
+    { id: 1, ico: 'qr', name: 'Tạo mã QR', desc: 'Tạo QR code cho link / URL hoặc sự kiện lịch (Google & Apple Calendar). Lưu lịch sử vào database.', url: './event-qr-generator.html', cat: 'utility', emoji: '📲', color: '#dff20d', isNew: false },
+    { id: 17, ico: 'tag', name: 'Kho Logos', desc: 'Tải logo nhãn hàng dược, chuỗi nhà thuốc, bệnh viện, hiệp hội.', url: './logos.html', cat: 'design', emoji: '🏷️', color: '#c9dd00', isNew: true },
+    { id: 18, ico: 'book', name: 'Brand Guidelines', desc: 'Xem và tải brand guidelines các nhãn hàng: AZ, Tezspire, Ozempic...', url: './brand-guidelines.html', cat: 'docs', emoji: '📘', color: '#c9dd00', isNew: true },
+    // Tài liệu
+    { id: 90, ico: 'key', name: 'Accounts nhân viên', desc: 'Quản lý tài khoản các nền tảng của toàn bộ team APSA.', url: './accounts.html', cat: 'utility', emoji: '👤', color: '#dff20d', isNew: true },
+    // Training
+    { id: 23, ico: 'image', name: 'Thư viện ảnh', desc: 'Upload, nén WebP và lấy link ảnh trực tiếp. Tự động xoá EXIF/GPS, tối đa 25MB mỗi ảnh.', url: 'https://imglib.apsa.agency', cat: 'media', emoji: '🖼️', color: '#ffffff', isNew: true },
+    { id: 24, ico: 'spark', name: 'AI Studio', desc: 'Tạo hình ảnh và nội dung bằng AI cho các dự án của APSA.', url: 'https://ai.apsa.agency', cat: 'media', emoji: '✨', color: '#c9dd00', isNew: true },
+    { id: 25, ico: 'bulb', name: 'Inspiration', desc: 'Kéo thả ảnh, video, link Facebook / Instagram / YouTube để lưu ý tưởng khi làm sự kiện.', url: './inspiration.html', cat: 'design', emoji: '💡', color: '#dff20d', isNew: true },
+    { id: 26, ico: 'price', name: 'Rate Card', desc: 'Bảng giá tham khảo Event / Design / Media / In ấn — xem, thêm, sửa, xoá theo 3 hạng Basic/Standard/Premium.', url: './ratecard.html', cat: 'data', emoji: '💰', color: '#dff20d', isNew: true },
+    { id: 35, ico: 'grid', name: 'Làm việc', desc: 'Danh sách dự án đang thực hiện: ai đang phụ trách, phần việc, hạn chót, tiến độ và cảnh báo quá hạn. Bấm mở từng dự án để xem chi tiết.', url: './assignments.html', cat: 'utility', emoji: '🧑‍💼', color: '#dff20d', isNew: true },
+    { id: 27, ico: 'shield', name: 'Quản lý User', desc: 'Tạo, sửa, xoá tài khoản đăng nhập cho team. Chỉ Admin thao tác được.', url: './users.html', cat: 'utility', emoji: '🔐', color: '#ff4d4d', isNew: true },
+    { id: 34, ico: 'album', name: 'Album ảnh gửi khách', desc: 'Tạo album, upload ảnh (tự nén) rồi gửi link cho khách xem trên điện thoại — khách lướt, thả tim, chọn ảnh và ghi chú ngay trên link.', url: './albums.html', cat: 'media', emoji: '📸', color: '#dff20d', isNew: true },
+    { id: 32, ico: 'invoice', name: 'Báo giá & Nghiệm thu', desc: 'Soạn báo giá Event / Media / Khác theo công ty khách hàng, lấy hạng mục từ Rate Card, nhập số liệu nghiệm thu và xuất Excel đúng format APSA.', url: './quotation.html', cat: 'quote', emoji: '🧾', color: '#dff20d', isNew: true },
+    { id: 31, ico: 'building', name: 'Quản lý Công ty', desc: 'Danh sách công ty khách hàng: mã số thuế, địa chỉ, người liên hệ và tổng công nợ theo công ty.', url: './companies.html', cat: 'data', emoji: '🏢', color: '#ffffff', isNew: true },
+    { id: 29, ico: 'people', name: 'Quản lý Khách hàng', desc: 'Danh bạ người liên hệ theo công ty: tên, email, số điện thoại và lưu ý.', url: './customers.html', cat: 'data', emoji: '🤝', color: '#ffffff', isNew: true },
+    { id: 30, ico: 'card', name: 'Quản lý Công nợ', desc: 'Công nợ theo công ty: nhập nhanh khoản nợ, ghi nhận đã trả, cảnh báo nợ quá hạn.', url: './debts.html', cat: 'data', emoji: '💳', color: '#ffffff', isNew: true },
+    { id: 28, ico: 'shuttle', name: 'APSA Badminton Championship', desc: 'Trang giải cầu lông nội bộ 03.10.2026 — thông tin, đăng ký thi đấu, lịch thi đấu. Quản trị bài đăng & danh sách đăng ký.', url: './badminton/index.html', cat: 'utility', emoji: '🏸', color: '#dff20d', isNew: true },
+  ];
+
+  // Các công cụ đã gỡ bỏ — tự động xóa khỏi danh sách đã lưu trên máy người dùng
+  const REMOVED_TOOL_IDS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22];
+
+  const EMOJIS = ['🔧','⚙️','🛠️','📊','📈','📉','📁','📂','🔍','🔗','📲','🖼️','🎨','✍️','📝','📧','🪪','🔐','🔑','💡','🚀','⚡','🎯','🧩','📦','🗂️','💬','📣','🌐','🔄','✅','💎'];
+
+  let tools = [];
+  let currentFilter = 'all';
+  let selectedEmoji = '';
+  let nextId = 100;
+
+  // ── Cá nhân hoá theo tài khoản: thứ tự + module đã ẩn + công cụ tự thêm ──
+  let PREFS = { order: [], hidden: [], custom: [], pinned: [] };
+  let SORT_MODE = false;
+  let SAVE_TIMER = null;
+
+  const AUTH_API = './api/auth-api.php';
+  function prefsCacheKey() {
+    const u = window.__APSA_USER || {};
+    return 'apsa_home_prefs_' + (u.id || 'anon');
+  }
+  function apsaToast(msg) {
+    let t = document.getElementById('apsaToast');
+    if (!t) { t = document.createElement('div'); t.id = 'apsaToast'; t.className = 'apsa-toast'; document.body.appendChild(t); }
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2400);
+  }
+
+  async function loadPrefs() {
+    // 1) cache trong máy để hiện ngay, 2) server để đồng bộ giữa các máy
+    try {
+      const cached = JSON.parse(localStorage.getItem(prefsCacheKey()) || 'null');
+      if (cached && typeof cached === 'object') PREFS = Object.assign(PREFS, cached);
+    } catch (e) {}
+    try {
+      const res = await fetch(AUTH_API + '?action=prefs-get&key=home', { credentials: 'same-origin', cache: 'no-store' });
+      const j = await res.json();
+      if (j && j.ok && j.data && j.data.value && typeof j.data.value === 'object') {
+        PREFS = Object.assign({ order: [], hidden: [], custom: [], pinned: [] }, j.data.value);
+        localStorage.setItem(prefsCacheKey(), JSON.stringify(PREFS));
+      } else if (migrateLegacy()) {
+        savePrefs(true);   // lần đầu: chuyển dữ liệu cũ trong trình duyệt lên tài khoản
+      }
+    } catch (e) { /* offline → dùng cache */ }
+    PREFS.order  = Array.isArray(PREFS.order)  ? PREFS.order  : [];
+    PREFS.hidden = Array.isArray(PREFS.hidden) ? PREFS.hidden : [];
+    PREFS.custom = Array.isArray(PREFS.custom) ? PREFS.custom : [];
+    PREFS.pinned = Array.isArray(PREFS.pinned) ? PREFS.pinned : [];
+  }
+
+  // Chuyển công cụ tự thêm + thứ tự từ localStorage cũ (apsa_tools) sang tài khoản
+  function migrateLegacy() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('apsa_tools') || 'null');
+      if (!Array.isArray(saved) || !saved.length) return false;
+      const defIds = new Set(DEFAULT_TOOLS.map(t => t.id));
+      const keep = saved.filter(t => t && t.id != null && !REMOVED_TOOL_IDS.includes(t.id));
+      PREFS.custom = keep.filter(t => !defIds.has(t.id));
+      PREFS.order  = keep.map(t => t.id);
+      return true;
+    } catch (e) { return false; }
+  }
+
+  function savePrefs(immediate) {
+    try { localStorage.setItem(prefsCacheKey(), JSON.stringify(PREFS)); } catch (e) {}
+    // sidebar dùng chung thiết lập này — cập nhật ngay, không đợi tải lại trang
+    if (window.apsaSyncSidebar) { try { window.apsaSyncSidebar(PREFS); } catch (e) {} }
+    clearTimeout(SAVE_TIMER);
+    const doSave = async () => {
+      try {
+        const res = await fetch(AUTH_API + '?action=prefs-save', {
+          method: 'POST', credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: 'home', value: PREFS })
+        });
+        const j = await res.json();
+        if (!j.ok) throw new Error(j.error || 'Lưu thất bại');
+      } catch (e) { apsaToast('⚠️ Chưa lưu được lên máy chủ — đã lưu tạm trên máy này'); }
+    };
+    if (immediate) doSave(); else SAVE_TIMER = setTimeout(doSave, 600);
+  }
+
+  // Ghép danh sách công cụ theo thứ tự riêng của user
+  function buildTools() {
+    const base   = DEFAULT_TOOLS.filter(t => !REMOVED_TOOL_IDS.includes(t.id));
+    const custom = (PREFS.custom || []).filter(t => t && t.id != null && !REMOVED_TOOL_IDS.includes(t.id));
+    const all    = base.concat(custom);
+    const pos    = new Map((PREFS.order || []).map((id, i) => [id, i]));
+    all.forEach((t, i) => { t._i = i; });
+    all.sort((a, b) => {
+      const pa = pos.has(a.id) ? pos.get(a.id) : 9999 + a._i;
+      const pb = pos.has(b.id) ? pos.get(b.id) : 9999 + b._i;
+      return pa - pb;
+    });
+    tools = all;
+    const ids = tools.map(t => Number(t.id) || 0);
+    nextId = ids.length ? Math.max(100, Math.max.apply(null, ids) + 1) : 100;
+  }
+
+  function isHidden(id) { return (PREFS.hidden || []).includes(id); }
+  function isPinned(id) { return (PREFS.pinned || []).includes(id); }
+
+  /* Ghim / bỏ ghim — quyết định module nằm ở nhóm Thường dùng hay nhóm dưới */
+  function togglePin(e, id) {
+    e.preventDefault(); e.stopPropagation();
+    const p = new Set(PREFS.pinned || []);
+    if (p.has(id)) { p.delete(id); apsaToast('Đã bỏ khỏi Thường dùng'); }
+    else { p.add(id); apsaToast('Đã thêm vào Thường dùng'); }
+    PREFS.pinned = [...p];
+    savePrefs();
+    renderGrid();
+  }
+  function hiddenCount() { return tools.filter(t => isHidden(t.id)).length; }
+
+  // ── INIT ──────────────────────────────────────────────────────
+  // — AUTH BADGE / LOGOUT ——————————————————————————————
+  function apsaLogout() {
+    fetch('./api/auth-api.php?action=logout', { method: 'POST', credentials: 'same-origin' })
+      .then(() => { location.href = './login.html'; });
+  }
+  window.addEventListener('apsa-auth-ready', () => {
+    const u = window.__APSA_USER;
+    const el = document.getElementById('apsaUserBadge');
+    if (!u || !el) return;
+    el.innerHTML = (u.role === 'admin' ? '👑 ' : '') + (u.display_name || u.username) +
+      ' <a href="#" onclick="apsaLogout(); return false;" style="color:var(--text3); text-decoration:none; margin-left:6px;">Đăng xuất</a>';
+  });
+
+  async function init() {
+    buildTools();          // hiện ngay bố cục mặc định
+    renderGrid();
+    renderEmojiPicker();
+    await loadPrefs();     // rồi áp tuỳ chỉnh riêng của user
+    buildTools();
+    renderGrid();
+    if (window.apsaSyncSidebar) { try { window.apsaSyncSidebar(PREFS); } catch (e) {} }
+  }
+
+  // ── RENDER ────────────────────────────────────────────────────
+  // ── BỘ ICON 2D (SVG sprite ở đầu <body>) ─────────────────────
+  const ICO_SET = new Set(['palette','pen','gear','wrench','cap','qr','tag','book','key','image','spark','bulb','price','shield','people','card','shuttle','chart','signal','doc','grid','building','invoice','album']);
+  const ICO_BY_EMOJI = {'\uD83D\uDCF2':'qr','\uD83C\uDFF7':'tag','\uD83D\uDCD8':'book','\uD83D\uDC64':'key','\uD83D\uDD11':'key',
+    '\uD83D\uDDBC':'image','\u2728':'spark','\uD83D\uDCA1':'bulb','\uD83D\uDCB0':'price','\uD83D\uDD10':'shield','\uD83E\uDD1D':'people',
+    '\uD83D\uDC65':'people','\uD83D\uDCB3':'card','\uD83C\uDFF8':'shuttle','\uD83D\uDCCA':'chart','\uD83D\uDCE1':'signal',
+    '\uD83D\uDCDD':'doc','\uD83D\uDCCB':'doc','\uD83D\uDCC4':'doc','\uD83D\uDD27':'grid','\u2699':'grid','\uD83D\uDC4B':'people',
+    '\uD83C\uDFE2':'building','\uD83E\uDDFE':'invoice','\uD83D\uDCF8':'album','\uD83D\uDCC1':'album'};
+  function icoHtml(t){
+    const e = (t.emoji || '').replace(/\uFE0F/g,'');
+    const k = (t.ico && ICO_SET.has(t.ico)) ? t.ico : (ICO_BY_EMOJI[e] || null);
+    if (k) return '<svg class="ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#ico-' + k + '"/></svg>';
+    return '<span class="ico-emoji">' + (t.emoji || '') + '</span>';
+  }
+
+  function renderGrid() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = tools.filter(t => {
+      if (!SORT_MODE && isHidden(t.id)) return false;      // đã ẩn thì không hiện (trừ khi đang sắp xếp)
+      const matchCat = currentFilter === 'all' || t.cat === currentFilter;
+      const matchQ = !q || t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q);
+      return matchCat && matchQ;
+    });
+
+    const countEl = document.getElementById('toolCount');
+    if (countEl) countEl.textContent = tools.filter(t => !isHidden(t.id)).length;
+
+    const grid = document.getElementById('toolGrid');
+    const gpin = document.getElementById('gridPin');
+    grid.innerHTML = ''; gpin.innerHTML = '';
+    grid.classList.toggle('sorting', SORT_MODE);
+    gpin.classList.toggle('sorting', SORT_MODE);
+
+    const defIds = new Set(DEFAULT_TOOLS.map(d => d.id));
+    let nPin = 0, nAll = 0;
+
+    filtered.forEach(t => {
+      const card = document.createElement('a');
+      card.href = SORT_MODE ? 'javascript:void(0)' : t.url;
+      if (!SORT_MODE && /^https?:\/\//i.test(t.url)) { card.target = '_blank'; card.rel = 'noopener'; }
+      card.className = 'card' + (isHidden(t.id) ? ' is-hidden' : '');
+      card.dataset.cat = t.cat;
+      card.dataset.id  = t.id;
+      card.style.setProperty('--card-color', t.color);
+      card.style.setProperty('--icon-bg', t.color + '22');
+
+      const pinned = isPinned(t.id);
+      const star = `<button class="card-star${pinned ? ' on' : ''}" title="${pinned ? 'Bỏ khỏi nhóm Thường dùng' : 'Đưa vào nhóm Thường dùng'}"
+              onclick="togglePin(event, ${t.id})">${pinned ? '★' : '☆'}</button>`;
+      const acts = SORT_MODE ? `
+        <div class="card-acts">
+          <button class="card-act" title="${isHidden(t.id) ? 'Hiện lại công cụ này' : 'Ẩn công cụ này khỏi trang chủ'}"
+                  onclick="toggleHide(event, ${t.id})">${isHidden(t.id) ? '👁' : '🚫'}</button>
+          ${defIds.has(t.id) ? '' : `<button class="card-act del" title="Xoá công cụ tự thêm" onclick="deleteCustom(event, ${t.id})">🗑</button>`}
+        </div>` : '';
+
+      card.innerHTML = `
+        ${t.isNew && !SORT_MODE ? '<span class="badge-new">New</span>' : ''}
+        ${star}
+        ${acts}
+        <div class="card-icon">${icoHtml(t)}</div>
+        <div class="card-body">
+          <div class="card-title">${t.name}</div>
+          <div class="card-desc">${t.desc}</div>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">${catLabel(t.cat)}</span>
+          <span class="card-arrow">
+            <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </span>
+        </div>
+      `;
+      card.draggable = false;
+      card.addEventListener('dragstart', e => e.preventDefault());   // chặn kéo link mặc định của trình duyệt
+      card.addEventListener('pointerdown', e => dragStart(e, card));
+      if (SORT_MODE) card.addEventListener('click', e => e.preventDefault());
+      if (pinned) { gpin.appendChild(card); nPin++; }
+      else        { grid.appendChild(card); nAll++; }
+    });
+
+    // Khối Thường dùng: chỉ hiện khi có thẻ, hoặc khi đang sắp xếp để có chỗ kéo vào
+    const secPin = document.getElementById('secPin');
+    secPin.style.display = (nPin || SORT_MODE) ? '' : 'none';
+    if (!nPin && SORT_MODE) {
+      const d = document.createElement('div');
+      d.className = 'gdrop';
+      d.textContent = 'Kéo module vào đây, hoặc bấm ☆ trên thẻ để đưa vào Thường dùng';
+      gpin.appendChild(d);
+    }
+    const pn = document.getElementById('pinNum'); if (pn) pn.textContent = nPin ? nPin + ' module' : '';
+    const an = document.getElementById('allNum'); if (an) an.textContent = nAll ? nAll + ' module' : '';
+    const at = document.getElementById('allTtl'); if (at) at.textContent = nPin ? 'Còn lại' : 'Tất cả công cụ';
+
+    // Add card
+    if (!SORT_MODE) {
+      const addCard = document.createElement('div');
+      addCard.className = 'card card-add';
+      addCard.onclick = openModal;
+      addCard.innerHTML = `
+        <div class="card-add-icon">＋</div>
+        <div class="card-add-text">Thêm công cụ mới</div>
+      `;
+      grid.appendChild(addCard);
+    }
+
+    const btnSort = document.getElementById('btnSort');
+    if (btnSort) {
+      const n = hiddenCount();
+      btnSort.classList.toggle('on', SORT_MODE);
+      btnSort.innerHTML = SORT_MODE
+        ? '✓ Xong'
+        : '⠿ Sắp xếp &amp; ẩn' + (n ? ' <span class="n">' + n + ' đã ẩn</span>' : '');
+    }
+  }
+
+  // ── CHẾ ĐỘ SẮP XẾP ────────────────────────────────────────────
+  function toggleSortMode() {
+    SORT_MODE = !SORT_MODE;
+    const fb = document.getElementById('filterBar');
+    const hint = document.getElementById('sortHint');
+    const reset = document.getElementById('btnReset');
+    if (SORT_MODE) {
+      currentFilter = 'all';
+      document.querySelectorAll('.filter-pill').forEach((b, i) => b.classList.toggle('active', i === 0));
+      document.getElementById('searchInput').value = '';
+      if (fb) fb.classList.add('locked');
+      if (reset) reset.style.display = '';
+      if (hint) hint.textContent = 'Kéo thả thẻ để đổi vị trí, kéo qua lại giữa hai nhóm để ghim / bỏ ghim · 🚫 ẩn công cụ · 👁 hiện lại · bấm “Xong” khi hoàn tất.';
+    } else {
+      if (fb) fb.classList.remove('locked');
+      if (reset) reset.style.display = 'none';
+      if (hint) hint.innerHTML = 'Bấm ☆ trên thẻ để đưa vào nhóm <b>Thường dùng</b> · kéo thả thẳng vào thẻ để đổi vị trí — tất cả lưu riêng cho tài khoản của bạn và áp dụng luôn cho thanh bên trái.';
+    }
+    renderGrid();
+  }
+
+  function toggleHide(e, id) {
+    e.preventDefault(); e.stopPropagation();
+    const h = new Set(PREFS.hidden || []);
+    if (h.has(id)) { h.delete(id); apsaToast('Đã hiện lại công cụ'); }
+    else { h.add(id); apsaToast('Đã ẩn khỏi trang chủ của bạn'); }
+    PREFS.hidden = [...h];
+    savePrefs();
+    renderGrid();
+  }
+
+  function deleteCustom(e, id) {
+    e.preventDefault(); e.stopPropagation();
+    const t = tools.find(x => x.id === id);
+    if (!t) return;
+    if (!confirm('Xoá công cụ “' + t.name + '” khỏi trang chủ của bạn?')) return;
+    PREFS.custom = (PREFS.custom || []).filter(x => x.id !== id);
+    PREFS.order  = (PREFS.order  || []).filter(x => x !== id);
+    PREFS.hidden = (PREFS.hidden || []).filter(x => x !== id);
+    PREFS.pinned = (PREFS.pinned || []).filter(x => x !== id);
+    savePrefs();
+    buildTools(); renderGrid();
+    apsaToast('Đã xoá công cụ');
+  }
+
+  function resetLayout() {
+    if (!confirm('Đưa trang chủ về bố cục mặc định? (Công cụ bạn tự thêm vẫn được giữ lại)')) return;
+    PREFS.order = []; PREFS.hidden = []; PREFS.pinned = [];
+    savePrefs(true);
+    buildTools(); renderGrid();
+    apsaToast('Đã đưa về bố cục mặc định');
+  }
+
+  function saveOrderFromDom() {
+    const gpin = document.getElementById('gridPin');
+    const grid = document.getElementById('toolGrid');
+    const pinIds = [...gpin.querySelectorAll('.card[data-id]')].map(el => Number(el.dataset.id));
+    const allIds = [...grid.querySelectorAll('.card[data-id]')].map(el => Number(el.dataset.id));
+    const ids = pinIds.concat(allIds);
+    if (!ids.length) return;
+    // Thẻ đang bị bộ lọc / đang ẩn: chèn lại đúng vị trí cũ thay vì dồn xuống cuối
+    const old = (PREFS.order && PREFS.order.length) ? PREFS.order.slice() : tools.map(t => t.id);
+    const out = ids.slice();
+    old.filter(id => ids.indexOf(id) === -1)
+       .map(id => ({ id: id, idx: old.indexOf(id) }))
+       .sort((a, b) => a.idx - b.idx)
+       .forEach(m => out.splice(Math.min(m.idx, out.length), 0, m.id));
+    tools.forEach(t => { if (out.indexOf(t.id) === -1) out.push(t.id); });
+    PREFS.order = out;
+    // Ghim lại theo đúng khối thẻ đang nằm; thẻ đang bị lọc / bị ẩn thì giữ nguyên
+    const shown = new Set(ids);
+    PREFS.pinned = (PREFS.pinned || []).filter(id => !shown.has(id)).concat(pinIds);
+    buildTools();
+    savePrefs();
+  }
+
+  // ── KÉO THẢ (chuột + cảm ứng) ─────────────────────────────────
+  let DRAG = null;
+  function dragStart(e, card) {
+    if (e.button !== undefined && e.button !== 0) return;
+    if (e.target.closest && e.target.closest('.card-act')) return;
+    // Trên màn hình cảm ứng chỉ kéo trong chế độ Sắp xếp (để vuốt cuộn trang vẫn bình thường)
+    if (e.pointerType === 'touch' && !SORT_MODE) return;
+    if (SORT_MODE) e.preventDefault();   // không cho bôi đen chữ khi đang sắp xếp
+    const r = card.getBoundingClientRect();
+    DRAG = { card, id: e.pointerId, x0: e.clientX, y0: e.clientY,
+             ox: e.clientX - r.left, oy: e.clientY - r.top, w: r.width, h: r.height, moved: false, ghost: null };
+    document.addEventListener('pointermove', dragMove);
+    document.addEventListener('pointerup', dragEnd);
+    document.addEventListener('pointercancel', dragEnd);
+  }
+
+  function dragMove(e) {
+    if (!DRAG) return;
+    if (!DRAG.moved) {
+      if (Math.abs(e.clientX - DRAG.x0) < 5 && Math.abs(e.clientY - DRAG.y0) < 5) return;
+      DRAG.moved = true;
+      document.body.style.userSelect = 'none';
+      const g = DRAG.card.cloneNode(true);
+      g.className = DRAG.card.className + ' card-drag-ghost';
+      g.style.width = DRAG.w + 'px'; g.style.height = DRAG.h + 'px';
+      document.body.appendChild(g);
+      DRAG.ghost = g;
+      DRAG.card.classList.add('drag-placeholder');
+    }
+    e.preventDefault();
+    DRAG.ghost.style.left = (e.clientX - DRAG.ox) + 'px';
+    DRAG.ghost.style.top  = (e.clientY - DRAG.oy) + 'px';
+
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const over = el && el.closest ? el.closest('.card[data-id]') : null;
+    if (over && over !== DRAG.card) {
+      const r = over.getBoundingClientRect();
+      const after = (e.clientX - r.left) > r.width / 2;
+      over.parentNode.insertBefore(DRAG.card, after ? over.nextSibling : over);
+    } else {
+      // thả vào vùng trống của một khối (VD khối Thường dùng đang rỗng)
+      const g = el && el.closest ? el.closest('.grid') : null;
+      if (g && DRAG.card.parentNode !== g) {
+        const d = g.querySelector('.gdrop'); if (d) d.remove();
+        g.appendChild(DRAG.card);
+      }
+    }
+  }
+
+  function dragEnd() {
+    if (!DRAG) return;
+    document.removeEventListener('pointermove', dragMove);
+    document.removeEventListener('pointerup', dragEnd);
+    document.removeEventListener('pointercancel', dragEnd);
+    if (DRAG.ghost) DRAG.ghost.remove();
+    DRAG.card.classList.remove('drag-placeholder');
+    document.body.style.userSelect = '';
+    const moved = DRAG.moved, card = DRAG.card;
+    DRAG = null;
+    if (moved) {
+      // vừa kéo xong thì không mở link
+      const guard = ev => { ev.preventDefault(); ev.stopPropagation(); };
+      card.addEventListener('click', guard, true);
+      setTimeout(() => card.removeEventListener('click', guard, true), 400);
+      saveOrderFromDom();
+      renderGrid();
+      apsaToast('Đã lưu thứ tự mới');
+    }
+  }
+
+  function catLabel(cat) {
+    const m = { utility:'Tiện ích', design:'Design', content:'Nội dung', data:'Dữ liệu', media:'Media', dev:'Dev', docs:'Tài liệu', training:'Training', quote:'Báo giá' };
+    return m[cat] || cat;
+  }
+
+  function renderEmojiPicker() {
+    const g = document.getElementById('emojiGrid');
+    g.innerHTML = '';
+    EMOJIS.forEach(e => {
+      const btn = document.createElement('button');
+      btn.className = 'emoji-btn';
+      btn.textContent = e;
+      btn.type = 'button';
+      btn.onclick = () => {
+        document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedEmoji = e;
+        document.getElementById('toolEmoji').value = e;
+      };
+      g.appendChild(btn);
+    });
+  }
+
+  // ── FILTER ────────────────────────────────────────────────────
+  function setFilter(cat, btn) {
+    currentFilter = cat;
+    document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderGrid();
+  }
+
+  function filterCards() { renderGrid(); }
+
+  // ── MODAL ────────────────────────────────────────────────────
+  function openModal() {
+    document.getElementById('modalOverlay').classList.add('open');
+    document.getElementById('toolName').focus();
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+    resetForm();
+  }
+
+  function closeModalOutside(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  }
+
+  function resetForm() {
+    ['toolName','toolDesc','toolUrl','toolEmoji'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('toolCat').selectedIndex = 0;
+    document.getElementById('toolColor').selectedIndex = 0;
+    document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+    selectedEmoji = '';
+  }
+
+  function saveTool() {
+    const name = document.getElementById('toolName').value.trim();
+    const url  = document.getElementById('toolUrl').value.trim();
+    if (!name || !url) { alert('Vui lòng nhập tên và đường dẫn.'); return; }
+
+    const emoji = document.getElementById('toolEmoji').value.trim() || selectedEmoji || '🔧';
+    const tool = {
+      id: nextId++,
+      name,
+      desc: document.getElementById('toolDesc').value.trim() || 'Không có mô tả.',
+      url,
+      cat: document.getElementById('toolCat').value,
+      color: document.getElementById('toolColor').value,
+      emoji,
+      isNew: true,
+    };
+
+    PREFS.custom = (PREFS.custom || []).concat([tool]);
+    PREFS.order  = (PREFS.order  || []).concat([tool.id]);
+    savePrefs(true);
+    buildTools();
+    closeModal();
+    renderGrid();
+    apsaToast('Đã thêm công cụ vào trang chủ của bạn');
+  }
+
+  // ── KEYBOARD ──────────────────────────────────────────────────
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  if (window.__APSA_USER) init();
+  else window.addEventListener('apsa-auth-ready', init);
+
+  // ── VISIT TRACKING ────────────────────────────────────────────
+  // Ghi lượt truy cập trang index vào database qua tracking-api.php.
+  // Gửi khi người dùng rời trang (sendBeacon hoạt động cả khi đóng tab).
+  (function () {
+    const TRACK_URL = './api/tracking-api.php';
+    const pageStart = Date.now();
+    let sent = false;
+
+    function sendVisit() {
+      if (sent) return;
+      sent = true;
+      const data = JSON.stringify({
+        project:      'APSA Toolkits',
+        user_name:    localStorage.getItem('apsa_visitor_name') || 'Visitor',
+        hospital:     null,
+        started_at:   pageStart,
+        slide:        'index',
+        view_seconds: Math.round((Date.now() - pageStart) / 100) / 10,
+        // ip: server tự lấy
+      });
+      try {
+        navigator.sendBeacon(TRACK_URL, new Blob([data], { type: 'application/json' }));
+      } catch (e) {
+        fetch(TRACK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: data, keepalive: true }).catch(() => {});
+      }
+    }
+
+    // pagehide bao phủ cả đóng tab, chuyển trang, reload
+    window.addEventListener('pagehide', sendVisit);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') sendVisit();
+    });
+  })();
+</script>
+</body>
+</html>
