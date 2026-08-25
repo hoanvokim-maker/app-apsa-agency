@@ -1,0 +1,5 @@
+# APSA - rewrite cho link rut gon:  /u/<ma>  ->  /u.php?c=<ma>
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^u/([A-Za-z0-9_-]{3,32})/?$ /u.php?c=$1 [L,QSA]
+</IfModule>
