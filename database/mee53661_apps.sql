@@ -346,9 +346,9 @@ CREATE TABLE `app_user_prefs` (
 
 LOCK TABLES `app_user_prefs` WRITE;
 /*!40000 ALTER TABLE `app_user_prefs` DISABLE KEYS */;
-INSERT INTO `app_user_prefs` VALUES (1,'home','{\"order\":[32,33,30,29,26,31,90,17,18,1,23,25,28,24,35,34,27],\"hidden\":[28,18,17,23],\"custom\":[],\"pinned\":[32,30,29,26,31]}','2026-08-25 05:28:23');
-INSERT INTO `app_user_prefs` VALUES (1,'quo_recent','[{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787635725173},{\"id\":2,\"code\":\"20082026-148\",\"title\":\"AZ-CVRM-TRANING-2508\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-20\",\"at\":1787627724142},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787627587040},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787568163546},{\"id\":282,\"code\":\"25022026-150\",\"title\":\"AZ-R&I-RESPI-SUMMIT\",\"client\":\"AstraZeneca\",\"date\":\"2026-02-25\",\"at\":1787567097632},{\"id\":160,\"code\":\"02122025-257\",\"title\":\"AZ_OBU-RDU Plenary and TA session (NC 2026)\",\"client\":\"Công Ty TNHH AstraZeneca\",\"date\":\"2025-12-02\",\"at\":1787566879376},{\"id\":150,\"code\":\"26122025-267\",\"title\":\"AZ-BBC - Recap 2025\",\"client\":\"Công Ty TNHH AstraZeneca\",\"date\":\"2025-12-26\",\"at\":1787566446152},{\"id\":20,\"code\":\"28072026-130\",\"title\":\"AZ-RI-Synagis-Booth-1408\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-28\",\"at\":1787564644515},{\"id\":123,\"code\":\"25022026-27\",\"title\":\"AZ-ONCO-SUMMIT-LC-Launch\",\"client\":\"AstraZeneca\",\"date\":\"2026-02-25\",\"at\":1787564093760},{\"id\":8,\"code\":\"12082026-142\",\"title\":\"AZ-ONCO-PEAKSharing-VietDuc-25Aug\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-12\",\"at\":1787557279547}]','2026-08-25 05:28:45');
-INSERT INTO `app_user_prefs` VALUES (1,'ui','{\"font_size\":\"md\"}','2026-08-24 15:39:49');
+INSERT INTO `app_user_prefs` VALUES (1,'home','{\"order\":[32,33,30,29,26,31,90,17,18,1,23,25,28,24,35,34,27],\"hidden\":[28],\"custom\":[],\"pinned\":[32,30,29,26,31]}','2026-08-25 06:08:36');
+INSERT INTO `app_user_prefs` VALUES (1,'quo_recent','[{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787637484417},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787637383225},{\"id\":2,\"code\":\"20082026-148\",\"title\":\"AZ-CVRM-TRANING-2508\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-20\",\"at\":1787627724142},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787627587040},{\"id\":282,\"code\":\"25022026-150\",\"title\":\"AZ-R&I-RESPI-SUMMIT\",\"client\":\"AstraZeneca\",\"date\":\"2026-02-25\",\"at\":1787567097632},{\"id\":160,\"code\":\"02122025-257\",\"title\":\"AZ_OBU-RDU Plenary and TA session (NC 2026)\",\"client\":\"Công Ty TNHH AstraZeneca\",\"date\":\"2025-12-02\",\"at\":1787566879376},{\"id\":150,\"code\":\"26122025-267\",\"title\":\"AZ-BBC - Recap 2025\",\"client\":\"Công Ty TNHH AstraZeneca\",\"date\":\"2025-12-26\",\"at\":1787566446152},{\"id\":20,\"code\":\"28072026-130\",\"title\":\"AZ-RI-Synagis-Booth-1408\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-28\",\"at\":1787564644515},{\"id\":123,\"code\":\"25022026-27\",\"title\":\"AZ-ONCO-SUMMIT-LC-Launch\",\"client\":\"AstraZeneca\",\"date\":\"2026-02-25\",\"at\":1787564093760},{\"id\":8,\"code\":\"12082026-142\",\"title\":\"AZ-ONCO-PEAKSharing-VietDuc-25Aug\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-12\",\"at\":1787557279547}]','2026-08-25 05:58:05');
+INSERT INTO `app_user_prefs` VALUES (1,'ui','{\"font_size\":\"md\"}','2026-08-25 05:56:31');
 INSERT INTO `app_user_prefs` VALUES (3,'home','{\"order\":[32,26,30,1,17,18,90,23,24,25,27,28,29,35,34,31],\"hidden\":[28],\"custom\":[]}','2026-08-24 02:48:51');
 INSERT INTO `app_user_prefs` VALUES (3,'quo_recent','[{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787565621783},{\"id\":30,\"code\":\"19072026-120\",\"title\":\"AZ-ONCO-PEAKSharing-175\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-19\",\"at\":1787540605254},{\"id\":8,\"code\":\"12082026-142\",\"title\":\"AZ-ONCO-PEAKSharing-VietDuc-25Aug\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-12\",\"at\":1787540250289},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787539299199}]','2026-08-24 10:00:22');
 INSERT INTO `app_user_prefs` VALUES (5,'home','{\"order\":[32,26,30,1,29,27,17,18,90,91,23,24,25,28,35,34,31],\"hidden\":[],\"custom\":[{\"id\":91,\"name\":\"JD Account Executive\",\"desc\":\"Không có mô tả.\",\"url\":\"https:\\/\\/apsa.agency\\/\",\"cat\":\"utility\",\"color\":\"#6c63ff\",\"emoji\":\"🧩\",\"isNew\":true,\"_i\":16}]}','2026-08-24 03:47:21');
@@ -357,6 +357,8 @@ INSERT INTO `app_user_prefs` VALUES (5,'ui','{\"font_size\":\"xl\"}','2026-08-24
 INSERT INTO `app_user_prefs` VALUES (7,'home','{\"order\":[32,1,17,18,90,23,24,25,26,35,27,34,31,29,30,28],\"hidden\":[34,31,28],\"custom\":[]}','2026-08-24 03:59:09');
 INSERT INTO `app_user_prefs` VALUES (7,'quo_recent','[{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787568241648},{\"id\":33,\"code\":\"15072026-117\",\"title\":\"OGN-Minisympo-2026-Session-2\",\"client\":\"Organon\",\"date\":\"2026-07-15\",\"at\":1787558968374},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787543976353}]','2026-08-24 10:44:02');
 INSERT INTO `app_user_prefs` VALUES (7,'ui','{\"font_size\":\"xl\"}','2026-08-24 07:46:16');
+INSERT INTO `app_user_prefs` VALUES (8,'ui','{\"font_size\":\"xl\"}','2026-08-25 06:03:41');
+INSERT INTO `app_user_prefs` VALUES (9,'home','{\"order\":[1,17,18,90,23,24,25,26,35,27,34,32,31,29,30,28],\"hidden\":[],\"custom\":[],\"pinned\":[1]}','2026-08-25 05:30:57');
 /*!40000 ALTER TABLE `app_user_prefs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -400,7 +402,7 @@ INSERT INTO `app_users` VALUES (4,'trangdo','$2y$10$8m6yCJl5LcyfI86PkVMFI.f01sVu
 INSERT INTO `app_users` VALUES (5,'nhattan','$2y$10$W8tp/Ef.JYD/V.XURuNJseFsfThk2KGlZM71rxdupY6chvGTv9Ep.','Nhật Tân','member',1,'2026-08-11 04:38:13','2026-08-24 08:57:34','2026-08-24 08:57:34',NULL,'inhouse',1,NULL,NULL,NULL);
 INSERT INTO `app_users` VALUES (6,'cankim','$2y$10$02p2Ljt1T7pbjDC5aFZ.T.H90nY52ggV0V8iYRxCIyc2FmQuAnbA.','Anh Kim','member',1,'2026-08-11 04:39:10','2026-08-24 06:54:26','2026-08-24 06:54:26',NULL,'inhouse',1,NULL,NULL,NULL);
 INSERT INTO `app_users` VALUES (7,'anhthu','$2y$10$XdyxyHCs3lSZ.fJG3NOBvOlk5KhQONtosEv0oLyVUDfaJXeUIiU6G','Anh Thư','member',1,'2026-08-11 04:39:27','2026-08-24 03:58:36','2026-08-24 03:58:36',NULL,'inhouse',1,NULL,NULL,NULL);
-INSERT INTO `app_users` VALUES (8,'minhtri','$2y$10$IXJyjUkkuQCINWGIhBGRsu6hlAJ4jeuf7XPTFBUjsu62TVf/lj2Zq','Minh Trí','member',1,'2026-08-11 14:03:06','2026-08-20 04:54:33',NULL,NULL,'inhouse',1,NULL,NULL,NULL);
+INSERT INTO `app_users` VALUES (8,'minhtri','$2y$10$DefjfsNDrXtCXWlJku2fDujVDtvLlaW3aCmVGcAzJbqEjhgMDw6za','Minh Trí','member',1,'2026-08-11 14:03:06','2026-08-25 06:00:06','2026-08-25 06:00:06',NULL,'inhouse',1,NULL,NULL,NULL);
 INSERT INTO `app_users` VALUES (9,'tientien','$2y$10$CjtsEP9TagGQMDVRln5Ftu0GFNKjGsGJL6wUhrrLxBg4ZR34qCxQS','Tiên Tiên','member',1,'2026-08-11 14:03:32','2026-08-25 05:26:51','2026-08-25 05:26:51',NULL,'inhouse',1,NULL,NULL,NULL);
 INSERT INTO `app_users` VALUES (10,'vyvy','$2y$10$JCqFrpMvEx7J.Q0/Lhb8Wu1FcQqsrHP4ihPFGUt455/iezkoVjm6a','Vy Vy','member',1,'2026-08-11 14:03:44','2026-08-25 04:04:38','2026-08-25 04:04:38',NULL,'inhouse',1,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `app_users` ENABLE KEYS */;
@@ -529,7 +531,7 @@ CREATE TABLE `badminton_registrations` (
   PRIMARY KEY (`id`),
   KEY `idx_category` (`category`),
   KEY `idx_created` (`created_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -545,6 +547,7 @@ INSERT INTO `badminton_registrations` VALUES (7,'doi_nam','Organon','Lê Hoàng 
 INSERT INTO `badminton_registrations` VALUES (8,'doi_nam','AstraZeneca','Lê Thành Tính','Lê Trương Phương Nhã','0946615127',8,'183.91.22.195','2026-08-12 03:00:43');
 INSERT INTO `badminton_registrations` VALUES (9,'doi_nam','Organon','Nguyễn Trần Minh Huy','Nguyễn Trần Hạnh Minh','0987626286',6,'42.118.145.127','2026-08-17 04:52:27');
 INSERT INTO `badminton_registrations` VALUES (10,'doi_nam_nu','Organon','Đào Ngọc Thiên Phúc','Huỳnh Kim Chi','0978058817',6,'115.79.6.142','2026-08-18 05:15:03');
+INSERT INTO `badminton_registrations` VALUES (11,'doi_nam_nu','Organon','Nguyễn Hoàng Tân','Đậu Đặng Minh Hằng','0703182210',NULL,'171.236.49.215','2026-08-25 05:37:24');
 /*!40000 ALTER TABLE `badminton_registrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1005,6 +1008,564 @@ INSERT INTO `inspiration_items` VALUES (13,'image','upload','D9A2EAC9-D95D-4F7E-
 UNLOCK TABLES;
 
 --
+-- Table structure for table `logo_files`
+--
+
+DROP TABLE IF EXISTS `logo_files`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `logo_files` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `item_id` int(11) NOT NULL,
+  `ext` varchar(12) NOT NULL,
+  `variant` varchar(24) DEFAULT NULL,
+  `orig_name` varchar(255) NOT NULL,
+  `path` varchar(500) NOT NULL,
+  `legacy` tinyint(1) NOT NULL DEFAULT 0,
+  `bytes` bigint(20) NOT NULL DEFAULT 0,
+  `is_preview` tinyint(1) NOT NULL DEFAULT 0,
+  `user_id` int(11) DEFAULT NULL,
+  `user_name` varchar(120) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_lf_item` (`item_id`),
+  KEY `idx_lf_path` (`path`(191))
+) ENGINE=InnoDB AUTO_INCREMENT=266 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `logo_files`
+--
+
+LOCK TABLES `logo_files` WRITE;
+/*!40000 ALTER TABLE `logo_files` DISABLE KEYS */;
+INSERT INTO `logo_files` VALUES (1,1,'png','2x','az_element.png','Pharmaceutical Logos/2x/az_element.png',1,10368,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (2,2,'png','4x','az_vae.png','Pharmaceutical Logos/4x/az_vae.png',1,22140,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (3,3,'svg',NULL,'airsupra-logo.svg','Pharmaceutical Logos/airsupra-logo.svg',1,137633,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (4,4,'svg',NULL,'alexion-logo.svg','Pharmaceutical Logos/alexion-logo.svg',1,20972,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (5,5,'eps',NULL,'AZ_RGB_H_COL.eps','Pharmaceutical Logos/AZ_RGB_H_COL.eps',1,507378,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (6,5,'png',NULL,'AZ_RGB_H_COL.png','Pharmaceutical Logos/AZ_RGB_H_COL.png',1,59012,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (7,6,'svg',NULL,'bevespi-logo.svg','Pharmaceutical Logos/bevespi-logo.svg',1,29287,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (8,7,'svg',NULL,'breztri-logo.svg','Pharmaceutical Logos/breztri-logo.svg',1,27347,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (9,8,'svg',NULL,'brilinta-logo.svg','Pharmaceutical Logos/brilinta-logo.svg',1,15959,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (10,9,'svg',NULL,'calquence-logo.svg','Pharmaceutical Logos/calquence-logo.svg',1,12132,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (11,10,'png',NULL,'Brilinta-Briventure.png','Pharmaceutical Logos/Character CVRM/Brilinta-Briventure.png',1,876928,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (12,11,'png',NULL,'Crestor-Mo.png','Pharmaceutical Logos/Character CVRM/Crestor-Mo.png',1,2643724,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (13,12,'png',NULL,'Forxiga-Than.png','Pharmaceutical Logos/Character CVRM/Forxiga-Than.png',1,529196,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (14,13,'png',NULL,'Forxiga-Tim.png','Pharmaceutical Logos/Character CVRM/Forxiga-Tim.png',1,981450,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (15,14,'png',NULL,'Forxiga-Tuy.png','Pharmaceutical Logos/Character CVRM/Forxiga-Tuy.png',1,613063,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (16,15,'png',NULL,'Lokehma-Lokelmon.png','Pharmaceutical Logos/Character CVRM/Lokehma-Lokelmon.png',1,2665069,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (17,16,'png',NULL,'ZOK.png','Pharmaceutical Logos/Character CVRM/ZOK.png',1,5056986,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (18,17,'svg',NULL,'fasenra-logo.svg','Pharmaceutical Logos/fasenra-logo.svg',1,14595,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (19,18,'ai',NULL,'Faslodex.ai','Pharmaceutical Logos/Faslodex.ai',1,713990,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (20,19,'png',NULL,'Forxiga-for-first-line.png','Pharmaceutical Logos/Forxiga-for-first-line.png',1,177784,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (21,20,'svg',NULL,'imfinzi-logo.svg','Pharmaceutical Logos/imfinzi-logo.svg',1,10889,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (22,21,'svg',NULL,'imjudo-logo.svg','Pharmaceutical Logos/imjudo-logo.svg',1,12391,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (23,22,'png',NULL,'Artboard 1 copy.png','Pharmaceutical Logos/LOGO ASTRAZENECA/Artboard 1 copy.png',1,10695,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (24,22,'png',NULL,'Artboard 1.png','Pharmaceutical Logos/LOGO ASTRAZENECA/Artboard 1.png',1,11469,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (25,23,'eps',NULL,'logo-astrazeneca.eps','Pharmaceutical Logos/logo-astrazeneca.eps',1,507378,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (26,24,'ai',NULL,'Logo-Forxiga.ai','Pharmaceutical Logos/Logo-Forxiga.ai',1,748086,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (27,25,'svg',NULL,'lokelma-logo.svg','Pharmaceutical Logos/lokelma-logo.svg',1,12760,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (28,26,'svg',NULL,'lynparza-logo.svg','Pharmaceutical Logos/lynparza-logo.svg',1,18159,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (29,27,'svg',NULL,'saphnelo-logo.svg','Pharmaceutical Logos/saphnelo-logo.svg',1,11305,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (30,28,'svg',NULL,'soliris-logo_no-bg.svg','Pharmaceutical Logos/soliris-logo_no-bg.svg',1,6646,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (31,26,'aco',NULL,'Lynparza.aco','Pharmaceutical Logos/Swatch-PTS/Lynparza.aco',1,631,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (32,29,'svg',NULL,'Symbicort.svg','Pharmaceutical Logos/Symbicort.svg',1,6935,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (33,30,'png',NULL,'synagis.png','Pharmaceutical Logos/synagis.png',1,20146,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (34,31,'svg',NULL,'tagrisso-logo.svg','Pharmaceutical Logos/tagrisso-logo.svg',1,13036,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (35,32,'png',NULL,'tezspire-logo.png','Pharmaceutical Logos/tezspire-logo.png',1,6662,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (36,33,'svg',NULL,'truqap-logo.svg','Pharmaceutical Logos/truqap-logo.svg',1,11383,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (37,34,'svg',NULL,'wainua-logo.svg','Pharmaceutical Logos/wainua-logo.svg',1,13766,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (38,35,'svg',NULL,'xigduo-logo.svg','Pharmaceutical Logos/xigduo-logo.svg',1,22707,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (39,36,'ai',NULL,'Logo Soft White RGB.ai','Pharmaceutical Logos/Logo Novartis 2026/Logo Soft White RGB.ai',1,110471,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (40,37,'png',NULL,'Logo Soft White RGB_Novartis.png','Pharmaceutical Logos/Logo Novartis 2026/Logo Soft White RGB_Novartis.png',1,34952,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (41,38,'ai',NULL,'Logo Warm Black RGB.ai','Pharmaceutical Logos/Logo Novartis 2026/Logo Warm Black RGB.ai',1,108175,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (42,39,'png',NULL,'Logo Warm Black RGB_Novartis.png','Pharmaceutical Logos/Logo Novartis 2026/Logo Warm Black RGB_Novartis.png',1,34945,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (43,40,'pdf',NULL,'Novartis Logo Overview.pdf','Pharmaceutical Logos/Novartis Logo/Novartis Logo Overview.pdf',1,43587,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (44,41,'ai',NULL,'Novartis Logo Black CMYK.ai','Pharmaceutical Logos/Novartis Logo/Print/CMYK/AI/Novartis Logo Black CMYK.ai',1,1633362,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (45,42,'ai',NULL,'Novartis Logo CMYK.ai','Pharmaceutical Logos/Novartis Logo/Print/CMYK/AI/Novartis Logo CMYK.ai',1,1640882,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (46,43,'ai',NULL,'Novartis Logo White CMYK.ai','Pharmaceutical Logos/Novartis Logo/Print/CMYK/AI/Novartis Logo White CMYK.ai',1,1625677,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (47,44,'ai',NULL,'Novartis Logo RGB 2.ai','Pharmaceutical Logos/Novartis Logo/Screen/RGB/AI/Novartis Logo RGB 2.ai',1,429706,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (48,45,'ai',NULL,'Novartis Logo RGB.ai','Pharmaceutical Logos/Novartis Logo/Screen/RGB/AI/Novartis Logo RGB.ai',1,429706,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (49,46,'ai',NULL,'Novartis Logo White RGB.ai','Pharmaceutical Logos/Novartis Logo/Screen/RGB/AI/Novartis Logo White RGB.ai',1,308334,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (50,45,'jpg',NULL,'Novartis Logo RGB.jpg','Pharmaceutical Logos/Novartis Logo/Screen/RGB/JPG/Novartis Logo RGB.jpg',1,637001,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (51,45,'png',NULL,'Novartis Logo RGB.png','Pharmaceutical Logos/Novartis Logo/Screen/RGB/PNG/Novartis Logo RGB.png',1,66163,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (52,46,'png',NULL,'Novartis Logo White RGB.png','Pharmaceutical Logos/Novartis Logo/Screen/RGB/PNG/Novartis Logo White RGB.png',1,63924,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (53,45,'svg',NULL,'Novartis Logo RGB.svg','Pharmaceutical Logos/Novartis Logo/Screen/RGB/SVG/Novartis Logo RGB.svg',1,4206,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (54,46,'svg',NULL,'Novartis Logo White RGB.svg','Pharmaceutical Logos/Novartis Logo/Screen/RGB/SVG/Novartis Logo White RGB.svg',1,3517,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (55,47,'jpg',NULL,'Opella-pharmacadamy-logo-CMYK-Beige-Gradient.jpg','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/CMYK/Opella-pharmacadamy-logo-CMYK-Beige-Gradient.jpg',1,1873743,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (56,48,'jpg',NULL,'Opella-pharmacadamy-logo-CMYK-Beige.jpg','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/CMYK/Opella-pharmacadamy-logo-CMYK-Beige.jpg',1,3175594,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (57,49,'jpg',NULL,'Opella-pharmacadamy-logo-CMYK-Green-Gradient.jpg','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/CMYK/Opella-pharmacadamy-logo-CMYK-Green-Gradient.jpg',1,1837284,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (58,50,'jpg',NULL,'Opella-pharmacadamy-logo-CMYK-Green.jpg','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/CMYK/Opella-pharmacadamy-logo-CMYK-Green.jpg',1,2009804,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (59,51,'ai',NULL,'Opella-pharmacadamy-logo-CMYK.ai','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/CMYK/Opella-pharmacadamy-logo-CMYK.ai',1,1888189,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (60,51,'pdf',NULL,'Opella-pharmacadamy-logo-CMYK.pdf','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/CMYK/Opella-pharmacadamy-logo-CMYK.pdf',1,613608,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (61,52,'zip',NULL,'Element.zip','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/Element.zip',1,1378734,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (62,53,'jpg',NULL,'Opella-pharmacadamy-logo-RGB-Beige-Gradient-no-PA.jpg','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB-Beige-Gradient-no-PA.jpg',1,710827,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (63,53,'png',NULL,'Opella-pharmacadamy-logo-RGB-Beige-Gradient-no-PA.png','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB-Beige-Gradient-no-PA.png',1,128871,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (64,54,'jpg',NULL,'Opella-pharmacadamy-logo-RGB-Beige-Gradient.jpg','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB-Beige-Gradient.jpg',1,826640,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (65,54,'png',NULL,'Opella-pharmacadamy-logo-RGB-Beige-Gradient.png','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB-Beige-Gradient.png',1,150680,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (66,55,'jpg',NULL,'Opella-pharmacadamy-logo-RGB-Beige-no-PA.jpg','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB-Beige-no-PA.jpg',1,1527481,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (67,55,'png',NULL,'Opella-pharmacadamy-logo-RGB-Beige-no-PA.png','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB-Beige-no-PA.png',1,123294,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (68,56,'jpg',NULL,'Opella-pharmacadamy-logo-RGB-Beige.jpg','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB-Beige.jpg',1,1589178,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (69,56,'png',NULL,'Opella-pharmacadamy-logo-RGB-Beige.png','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB-Beige.png',1,144036,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (70,57,'png',NULL,'Opella-pharmacadamy-logo-RGB-Black-no-PA.png','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB-Black-no-PA.png',1,122802,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (71,58,'jpg',NULL,'Opella-pharmacadamy-logo-RGB-Green-Gradient-no-PA.jpg','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB-Green-Gradient-no-PA.jpg',1,713957,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (72,58,'png',NULL,'Opella-pharmacadamy-logo-RGB-Green-Gradient-no-PA.png','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB-Green-Gradient-no-PA.png',1,130839,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (73,59,'jpg',NULL,'Opella-pharmacadamy-logo-RGB-Green-Gradient.jpg','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB-Green-Gradient.jpg',1,809114,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (74,59,'png',NULL,'Opella-pharmacadamy-logo-RGB-Green-Gradient.png','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB-Green-Gradient.png',1,151623,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (75,60,'jpg',NULL,'Opella-pharmacadamy-logo-RGB-Green-no-PA.jpg','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB-Green-no-PA.jpg',1,913571,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (76,60,'png',NULL,'Opella-pharmacadamy-logo-RGB-Green-no-PA.png','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB-Green-no-PA.png',1,123888,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (77,61,'jpg',NULL,'Opella-pharmacadamy-logo-RGB-Green.jpg','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB-Green.jpg',1,1041874,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (78,61,'png',NULL,'Opella-pharmacadamy-logo-RGB-Green.png','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB-Green.png',1,144772,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (79,62,'png',NULL,'Opella-pharmacadamy-logo-RGB-White-no-PA.png','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB-White-no-PA.png',1,112520,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (80,63,'ai',NULL,'Opella-pharmacadamy-logo-RGB.ai','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB.ai',1,907903,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (81,63,'pdf',NULL,'Opella-pharmacadamy-logo-RGB.pdf','Pharmaceutical Logos/Opella HH_Final Logo/1_Final Logo/RGB/Opella-pharmacadamy-logo-RGB.pdf',1,604395,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (82,64,'pdf',NULL,'20250228_Opella_VI_IdentityGuidelines_V0.2.pdf','Pharmaceutical Logos/Opella HH_Final Logo/20250228_Opella_VI_IdentityGuidelines_V0.2.pdf',1,16061907,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (83,65,'pdf',NULL,'241009_Opella_VI_Logo_Lockup_V2.1.pdf','Pharmaceutical Logos/Opella HH_Final Logo/241009_Opella_VI_Logo_Lockup_V2.1.pdf',1,2160131,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (84,66,'ai',NULL,'0206 - Opella_Adapt.ai','Pharmaceutical Logos/Opella HH_Final Logo/Opella Vietnam Logo/0206 - Opella_Adapt.ai',1,656462,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (85,67,'png',NULL,'Logo Opella VN (Black).png','Pharmaceutical Logos/Opella HH_Final Logo/Opella Vietnam Logo/Logo Opella VN (Black).png',1,57289,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (86,68,'png',NULL,'Logo Opella VN (Bold Green).png','Pharmaceutical Logos/Opella HH_Final Logo/Opella Vietnam Logo/Logo Opella VN (Bold Green).png',1,212851,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (87,69,'png',NULL,'Opella Vietnam (Bold Green).png','Pharmaceutical Logos/Opella HH_Final Logo/Opella Vietnam Logo/Opella Vietnam (Bold Green).png',1,564705,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (88,70,'png',NULL,'Opella Vietnam (Negative White).png','Pharmaceutical Logos/Opella HH_Final Logo/Opella Vietnam Logo/Opella Vietnam (Negative White).png',1,518944,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (89,71,'png',NULL,'Opella Vietnam (Positive Black).png','Pharmaceutical Logos/Opella HH_Final Logo/Opella Vietnam Logo/Opella Vietnam (Positive Black).png',1,503936,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (90,72,'png',NULL,'Opella Vietnam (Warm White).png','Pharmaceutical Logos/Opella HH_Final Logo/Opella Vietnam Logo/Opella Vietnam (Warm White).png',1,559270,1,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (91,73,'eps',NULL,'Health In your hands_Workmark_Bold Green_CMYK.eps','Pharmaceutical Logos/Opella HH_Final Logo/Opella_Health In Your Hands Logo/EPS/Health In your hands_Workmark_Bold Green_CMYK.eps',1,497470,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (92,74,'eps',NULL,'Health In your hands_Workmark_Negative_CMYK.eps','Pharmaceutical Logos/Opella HH_Final Logo/Opella_Health In Your Hands Logo/EPS/Health In your hands_Workmark_Negative_CMYK.eps',1,497282,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (93,75,'eps',NULL,'Health In your hands_Workmark_Positive_CMYK.eps','Pharmaceutical Logos/Opella HH_Final Logo/Opella_Health In Your Hands Logo/EPS/Health In your hands_Workmark_Positive_CMYK.eps',1,497358,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (94,76,'eps',NULL,'Health In your hands_Workmark_Warm White_CMYK.eps','Pharmaceutical Logos/Opella HH_Final Logo/Opella_Health In Your Hands Logo/EPS/Health In your hands_Workmark_Warm White_CMYK.eps',1,497386,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (95,77,'eps',NULL,'Opella_HIYH_Workmark_Bold Green_CMYK.eps','Pharmaceutical Logos/Opella HH_Final Logo/Opella_Health In Your Hands Logo/EPS/Opella_HIYH_Workmark_Bold Green_CMYK.eps',1,600378,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (96,78,'eps',NULL,'Opella_HIYH_Workmark_Negative_CMYK.eps','Pharmaceutical Logos/Opella HH_Final Logo/Opella_Health In Your Hands Logo/EPS/Opella_HIYH_Workmark_Negative_CMYK.eps',1,600134,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (97,79,'eps',NULL,'Opella_HIYH_Workmark_Positive_CMYK.eps','Pharmaceutical Logos/Opella HH_Final Logo/Opella_Health In Your Hands Logo/EPS/Opella_HIYH_Workmark_Positive_CMYK.eps',1,600206,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (98,80,'eps',NULL,'Opella_HIYH_Workmark_Warm White_CMYK.eps','Pharmaceutical Logos/Opella HH_Final Logo/Opella_Health In Your Hands Logo/EPS/Opella_HIYH_Workmark_Warm White_CMYK.eps',1,600282,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (99,73,'ai',NULL,'Health In your hands_Workmark_Bold Green_CMYK.ai','Pharmaceutical Logos/Opella HH_Final Logo/Opella_Health In Your Hands Logo/Illustrator/Health In your hands_Workmark_Bold Green_CMYK.ai',1,1251205,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (100,74,'ai',NULL,'Health In your hands_Workmark_Negative_CMYK.ai','Pharmaceutical Logos/Opella HH_Final Logo/Opella_Health In Your Hands Logo/Illustrator/Health In your hands_Workmark_Negative_CMYK.ai',1,1250582,0,NULL,NULL,'2026-08-25 13:25:59');
+INSERT INTO `logo_files` VALUES (101,75,'ai',NULL,'Health In your hands_Workmark_Positive_CMYK.ai','Pharmaceutical Logos/Opella HH_Final Logo/Opella_Health In Your Hands Logo/Illustrator/Health In your hands_Workmark_Positive_CMYK.ai',1,1250877,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (102,76,'ai',NULL,'Health In your hands_Workmark_Warm White_CMYK.ai','Pharmaceutical Logos/Opella HH_Final Logo/Opella_Health In Your Hands Logo/Illustrator/Health In your hands_Workmark_Warm White_CMYK.ai',1,1250912,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (103,77,'ai',NULL,'Opella_HIYH_Workmark_Bold Green_CMYK.ai','Pharmaceutical Logos/Opella HH_Final Logo/Opella_Health In Your Hands Logo/Illustrator/Opella_HIYH_Workmark_Bold Green_CMYK.ai',1,1240697,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (104,78,'ai',NULL,'Opella_HIYH_Workmark_Negative_CMYK.ai','Pharmaceutical Logos/Opella HH_Final Logo/Opella_Health In Your Hands Logo/Illustrator/Opella_HIYH_Workmark_Negative_CMYK.ai',1,1252890,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (105,79,'ai',NULL,'Opella_HIYH_Workmark_Positive_CMYK.ai','Pharmaceutical Logos/Opella HH_Final Logo/Opella_Health In Your Hands Logo/Illustrator/Opella_HIYH_Workmark_Positive_CMYK.ai',1,1253073,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (106,80,'ai',NULL,'Opella_HIYH_Workmark_Warm White_CMYK.ai','Pharmaceutical Logos/Opella HH_Final Logo/Opella_Health In Your Hands Logo/Illustrator/Opella_HIYH_Workmark_Warm White_CMYK.ai',1,1254395,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (107,81,'pptx',NULL,'20240705_Opella PPT Basic Template_V1_FONTEMBEDDED.pptx','Pharmaceutical Logos/Opella HH_Final Logo/Powerpoint Template/20240705_Opella PPT Basic Template_V1_FONTEMBEDDED.pptx',1,1371469,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (108,82,'pptx',NULL,'20240705_Opella PPT Extended Template_V1_FONTEMBEDDED.pptx','Pharmaceutical Logos/Opella HH_Final Logo/Powerpoint Template/20240705_Opella PPT Extended Template_V1_FONTEMBEDDED.pptx',1,1395239,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (109,83,'pptx',NULL,'20240718_Opella PPT Basic Template_V1.3_FONTEMBEDDED.pptx','Pharmaceutical Logos/Opella HH_Final Logo/Powerpoint Template/20240718_Opella PPT Basic Template_V1.3_FONTEMBEDDED.pptx',1,1620748,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (110,84,'pptx',NULL,'20240718_Opella PPT Extended Template_V1.3_FONTEMBEDDED.pptx','Pharmaceutical Logos/Opella HH_Final Logo/Powerpoint Template/20240718_Opella PPT Extended Template_V1.3_FONTEMBEDDED.pptx',1,1828948,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (111,85,'pdf',NULL,'24_035_Opella Logo Suite_CMYK_Contact sheet.pdf','Pharmaceutical Logos/Opella_Logo_Suite/CMYK/24_035_Opella Logo Suite_CMYK_Contact sheet.pdf',1,555423,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (112,86,'eps',NULL,'Opella_Workmark_ Warm White_CMYK.eps','Pharmaceutical Logos/Opella_Logo_Suite/CMYK/EPS/Opella_Workmark_ Warm White_CMYK.eps',1,508118,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (113,87,'eps',NULL,'Opella_Workmark_Bold Green_CMYK.eps','Pharmaceutical Logos/Opella_Logo_Suite/CMYK/EPS/Opella_Workmark_Bold Green_CMYK.eps',1,508150,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (114,88,'eps',NULL,'Opella_Workmark_Negative_CMYK.eps','Pharmaceutical Logos/Opella_Logo_Suite/CMYK/EPS/Opella_Workmark_Negative_CMYK.eps',1,508166,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (115,89,'eps',NULL,'Opella_Workmark_Positive_CMYK.eps','Pharmaceutical Logos/Opella_Logo_Suite/CMYK/EPS/Opella_Workmark_Positive_CMYK.eps',1,508174,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (116,86,'ai',NULL,'Opella_Workmark_ Warm White_CMYK.ai','Pharmaceutical Logos/Opella_Logo_Suite/CMYK/Illustrator/Opella_Workmark_ Warm White_CMYK.ai',1,1250303,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (117,87,'ai',NULL,'Opella_Workmark_Bold Green_CMYK.ai','Pharmaceutical Logos/Opella_Logo_Suite/CMYK/Illustrator/Opella_Workmark_Bold Green_CMYK.ai',1,1250336,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (118,88,'ai',NULL,'Opella_Workmark_Negative_CMYK.ai','Pharmaceutical Logos/Opella_Logo_Suite/CMYK/Illustrator/Opella_Workmark_Negative_CMYK.ai',1,1250270,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (119,89,'ai',NULL,'Opella_Workmark_Positive_CMYK.ai','Pharmaceutical Logos/Opella_Logo_Suite/CMYK/Illustrator/Opella_Workmark_Positive_CMYK.ai',1,1237022,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (120,86,'jpg',NULL,'Opella_Workmark_ Warm White_CMYK.jpg','Pharmaceutical Logos/Opella_Logo_Suite/CMYK/JPG/Opella_Workmark_ Warm White_CMYK.jpg',1,722763,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (121,87,'jpg',NULL,'Opella_Workmark_Bold Green_CMYK.jpg','Pharmaceutical Logos/Opella_Logo_Suite/CMYK/JPG/Opella_Workmark_Bold Green_CMYK.jpg',1,811197,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (122,89,'jpg',NULL,'Opella_Workmark_Positive_CMYK.jpg','Pharmaceutical Logos/Opella_Logo_Suite/CMYK/JPG/Opella_Workmark_Positive_CMYK.jpg',1,726489,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (123,86,'psd',NULL,'Opella_Workmark_ Warm White_CMYK.psd','Pharmaceutical Logos/Opella_Logo_Suite/CMYK/PSD/Opella_Workmark_ Warm White_CMYK.psd',1,882014,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (124,87,'psd',NULL,'Opella_Workmark_Bold Green_CMYK.psd','Pharmaceutical Logos/Opella_Logo_Suite/CMYK/PSD/Opella_Workmark_Bold Green_CMYK.psd',1,912720,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (125,88,'psd',NULL,'Opella_Workmark_Negative_CMYK.psd','Pharmaceutical Logos/Opella_Logo_Suite/CMYK/PSD/Opella_Workmark_Negative_CMYK.psd',1,828779,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (126,89,'psd',NULL,'Opella_Workmark_Positive_CMYK.psd','Pharmaceutical Logos/Opella_Logo_Suite/CMYK/PSD/Opella_Workmark_Positive_CMYK.psd',1,858084,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (127,90,'pdf',NULL,'24_035_Opella Logo Suite_PMS_Contact sheet.pdf','Pharmaceutical Logos/Opella_Logo_Suite/PANTONE/24_035_Opella Logo Suite_PMS_Contact sheet.pdf',1,539126,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (128,91,'eps',NULL,'Opella_Workmark_ Warm White_PANTONE 9285 C.eps','Pharmaceutical Logos/Opella_Logo_Suite/PANTONE/EPS/Opella_Workmark_ Warm White_PANTONE 9285 C.eps',1,505266,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (129,92,'eps',NULL,'Opella_Workmark_Bold Green_PANTONE 3537 C.eps','Pharmaceutical Logos/Opella_Logo_Suite/PANTONE/EPS/Opella_Workmark_Bold Green_PANTONE 3537 C.eps',1,505266,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (130,91,'ai',NULL,'Opella_Workmark_ Warm White_PANTONE 9285 C.ai','Pharmaceutical Logos/Opella_Logo_Suite/PANTONE/Illustrator/Opella_Workmark_ Warm White_PANTONE 9285 C.ai',1,754510,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (131,92,'ai',NULL,'Opella_Workmark_Bold Green_PANTONE 3537 C.ai','Pharmaceutical Logos/Opella_Logo_Suite/PANTONE/Illustrator/Opella_Workmark_Bold Green_PANTONE 3537 C.ai',1,742264,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (132,93,'zip',NULL,'PharmAcademy logo 2026.zip','Pharmaceutical Logos/Opella_Logo_Suite/PharmAcademy logo 2026.zip',1,23762041,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (133,94,'pdf',NULL,'24_035_Opella Logo Suite_RGB_Contact sheet.pdf','Pharmaceutical Logos/Opella_Logo_Suite/RGB/24_035_Opella Logo Suite_RGB_Contact sheet.pdf',1,67300,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (134,95,'ai',NULL,'Opella_Workmark_ Warm White_RGB.ai','Pharmaceutical Logos/Opella_Logo_Suite/RGB/Illustrator/Opella_Workmark_ Warm White_RGB.ai',1,215115,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (135,96,'ai',NULL,'Opella_Workmark_Bold Green_RGB.ai','Pharmaceutical Logos/Opella_Logo_Suite/RGB/Illustrator/Opella_Workmark_Bold Green_RGB.ai',1,215164,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (136,97,'ai',NULL,'Opella_Workmark_Negative_RGB.ai','Pharmaceutical Logos/Opella_Logo_Suite/RGB/Illustrator/Opella_Workmark_Negative_RGB.ai',1,215046,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (137,98,'ai',NULL,'Opella_Workmark_Positive_RGB.ai','Pharmaceutical Logos/Opella_Logo_Suite/RGB/Illustrator/Opella_Workmark_Positive_RGB.ai',1,202202,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (138,95,'png',NULL,'Opella_Workmark_ Warm White_RGB.png','Pharmaceutical Logos/Opella_Logo_Suite/RGB/PNG/Opella_Workmark_ Warm White_RGB.png',1,20508,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (139,96,'png',NULL,'Opella_Workmark_Bold Green_RGB.png','Pharmaceutical Logos/Opella_Logo_Suite/RGB/PNG/Opella_Workmark_Bold Green_RGB.png',1,20545,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (140,97,'png',NULL,'Opella_Workmark_Negative_RGB.png','Pharmaceutical Logos/Opella_Logo_Suite/RGB/PNG/Opella_Workmark_Negative_RGB.png',1,19210,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (141,98,'png',NULL,'Opella_Workmark_Positive_RGB.png','Pharmaceutical Logos/Opella_Logo_Suite/RGB/PNG/Opella_Workmark_Positive_RGB.png',1,20352,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (142,95,'svg',NULL,'Opella_Workmark_ Warm White_RGB.svg','Pharmaceutical Logos/Opella_Logo_Suite/RGB/SVG/Opella_Workmark_ Warm White_RGB.svg',1,3888,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (143,96,'svg',NULL,'Opella_Workmark_Bold Green_RGB.svg','Pharmaceutical Logos/Opella_Logo_Suite/RGB/SVG/Opella_Workmark_Bold Green_RGB.svg',1,3888,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (144,97,'svg',NULL,'Opella_Workmark_Negative_RGB.svg','Pharmaceutical Logos/Opella_Logo_Suite/RGB/SVG/Opella_Workmark_Negative_RGB.svg',1,3885,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (145,98,'svg',NULL,'Opella_Workmark_Positive_RGB.svg','Pharmaceutical Logos/Opella_Logo_Suite/RGB/SVG/Opella_Workmark_Positive_RGB.svg',1,3865,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (146,95,'jpg',NULL,'Opella_Workmark_ Warm White_RGB.jpg','Pharmaceutical Logos/Opella_Logo_Suite/Wordmark on background colors/Opella_Workmark_ Warm White_RGB.jpg',1,104928,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (147,96,'jpg',NULL,'Opella_Workmark_Bold Green_RGB.jpg','Pharmaceutical Logos/Opella_Logo_Suite/Wordmark on background colors/Opella_Workmark_Bold Green_RGB.jpg',1,104238,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (148,99,'zip',NULL,'PharmAcademy logo.zip','Pharmaceutical Logos/PharmAcademy logo.zip',1,23762041,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (149,100,'png',NULL,'280423_PMC_Logo-02_4.png','Pharmaceutical Logos/280423_PMC_Logo-02_4.png',1,98612,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (150,101,'png','4x','OGN@4x.png','Pharmaceutical Logos/4x/OGN@4x.png',1,67558,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (151,102,'png',NULL,'Abbot logo-blue-vertical.png','Pharmaceutical Logos/Abbot logo-blue-vertical.png',1,38280,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (152,103,'png',NULL,'Abbott_Logo_blue.png','Pharmaceutical Logos/Abbott_Logo_blue.png',1,220055,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (153,104,'ai',NULL,'CAREME.ai','Pharmaceutical Logos/CAREME.ai',1,344328,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (154,105,'svg',NULL,'gsk-1.svg','Pharmaceutical Logos/gsk-1.svg',1,1761,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (155,106,'png',NULL,'Logo_Sanofi_(2022).png','Pharmaceutical Logos/Logo_Sanofi_(2022).png',1,49467,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (156,107,'pdf',NULL,'MTP_PROFILE_BROCHURE_PRINT_FA_R18.pdf','Pharmaceutical Logos/MTP_PROFILE_BROCHURE_PRINT_FA_R18.pdf',1,21446636,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (157,108,'ai',NULL,'Organon-Logo-CMYK.ai','Pharmaceutical Logos/Organon-Logo-CMYK.ai',1,1205801,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (158,109,'ai',NULL,'Organon-Logo-RGB.ai','Pharmaceutical Logos/Organon-Logo-RGB.ai',1,364389,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (159,110,'svg',NULL,'Sanofi-2022.svg','Pharmaceutical Logos/Sanofi-2022.svg',1,4758,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (160,111,'png',NULL,'Sapharcen.png','Pharmaceutical Logos/Sapharcen.png',1,233498,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (161,112,'ai',NULL,'Viatris copy.ai','Pharmaceutical Logos/Viatris copy.ai',1,48137,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (162,112,'svg',NULL,'Viatris.svg','Pharmaceutical Logos/Viatris.svg',1,4531,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (163,113,'jpg',NULL,'Zuelling Pharma.jpg','Pharmaceutical Logos/Zuelling Pharma.jpg',1,146002,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (164,114,'png',NULL,'An-Khang.png','Pharmaceutical Logos/An-Khang.png',1,31720,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (165,115,'txt',NULL,'230524 HBD-TVDT Report.txt','Pharmaceutical Logos/Chuoi Nha Thuoc - Logo/230524 HBD-TVDT Report.txt',1,1200,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (166,116,'ai',NULL,'230524 HBD-TVDT.ai','Pharmaceutical Logos/Chuoi Nha Thuoc - Logo/230524 HBD-TVDT.ai',1,1146368,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (167,117,'ttf',NULL,'Comfortaa-Bold.ttf','Pharmaceutical Logos/Chuoi Nha Thuoc - Logo/Fonts/Comfortaa-Bold.ttf',1,111492,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (168,118,'otf',NULL,'SVN-GilroyBold.otf','Pharmaceutical Logos/Chuoi Nha Thuoc - Logo/Fonts/SVN-GilroyBold.otf',1,102104,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (169,119,'otf',NULL,'SVN-GilroyHeavy.otf','Pharmaceutical Logos/Chuoi Nha Thuoc - Logo/Fonts/SVN-GilroyHeavy.otf',1,104596,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (170,120,'png',NULL,'Artboard 1@4x.png','Pharmaceutical Logos/Long Chau/4x/Artboard 1@4x.png',1,1734372,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (171,121,'png',NULL,'Artboard 3 copy@4x.png','Pharmaceutical Logos/Long Chau/4x/Artboard 3 copy@4x.png',1,2004302,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (172,122,'png',NULL,'Artboard 3@4x.png','Pharmaceutical Logos/Long Chau/4x/Artboard 3@4x.png',1,1606182,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (173,123,'png',NULL,'Asset 1@4x.png','Pharmaceutical Logos/Long Chau/4x/Asset 1@4x.png',1,68317,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (174,124,'png',NULL,'LV@4x.png','Pharmaceutical Logos/Long Chau/4x/LV@4x.png',1,26024,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (175,125,'ai',NULL,'Hashtag (1).ai','Pharmaceutical Logos/Long Chau/Hashtag (1).ai',1,1415990,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (176,126,'ai',NULL,'HASHTAG.ai','Pharmaceutical Logos/Long Chau/HASHTAG.ai',1,1693206,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (177,127,'pdf',NULL,'Untitled-1.pdf','Pharmaceutical Logos/Long Chau/PDF/Untitled-1.pdf',1,977887,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (178,128,'pdf',NULL,'Untitled-3.pdf','Pharmaceutical Logos/Long Chau/PDF/Untitled-3.pdf',1,1946607,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (179,129,'png',NULL,'Longchau.png','Pharmaceutical Logos/Longchau.png',1,57911,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (180,130,'png',NULL,'trungson.png','Pharmaceutical Logos/trungson.png',1,149855,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (181,131,'png',NULL,'BV Nhietdoi.png','Pharmaceutical Logos/BV Nhietdoi.png',1,1348224,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (182,131,'psb',NULL,'BV Nhietdoi.psb','Pharmaceutical Logos/BV Nhietdoi.psb',1,4860003,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (183,132,'jpg',NULL,'BVNhandanGiaDinh.jpg','Pharmaceutical Logos/BVNhandanGiaDinh.jpg',1,89386,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (184,132,'png',NULL,'BVNhandanGiaDinh.png','Pharmaceutical Logos/BVNhandanGiaDinh.png',1,335987,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (185,133,'png',NULL,'BVThongnhat.png','Pharmaceutical Logos/BVThongnhat.png',1,2624883,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (186,134,'svg',NULL,'Food_and_Drug_Administration_logo.svg','Pharmaceutical Logos/Food_and_Drug_Administration_logo.svg',1,898,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (187,135,'png',NULL,'logo-benh-vien-trung-uong-hue.png','Pharmaceutical Logos/logo-benh-vien-trung-uong-hue.png',1,1673665,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (188,136,'png',NULL,'logo-bo-y-te-vector-inkythuatso copy 2.png','Pharmaceutical Logos/logo-bo-y-te-vector-inkythuatso/logo-bo-y-te-vector-inkythuatso copy 2.png',1,1737830,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (189,137,'png',NULL,'logo-bo-y-te-vector-inkythuatso copy 3.png','Pharmaceutical Logos/logo-bo-y-te-vector-inkythuatso/logo-bo-y-te-vector-inkythuatso copy 3.png',1,1510027,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (190,138,'png',NULL,'logo-bo-y-te-vector-inkythuatso copy 4.png','Pharmaceutical Logos/logo-bo-y-te-vector-inkythuatso/logo-bo-y-te-vector-inkythuatso copy 4.png',1,547089,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (191,139,'png',NULL,'logo-bo-y-te-vector-inkythuatso copy.png','Pharmaceutical Logos/logo-bo-y-te-vector-inkythuatso/logo-bo-y-te-vector-inkythuatso copy.png',1,658264,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (192,140,'png',NULL,'logo-bo-y-te-vector-inkythuatso-01.png','Pharmaceutical Logos/logo-bo-y-te-vector-inkythuatso/logo-bo-y-te-vector-inkythuatso-01.png',1,28827,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (193,139,'ai',NULL,'logo-bo-y-te-vector-inkythuatso.ai','Pharmaceutical Logos/logo-bo-y-te-vector-inkythuatso/logo-bo-y-te-vector-inkythuatso.ai',1,714910,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (194,139,'cdr',NULL,'logo-bo-y-te-vector-inkythuatso.cdr','Pharmaceutical Logos/logo-bo-y-te-vector-inkythuatso/logo-bo-y-te-vector-inkythuatso.cdr',1,31178,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (195,139,'eps',NULL,'logo-bo-y-te-vector-inkythuatso.eps','Pharmaceutical Logos/logo-bo-y-te-vector-inkythuatso/logo-bo-y-te-vector-inkythuatso.eps',1,5193550,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (196,139,'png',NULL,'logo-bo-y-te-vector-inkythuatso.png','Pharmaceutical Logos/logo-bo-y-te-vector-inkythuatso/logo-bo-y-te-vector-inkythuatso.png',1,330924,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (197,139,'svg',NULL,'logo-bo-y-te-vector-inkythuatso.svg','Pharmaceutical Logos/logo-bo-y-te-vector-inkythuatso/logo-bo-y-te-vector-inkythuatso.svg',1,119223,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (198,141,'png',NULL,'Logo-BV-UngBuou.png','Pharmaceutical Logos/Logo-BV-UngBuou.png',1,287131,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (199,142,'svg',NULL,'Ministry_of_Health_(Vietnam)_Logo.svg','Pharmaceutical Logos/Ministry_of_Health_(Vietnam)_Logo.svg',1,19356,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (200,143,'jpg',NULL,'ACC LOGO.jpg','Pharmaceutical Logos/ACC LOGO.jpg',1,125648,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (201,144,'png',NULL,'Chi hoi duoc nha thuoc TPHCM copy.png','Pharmaceutical Logos/Chi hoi duoc nha thuoc TPHCM copy.png',1,211331,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (202,145,'png',NULL,'Esc-logo.png','Pharmaceutical Logos/Esc-logo.png',1,20176,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (203,146,'png',NULL,'hoi Duoc Nt.png','Pharmaceutical Logos/hoi Duoc Nt.png',1,172736,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (204,147,'png',NULL,'Hoi KHHGĐ TPHCM.png','Pharmaceutical Logos/Hoi KHHGĐ TPHCM.png',1,510483,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (205,148,'ai',NULL,'logo hoi tim mach hoc viet nam.ai','Pharmaceutical Logos/Hoi tim mach hoc VN/logo hoi tim mach hoc viet nam.ai',1,86808,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (206,148,'png',NULL,'logo hoi tim mach hoc viet nam.png','Pharmaceutical Logos/Hoi tim mach hoc VN/logo hoi tim mach hoc viet nam.png',1,165615,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (207,149,'png',NULL,'hoi-noi-khoa-viet-nam copy.png','Pharmaceutical Logos/hoi-noi-khoa-viet-nam copy.png',1,264391,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (208,150,'png',NULL,'hoihohapvietnam.png','Pharmaceutical Logos/hoihohapvietnam.png',1,1496512,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (209,151,'png',NULL,'Hoikehoachoagiadinh.png','Pharmaceutical Logos/Hoikehoachoagiadinh.png',1,2793166,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (210,152,'ai',NULL,'HoiThapKhopHoc.ai','Pharmaceutical Logos/HoiThapKhopHoc.ai',1,718313,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (211,152,'png',NULL,'HOiThapKhopHoc.png','Pharmaceutical Logos/HOiThapKhopHoc.png',1,76939,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (212,153,'png',NULL,'HoitimmachhocVN (1).png','Pharmaceutical Logos/HoitimmachhocVN (1).png',1,66157,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (213,144,'jpg',NULL,'LOGO Chi hoi duoc nha thuoc TPHCM.jpg','Pharmaceutical Logos/LOGO Chi hoi duoc nha thuoc TPHCM.jpg',1,41580,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (214,154,'png',NULL,'LOGO Hoi duoc nha thuoc TPHCM.png','Pharmaceutical Logos/LOGO Hoi duoc nha thuoc TPHCM.png',1,400866,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (215,155,'jpg',NULL,'Logo Hoi.jpg','Pharmaceutical Logos/Logo Hoi.jpg',1,68704,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (216,156,'png',NULL,'Logo HoiDuocHocVietNam.png','Pharmaceutical Logos/Logo HoiDuocHocVietNam.png',1,4596317,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (217,157,'jpg',NULL,'Logo-hoi-duoc-hoc.jpg','Pharmaceutical Logos/Logo-hoi-duoc-hoc.jpg',1,250462,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (218,158,'ai',NULL,'logo-hoi-duoc.ai','Pharmaceutical Logos/logo-hoi-duoc.ai',1,766772,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (219,159,'png',NULL,'Logo-Hoi-Phoi-Viet-Nam.png','Pharmaceutical Logos/Logo-Hoi-Phoi-Viet-Nam.png',1,40683,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (220,160,'png',NULL,'LOGO-png Chi hoi duoc nha thuoc TPHCM.png','Pharmaceutical Logos/LOGO-png Chi hoi duoc nha thuoc TPHCM.png',1,252654,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (221,161,'png',NULL,'logohoga-3.png','Pharmaceutical Logos/logohoga-3.png',1,53193,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (222,162,'png',NULL,'pngfind.com-american-heart-association-png-4941665.png','Pharmaceutical Logos/pngfind.com-american-heart-association-png-4941665.png',1,26359,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (223,163,'ai',NULL,'AQUA_Tag_Black.ai','Pharmaceutical Logos/AQUA SMARTHOME-logo/AI/AQUA_Tag_Black.ai',1,528046,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (224,164,'ai',NULL,'AQUA_Tag_Blue.ai','Pharmaceutical Logos/AQUA SMARTHOME-logo/AI/AQUA_Tag_Blue.ai',1,526911,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (225,165,'ai',NULL,'AQUA_Tag_White.ai','Pharmaceutical Logos/AQUA SMARTHOME-logo/AI/AQUA_Tag_White.ai',1,528640,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (226,166,'jpg',NULL,'AQUA_Tag_Black-01.jpg','Pharmaceutical Logos/AQUA SMARTHOME-logo/AQUA smart home-Horizontal/AQUA_Tag_Black-01.jpg',1,354579,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (227,163,'png',NULL,'AQUA_Tag_Black.png','Pharmaceutical Logos/AQUA SMARTHOME-logo/AQUA smart home-Horizontal/AQUA_Tag_Black.png',1,109071,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (228,167,'jpg',NULL,'AQUA_Tag_Blue-01.jpg','Pharmaceutical Logos/AQUA SMARTHOME-logo/AQUA smart home-Horizontal/AQUA_Tag_Blue-01.jpg',1,532580,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (229,164,'png',NULL,'AQUA_Tag_Blue.png','Pharmaceutical Logos/AQUA SMARTHOME-logo/AQUA smart home-Horizontal/AQUA_Tag_Blue.png',1,109447,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (230,168,'jpg',NULL,'AQUA_Tag_White-01.jpg','Pharmaceutical Logos/AQUA SMARTHOME-logo/AQUA smart home-Horizontal/AQUA_Tag_White-01.jpg',1,345095,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (231,165,'png',NULL,'AQUA_Tag_White.png','Pharmaceutical Logos/AQUA SMARTHOME-logo/AQUA smart home-Horizontal/AQUA_Tag_White.png',1,100357,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (232,166,'jpg',NULL,'AQUA_Tag_Black-01.jpg','Pharmaceutical Logos/AQUA SMARTHOME-logo/AQUA smart home-Vertical/AQUA_Tag_Black-01.jpg',1,635481,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (233,163,'png',NULL,'AQUA_Tag_Black.png','Pharmaceutical Logos/AQUA SMARTHOME-logo/AQUA smart home-Vertical/AQUA_Tag_Black.png',1,204811,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (234,167,'jpg',NULL,'AQUA_Tag_Blue-01.jpg','Pharmaceutical Logos/AQUA SMARTHOME-logo/AQUA smart home-Vertical/AQUA_Tag_Blue-01.jpg',1,945627,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (235,164,'png',NULL,'AQUA_Tag_Blue.png','Pharmaceutical Logos/AQUA SMARTHOME-logo/AQUA smart home-Vertical/AQUA_Tag_Blue.png',1,205621,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (236,168,'jpg',NULL,'AQUA_Tag_White-01.jpg','Pharmaceutical Logos/AQUA SMARTHOME-logo/AQUA smart home-Vertical/AQUA_Tag_White-01.jpg',1,623527,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (237,165,'png',NULL,'AQUA_Tag_White.png','Pharmaceutical Logos/AQUA SMARTHOME-logo/AQUA smart home-Vertical/AQUA_Tag_White.png',1,189489,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (238,169,'png',NULL,'Screenshot 2025-07-12 at 09.03.45.png','Pharmaceutical Logos/AQUA SMARTHOME-logo/Screenshot 2025-07-12 at 09.03.45.png',1,141857,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (239,170,'png','2x','Asset 1_element.png','Pharmaceutical Logos/2x/Asset 1_element.png',1,89323,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (240,171,'png','3x','Asset 111_element.png','Pharmaceutical Logos/3x/Asset 111_element.png',1,23395,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (241,172,'png','3x','Asset 1@3x.png','Pharmaceutical Logos/3x/Asset 1@3x.png',1,27790,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (242,173,'png','3x','Master@3x-2.png','Pharmaceutical Logos/3x/Master@3x-2.png',1,8343278,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (243,174,'png','4x','AAA@4x.png','Pharmaceutical Logos/4x/AAA@4x.png',1,49578,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (244,175,'png','4x','Artboard 12@4x.png','Pharmaceutical Logos/4x/Artboard 12@4x.png',1,2173980,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (245,123,'png','4x','Asset 1@4x.png','Pharmaceutical Logos/4x/Asset 1@4x.png',1,22140,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (246,123,'png','4x','Asset-1@4x.png','Pharmaceutical Logos/4x/Asset-1@4x.png',1,120369,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (247,176,'psd',NULL,'AI_Image.psd','Pharmaceutical Logos/AI_Image.psd',1,153175473,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (248,177,'jpg',NULL,'dsfasdfdfdf.jpg','Pharmaceutical Logos/dsfasdfdfdf.jpg',1,58046,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (249,178,'png',NULL,'Gold Lead.png','Pharmaceutical Logos/Gold Lead.png',1,71560,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (250,179,'ai',NULL,'logo icon.ai','Pharmaceutical Logos/logo icon.ai',1,224683,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (251,180,'png',NULL,'Artboard 20.png','Pharmaceutical Logos/PNG/Artboard 20.png',1,10611,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (252,181,'png',NULL,'logo y360-01.png','Pharmaceutical Logos/Y360/logo y360-01.png',1,217000,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (253,182,'png',NULL,'logo y360-02.png','Pharmaceutical Logos/Y360/logo y360-02.png',1,199654,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (254,183,'ai',NULL,'logo y360.ai','Pharmaceutical Logos/Y360/logo y360.ai',1,353182,0,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (255,184,'jpg',NULL,'z7821516639682_6203c0e5aa5a6ee37cacf702226e8741.jpg','Pharmaceutical Logos/z7821516639682_6203c0e5aa5a6ee37cacf702226e8741.jpg',1,58046,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (256,185,'jpg',NULL,'z7821616206558_13182bdd8e8a81109a543dc85a92b6f5.jpg','Pharmaceutical Logos/z7821616206558_13182bdd8e8a81109a543dc85a92b6f5.jpg',1,86707,1,NULL,NULL,'2026-08-25 13:26:00');
+INSERT INTO `logo_files` VALUES (257,186,'png',NULL,'logo - hội dược học việt nam.png','Pharmaceutical Logos/logo - hội dược học việt nam.png',1,2173980,1,NULL,NULL,'2026-08-25 13:33:31');
+INSERT INTO `logo_files` VALUES (258,187,'ai',NULL,'Logo Bệnh viện K.ai','Pharmaceutical Logos/Logo Bệnh viện K.ai',1,128922,0,NULL,NULL,'2026-08-25 13:33:31');
+INSERT INTO `logo_files` VALUES (259,188,'svg',NULL,'Logo Hội dược nhà thuốc HCM.svg','Pharmaceutical Logos/Logo Hội dược nhà thuốc HCM.svg',1,25331,1,NULL,NULL,'2026-08-25 13:33:31');
+INSERT INTO `logo_files` VALUES (260,189,'psd',NULL,'logo hội hô hấp việt nam.psd','Pharmaceutical Logos/logo hội hô hấp việt nam.psd',1,4931538,0,NULL,NULL,'2026-08-25 13:33:31');
+INSERT INTO `logo_files` VALUES (261,190,'png',NULL,'Logo hội nhi khoa.png','Pharmaceutical Logos/Logo hội nhi khoa.png',1,673794,1,NULL,NULL,'2026-08-25 13:33:31');
+INSERT INTO `logo_files` VALUES (262,191,'png',NULL,'logo trung sơn_white outline.png','Pharmaceutical Logos/logo trung sơn_white outline.png',1,224852,1,NULL,NULL,'2026-08-25 13:33:31');
+/*!40000 ALTER TABLE `logo_files` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `logo_groups`
+--
+
+DROP TABLE IF EXISTS `logo_groups`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `logo_groups` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `gkey` varchar(40) NOT NULL,
+  `name` varchar(160) NOT NULL,
+  `icon` varchar(16) DEFAULT NULL,
+  `descr` varchar(400) DEFAULT NULL,
+  `sort` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_logo_gkey` (`gkey`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `logo_groups`
+--
+
+LOCK TABLES `logo_groups` WRITE;
+/*!40000 ALTER TABLE `logo_groups` DISABLE KEYS */;
+INSERT INTO `logo_groups` VALUES (1,'az','AstraZeneca & Nhãn thuốc AZ','🟣','Logo AstraZeneca và các nhãn thuốc: Breztri, Forxiga, Tagrisso, Symbicort, Tezspire…',1);
+INSERT INTO `logo_groups` VALUES (2,'novartis','Novartis','♥️','Novartis và các nhãn thuốc liên quan.',2);
+INSERT INTO `logo_groups` VALUES (3,'opella','Opella & PharmAcademy','🌿','Opella Healthcare, PharmAcademy và nhãn hàng trực thuộc.',3);
+INSERT INTO `logo_groups` VALUES (4,'pharma','Tập đoàn Dược khác','💊','Các tập đoàn và nhãn dược phẩm khác.',4);
+INSERT INTO `logo_groups` VALUES (5,'chain','Chuỗi nhà thuốc','🏪','Long Châu, Pharmacity, An Khang và các chuỗi khác.',5);
+INSERT INTO `logo_groups` VALUES (6,'hospital','Bệnh viện & Cơ quan Y tế','🏥','Logo bệnh viện, Bộ Y tế, FDA (đủ định dạng vector).',6);
+INSERT INTO `logo_groups` VALUES (7,'assoc','Hội & Hiệp hội','🤝','Các hội ngành y dược trong nước và quốc tế (ACC, ESC, AHA…).',7);
+INSERT INTO `logo_groups` VALUES (8,'aqua','AQUA Smart Home','🏠','Logo AQUA Smart Home bản dọc, ngang và file AI gốc.',8);
+INSERT INTO `logo_groups` VALUES (9,'other','Khác','🌍','Y360 và các asset, hình ảnh chưa phân loại.',9);
+/*!40000 ALTER TABLE `logo_groups` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `logo_items`
+--
+
+DROP TABLE IF EXISTS `logo_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `logo_items` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(200) NOT NULL,
+  `mkey` varchar(200) NOT NULL,
+  `gkey` varchar(40) NOT NULL DEFAULT 'other',
+  `note` varchar(500) DEFAULT NULL,
+  `cover_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `user_name` varchar(120) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_logo_g` (`gkey`),
+  KEY `idx_logo_k` (`mkey`)
+) ENGINE=InnoDB AUTO_INCREMENT=193 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `logo_items`
+--
+
+LOCK TABLES `logo_items` WRITE;
+/*!40000 ALTER TABLE `logo_items` DISABLE KEYS */;
+INSERT INTO `logo_items` VALUES (1,'az element','az element','az',NULL,1,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (2,'az vae','az vae','az',NULL,2,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (3,'airsupra logo','airsupra','az',NULL,3,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (4,'alexion logo','alexion','az',NULL,4,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (5,'AZ RGB H COL','az rgb h col','az',NULL,6,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (6,'bevespi logo','bevespi','az',NULL,7,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (7,'breztri logo','breztri','az',NULL,8,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (8,'brilinta logo','brilinta','az',NULL,9,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (9,'calquence logo','calquence','az',NULL,10,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (10,'Brilinta Briventure','brilinta briventure','az',NULL,11,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (11,'Crestor Mo','crestor mo','az',NULL,12,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (12,'Forxiga Than','forxiga than','az',NULL,13,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (13,'Forxiga Tim','forxiga tim','az',NULL,14,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (14,'Forxiga Tuy','forxiga tuy','az',NULL,15,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (15,'Lokehma Lokelmon','lokehma lokelmon','az',NULL,16,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (16,'ZOK','zok','az',NULL,17,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (17,'fasenra logo','fasenra','az',NULL,18,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (18,'Faslodex','faslodex','az',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (19,'Forxiga for first line','forxiga for first line','az',NULL,20,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (20,'imfinzi logo','imfinzi','az',NULL,21,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (21,'imjudo logo','imjudo','az',NULL,22,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (22,'Artboard 1 copy','artboard 1','az',NULL,23,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (23,'logo astrazeneca','astrazeneca','az',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (24,'Logo Forxiga','forxiga','az',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (25,'lokelma logo','lokelma','az',NULL,27,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (26,'lynparza logo','lynparza','az',NULL,28,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (27,'saphnelo logo','saphnelo','az',NULL,29,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (28,'soliris logo no bg','soliris no bg','az',NULL,30,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (29,'Symbicort','symbicort','az',NULL,32,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (30,'synagis','synagis','az',NULL,33,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (31,'tagrisso logo','tagrisso','az',NULL,34,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (32,'tezspire logo','tezspire','az',NULL,35,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (33,'truqap logo','truqap','az',NULL,36,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (34,'wainua logo','wainua','az',NULL,37,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (35,'xigduo logo','xigduo','az',NULL,38,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (36,'Logo Soft White RGB','soft white rgb','novartis',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (37,'Logo Soft White RGB Novartis','soft white rgb novartis','novartis',NULL,40,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (38,'Logo Warm Black RGB','warm black rgb','novartis',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (39,'Logo Warm Black RGB Novartis','warm black rgb novartis','novartis',NULL,42,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (40,'Novartis Logo Overview','novartis overview','novartis',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (41,'Novartis Logo Black CMYK','novartis black cmyk','novartis',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (42,'Novartis Logo CMYK','novartis cmyk','novartis',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (43,'Novartis Logo White CMYK','novartis white cmyk','novartis',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (44,'Novartis Logo RGB 2','novartis rgb 2','novartis',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (45,'Novartis Logo RGB','novartis rgb','novartis',NULL,53,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (46,'Novartis Logo White RGB','novartis white rgb','novartis',NULL,54,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (47,'Opella pharmacadamy logo CMYK Beige Gradient','opella pharmacadamy cmyk beige gradient','opella',NULL,55,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (48,'Opella pharmacadamy logo CMYK Beige','opella pharmacadamy cmyk beige','opella',NULL,56,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (49,'Opella pharmacadamy logo CMYK Green Gradient','opella pharmacadamy cmyk green gradient','opella',NULL,57,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (50,'Opella pharmacadamy logo CMYK Green','opella pharmacadamy cmyk green','opella',NULL,58,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (51,'Opella pharmacadamy logo CMYK','opella pharmacadamy cmyk','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (52,'Element','element','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (53,'Opella pharmacadamy logo RGB Beige Gradient no PA','opella pharmacadamy rgb beige gradient no pa','opella',NULL,63,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (54,'Opella pharmacadamy logo RGB Beige Gradient','opella pharmacadamy rgb beige gradient','opella',NULL,65,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (55,'Opella pharmacadamy logo RGB Beige no PA','opella pharmacadamy rgb beige no pa','opella',NULL,67,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (56,'Opella pharmacadamy logo RGB Beige','opella pharmacadamy rgb beige','opella',NULL,69,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (57,'Opella pharmacadamy logo RGB Black no PA','opella pharmacadamy rgb black no pa','opella',NULL,70,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (58,'Opella pharmacadamy logo RGB Green Gradient no PA','opella pharmacadamy rgb green gradient no pa','opella',NULL,72,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (59,'Opella pharmacadamy logo RGB Green Gradient','opella pharmacadamy rgb green gradient','opella',NULL,74,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (60,'Opella pharmacadamy logo RGB Green no PA','opella pharmacadamy rgb green no pa','opella',NULL,76,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (61,'Opella pharmacadamy logo RGB Green','opella pharmacadamy rgb green','opella',NULL,78,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (62,'Opella pharmacadamy logo RGB White no PA','opella pharmacadamy rgb white no pa','opella',NULL,79,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (63,'Opella pharmacadamy logo RGB','opella pharmacadamy rgb','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (64,'20250228 Opella VI IdentityGuidelines V0.2','20250228 opella vi identityguidelines v0 2','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (65,'241009 Opella VI Logo Lockup V2.1','241009 opella vi lockup v2 1','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (66,'0206 Opella Adapt','0206 opella adapt','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (67,'Logo Opella VN (Black)','opella vn (black)','opella',NULL,85,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (68,'Logo Opella VN (Bold Green)','opella vn (bold green)','opella',NULL,86,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (69,'Opella Vietnam (Bold Green)','opella vietnam (bold green)','opella',NULL,87,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (70,'Opella Vietnam (Negative White)','opella vietnam (negative white)','opella',NULL,88,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (71,'Opella Vietnam (Positive Black)','opella vietnam (positive black)','opella',NULL,89,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (72,'Opella Vietnam (Warm White)','opella vietnam (warm white)','opella',NULL,90,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (73,'Health In your hands Workmark Bold Green CMYK','health in your hands workmark bold green cmyk','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (74,'Health In your hands Workmark Negative CMYK','health in your hands workmark negative cmyk','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (75,'Health In your hands Workmark Positive CMYK','health in your hands workmark positive cmyk','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (76,'Health In your hands Workmark Warm White CMYK','health in your hands workmark warm white cmyk','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (77,'Opella HIYH Workmark Bold Green CMYK','opella hiyh workmark bold green cmyk','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (78,'Opella HIYH Workmark Negative CMYK','opella hiyh workmark negative cmyk','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (79,'Opella HIYH Workmark Positive CMYK','opella hiyh workmark positive cmyk','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (80,'Opella HIYH Workmark Warm White CMYK','opella hiyh workmark warm white cmyk','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:25:59','2026-08-25 13:25:59');
+INSERT INTO `logo_items` VALUES (81,'20240705 Opella PPT Basic Template V1 FONTEMBEDDED','20240705 opella ppt basic template v1 fontembedded','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (82,'20240705 Opella PPT Extended Template V1 FONTEMBEDDED','20240705 opella ppt extended template v1 fontembedded','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (83,'20240718 Opella PPT Basic Template V1.3 FONTEMBEDDED','20240718 opella ppt basic template v1 3 fontembedded','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (84,'20240718 Opella PPT Extended Template V1.3 FONTEMBEDDED','20240718 opella ppt extended template v1 3 fontembedded','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (85,'24 035 Opella Logo Suite CMYK Contact sheet','24 035 opella suite cmyk contact sheet','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (86,'Opella Workmark Warm White CMYK','opella workmark warm white cmyk','opella',NULL,120,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (87,'Opella Workmark Bold Green CMYK','opella workmark bold green cmyk','opella',NULL,121,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (88,'Opella Workmark Negative CMYK','opella workmark negative cmyk','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (89,'Opella Workmark Positive CMYK','opella workmark positive cmyk','opella',NULL,122,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (90,'24 035 Opella Logo Suite PMS Contact sheet','24 035 opella suite pms contact sheet','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (91,'Opella Workmark Warm White PANTONE 9285 C','opella workmark warm white pantone 9285 c','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (92,'Opella Workmark Bold Green PANTONE 3537 C','opella workmark bold green pantone 3537 c','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (93,'PharmAcademy logo 2026','pharmacademy 2026','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (94,'24 035 Opella Logo Suite RGB Contact sheet','24 035 opella suite rgb contact sheet','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (95,'Opella Workmark Warm White RGB','opella workmark warm white rgb','opella',NULL,142,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (96,'Opella Workmark Bold Green RGB','opella workmark bold green rgb','opella',NULL,143,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (97,'Opella Workmark Negative RGB','opella workmark negative rgb','opella',NULL,144,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (98,'Opella Workmark Positive RGB','opella workmark positive rgb','opella',NULL,145,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (99,'PharmAcademy logo','pharmacademy','opella',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (100,'280423 PMC Logo 02 4','280423 pmc 02 4','pharma',NULL,149,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (101,'OGN@4x','ogn@4x','pharma',NULL,150,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (102,'Abbot logo blue vertical','abbot blue vertical','pharma',NULL,151,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (103,'Abbott Logo blue','abbott blue','pharma',NULL,152,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (104,'CAREME','careme','pharma',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (105,'gsk 1','gsk 1','pharma',NULL,154,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (106,'Logo Sanofi (2022)','sanofi (2022)','pharma',NULL,155,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (107,'MTP PROFILE BROCHURE PRINT FA R18','mtp profile brochure print fa r18','pharma',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (108,'Organon Logo CMYK','organon cmyk','pharma',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (109,'Organon Logo RGB','organon rgb','pharma',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (110,'Sanofi 2022','sanofi 2022','pharma',NULL,159,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (111,'Sapharcen','sapharcen','pharma',NULL,160,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (112,'Viatris copy','viatris','pharma',NULL,162,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (113,'Zuelling Pharma','zuelling pharma','pharma',NULL,163,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (114,'An Khang','an khang','other',NULL,164,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (115,'230524 HBD TVDT Report','230524 hbd tvdt report','other',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (116,'230524 HBD TVDT','230524 hbd tvdt','other',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (117,'Comfortaa Bold','comfortaa bold','other',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (118,'SVN GilroyBold','svn gilroybold','other',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (119,'SVN GilroyHeavy','svn gilroyheavy','other',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (120,'Artboard 1@4x','artboard 1@4x','other',NULL,170,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (121,'Artboard 3 copy@4x','artboard 3 @4x','other',NULL,171,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (122,'Artboard 3@4x','artboard 3@4x','other',NULL,172,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (123,'Asset 1@4x','asset 1@4x','other',NULL,173,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (124,'LV@4x','lv@4x','other',NULL,174,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (125,'Hashtag (1)','hashtag (1)','other',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (126,'HASHTAG','hashtag','other',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (127,'Untitled 1','untitled 1','other',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (128,'Untitled 3','untitled 3','other',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (129,'Longchau','longchau','other',NULL,179,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (130,'trungson','trungson','other',NULL,180,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (131,'BV Nhietdoi','bv nhietdoi','hospital',NULL,181,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (132,'BVNhandanGiaDinh','bvnhandangiadinh','hospital',NULL,184,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (133,'BVThongnhat','bvthongnhat','hospital',NULL,185,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (134,'Food and Drug Administration logo','food and drug administration','hospital',NULL,186,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (135,'logo benh vien trung uong hue','benh vien trung uong hue','hospital',NULL,187,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (136,'logo bo y te vector inkythuatso copy 2','bo y te inkythuatso 2','hospital',NULL,188,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (137,'logo bo y te vector inkythuatso copy 3','bo y te inkythuatso 3','hospital',NULL,189,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (138,'logo bo y te vector inkythuatso copy 4','bo y te inkythuatso 4','hospital',NULL,190,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (139,'logo bo y te vector inkythuatso copy','bo y te inkythuatso','hospital',NULL,197,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (140,'logo bo y te vector inkythuatso 01','bo y te inkythuatso 01','hospital',NULL,192,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (141,'Logo BV UngBuou','bv ungbuou','hospital',NULL,198,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (142,'Ministry of Health (Vietnam) Logo','ministry of health (vietnam)','hospital',NULL,199,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (143,'ACC LOGO','acc','assoc',NULL,200,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (144,'Chi hoi duoc nha thuoc TPHCM copy','chi hoi duoc nha thuoc tphcm','assoc',NULL,201,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (145,'Esc logo','esc','assoc',NULL,202,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (146,'hoi Duoc Nt','hoi duoc nt','assoc',NULL,203,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (147,'Hoi KHHGĐ TPHCM','hoi khhgĐ tphcm','assoc',NULL,204,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (148,'logo hoi tim mach hoc viet nam','hoi tim mach hoc viet nam','assoc',NULL,206,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (149,'hoi noi khoa viet nam copy','hoi noi khoa viet nam','assoc',NULL,207,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (150,'hoihohapvietnam','hoihohapvietnam','assoc',NULL,208,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (151,'Hoikehoachoagiadinh','hoikehoachoagiadinh','assoc',NULL,209,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (152,'HoiThapKhopHoc','hoithapkhophoc','assoc',NULL,211,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (153,'HoitimmachhocVN (1)','hoitimmachhocvn (1)','assoc',NULL,212,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (154,'LOGO Hoi duoc nha thuoc TPHCM','hoi duoc nha thuoc tphcm','assoc',NULL,214,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (155,'Logo Hoi','hoi','assoc',NULL,215,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (156,'Logo HoiDuocHocVietNam','hoiduochocvietnam','assoc',NULL,216,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (157,'Logo hoi duoc hoc','hoi duoc hoc','assoc',NULL,217,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (158,'logo hoi duoc','hoi duoc','assoc',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (159,'Logo Hoi Phoi Viet Nam','hoi phoi viet nam','assoc',NULL,219,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (160,'LOGO png Chi hoi duoc nha thuoc TPHCM','png chi hoi duoc nha thuoc tphcm','assoc',NULL,220,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (161,'logohoga 3','logohoga 3','assoc',NULL,221,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (162,'pngfind.com american heart association png 4941665','pngfind com american heart association png 4941665','assoc',NULL,222,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (163,'AQUA Tag Black','aqua tag black','aqua',NULL,227,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (164,'AQUA Tag Blue','aqua tag blue','aqua',NULL,229,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (165,'AQUA Tag White','aqua tag white','aqua',NULL,231,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (166,'AQUA Tag Black 01','aqua tag black 01','aqua',NULL,226,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (167,'AQUA Tag Blue 01','aqua tag blue 01','aqua',NULL,228,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (168,'AQUA Tag White 01','aqua tag white 01','aqua',NULL,230,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (169,'Screenshot 2025 07 12 at 09.03.45','screenshot 2025 07 12 at 09 03 45','aqua',NULL,238,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (170,'Asset 1 element','asset 1 element','other',NULL,239,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (171,'Asset 111 element','asset 111 element','other',NULL,240,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (172,'Asset 1@3x','asset 1@3x','other',NULL,241,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (173,'Master@3x 2','master@3x 2','other',NULL,242,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (174,'AAA@4x','aaa@4x','other',NULL,243,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (175,'Artboard 12@4x','artboard 12@4x','other',NULL,244,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (176,'AI Image','ai image','other',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (177,'dsfasdfdfdf','dsfasdfdfdf','other',NULL,248,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (178,'Gold Lead','gold lead','other',NULL,249,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (179,'logo icon','icon','other',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (180,'Artboard 20','artboard 20','other',NULL,251,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (181,'logo y360 01','y360 01','other',NULL,252,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (182,'logo y360 02','y360 02','other',NULL,253,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (183,'logo y360','y360','other',NULL,NULL,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (184,'z7821516639682 6203c0e5aa5a6ee37cacf702226e8741','z7821516639682 6203c0e5aa5a6ee37cacf702226e8741','other',NULL,255,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (185,'z7821616206558 13182bdd8e8a81109a543dc85a92b6f5','z7821616206558 13182bdd8e8a81109a543dc85a92b6f5','other',NULL,256,NULL,NULL,'2026-08-25 13:26:00','2026-08-25 13:26:00');
+INSERT INTO `logo_items` VALUES (186,'logo hội dược học việt nam','hội dược học việt nam','other',NULL,257,NULL,NULL,'2026-08-25 13:33:31','2026-08-25 13:33:31');
+INSERT INTO `logo_items` VALUES (187,'Logo Bệnh viện K','bệnh viện k','other',NULL,NULL,NULL,NULL,'2026-08-25 13:33:31','2026-08-25 13:33:31');
+INSERT INTO `logo_items` VALUES (188,'Logo Hội dược nhà thuốc HCM','hội dược nhà thuốc hcm','other',NULL,259,NULL,NULL,'2026-08-25 13:33:31','2026-08-25 13:33:31');
+INSERT INTO `logo_items` VALUES (189,'logo hội hô hấp việt nam','hội hô hấp việt nam','other',NULL,NULL,NULL,NULL,'2026-08-25 13:33:31','2026-08-25 13:33:31');
+INSERT INTO `logo_items` VALUES (190,'Logo hội nhi khoa','hội nhi khoa','other',NULL,261,NULL,NULL,'2026-08-25 13:33:31','2026-08-25 13:33:31');
+INSERT INTO `logo_items` VALUES (191,'logo trung sơn white outline','trung sơn white outline','other',NULL,262,NULL,NULL,'2026-08-25 13:33:31','2026-08-25 13:33:31');
+/*!40000 ALTER TABLE `logo_items` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `qr_events`
 --
 
@@ -1030,7 +1591,7 @@ CREATE TABLE `qr_events` (
   KEY `idx_uid` (`uid`),
   KEY `idx_team` (`team`),
   KEY `idx_created` (`created_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1078,7 +1639,7 @@ CREATE TABLE `quotation_assignees` (
   KEY `idx_user` (`user_id`),
   KEY `idx_stat` (`status`),
   KEY `idx_due` (`due_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1088,7 +1649,8 @@ CREATE TABLE `quotation_assignees` (
 LOCK TABLES `quotation_assignees` WRITE;
 /*!40000 ALTER TABLE `quotation_assignees` DISABLE KEYS */;
 INSERT INTO `quotation_assignees` VALUES (1,3,7,'account','Quản lý chính','2026-08-24','doing',0,'Harris','2026-08-24 10:42:43','2026-08-24 10:42:43');
-INSERT INTO `quotation_assignees` VALUES (2,284,4,'admin','Liên hệ với chị Nga và làm việc menu','2026-08-25','doing',0,'Harris','2026-08-25 02:50:30','2026-08-25 02:50:30');
+INSERT INTO `quotation_assignees` VALUES (9,284,4,'admin','Liên hệ với chị Nga và làm việc menu','2026-08-25','doing',0,'Harris','2026-08-25 05:58:04','2026-08-25 05:58:04');
+INSERT INTO `quotation_assignees` VALUES (10,284,9,'designer','G',NULL,'todo',1,'Harris','2026-08-25 05:58:04','2026-08-25 05:58:04');
 /*!40000 ALTER TABLE `quotation_assignees` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1725,7 +2287,7 @@ CREATE TABLE `quotation_items` (
   `act_file_name` varchar(200) DEFAULT NULL COMMENT 'Tên file gốc',
   PRIMARY KEY (`id`),
   KEY `idx_quotation` (`quotation_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6688 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6704 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -5031,13 +5593,13 @@ INSERT INTO `quotation_items` VALUES (6658,3,'item','Hashtag','',4.00,'Cái',150
 INSERT INTO `quotation_items` VALUES (6659,3,'item','Chú hề ảo thuật','30 phút',1.00,'Người',1400000.00,'',15,1.00,'Người',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (6660,3,'item','Chú hề vặn bong bóng','60 phút',1.00,'Người',1200000.00,'',16,1.00,'Người',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (6661,3,'item','Lắp đặt, vận chuyển, tháo dỡ','',1.00,'Gói',4000000.00,'',17,1.00,'Gói',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (6666,284,'section','','Teabreak',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (6667,284,'item','Tea-break Sáng','HCM: 50\nHN: 15',65.00,'Pax',120000.00,'',1,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (6668,284,'item','Tea-break Chiều','HCM: 50\nHN: 15',65.00,'Pax',120000.00,'',2,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (6669,284,'item','Lunch','HCM: 50\nHN: 15',65.00,'Pax',150000.00,'',3,0.00,'',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (6685,148,'section','Shooting','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (6686,148,'item','Shooting','1h',1.00,'',3000000.00,'',1,1.00,'',3000000.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (6687,148,'item','Editor','',1.00,'',1000000.00,'',2,1.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (6700,284,'section','','Teabreak',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (6701,284,'item','Lunch','HCM: 50\nHN: 15',65.00,'Pax',150000.00,'',1,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (6702,284,'item','Tea-break Sáng','HCM: 50\nHN: 15',65.00,'Pax',120000.00,'',2,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (6703,284,'item','Tea-break Chiều','HCM: 50\nHN: 15',65.00,'Pax',120000.00,'',3,0.00,'',0.00,0.00,'',NULL,NULL);
 /*!40000 ALTER TABLE `quotation_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -5661,7 +6223,7 @@ CREATE TABLE `short_links` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_short_code` (`code`),
   KEY `idx_short_created` (`created_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
