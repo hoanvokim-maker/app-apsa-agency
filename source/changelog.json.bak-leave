@@ -1,33 +1,12 @@
 {
-    "version": "1.2.1",
+    "version": "1.1",
     "updated": "2026-08-25",
     "releases": [
-        {
-            "v": "1.2",
-            "date": "2026-08-25",
-            "note": "Phiên bản 1.2",
-            "items": [
-                {
-                    "d": "2026-08-25",
-                    "v": "1.2.1",
-                    "t": "Nang len 1.2. Cong ty lam ca thu 7 (ngay lam viec T2-T7 chinh duoc trong Cai dat). Cho phep xoa han don xin nghi da huy hoac bi tu choi. Them bo cong cu deploy/version/rollback.",
-                    "by": "mee53661"
-                }
-            ]
-        },
         {
             "v": "1.1",
             "date": "2026-08-24",
             "note": "Mốc phiên bản mới — từ đây mọi thay đổi đều được ghi lại tại trang này.",
             "items": [
-                {
-                    "d": "2026-08-25",
-                    "t": "Thêm trang Cài đặt hệ thống (chỉ Admin): cỡ chữ 3 mức, quỹ phép năm mặc định, giờ làm việc, ngày nghỉ lễ, loại nghỉ phép, thông tin công ty. Trạng thái dự án giờ thêm, sửa tên, đổi màu, kéo đổi thứ tự và xoá được; xoá trạng thái đang có dự án thì hệ thống hỏi chuyển sang trạng thái nào."
-                },
-                {
-                    "d": "2026-08-25",
-                    "t": "Thêm module Xin nghỉ phép: nhân viên nộp đơn nguyên ngày hoặc nửa ngày (sáng/chiều), hệ thống tự tính số ngày và bỏ qua thứ 7 - chủ nhật. Admin duyệt hoặc từ chối, duyệt xong tự tạo sự kiện trên lịch Outlook hello@apsa.agency và tự xoá sự kiện khi huỷ đơn. Có quỹ phép năm 14 ngày mỗi người, Admin chỉnh được."
-                },
                 {
                     "d": "2026-08-25",
                     "t": "Gộp trạng thái: 43 dự án đang ở Chờ thanh toán đã chuyển sang Đóng và chờ thanh toán, và bỏ hẳn trạng thái Chờ thanh toán khỏi danh sách. Danh sách trạng thái còn 9 mục."

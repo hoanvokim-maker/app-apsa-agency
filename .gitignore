@@ -2,3 +2,4 @@ source/logs/
 source/**/*.log
 source/api/mail-config.php
 .DS_Store
+source/api/msgraph-config.php

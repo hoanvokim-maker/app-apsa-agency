@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script>
+  document.documentElement.style.visibility = 'hidden';
+  fetch('./api/auth-api.php?action=me', { credentials: 'same-origin' })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(res => {
+      if (!res.ok) throw new Error();
+      window.__APSA_USER = res.data;
+      document.documentElement.style.visibility = 'visible';
+    })
+    .catch(() => {
+      location.replace('./login.html?next=' + encodeURIComponent(location.pathname + location.search));
+    });
+</script>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=1">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=1">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#dff20d">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>APSA — Xin nghỉ phép</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #000000; --bg2: #0b0b0b; --bg3: #141414; --bg4: #1c1c1c;
+      --border: rgba(255,255,255,0.08); --border-h: rgba(255,255,255,0.16);
+      --text: #ffffff; --text2: #9a9a9a; --text3: #5e5e5e;
+      --green: #dff20d; --pink: #c9dd00; --red: #ff4d4d;
+      --amber: #ffb020; --sky: #56ccf2;
+      --r: 11px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Oxanium', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(0,0,0,0.9); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      height: 60px; padding: 0 28px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo img { height: 26px; filter: brightness(0) invert(1); opacity: .9; display: block; }
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      color: var(--text2); text-decoration: none; font-size: 13px; font-weight: 500;
+      padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); transition: all .2s;
+    }
+    .back-btn:hover { color: var(--text); border-color: var(--border-h); }
+
+    /* ── PAGE HEAD ── */
+    .page-head { padding: 32px 28px 20px; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+    .page-head h1 { font-size: 26px; font-weight: 800; letter-spacing: -.5px; }
+    .page-head p  { font-size: 13px; color: var(--text2); margin-top: 4px; }
+    .head-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip { background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 14px; font-size: 12px; color: var(--text2); }
+    .chip strong { color: var(--text); }
+    .chip.hi strong { color: var(--green); }
+    .chip.warn strong { color: var(--amber); }
+
+    /* ── TOOLBAR ── */
+    .wrap { padding: 0 28px 60px; }
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+    .tab {
+      background: var(--bg2); border: 1px solid var(--border); color: var(--text2);
+      border-radius: 20px; padding: 7px 16px; font: inherit; font-size: 12.5px; font-weight: 700;
+      cursor: pointer; transition: all .18s; display: inline-flex; align-items: center; gap: 7px;
+    }
+    .tab:hover { border-color: var(--border-h); color: var(--text); }
+    .tab.on { background: var(--green); border-color: var(--green); color: #000; }
+    .tab .cnt { background: var(--red); color: #fff; border-radius: 10px; font-size: 10.5px; padding: 1px 6px; font-weight: 800; }
+    .tab.on .cnt { background: #000; color: var(--green); }
+    .spacer { flex: 1 1 auto; }
+
+    .btn {
+      background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+      border-radius: 20px; padding: 7px 16px; font: inherit; font-size: 12.5px; font-weight: 700;
+      cursor: pointer; transition: all .18s;
+    }
+    .btn:hover:not(:disabled) { border-color: var(--border-h); background: var(--bg4); }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+    .btn.primary { background: var(--green); border-color: var(--green); color: #000; }
+    .btn.primary:hover:not(:disabled) { background: var(--pink); border-color: var(--pink); }
+    .btn.danger { color: var(--red); border-color: rgba(255,77,77,.4); }
+    .btn.danger:hover:not(:disabled) { background: rgba(255,77,77,.12); border-color: var(--red); }
+    .btn.sm { padding: 4px 11px; font-size: 11.5px; }
+
+    /* ── TABLE ── */
+    .tbl-wrap { border: 1px solid var(--border); border-radius: var(--r); overflow: auto; background: var(--bg2); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 900px; }
+    thead th {
+      text-align: left; padding: 12px 14px; font-size: 11px; font-weight: 800; letter-spacing: .6px;
+      text-transform: uppercase; color: var(--text3); border-bottom: 1px solid var(--border);
+      background: var(--bg3); position: sticky; top: 0; white-space: nowrap;
+    }
+    tbody td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,.02); }
+    .lv-who { font-weight: 700; }
+    .sub { color: var(--text3); font-size: 11.5px; margin-top: 3px; }
+    .nowrap { white-space: nowrap; }
+    .days { font-weight: 800; font-size: 15px; color: var(--green); }
+    .reason { max-width: 280px; color: var(--text2); font-size: 12.5px; line-height: 1.5; }
+
+    .pill {
+      display: inline-block; border-radius: 999px; padding: 4px 12px;
+      font-size: 11.5px; font-weight: 800; white-space: nowrap;
+      color: var(--neon);
+      background-color: color-mix(in srgb, var(--neon) 16%, transparent);
+      border: 1px solid color-mix(in srgb, var(--neon) 50%, transparent);
+    }
+    .st-pending  { --neon: var(--amber); }
+    .st-approved { --neon: var(--green); }
+    .st-rejected { --neon: var(--red); }
+    .st-canceled { --neon: var(--text3); }
+
+    .cal-ok  { color: var(--green); font-size: 11.5px; font-weight: 700; }
+    .cal-err { color: var(--red);   font-size: 11.5px; font-weight: 700; cursor: help; }
+    .cal-off { color: var(--text3); font-size: 11.5px; }
+
+    .acts { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .empty { padding: 60px 20px; text-align: center; color: var(--text3); font-size: 13.5px; }
+    .empty b { display: block; color: var(--text2); font-size: 15px; margin-bottom: 6px; }
+
+    /* ── BANNER ── */
+    .banner {
+      border-radius: var(--r); padding: 12px 16px; font-size: 12.5px; line-height: 1.55;
+      margin-bottom: 16px; display: flex; gap: 10px; align-items: flex-start;
+    }
+    .banner.warn { background: rgba(255,176,32,.09); border: 1px solid rgba(255,176,32,.32); color: #ffd88a; }
+    .banner.warn b { color: var(--amber); }
+    .banner .bx { flex: 1; }
+
+    /* ── MODAL ── */
+    .mask {
+      position: fixed; inset: 0; background: rgba(0,0,0,.75); backdrop-filter: blur(4px);
+      display: none; align-items: flex-start; justify-content: center; z-index: 300; padding: 40px 16px; overflow: auto;
+    }
+    .mask.on { display: flex; }
+    .modal {
+      background: var(--bg2); border: 1px solid var(--border-h); border-radius: 16px;
+      width: 100%; max-width: 560px; padding: 24px;
+    }
+    .modal h2 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+    .modal .mh-sub { font-size: 12.5px; color: var(--text2); margin-bottom: 20px; }
+
+    .fg { margin-bottom: 15px; }
+    .fg > label { display: block; font-size: 11px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; }
+    .fg input[type=text], .fg input[type=date], .fg input[type=number], .fg select, .fg textarea {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+      border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 13.5px; outline: none; transition: border-color .18s;
+    }
+    .fg input:focus, .fg select:focus, .fg textarea:focus { border-color: var(--green); }
+    .fg textarea { resize: vertical; min-height: 76px; line-height: 1.55; }
+    .fg select { cursor: pointer; }
+    .row2 { display: grid; grid-template-columns: 1fr 148px; gap: 10px; }
+    .ck { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--text2); text-transform: none; font-weight: 400; letter-spacing: 0; cursor: pointer; }
+    .ck input { width: 16px; height: 16px; accent-color: var(--green); cursor: pointer; }
+
+    .calc {
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px 14px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .calc .lb { font-size: 12px; color: var(--text2); }
+    .calc .vl { font-size: 22px; font-weight: 800; color: var(--green); }
+    .calc .vl small { font-size: 12px; color: var(--text2); font-weight: 600; margin-left: 4px; }
+
+    .modal-acts { display: flex; gap: 9px; justify-content: flex-end; margin-top: 22px; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px);
+      background: var(--bg4); border: 1px solid var(--border-h); color: var(--text);
+      padding: 12px 20px; border-radius: 24px; font-size: 13px; font-weight: 600;
+      opacity: 0; pointer-events: none; transition: all .25s; z-index: 500; max-width: 88vw; text-align: center;
+    }
+    #toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.err { border-color: rgba(255,77,77,.5); color: #ffb3b3; }
+
+    @media (max-width: 720px) {
+      header { padding: 0 16px; }
+      .page-head, .wrap { padding-left: 16px; padding-right: 16px; }
+      .row2 { grid-template-columns: 1fr; }
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/theme.css?v=12" />
+  <script src="/apsa-ui.js?v=7"></script>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="./index.html">
+    <img src="./Logo rectange.png" alt="APSA" onerror="this.style.display='none'" />
+  </a>
+  <a class="back-btn" href="./index.html">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Trang chủ
+  </a>
+</header>
+
+<div class="page-head">
+  <div>
+    <h1>Xin nghỉ phép</h1>
+    <p>Nộp đơn, chờ Admin duyệt — duyệt xong tự động thêm vào lịch Outlook của công ty.</p>
+  </div>
+  <div class="head-chips" id="chips"></div>
+</div>
+
+<div class="wrap">
+
+  <div id="calWarn"></div>
+
+  <div class="toolbar">
+    <button class="tab on" data-tab="mine"    onclick="setTab('mine')">Đơn của tôi</button>
+    <button class="tab" data-tab="pending" onclick="setTab('pending')" style="display:none">Chờ duyệt <span class="cnt" id="cntPending" style="display:none">0</span></button>
+    <button class="tab" data-tab="all"     onclick="setTab('all')"     style="display:none">Tất cả đơn</button>
+    <button class="tab" data-tab="quota"   onclick="setTab('quota')"   style="display:none">Quỹ phép</button>
+    <div class="spacer"></div>
+    <button class="btn sm" id="btnCalTest" onclick="calTest()" style="display:none">Kiểm tra Outlook</button>
+    <button class="btn primary" onclick="openForm(0)">+ Tạo đơn xin nghỉ</button>
+  </div>
+
+  <div id="view"></div>
+</div>
+
+<!-- ── Modal: tạo / sửa đơn ── -->
+<div class="mask" id="mForm">
+  <div class="modal">
+    <h2 id="fTitle">Tạo đơn xin nghỉ</h2>
+    <div class="mh-sub">Đơn sẽ được gửi tới Admin để duyệt.</div>
+
+    <div class="fg">
+      <label>Loại nghỉ</label>
+      <select id="fType"></select>
+    </div>
+
+    <div class="fg">
+      <label>Từ ngày</label>
+      <div class="row2">
+        <input type="date" id="fStart" oninput="calc()" onchange="onDates()" />
+        <select id="fStartPart" onchange="calc()">
+          <option value="full">Cả ngày</option>
+          <option value="am">Buổi sáng</option>
+          <option value="pm">Buổi chiều</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label>Đến ngày</label>
+      <div class="row2">
+        <input type="date" id="fEnd" oninput="calc()" onchange="onDates()" />
+        <select id="fEndPart" onchange="calc()">
+          <option value="full">Cả ngày</option>
+          <option value="am">Buổi sáng</option>
+          <option value="pm">Buổi chiều</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="ck"><input type="checkbox" id="fSkip" checked onchange="calc()" /> <span id="fSkipLb">Không tính ngày nghỉ hàng tuần &amp; ngày lễ</span></label>
+    </div>
+
+    <div class="calc">
+      <span class="lb">Số ngày nghỉ</span>
+      <span class="vl" id="fDays">0<small>ngày</small></span>
+    </div>
+
+    <div id="fQuotaWarn"></div>
+
+    <div class="fg">
+      <label>Lý do</label>
+      <textarea id="fReason" placeholder="Ví dụ: về quê giỗ ông, khám sức khoẻ định kỳ..."></textarea>
+    </div>
+
+    <div class="fg">
+      <label>Bàn giao cho (không bắt buộc)</label>
+      <input type="text" id="fHandover" placeholder="Tên người nhận bàn giao công việc" />
+    </div>
+
+    <div class="modal-acts">
+      <button class="btn" onclick="closeModal()">Huỷ</button>
+      <button class="btn primary" id="fSave" onclick="saveForm()">Gửi đơn</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal: duyệt / từ chối ── -->
+<div class="mask" id="mDecide">
+  <div class="modal" style="max-width:480px">
+    <h2 id="dTitle">Duyệt đơn</h2>
+    <div class="mh-sub" id="dSub"></div>
+    <div class="fg">
+      <label id="dNoteLb">Ghi chú (không bắt buộc)</label>
+      <textarea id="dNote" placeholder=""></textarea>
+    </div>
+    <div class="modal-acts">
+      <button class="btn" onclick="closeModal()">Đóng</button>
+      <button class="btn primary" id="dGo" onclick="doDecide()">Xác nhận</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   APSA — Xin nghỉ phép
+   ══════════════════════════════════════════════════════════ */
+const API = './api/leave-api.php';
+
+let ME = null, IS_ADMIN = false, TYPES = {}, CAL = { enabled: false, mailbox: '' };
+let WORK_DAYS = [1,2,3,4,5,6], HOLIDAYS = {};   // 1=T2 ... 7=CN
+let TAB = 'mine', ROWS = [], SUMMARY = null, EDIT = 0, DECIDE = { id: 0, mode: '' };
+const YEAR = new Date().getFullYear();
+
+/* ── helpers ── */
+async function api(action, opts) {
+  opts = opts || {};
+  const url = API + '?action=' + encodeURIComponent(action) + (opts.qs || '');
+  const init = { credentials: 'same-origin', headers: { 'Content-Type': 'application/json' } };
+  if (opts.body) { init.method = 'POST'; init.body = JSON.stringify(opts.body); }
+  const r = await fetch(url, init);
+  let j = {};
+  try { j = await r.json(); } catch (e) { throw new Error('Máy chủ trả về dữ liệu không đọc được.'); }
+  if (!r.ok || j.ok === false) throw new Error(j.error || ('Lỗi ' + r.status));
+  return j;
+}
+
+let toastT = null;
+function toast(msg, isErr) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'on' + (isErr ? ' err' : '');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => { t.className = ''; }, isErr ? 6000 : 3200);
+}
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+const nd  = n => { const v = Math.round(Number(n) * 10) / 10; return (v % 1 === 0 ? String(v) : String(v).replace('.', ',')); };
+const dvn = d => { if (!d) return ''; const p = String(d).slice(0, 10).split('-'); return p[2] + '/' + p[1] + '/' + p[0]; };
+
+function partLb(p) { return p === 'am' ? 'buổi sáng' : (p === 'pm' ? 'buổi chiều' : ''); }
+function rangeText(r) {
+  const a = dvn(r.start_date), b = dvn(r.end_date);
+  if (r.start_date === r.end_date) {
+    const p = partLb(r.start_part);
+    return a + (p ? ' (' + p + ')' : '');
+  }
+  const pa = partLb(r.start_part), pb = partLb(r.end_part);
+  return a + (pa ? ' (' + pa + ')' : '') + ' → ' + b + (pb ? ' (' + pb + ')' : '');
+}
+
+/* Tính số ngày — cùng công thức với server */
+function countDays(sd, sp, ed, ep, skipWe) {
+  if (!sd) return 0;
+  if (!ed) ed = sd;
+  if (ed < sd) return 0;
+  const single = (sd === ed);
+  let total = 0, guard = 0;
+  const cur = new Date(sd + 'T00:00:00'), end = new Date(ed + 'T00:00:00');
+  while (cur <= end && guard++ < 400) {
+    const key = cur.getFullYear() + '-' + String(cur.getMonth()+1).padStart(2,'0') + '-' + String(cur.getDate()).padStart(2,'0');
+    const iso = cur.getDay() === 0 ? 7 : cur.getDay();   // 1=T2 ... 7=CN
+    const offDay = skipWe && WORK_DAYS.indexOf(iso) === -1;
+    if (!offDay && !HOLIDAYS[key]) {
+      let part = 'full';
+      if (single) part = sp;
+      else if (key === sd) part = sp;
+      else if (key === ed) part = ep;
+      total += (part === 'am' || part === 'pm') ? 0.5 : 1;
+    }
+    cur.setDate(cur.getDate() + 1);
+  }
+  return Math.round(total * 10) / 10;
+}
+
+/* ── khởi động ── */
+async function init() {
+  try {
+    const j = await api('me', { qs: '&year=' + YEAR });
+    ME = j.me; IS_ADMIN = !!j.is_admin; TYPES = j.types; SUMMARY = j.summary; CAL = j.calendar;
+    if (Array.isArray(j.work_days) && j.work_days.length) WORK_DAYS = j.work_days;
+    if (j.holidays) HOLIDAYS = j.holidays;
+    paintSkipLabel();
+  } catch (e) { toast(e.message, true); return; }
+
+  const sel = document.getElementById('fType');
+  sel.innerHTML = Object.keys(TYPES).map(k => '<option value="' + k + '">' + esc(TYPES[k]) + '</option>').join('');
+
+  if (IS_ADMIN) {
+    document.querySelectorAll('.tab[data-tab="pending"],.tab[data-tab="all"],.tab[data-tab="quota"]')
+      .forEach(b => b.style.display = '');
+    document.getElementById('btnCalTest').style.display = '';
+    if (!CAL.enabled) {
+      document.getElementById('calWarn').innerHTML =
+        '<div class="banner warn"><div class="bx"><b>Chưa kết nối lịch Outlook.</b> ' +
+        'Đơn vẫn duyệt được bình thường, nhưng chưa tự thêm vào lịch ' + esc(CAL.mailbox) + '. ' +
+        'Cần điền Tenant ID / Client ID / Client Secret vào <code>api/msgraph-config.php</code> rồi đặt <code>enabled =&gt; true</code>.</div></div>';
+    }
+  }
+
+  paintChips();
+  refreshPending();
+  setTab('mine');
+
+  // Mở thẳng 1 đơn nếu URL có ?id=
+  const q = new URLSearchParams(location.search);
+  if (q.get('id')) setTimeout(() => {
+    const el = document.getElementById('row-' + q.get('id'));
+    if (el) { el.scrollIntoView({ block: 'center' }); el.style.background = 'rgba(223,242,13,.07)'; }
+  }, 400);
+}
+
+/* Nhãn ô tick đọc đúng theo cấu hình ngày làm việc trong Cài đặt */
+function paintSkipLabel() {
+  const NAME = { 1:'T2', 2:'T3', 3:'T4', 4:'T5', 5:'T6', 6:'T7', 7:'CN' };
+  const off = [1,2,3,4,5,6,7].filter(d => WORK_DAYS.indexOf(d) === -1).map(d => NAME[d]);
+  const el = document.getElementById('fSkipLb');
+  if (el) el.innerHTML = off.length
+    ? 'Không tính ' + off.join(' &amp; ') + ' và ngày lễ'
+    : 'Không tính ngày lễ';
+}
+
+function paintChips() {
+  if (!SUMMARY) return;
+  const s = SUMMARY;
+  const low = s.remaining <= 2;
+  document.getElementById('chips').innerHTML =
+    '<span class="chip">Phép năm ' + YEAR + ': <strong>' + nd(s.total) + '</strong> ngày</span>' +
+    '<span class="chip">Đã dùng <strong>' + nd(s.used) + '</strong></span>' +
+    (s.pending > 0 ? '<span class="chip warn">Chờ duyệt <strong>' + nd(s.pending) + '</strong></span>' : '') +
+    '<span class="chip ' + (low ? 'warn' : 'hi') + '">Còn lại <strong>' + nd(s.remaining) + '</strong> ngày</span>';
+}
+
+async function refreshPending() {
+  if (!IS_ADMIN) return;
+  try {
+    const j = await api('pending-count');
+    const el = document.getElementById('cntPending');
+    el.textContent = j.count;
+    el.style.display = j.count > 0 ? '' : 'none';
+  } catch (e) {}
+}
+
+/* ── tabs ── */
+function setTab(t) {
+  TAB = t;
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+  if (t === 'quota') loadQuota(); else loadList();
+}
+
+async function loadList() {
+  document.getElementById('view').innerHTML = '<div class="empty">Đang tải…</div>';
+  let qs = '';
+  if (TAB === 'mine')    qs = '&scope=mine';
+  if (TAB === 'pending') qs = '&scope=all&status=pending';
+  if (TAB === 'all')     qs = '&scope=all';
+  try {
+    const j = await api('list', { qs: qs });
+    ROWS = j.rows;
+    renderList();
+  } catch (e) {
+    document.getElementById('view').innerHTML = '<div class="empty"><b>Không tải được danh sách</b>' + esc(e.message) + '</div>';
+  }
+}
+
+function renderList() {
+  if (!ROWS.length) {
+    const msg = TAB === 'pending' ? 'Không có đơn nào đang chờ duyệt.' : 'Chưa có đơn xin nghỉ nào.';
+    document.getElementById('view').innerHTML = '<div class="empty"><b>Trống</b>' + msg + '</div>';
+    return;
+  }
+  const showWho = (TAB !== 'mine');
+  const html =
+    '<div class="tbl-wrap"><table><thead><tr>' +
+    (showWho ? '<th>Người xin nghỉ</th>' : '') +
+    '<th>Loại</th><th>Thời gian</th><th>Số ngày</th><th>Lý do</th><th>Trạng thái</th>' +
+    (IS_ADMIN ? '<th>Lịch</th>' : '') +
+    '<th></th></tr></thead><tbody>' +
+    ROWS.map(r => rowHtml(r, showWho)).join('') +
+    '</tbody></table></div>';
+  document.getElementById('view').innerHTML = html;
+}
+
+function rowHtml(r, showWho) {
+  let cal = '';
+  if (IS_ADMIN) {
+    if (r.status !== 'approved')      cal = '<span class="cal-off">—</span>';
+    else if (r.cal_status === 'ok')   cal = '<span class="cal-ok">✓ Đã lên lịch</span>';
+    else if (r.cal_status === 'error') cal = '<span class="cal-err" title="' + esc(r.cal_error) + '">✕ Lỗi</span>';
+    else                              cal = '<span class="cal-off">chưa đẩy</span>';
+  }
+
+  const acts = [];
+  const mine = (r.user_id === ME.id);
+  if (r.status === 'pending' && mine)        acts.push('<button class="btn sm" onclick="openForm(' + r.id + ')">Sửa</button>');
+  if (r.status === 'pending' && IS_ADMIN)    acts.push('<button class="btn sm primary" onclick="openDecide(' + r.id + ',\'approve\')">Duyệt</button>');
+  if (r.status === 'pending' && IS_ADMIN)    acts.push('<button class="btn sm danger" onclick="openDecide(' + r.id + ',\'reject\')">Từ chối</button>');
+  if (r.status === 'pending' && mine)        acts.push('<button class="btn sm danger" onclick="cancelReq(' + r.id + ')">Huỷ</button>');
+  if (r.status === 'approved' && IS_ADMIN)   acts.push('<button class="btn sm danger" onclick="cancelReq(' + r.id + ')">Huỷ đơn</button>');
+  if (r.status === 'approved' && IS_ADMIN && CAL.enabled && r.cal_status !== 'ok')
+    acts.push('<button class="btn sm" onclick="calRetry(' + r.id + ')">Đẩy lên lịch</button>');
+  if ((r.status === 'canceled' || r.status === 'rejected') && (mine || IS_ADMIN))
+    acts.push('<button class="btn sm danger" onclick="delReq(' + r.id + ')">Xoá</button>');
+
+  const decided = r.decided_by_name
+    ? '<div class="sub">' + (r.status === 'approved' ? 'Duyệt bởi ' : (r.status === 'rejected' ? 'Từ chối bởi ' : 'Xử lý bởi ')) + esc(r.decided_by_name) + '</div>'
+    : '';
+  const note = r.decide_note ? '<div class="sub">“' + esc(r.decide_note) + '”</div>' : '';
+
+  return '<tr id="row-' + r.id + '">' +
+    (showWho ? '<td><div class="lv-who">' + esc(r.user_name) + '</div><div class="sub">' + dvn(r.created_at) + '</div></td>' : '') +
+    '<td class="nowrap">' + esc(r.type_label) + '</td>' +
+    '<td class="nowrap">' + esc(rangeText(r)) + '</td>' +
+    '<td class="days nowrap">' + nd(r.days) + '</td>' +
+    '<td class="reason">' + esc(r.reason) + (r.handover ? '<div class="sub">Bàn giao: ' + esc(r.handover) + '</div>' : '') + '</td>' +
+    '<td><span class="pill st-' + r.status + '">' + esc(r.status_label) + '</span>' + decided + note + '</td>' +
+    (IS_ADMIN ? '<td class="nowrap">' + cal + '</td>' : '') +
+    '<td><div class="acts">' + acts.join('') + '</div></td>' +
+  '</tr>';
+}
+
+/* ── form ── */
+function openForm(id) {
+  EDIT = id || 0;
+  const r = id ? ROWS.find(x => x.id === id) : null;
+  document.getElementById('fTitle').textContent = r ? 'Sửa đơn xin nghỉ' : 'Tạo đơn xin nghỉ';
+  document.getElementById('fSave').textContent  = r ? 'Lưu thay đổi' : 'Gửi đơn';
+
+  const _t = new Date(); const today = _t.getFullYear() + '-' + String(_t.getMonth()+1).padStart(2,'0') + '-' + String(_t.getDate()).padStart(2,'0');
+  document.getElementById('fType').value      = r ? r.leave_type : 'annual';
+  document.getElementById('fStart').value     = r ? r.start_date : today;
+  document.getElementById('fEnd').value       = r ? r.end_date   : today;
+  document.getElementById('fStartPart').value = r ? r.start_part : 'full';
+  document.getElementById('fEndPart').value   = r ? r.end_part   : 'full';
+  document.getElementById('fSkip').checked    = r ? !!r.skip_weekend : true;
+  document.getElementById('fReason').value    = r ? r.reason   : '';
+  document.getElementById('fHandover').value  = r ? r.handover : '';
+
+  onDates();
+  document.getElementById('mForm').classList.add('on');
+}
+
+function onDates() {
+  const s = document.getElementById('fStart').value;
+  const e = document.getElementById('fEnd').value;
+  if (s && (!e || e < s)) document.getElementById('fEnd').value = s;
+  const same = (document.getElementById('fStart').value === document.getElementById('fEnd').value);
+  document.getElementById('fEndPart').disabled = same;
+  if (same) document.getElementById('fEndPart').value = document.getElementById('fStartPart').value;
+  calc();
+}
+
+function calc() {
+  const sd = document.getElementById('fStart').value;
+  const ed = document.getElementById('fEnd').value || sd;
+  const sp = document.getElementById('fStartPart').value;
+  const ep = (sd === ed) ? sp : document.getElementById('fEndPart').value;
+  const n  = countDays(sd, sp, ed, ep, document.getElementById('fSkip').checked);
+  document.getElementById('fDays').innerHTML = nd(n) + '<small>ngày</small>';
+
+  // Cảnh báo vượt quỹ phép năm
+  const box = document.getElementById('fQuotaWarn');
+  box.innerHTML = '';
+  if (document.getElementById('fType').value === 'annual' && SUMMARY) {
+    const already = EDIT ? 0 : 0;
+    const left = SUMMARY.remaining - already;
+    if (n > left) {
+      box.innerHTML = '<div class="banner warn"><div class="bx"><b>Vượt quỹ phép năm.</b> ' +
+        'Bạn còn <b>' + nd(left) + '</b> ngày nhưng đang xin <b>' + nd(n) + '</b> ngày. ' +
+        'Vẫn gửi được, nhưng phần vượt sẽ do Admin quyết.</div></div>';
+    }
+  }
+}
+document.getElementById('fType').addEventListener('change', calc);
+
+async function saveForm() {
+  const body = {
+    id:           EDIT,
+    leave_type:   document.getElementById('fType').value,
+    start_date:   document.getElementById('fStart').value,
+    start_part:   document.getElementById('fStartPart').value,
+    end_date:     document.getElementById('fEnd').value,
+    end_part:     document.getElementById('fEndPart').value,
+    skip_weekend: document.getElementById('fSkip').checked ? 1 : 0,
+    reason:       document.getElementById('fReason').value.trim(),
+    handover:     document.getElementById('fHandover').value.trim()
+  };
+  if (!body.start_date) return toast('Chọn ngày bắt đầu đã nhé.', true);
+  if (!body.reason)     return toast('Nhập lý do nghỉ giúp tôi.', true);
+
+  const btn = document.getElementById('fSave');
+  btn.disabled = true;
+  try {
+    await api('save', { body: body });
+    closeModal();
+    toast(EDIT ? 'Đã lưu thay đổi.' : 'Đã gửi đơn — chờ Admin duyệt.');
+    await reloadAll();
+  } catch (e) { toast(e.message, true); }
+  btn.disabled = false;
+}
+
+/* ── duyệt / từ chối ── */
+function openDecide(id, mode) {
+  DECIDE = { id: id, mode: mode };
+  const r = ROWS.find(x => x.id === id);
+  const ok = (mode === 'approve');
+  document.getElementById('dTitle').textContent = ok ? 'Duyệt đơn nghỉ' : 'Từ chối đơn nghỉ';
+  document.getElementById('dSub').innerHTML =
+    esc(r.user_name) + ' — ' + esc(r.type_label) + ', <b>' + nd(r.days) + '</b> ngày<br>' + esc(rangeText(r)) +
+    (ok && CAL.enabled ? '<br><span style="color:var(--green)">Duyệt xong sẽ tự thêm vào lịch ' + esc(CAL.mailbox) + '.</span>' : '');
+  document.getElementById('dNoteLb').textContent = ok ? 'Ghi chú (không bắt buộc)' : 'Lý do từ chối (bắt buộc)';
+  document.getElementById('dNote').value = '';
+  document.getElementById('dNote').placeholder = ok ? '' : 'Ví dụ: trùng lịch chạy campaign, dời sang tuần sau giúp anh.';
+  const go = document.getElementById('dGo');
+  go.textContent = ok ? 'Duyệt đơn' : 'Từ chối';
+  go.className = 'btn ' + (ok ? 'primary' : 'danger');
+  document.getElementById('mDecide').classList.add('on');
+}
+
+async function doDecide() {
+  const note = document.getElementById('dNote').value.trim();
+  if (DECIDE.mode === 'reject' && !note) return toast('Nhập lý do từ chối giúp nhân viên hiểu.', true);
+  const go = document.getElementById('dGo');
+  go.disabled = true;
+  try {
+    const j = await api(DECIDE.mode, { body: { id: DECIDE.id, note: note } });
+    closeModal();
+    toast(j.message || 'Xong.', DECIDE.mode === 'approve' && j.calendar === false);
+    await reloadAll();
+  } catch (e) { toast(e.message, true); }
+  go.disabled = false;
+}
+
+async function cancelReq(id) {
+  const r = ROWS.find(x => x.id === id);
+  if (!confirm('Huỷ đơn nghỉ ' + rangeText(r) + '?' + (r.has_event ? '\n\nSự kiện trên lịch Outlook cũng sẽ bị xoá.' : ''))) return;
+  try {
+    const j = await api('cancel', { body: { id: id } });
+    toast(j.message || 'Đã huỷ đơn.');
+    await reloadAll();
+  } catch (e) { toast(e.message, true); }
+}
+
+async function delReq(id) {
+  const r = ROWS.find(x => x.id === id);
+  if (!confirm('Xoá hẳn đơn ' + rangeText(r) + ' khỏi danh sách?\n\nĐơn đã huỷ/bị từ chối nên không ảnh hưởng quỹ phép. Thao tác này không hoàn tác được.')) return;
+  try { const j = await api('delete', { body: { id } }); toast(j.message); await reloadAll(); }
+  catch (e) { toast(e.message, true); }
+}
+
+async function calRetry(id) {
+  try {
+    const j = await api('cal-retry', { body: { id: id } });
+    toast(j.message, !j.ok);
+    await reloadAll();
+  } catch (e) { toast(e.message, true); }
+}
+
+async function calTest() {
+  const b = document.getElementById('btnCalTest');
+  b.disabled = true; b.textContent = 'Đang kiểm tra…';
+  try {
+    const j = await api('cal-test');
+    toast(j.message, !j.ok);
+  } catch (e) { toast(e.message, true); }
+  b.disabled = false; b.textContent = 'Kiểm tra Outlook';
+}
+
+/* ── quỹ phép ── */
+async function loadQuota() {
+  document.getElementById('view').innerHTML = '<div class="empty">Đang tải…</div>';
+  try {
+    const j = await api('quota-list', { qs: '&year=' + YEAR });
+    const html =
+      '<div class="tbl-wrap"><table><thead><tr>' +
+      '<th>Nhân viên</th><th style="width:150px">Quỹ phép ' + YEAR + '</th><th>Đã dùng</th><th>Chờ duyệt</th><th>Còn lại</th><th></th>' +
+      '</tr></thead><tbody>' +
+      j.rows.map(u =>
+        '<tr>' +
+          '<td><div class="lv-who">' + esc(u.name) + '</div><div class="sub">' + esc(u.role) + '</div></td>' +
+          '<td><input type="number" step="0.5" min="0" max="365" id="q-' + u.user_id + '" value="' + u.total + '" ' +
+              'style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:7px 10px;font:inherit;font-size:13px" /></td>' +
+          '<td>' + nd(u.used) + '</td>' +
+          '<td>' + (u.pending > 0 ? '<span style="color:var(--amber)">' + nd(u.pending) + '</span>' : '0') + '</td>' +
+          '<td class="days">' + nd(u.remaining) + '</td>' +
+          '<td><button class="btn sm primary" onclick="saveQuota(' + u.user_id + ')">Lưu</button></td>' +
+        '</tr>'
+      ).join('') +
+      '</tbody></table></div>';
+    document.getElementById('view').innerHTML = html;
+  } catch (e) {
+    document.getElementById('view').innerHTML = '<div class="empty"><b>Không tải được</b>' + esc(e.message) + '</div>';
+  }
+}
+
+async function saveQuota(uid) {
+  const v = parseFloat(document.getElementById('q-' + uid).value);
+  if (isNaN(v)) return toast('Số ngày không hợp lệ.', true);
+  try {
+    await api('quota-set', { body: { user_id: uid, year: YEAR, total: v } });
+    toast('Đã lưu quỹ phép.');
+    if (uid === ME.id) { const s = await api('me', { qs: '&year=' + YEAR }); SUMMARY = s.summary; paintChips(); }
+    loadQuota();
+  } catch (e) { toast(e.message, true); }
+}
+
+/* ── chung ── */
+async function reloadAll() {
+  try { const s = await api('me', { qs: '&year=' + YEAR }); SUMMARY = s.summary; paintChips(); } catch (e) {}
+  refreshPending();
+  if (TAB === 'quota') loadQuota(); else loadList();
+}
+
+function closeModal() {
+  document.querySelectorAll('.mask').forEach(m => m.classList.remove('on'));
+}
+document.querySelectorAll('.mask').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) closeModal(); });
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+init();
+</script>
+</body>
+</html>
