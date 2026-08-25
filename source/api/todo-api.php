@@ -13,6 +13,7 @@ header('X-Content-Type-Options: nosniff');
 
 require_once __DIR__ . '/db-config.php';
 require_once __DIR__ . '/session-boot.php';
+require_once __DIR__ . '/zalo.php';
 
 /* ------------------------------------------------------------------ */
 /*  Ha tang chung                                                      */
@@ -102,6 +103,9 @@ function td_notify($userId, $kind, $title, $body, $url, $actor)
             ->execute(array($userId, $kind, mb_substr((string) $title, 0, 190, 'UTF-8'),
                 mb_substr((string) $body, 0, 500, 'UTF-8'), (string) $url, mb_substr((string) $actor, 0, 120, 'UTF-8')));
     } catch (Exception $e) { /* thong bao hong thi thoi */ }
+
+    /* Day sang Zalo neu nguoi nhan da ket noi */
+    if (function_exists('zb_push')) zb_push(td_pdo(), $userId, $kind, $title, $body, $url);
 }
 
 /** assigned_by luu ten hien thi (varchar) -> doi ra user id. */

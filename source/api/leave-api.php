@@ -369,8 +369,10 @@ function lv_notify_table()
 }
 
 /** Gui thong bao. Loi o day KHONG duoc lam hong nghiep vu chinh. */
+require_once __DIR__ . '/zalo.php';   /* APSA127-ZALO */
 function lv_notify($userId, $kind, $title, $body, $url)
 {
+    if (function_exists('zb_push')) zb_push(lv_pdo(), $userId, $kind, $title, $body, $url);
     try {
         $t = lv_notify_table();
         if (!$t) return;

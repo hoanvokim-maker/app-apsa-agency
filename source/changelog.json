@@ -1,5 +1,5 @@
 {
-    "version": "1.2.6",
+    "version": "1.2.7",
     "updated": "2026-08-25",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-25",
             "note": "Phiên bản 1.2",
             "items": [
+                {
+                    "d": "2026-08-25",
+                    "v": "1.2.7",
+                    "t": "Ket noi Zalo Bot: trang zalo.html, API zalo-api/zalo-hook, day thong bao giao viec - nhac ten - don nghi - mo lai du an sang Zalo, nhac viec qua han qua cron",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-25",
                     "v": "1.2.6",

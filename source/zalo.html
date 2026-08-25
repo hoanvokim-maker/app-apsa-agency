@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script>
+  document.documentElement.style.visibility = 'hidden';
+  fetch('./api/auth-api.php?action=me', { credentials: 'same-origin' })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(res => {
+      if (!res.ok) throw new Error();
+      window.__APSA_USER = res.data;
+      document.documentElement.style.visibility = 'visible';
+    })
+    .catch(() => {
+      location.replace('./login.html?next=' + encodeURIComponent(location.pathname + location.search));
+    });
+</script>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=1">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=1">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#dff20d">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>APSA — Thông báo Zalo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/theme.css?v=12" />
+  <script src="/apsa-ui.js?v=13"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #000000; --bg2: #0b0b0b; --bg3: #141414; --bg4: #1c1c1c;
+      --border: rgba(255,255,255,0.08); --border-h: rgba(255,255,255,0.16);
+      --text: #ffffff; --text2: #9a9a9a; --text3: #5e5e5e;
+      --green: #dff20d; --pink: #c9dd00; --red: #ff4d4d;
+      --amber: #ffb020; --sky: #56ccf2;
+      --r: 11px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Oxanium', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    header { display:flex; align-items:center; gap:14px; padding:14px 22px; border-bottom:1px solid var(--border); }
+    header .logo img { height:20px; display:block; }
+    .back-btn { display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--text2);
+      text-decoration:none; border:1px solid var(--border); padding:6px 11px; border-radius:8px; }
+    .back-btn:hover { color:var(--text); border-color:var(--border-h); }
+
+    .page-head { padding:26px 22px 6px; }
+    .page-head h1 { font-family:'Orbitron',sans-serif; font-size:26px; letter-spacing:.02em; }
+    .page-head p  { color:var(--text2); font-size:12.5px; margin-top:6px; max-width:760px; }
+
+    .wrap { padding:18px 22px 60px; display:flex; flex-direction:column; gap:16px; max-width:900px; }
+
+    .card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r); padding:18px 20px; }
+    .card h2 { font-family:'Orbitron',sans-serif; font-size:15px; margin-bottom:4px; }
+    .card .sub { color:var(--text2); font-size:12px; margin-bottom:14px; }
+
+    .btn { font-family:'Oxanium',sans-serif; font-weight:700; font-size:12.5px; padding:8px 15px;
+      border-radius:8px; border:1px solid var(--border-h); background:var(--bg4); color:var(--text); cursor:pointer; }
+    .btn:hover { border-color:var(--green); }
+    .btn.pri { background:var(--green); color:#0b0b0b; border-color:var(--green); }
+    .btn.danger { color:var(--red); border-color:rgba(255,77,77,.4); }
+    .btn[disabled] { opacity:.5; cursor:default; }
+    .row { display:flex; gap:9px; flex-wrap:wrap; align-items:center; }
+
+    .pill { display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700;
+      padding:4px 10px; border-radius:999px; border:1px solid var(--border-h); }
+    .pill.on  { color:#0b0b0b; background:var(--green); border-color:var(--green); }
+    .pill.off { color:var(--text2); }
+    .pill.err { color:var(--red); border-color:rgba(255,77,77,.4); }
+
+    .code { font-family:'Orbitron',monospace; font-size:38px; letter-spacing:.22em; color:var(--green);
+      background:var(--bg3); border:1px dashed var(--border-h); border-radius:10px;
+      padding:16px 10px; text-align:center; margin:12px 0 8px; }
+    .steps { font-size:12.5px; color:var(--text2); line-height:1.75; padding-left:18px; }
+    .steps b { color:var(--text); }
+    .steps code { background:var(--bg3); padding:1px 6px; border-radius:5px; color:var(--green); font-size:12px; }
+
+    table { width:100%; border-collapse:collapse; font-size:12.5px; }
+    th { text-align:left; font-size:10.5px; letter-spacing:.09em; text-transform:uppercase;
+      color:var(--text3); padding:6px 8px; border-bottom:1px solid var(--border); }
+    td { padding:8px; border-bottom:1px solid var(--border); }
+    tr:last-child td { border-bottom:0; }
+    .muted { color:var(--text2); }
+    .ok  { color:var(--green); font-weight:700; }
+    .no  { color:var(--text3); }
+    .msg { font-size:12.5px; padding:9px 12px; border-radius:8px; margin-top:10px; display:none; }
+    .msg.good { display:block; background:rgba(223,242,13,.09); border:1px solid rgba(223,242,13,.35); }
+    .msg.bad  { display:block; background:rgba(255,77,77,.09);  border:1px solid rgba(255,77,77,.35); color:#ffb3b3; }
+    .kinds { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .kinds span { font-size:11px; color:var(--text2); border:1px solid var(--border); border-radius:6px; padding:3px 8px; }
+    .adm { display:none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="./index.html">
+    <img src="./Logo rectange.png" alt="APSA" onerror="this.style.display='none'" />
+  </a>
+  <a class="back-btn" href="./index.html">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Trang chủ
+  </a>
+</header>
+
+<div class="page-head">
+  <div>
+    <h1>Thông báo Zalo</h1>
+    <p>Kết nối tài khoản Zalo của bạn với APSA Tools để nhận thông báo ngay trên điện thoại: được giao việc, bị nhắc tên trong thảo luận, đơn xin nghỉ chờ duyệt, yêu cầu mở lại dự án và nhắc việc quá hạn.</p>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ===== Kết nối của tôi ===== -->
+  <div class="card">
+    <h2>Kết nối của tôi</h2>
+    <div class="sub" id="myState">Đang kiểm tra…</div>
+    <div class="row" id="myBtns"></div>
+    <div id="linkBox" style="display:none">
+      <div class="code" id="codeVal">------</div>
+      <ol class="steps">
+        <li>Mở <b>Zalo</b>, tìm bot <b id="botName">APSA Tools</b> (hoặc quét QR do Admin cung cấp).</li>
+        <li>Nhắn cho bot đúng 6 số ở trên: <code id="codeEcho">------</code></li>
+        <li>Bot trả lời “Kết nối thành công” là xong. Mã có hiệu lực <b>15 phút</b>.</li>
+      </ol>
+    </div>
+    <div class="kinds" id="kindList"></div>
+    <div class="msg" id="myMsg"></div>
+  </div>
+
+  <!-- ===== Quản trị ===== -->
+  <div class="card adm" id="admCard">
+    <h2>Cấu hình bot (Admin)</h2>
+    <div class="sub">Bot Token và khoá bí mật nằm trong <code>api/zalo-config.php</code> trên máy chủ — không hiển thị ở đây.</div>
+    <div class="row" style="margin-bottom:12px">
+      <span class="pill off" id="pCfg">Token</span>
+      <span class="pill off" id="pOn">Trạng thái</span>
+      <span class="pill off" id="pSec">Khoá webhook</span>
+      <span class="pill off" id="pCron">Khoá cron</span>
+    </div>
+    <div class="sub" id="botInfo"></div>
+    <div class="row">
+      <button class="btn" id="btnHook">Đăng ký Webhook với Zalo</button>
+      <button class="btn" id="btnReload">Tải lại</button>
+    </div>
+    <div class="sub" style="margin-top:10px">Webhook URL: <code id="hookUrl">—</code></div>
+    <div class="msg" id="admMsg"></div>
+  </div>
+
+  <!-- ===== Ai đã kết nối ===== -->
+  <div class="card adm" id="usrCard">
+    <h2>Nhân viên đã kết nối</h2>
+    <div class="sub">Người chưa kết nối vẫn nhận thông báo trong app, chỉ là không có tin Zalo.</div>
+    <table><thead><tr><th>Nhân viên</th><th>Zalo</th><th>Kết nối lúc</th></tr></thead>
+      <tbody id="usrBody"></tbody></table>
+  </div>
+
+</div>
+
+<script>
+/* ===== Trang Thông báo Zalo (v1.2.7) ===== */
+let ST = null;
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function say(el, text, bad) {
+  const n = document.getElementById(el);
+  n.className = 'msg ' + (bad ? 'bad' : 'good');
+  n.textContent = text;
+  setTimeout(() => { n.className = 'msg'; }, 6000);
+}
+function api(action, method, body) {
+  return fetch('./api/zalo-api.php?action=' + action, {
+    method: method || 'GET',
+    credentials: 'same-origin',
+    headers: body ? { 'Content-Type': 'application/json' } : undefined,
+    body: body ? JSON.stringify(body) : undefined
+  }).then(r => r.json());
+}
+
+const KIND_LABEL = {
+  assign: 'Được giao việc', task_done: 'Việc đã xong', task_due: 'Nhắc việc quá hạn',
+  mention: 'Bị nhắc tên', reply: 'Trả lời bình luận',
+  leave_new: 'Đơn nghỉ mới', leave_canceled: 'Đơn nghỉ bị huỷ',
+  leave_approved: 'Đơn nghỉ được duyệt', leave_rejected: 'Đơn nghỉ bị từ chối',
+  reopen_request: 'Xin mở lại dự án'
+};
+
+function paint() {
+  const s = ST;
+  const st = document.getElementById('myState');
+  const bt = document.getElementById('myBtns');
+
+  if (!s.configured) {
+    st.innerHTML = 'Máy chủ <b>chưa cấu hình Bot Token</b>. Admin cần tạo <code>api/zalo-config.php</code> trước.';
+    bt.innerHTML = '';
+  } else if (s.me.linked) {
+    st.innerHTML = 'Đang kết nối với Zalo <b>' + esc(s.me.zalo_name || '(không rõ tên)') + '</b>'
+      + (s.me.linked_at ? ' — từ ' + esc(s.me.linked_at) : '')
+      + (s.enabled ? '' : ' · <span style="color:var(--amber)">bot đang tắt nên chưa gửi tin</span>');
+    bt.innerHTML = '<button class="btn pri" onclick="doTest()">Gửi tin thử</button>'
+                 + '<button class="btn danger" onclick="doUnlink()">Ngắt kết nối</button>';
+  } else {
+    st.innerHTML = 'Bạn <b>chưa kết nối</b> Zalo. Lấy mã rồi nhắn cho bot là xong.';
+    bt.innerHTML = '<button class="btn pri" onclick="doCode()">Lấy mã kết nối</button>';
+  }
+
+  const kl = document.getElementById('kindList');
+  kl.innerHTML = (s.kinds || []).map(k => '<span>' + esc(KIND_LABEL[k] || k) + '</span>').join('');
+
+  if (s.is_admin) {
+    document.getElementById('admCard').style.display = 'block';
+    document.getElementById('usrCard').style.display = 'block';
+    const set = (id, on, txt) => {
+      const e = document.getElementById(id);
+      e.className = 'pill ' + (on ? 'on' : 'err');
+      e.textContent = txt;
+    };
+    set('pCfg',  s.configured,  s.configured ? 'Đã có Token' : 'Thiếu Token');
+    set('pOn',   s.enabled,     s.enabled ? 'Đang bật' : 'Đang tắt');
+    set('pSec',  s.has_secret,  s.has_secret ? 'Đã có khoá webhook' : 'Thiếu khoá webhook');
+    set('pCron', s.has_cronkey, s.has_cronkey ? 'Đã có khoá cron' : 'Thiếu khoá cron');
+    document.getElementById('hookUrl').textContent = s.webhook_url || '—';
+    const bi = document.getElementById('botInfo');
+    if (s.bot) {
+      bi.innerHTML = 'Bot: <b>' + esc(s.bot.display_name || s.bot.name || s.bot.username || '(không rõ)') + '</b>'
+        + (s.bot.id ? ' · id ' + esc(s.bot.id) : '');
+      if (s.bot.display_name) document.getElementById('botName').textContent = s.bot.display_name;
+    } else if (s.bot_error) {
+      bi.innerHTML = '<span style="color:var(--red)">Không gọi được Zalo: ' + esc(s.bot_error) + '</span>';
+    } else bi.textContent = '';
+    loadUsers();
+  }
+}
+
+function loadUsers() {
+  api('users').then(j => {
+    if (!j.ok) return;
+    document.getElementById('usrBody').innerHTML = j.rows.map(u =>
+      '<tr><td>' + esc(u.display_name) + ' <span class="muted">· ' + esc(u.role) + '</span></td>'
+      + '<td>' + (u.linked ? '<span class="ok">' + esc(u.zalo_name || 'đã kết nối') + '</span>'
+                           : '<span class="no">chưa kết nối</span>') + '</td>'
+      + '<td class="muted">' + esc(u.zalo_linked_at || '—') + '</td></tr>').join('');
+  });
+}
+
+function load() {
+  api('status').then(j => {
+    if (!j.ok) { document.getElementById('myState').textContent = j.error || 'Không tải được.'; return; }
+    ST = j; paint();
+  });
+}
+
+function doCode() {
+  api('link-code', 'POST', {}).then(j => {
+    if (!j.ok) { say('myMsg', j.error || 'Không lấy được mã.', true); return; }
+    document.getElementById('linkBox').style.display = 'block';
+    document.getElementById('codeVal').textContent = j.code;
+    document.getElementById('codeEcho').textContent = j.code;
+  });
+}
+function doUnlink() {
+  api('unlink', 'POST', {}).then(j => {
+    say('myMsg', j.ok ? j.message : (j.error || 'Lỗi'), !j.ok);
+    load();
+  });
+}
+function doTest() {
+  api('test', 'POST', {}).then(j => say('myMsg', j.ok ? j.message : (j.error || 'Lỗi'), !j.ok));
+}
+
+document.getElementById('btnReload').addEventListener('click', load);
+document.getElementById('btnHook').addEventListener('click', function () {
+  this.disabled = true;
+  api('set-webhook', 'POST', {}).then(j => {
+    this.disabled = false;
+    if (!j.ok) { say('admMsg', j.error || 'Lỗi', true); return; }
+    const v = j.result && j.result.verification;
+    say('admMsg', 'Đã đăng ký webhook. ' + (v ? (v.ok ? 'Zalo gọi thử thành công (' + v.status_code + ').'
+                                                     : 'Zalo gọi thử thất bại: ' + (v.hint || v.outcome)) : ''), v ? !v.ok : false);
+  });
+});
+
+load();
+</script>
+</body>
+</html>

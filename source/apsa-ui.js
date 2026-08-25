@@ -365,6 +365,7 @@
     { ico: 'leave',   name: 'Xin nghỉ phép',      url: './leave.html', id: 91 },
     { ico: 'shield',  name: 'Quản lý User',      url: './users.html', id: 27 },
     { ico: 'gear',    name: 'Cài đặt hệ thống',  url: './settings.html', id: 92, admin: true },
+    { ico: 'bell',    name: 'Thông báo Zalo',    url: './zalo.html', id: 93 },
     { ico: 'trophy',  name: 'Badminton',         url: './badminton/index.html', id: 28 }
   ];
 

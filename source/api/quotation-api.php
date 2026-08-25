@@ -530,7 +530,9 @@ function qr_canDecide(PDO $pdo, $qid, $scope, $ME) {
 }
 
 /** Ghi thông báo trong app, đồng thời gửi mail nếu đã cấu hình SMTP */
+require_once __DIR__ . '/zalo.php';   /* APSA127-ZALO */
 function qr_notify(PDO $pdo, $userId, $kind, $title, $body, $url, $actor) {
+    if (function_exists('zb_push')) zb_push($pdo, $userId, $kind, $title, $body, $url);
     $userId = (int)$userId;
     if ($userId <= 0) return;
     try {

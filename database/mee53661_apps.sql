@@ -422,6 +422,11 @@ CREATE TABLE `app_users` (
   `phone` varchar(40) DEFAULT NULL,
   `email` varchar(150) DEFAULT NULL,
   `note` varchar(300) DEFAULT NULL,
+  `zalo_chat_id` varchar(64) DEFAULT NULL,
+  `zalo_name` varchar(120) DEFAULT NULL,
+  `zalo_linked_at` datetime DEFAULT NULL,
+  `zalo_code` varchar(12) DEFAULT NULL,
+  `zalo_code_exp` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_username` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -433,15 +438,15 @@ CREATE TABLE `app_users` (
 
 LOCK TABLES `app_users` WRITE;
 /*!40000 ALTER TABLE `app_users` DISABLE KEYS */;
-INSERT INTO `app_users` VALUES (1,'admin','$2y$10$tgjxDVP41TkZC7QgOnnIbuaB8HFuMpI8iZCJQTqih1BFPVh6ksnU2','Harris','admin',1,'2026-08-05 16:47:25','2026-08-25 11:20:34','2026-08-25 11:20:34',NULL,'inhouse',1,NULL,NULL,NULL);
-INSERT INTO `app_users` VALUES (3,'thaoly','$2y$10$apwNXhmb03WC5brdnZnV2unSiF6fKbehZHlK2/lojsPd4MtBAB3LS','Thảo Lý','member',1,'2026-08-11 04:37:01','2026-08-25 04:25:16','2026-08-25 04:25:16',NULL,'inhouse',1,NULL,NULL,NULL);
-INSERT INTO `app_users` VALUES (4,'trangdo','$2y$10$1Dj1IZCt0H6BNWX/DmN0LulFIoMya7pYPc0PedQJmsleIOSfIFfni','Trang Đỗ','member',1,'2026-08-11 04:37:51','2026-08-25 10:57:36','2026-08-25 10:57:36',NULL,'inhouse',1,NULL,NULL,NULL);
-INSERT INTO `app_users` VALUES (5,'nhattan','$2y$10$W8tp/Ef.JYD/V.XURuNJseFsfThk2KGlZM71rxdupY6chvGTv9Ep.','Nhật Tân','member',1,'2026-08-11 04:38:13','2026-08-24 08:57:34','2026-08-24 08:57:34',NULL,'inhouse',1,NULL,NULL,NULL);
-INSERT INTO `app_users` VALUES (6,'cankim','$2y$10$02p2Ljt1T7pbjDC5aFZ.T.H90nY52ggV0V8iYRxCIyc2FmQuAnbA.','Anh Kim','member',1,'2026-08-11 04:39:10','2026-08-24 06:54:26','2026-08-24 06:54:26',NULL,'inhouse',1,NULL,NULL,NULL);
-INSERT INTO `app_users` VALUES (7,'anhthu','$2y$10$XdyxyHCs3lSZ.fJG3NOBvOlk5KhQONtosEv0oLyVUDfaJXeUIiU6G','Anh Thư','member',1,'2026-08-11 04:39:27','2026-08-24 03:58:36','2026-08-24 03:58:36',NULL,'inhouse',1,NULL,NULL,NULL);
-INSERT INTO `app_users` VALUES (8,'minhtri','$2y$10$DefjfsNDrXtCXWlJku2fDujVDtvLlaW3aCmVGcAzJbqEjhgMDw6za','Minh Trí','member',1,'2026-08-11 14:03:06','2026-08-25 06:00:06','2026-08-25 06:00:06',NULL,'inhouse',1,NULL,NULL,NULL);
-INSERT INTO `app_users` VALUES (9,'tientien','$2y$10$CjtsEP9TagGQMDVRln5Ftu0GFNKjGsGJL6wUhrrLxBg4ZR34qCxQS','Tiên Tiên','member',1,'2026-08-11 14:03:32','2026-08-25 05:26:51','2026-08-25 05:26:51',NULL,'inhouse',1,NULL,NULL,NULL);
-INSERT INTO `app_users` VALUES (10,'vyvy','$2y$10$JCqFrpMvEx7J.Q0/Lhb8Wu1FcQqsrHP4ihPFGUt455/iezkoVjm6a','Vy Vy','member',1,'2026-08-11 14:03:44','2026-08-25 04:04:38','2026-08-25 04:04:38',NULL,'inhouse',1,NULL,NULL,NULL);
+INSERT INTO `app_users` VALUES (1,'admin','$2y$10$tgjxDVP41TkZC7QgOnnIbuaB8HFuMpI8iZCJQTqih1BFPVh6ksnU2','Harris','admin',1,'2026-08-05 16:47:25','2026-08-25 11:20:34','2026-08-25 11:20:34',NULL,'inhouse',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `app_users` VALUES (3,'thaoly','$2y$10$apwNXhmb03WC5brdnZnV2unSiF6fKbehZHlK2/lojsPd4MtBAB3LS','Thảo Lý','member',1,'2026-08-11 04:37:01','2026-08-25 04:25:16','2026-08-25 04:25:16',NULL,'inhouse',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `app_users` VALUES (4,'trangdo','$2y$10$1Dj1IZCt0H6BNWX/DmN0LulFIoMya7pYPc0PedQJmsleIOSfIFfni','Trang Đỗ','member',1,'2026-08-11 04:37:51','2026-08-25 10:57:36','2026-08-25 10:57:36',NULL,'inhouse',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `app_users` VALUES (5,'nhattan','$2y$10$W8tp/Ef.JYD/V.XURuNJseFsfThk2KGlZM71rxdupY6chvGTv9Ep.','Nhật Tân','member',1,'2026-08-11 04:38:13','2026-08-24 08:57:34','2026-08-24 08:57:34',NULL,'inhouse',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `app_users` VALUES (6,'cankim','$2y$10$02p2Ljt1T7pbjDC5aFZ.T.H90nY52ggV0V8iYRxCIyc2FmQuAnbA.','Anh Kim','member',1,'2026-08-11 04:39:10','2026-08-24 06:54:26','2026-08-24 06:54:26',NULL,'inhouse',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `app_users` VALUES (7,'anhthu','$2y$10$XdyxyHCs3lSZ.fJG3NOBvOlk5KhQONtosEv0oLyVUDfaJXeUIiU6G','Anh Thư','member',1,'2026-08-11 04:39:27','2026-08-24 03:58:36','2026-08-24 03:58:36',NULL,'inhouse',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `app_users` VALUES (8,'minhtri','$2y$10$DefjfsNDrXtCXWlJku2fDujVDtvLlaW3aCmVGcAzJbqEjhgMDw6za','Minh Trí','member',1,'2026-08-11 14:03:06','2026-08-25 06:00:06','2026-08-25 06:00:06',NULL,'inhouse',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `app_users` VALUES (9,'tientien','$2y$10$CjtsEP9TagGQMDVRln5Ftu0GFNKjGsGJL6wUhrrLxBg4ZR34qCxQS','Tiên Tiên','member',1,'2026-08-11 14:03:32','2026-08-25 05:26:51','2026-08-25 05:26:51',NULL,'inhouse',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `app_users` VALUES (10,'vyvy','$2y$10$JCqFrpMvEx7J.Q0/Lhb8Wu1FcQqsrHP4ihPFGUt455/iezkoVjm6a','Vy Vy','member',1,'2026-08-11 14:03:44','2026-08-25 04:04:38','2026-08-25 04:04:38',NULL,'inhouse',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `app_users` ENABLE KEYS */;
 UNLOCK TABLES;
 
