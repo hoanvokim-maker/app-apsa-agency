@@ -251,7 +251,7 @@ $Q_STATUS = [
     'service_done'     => 'Hoàn thành dịch vụ',
     'liq_sent'         => 'Gửi nghiệm thu',
     'awaiting_payment' => 'Chờ thanh toán',
-    'done'             => 'Đóng và chờ thanh toán',
+    'done'             => 'Hoàn thành',
     'lost'             => 'Trượt Bidding',
 ];
 function q_status($v) {
@@ -373,7 +373,6 @@ if (!q_hasColumn($pdo, 'quotations', 'status')) {
         'Chờ thanh toán'     => 'awaiting_payment',
         // 'Hoàn thành' phải chạy TRƯỚC 'Hoàn thành dịch vụ' vì LIKE %...% khớp cả hai
         'Hoàn thành'         => 'done',
-        'Đóng và chờ thanh toán' => 'done',
         'Hoàn thành dịch vụ' => 'service_done',
         'Trượt Bidding'      => 'lost',
     ];
@@ -1376,9 +1375,6 @@ function buildXlsx($quo, $items, $logoBinary, $withLiq = false) {
 
 $action = $_GET['action'] ?? '';
 $B      = body_json();
-
-qc_boot($pdo);
-qc_gate($pdo, $action, $B);
 
 switch ($action) {
 
@@ -2602,142 +2598,7 @@ case 'file': {
     exit;
 }
 
-case 'close-state': {
-    qc_boot($pdo);
-    $id = (int)($_GET['id'] ?? $B['id'] ?? 0);
-    if (!$id) q_fail('id is required');
-    $r = qc_row($pdo, $id);
-    if (!$r) q_fail('Không tìm thấy dự án', 404);
-    q_ok([
-        'id'        => (int)$r['id'],
-        'closed'    => !empty($r['closed_at']),
-        'closed_at' => $r['closed_at'],
-        'closed_by' => $r['closed_by_name'],
-        'admin'     => qc_is_admin(),
-        'pending'   => qc_pending($pdo, $id),
-    ]);
-}
-
-case 'project-close': {
-    qc_boot($pdo);
-    $id = (int)($B['id'] ?? 0);
-    if (!$id) q_fail('id is required');
-    $r = qc_row($pdo, $id);
-    if (!$r) q_fail('Không tìm thấy dự án', 404);
-    if (!empty($r['closed_at'])) q_fail('Dự án này đã đóng rồi');
-
-    global $ME;
-    $st = $pdo->prepare("UPDATE `quotations` SET closed_at = NOW(), closed_by = ?, closed_by_name = ? WHERE id = ?");
-    $st->execute([is_array($ME) ? (int)$ME['id'] : null, qc_actor(), $id]);
-
-    qc_notify_admins($pdo, 'project_closed',
-        'Đã đóng dự án ' . $r['code'],
-        qc_actor() . ' vừa đóng dự án “' . $r['title'] . '”. Từ giờ không ai sửa được cho tới khi Admin mở lại.',
-        qc_url($r));
-
-    q_ok(['id' => $id, 'closed' => true, 'closed_by' => qc_actor()]);
-}
-
-case 'project-reopen': {
-    qc_boot($pdo);
-    if (!qc_is_admin()) q_fail('Chỉ Admin mới mở lại được dự án', 403);
-    $id = (int)($B['id'] ?? 0);
-    if (!$id) q_fail('id is required');
-    $r = qc_row($pdo, $id);
-    if (!$r) q_fail('Không tìm thấy dự án', 404);
-
-    $pdo->prepare("UPDATE `quotations` SET closed_at = NULL, closed_by = NULL, closed_by_name = NULL WHERE id = ?")
-        ->execute([$id]);
-
-    // Duyet luon moi yeu cau dang cho, va bao cho nguoi da xin
-    global $ME;
-    foreach (qc_pending($pdo, $id) as $p) {
-        $pdo->prepare("UPDATE `quotation_reopen_reqs`
-                       SET state='approved', decided_by=?, decided_name=?, decided_at=NOW() WHERE id=?")
-            ->execute([is_array($ME) ? (int)$ME['id'] : null, qc_actor(), (int)$p['id']]);
-        if (!empty($p['user_id'])) {
-            qr_notify($pdo, (int)$p['user_id'], 'project_reopened',
-                'Đã mở lại dự án ' . $r['code'],
-                qc_actor() . ' đã mở lại “' . $r['title'] . '” — anh/chị chỉnh sửa tiếp được rồi.',
-                qc_url($r), qc_actor());
-        }
-    }
-
-    q_ok(['id' => $id, 'closed' => false]);
-}
-
-case 'reopen-request': {
-    qc_boot($pdo);
-    $id     = (int)($B['id'] ?? 0);
-    $reason = trim((string)($B['reason'] ?? ''));
-    if (!$id) q_fail('id is required');
-    if ($reason === '') q_fail('Vui lòng ghi lý do cần mở lại');
-
-    $r = qc_row($pdo, $id);
-    if (!$r) q_fail('Không tìm thấy dự án', 404);
-    if (empty($r['closed_at'])) q_fail('Dự án đang mở, không cần xin mở lại');
-
-    global $ME;
-    $uid = is_array($ME) ? (int)$ME['id'] : null;
-    $dup = $pdo->prepare("SELECT id FROM `quotation_reopen_reqs`
-                          WHERE quotation_id = ? AND user_id <=> ? AND state = 'pending' LIMIT 1");
-    $dup->execute([$id, $uid]);
-    if ($dup->fetch()) q_fail('Anh/chị đã gửi yêu cầu rồi — đang chờ Admin duyệt.');
-
-    $pdo->prepare("INSERT INTO `quotation_reopen_reqs` (quotation_id, user_id, user_name, reason) VALUES (?,?,?,?)")
-        ->execute([$id, $uid, qc_actor(), mb_substr($reason, 0, 600)]);
-
-    qc_notify_admins($pdo, 'reopen_request',
-        'Xin mở lại dự án ' . $r['code'],
-        qc_actor() . ' xin mở lại “' . $r['title'] . '”. Lý do: ' . $reason,
-        qc_url($r));
-
-    q_ok(['id' => $id, 'sent' => true]);
-}
-
-case 'reopen-decide': {
-    qc_boot($pdo);
-    if (!qc_is_admin()) q_fail('Chỉ Admin mới duyệt được yêu cầu', 403);
-    $rid     = (int)($B['req_id'] ?? 0);
-    $approve = !empty($B['approve']);
-    $note    = trim((string)($B['note'] ?? ''));
-    if (!$rid) q_fail('req_id is required');
-
-    $st = $pdo->prepare("SELECT * FROM `quotation_reopen_reqs` WHERE id = ?");
-    $st->execute([$rid]);
-    $req = $st->fetch();
-    if (!$req) q_fail('Không tìm thấy yêu cầu', 404);
-    if ($req['state'] !== 'pending') q_fail('Yêu cầu này đã được xử lý');
-
-    $r = qc_row($pdo, (int)$req['quotation_id']);
-    if (!$r) q_fail('Không tìm thấy dự án', 404);
-
-    global $ME;
-    $pdo->prepare("UPDATE `quotation_reopen_reqs`
-                   SET state = ?, decided_by = ?, decided_name = ?, decided_note = ?, decided_at = NOW()
-                   WHERE id = ?")
-        ->execute([$approve ? 'approved' : 'rejected',
-                   is_array($ME) ? (int)$ME['id'] : null, qc_actor(),
-                   mb_substr($note, 0, 600), $rid]);
-
-    if ($approve) {
-        $pdo->prepare("UPDATE `quotations` SET closed_at = NULL, closed_by = NULL, closed_by_name = NULL WHERE id = ?")
-            ->execute([(int)$req['quotation_id']]);
-    }
-
-    if (!empty($req['user_id'])) {
-        qr_notify($pdo, (int)$req['user_id'],
-            $approve ? 'project_reopened' : 'reopen_rejected',
-            ($approve ? 'Đã mở lại dự án ' : 'Chưa mở lại dự án ') . $r['code'],
-            qc_actor() . ($approve
-                ? ' đã mở lại “' . $r['title'] . '” — anh/chị chỉnh sửa tiếp được rồi.'
-                : ' chưa đồng ý mở lại “' . $r['title'] . '”.')
-                . ($note !== '' ? ' Ghi chú: ' . $note : ''),
-            qc_url($r), qc_actor());
-    }
-
-    q_ok(['req_id' => $rid, 'approved' => $approve, 'closed' => !$approve]);
-}case 'statuses':
+case 'statuses':
     q_ok($Q_STATUS);
 
 case 'set-status': {
@@ -2759,100 +2620,4 @@ case 'me':
 
 default:
     q_fail('Unknown action', 404);
-}
-
-// ═══════════════════════════════════════════════════════
-//  ĐÓNG DỰ ÁN — khoá chỉnh sửa, xin Admin mở lại
-// ═══════════════════════════════════════════════════════
-
-
-function qc_boot(PDO $pdo) {
-    static $done = false;
-    if ($done) return;
-    $done = true;
-
-    $lock = sys_get_temp_dir() . '/apsa_qclose_mig_' . @filemtime(__FILE__) . '.lock';
-    if (file_exists($lock)) return;
-
-    try {
-        $cols = [];
-        foreach ($pdo->query("SHOW COLUMNS FROM `quotations`") as $r) $cols[$r['Field']] = 1;
-        if (!isset($cols['closed_at']))      $pdo->exec("ALTER TABLE `quotations` ADD COLUMN `closed_at` DATETIME NULL DEFAULT NULL");
-        if (!isset($cols['closed_by']))      $pdo->exec("ALTER TABLE `quotations` ADD COLUMN `closed_by` INT NULL DEFAULT NULL");
-        if (!isset($cols['closed_by_name'])) $pdo->exec("ALTER TABLE `quotations` ADD COLUMN `closed_by_name` VARCHAR(120) NULL DEFAULT NULL");
-
-        $pdo->exec("CREATE TABLE IF NOT EXISTS `quotation_reopen_reqs` (
-            `id`            INT AUTO_INCREMENT PRIMARY KEY,
-            `quotation_id`  INT NOT NULL,
-            `user_id`       INT NULL,
-            `user_name`     VARCHAR(120) NULL,
-            `reason`        VARCHAR(600) NULL,
-            `state`         VARCHAR(16) NOT NULL DEFAULT 'pending',
-            `decided_by`    INT NULL,
-            `decided_name`  VARCHAR(120) NULL,
-            `decided_note`  VARCHAR(600) NULL,
-            `decided_at`    DATETIME NULL,
-            `created_at`    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            KEY `idx_qrr_q` (`quotation_id`),
-            KEY `idx_qrr_state` (`state`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
-
-        @touch($lock);
-    } catch (PDOException $e) { /* de lan sau thu lai */ }
-}
-
-function qc_row(PDO $pdo, $id) {
-    $id = (int)$id;
-    if ($id <= 0) return null;
-    $st = $pdo->prepare("SELECT id, code, title, closed_at, closed_by, closed_by_name FROM `quotations` WHERE id = ?");
-    $st->execute([$id]);
-    return $st->fetch() ?: null;
-}
-
-function qc_is_admin() {
-    global $ME;
-    return is_array($ME) && (($ME['role'] ?? '') === 'admin');
-}
-
-function qc_actor() {
-    global $ME;
-    if (!is_array($ME)) return 'Ai đó';
-    return $ME['display_name'] ?: ($ME['username'] ?? 'Ai đó');
-}
-
-// Chan moi thao tac ghi khi du an da dong
-function qc_gate(PDO $pdo, $action, $B) {
-    static $LOCKED = ["save","set-status","delete","upload-file","delete-file","import-xlsx"];
-    if (!in_array($action, $LOCKED, true)) return;
-    $id = (int)($B['id'] ?? $B['quotation_id'] ?? $_GET['id'] ?? 0);
-    if ($id <= 0) return;                       // tao moi -> cho phep
-    $r = qc_row($pdo, $id);
-    if (!$r || empty($r['closed_at'])) return;  // chua dong -> cho phep
-    q_fail('Dự án đã đóng bởi ' . ($r['closed_by_name'] ?: 'ai đó')
-         . ' — cần Admin mở lại mới chỉnh sửa được.', 423);
-}
-
-// Gui thong bao cho tat ca Admin
-function qc_notify_admins(PDO $pdo, $kind, $title, $body, $url) {
-    try {
-        $st = $pdo->query("SELECT id FROM `app_users` WHERE role = 'admin' AND active = 1");
-        foreach ($st->fetchAll() as $u) qr_notify($pdo, (int)$u['id'], $kind, $title, $body, $url, qc_actor());
-    } catch (Exception $e) { /* bo qua */ }
-}
-
-function qc_url($r) {
-    return 'https://app.apsa.agency/quotation.html?q=' . rawurlencode((string)($r['code'] ?? ''));
-}
-
-function qc_pending(PDO $pdo, $id) {
-    global $ME;
-    $uid = is_array($ME) ? (int)$ME['id'] : 0;
-    $st = $pdo->prepare("SELECT id, user_id, user_name, reason, created_at,
-                                (user_id = ?) AS mine
-                         FROM `quotation_reopen_reqs`
-                         WHERE quotation_id = ? AND state = 'pending' ORDER BY id DESC");
-    $st->execute([$uid, (int)$id]);
-    $rows = $st->fetchAll();
-    foreach ($rows as &$r) { $r['id'] = (int)$r['id']; $r['mine'] = (int)$r['mine'] === 1; }
-    return $rows;
 }

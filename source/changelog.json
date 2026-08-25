@@ -9,6 +9,10 @@
             "items": [
                 {
                     "d": "2026-08-25",
+                    "t": "Báo giá: ô Trạng thái dự án trong trang chi tiết đổi sang dạng pill màu giống trang danh sách. Thêm nút Đóng dự án — khi đóng, mọi ô nhập bị khoá và máy chủ chặn luôn mọi thao tác ghi; muốn sửa phải gửi yêu cầu để Admin mở lại (có thông báo hai chiều). Trạng thái Hoàn thành đổi tên thành Đóng và chờ thanh toán."
+                },
+                {
+                    "d": "2026-08-25",
                     "t": "Kho Logos giờ tải lên được: kéo thả cả bộ file của một nhãn hàng (PNG, SVG, AI, EPS, PDF, PSD, ZIP — tối đa 400 MB mỗi file), các định dạng cùng tên tự gom vào một thẻ với đủ nút tải file gốc để mang đi thiết kế. Sửa tên, đổi nhóm, chọn ảnh bìa; Admin xoá được. 262 file trong kho cũ đã gom thành 191 logo."
                 },
                 {
