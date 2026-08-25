@@ -9,12 +9,6 @@
             "items": [
                 {
                     "d": "2026-08-25",
-                    "v": "1.2.4",
-                    "t": "Sua loi rollback lam sap app: khong dung cp -a nua (no ghi de quyen thu muc docroot khien web tra 404). Nay chi chep noi dung file va giu nguyen quyen thu muc, kem tu kiem tra HTTP 200 sau moi lan deploy va rollback",
-                    "by": "mee53661"
-                },
-                {
-                    "d": "2026-08-25",
                     "v": "1.2.3",
                     "t": "Bo cong cu apsa: deploy tu tang 1.2.x, chup DB truoc moi lan deploy (giu 10 ban), rollback quay ca ma nguon lan database va go file thua, luon chup an toan truoc khi quay lui",
                     "by": "mee53661"
