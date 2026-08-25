@@ -395,6 +395,54 @@ function q_kind($v) {
     return in_array($v, ['event','media','other'], true) ? $v : 'media';
 }
 
+/* ── Review & thảo luận trong báo giá ─────────────────────────
+   scope: 'quote' = phần báo giá · 'liq' = phần nghiệm thu */
+q_mig($pdo, "CREATE TABLE IF NOT EXISTS `quotation_comments` (
+  `id`           INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `quotation_id` INT UNSIGNED NOT NULL,
+  `scope`        VARCHAR(10)  NOT NULL DEFAULT 'quote',
+  `parent_id`    INT UNSIGNED DEFAULT NULL COMMENT 'NULL = mo thread moi',
+  `user_id`      INT UNSIGNED NOT NULL,
+  `user_name`    VARCHAR(120) NOT NULL,
+  `body`         TEXT         NOT NULL,
+  `mentions`     VARCHAR(500) DEFAULT NULL COMMENT 'danh sach id, ngan cach dau phay',
+  `created_at`   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at`   DATETIME     DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_q`      (`quotation_id`, `scope`, `id`),
+  KEY `idx_parent` (`parent_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+q_mig($pdo, "CREATE TABLE IF NOT EXISTS `quotation_reviews` (
+  `id`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `quotation_id`  INT UNSIGNED NOT NULL,
+  `scope`         VARCHAR(10)  NOT NULL DEFAULT 'quote',
+  `reviewer_id`   INT UNSIGNED NOT NULL,
+  `reviewer_name` VARCHAR(120) NOT NULL,
+  `requested_by`  VARCHAR(120) DEFAULT NULL,
+  `status`        VARCHAR(12)  NOT NULL DEFAULT 'pending',
+  `note`          VARCHAR(600) DEFAULT NULL,
+  `created_at`    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `decided_at`    DATETIME     DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_rev`     (`quotation_id`, `scope`, `reviewer_id`),
+  KEY        `idx_reviewer` (`reviewer_id`, `status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+q_mig($pdo, "CREATE TABLE IF NOT EXISTS `app_notifications` (
+  `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id`    INT UNSIGNED NOT NULL,
+  `kind`       VARCHAR(24)  NOT NULL,
+  `title`      VARCHAR(200) NOT NULL,
+  `body`       VARCHAR(500) DEFAULT NULL,
+  `url`        VARCHAR(300) DEFAULT NULL,
+  `actor`      VARCHAR(120) DEFAULT NULL,
+  `is_read`    TINYINT(1)   NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_user` (`user_id`, `is_read`, `id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
 if ($DO_MIGRATE) @touch($MIG_LOCK);         // đánh dấu đã migrate cho lần sau
 
 // ── Helper tính tổng ─────────────────────────────────────────
@@ -455,6 +503,114 @@ function q_nextSeq($pdo, $year) {
         }
     } catch (PDOException $e) { $max = 0; }
     return $max + 1;
+}
+
+/* ══════════ Thảo luận & duyệt báo giá — hàm dùng chung ══════════ */
+require_once __DIR__ . '/mailer.php';
+
+function qr_scope($v) { return ((string)$v === 'liq') ? 'liq' : 'quote'; }
+
+function qr_quotation(PDO $pdo, $id) {
+    $st = $pdo->prepare("SELECT id, code, title, created_by FROM `quotations`
+                          WHERE id = ? AND deleted_at IS NULL");
+    $st->execute([(int)$id]);
+    return $st->fetch() ?: null;
+}
+
+function qr_label($q, $scope) {
+    return ($scope === 'liq' ? 'nghiệm thu ' : 'báo giá ')
+         . trim(($q['code'] ?? '') . ' · ' . ($q['title'] ?? ''), ' ·');
+}
+
+function qr_url($q, $scope) {
+    return './quotation.html?q=' . rawurlencode((string)($q['code'] ?? ''))
+         . '&tab=' . ($scope === 'liq' ? 'liq' : 'quote') . '#thaoluan';
+}
+
+/** Admin duyệt được mọi báo giá; ngoài ra phải nằm trong danh sách được mời review */
+function qr_canDecide(PDO $pdo, $qid, $scope, $ME) {
+    if (($ME['role'] ?? '') === 'admin') return true;
+    $st = $pdo->prepare("SELECT 1 FROM `quotation_reviews`
+                          WHERE quotation_id = ? AND scope = ? AND reviewer_id = ? LIMIT 1");
+    $st->execute([(int)$qid, $scope, (int)$ME['id']]);
+    return (bool)$st->fetchColumn();
+}
+
+/** Ghi thông báo trong app, đồng thời gửi mail nếu đã cấu hình SMTP */
+function qr_notify(PDO $pdo, $userId, $kind, $title, $body, $url, $actor) {
+    $userId = (int)$userId;
+    if ($userId <= 0) return;
+    try {
+        $pdo->prepare("INSERT INTO `app_notifications` (user_id, kind, title, body, url, actor)
+                       VALUES (?,?,?,?,?,?)")
+            ->execute([$userId, $kind, mb_substr($title, 0, 200), mb_substr((string)$body, 0, 500),
+                       mb_substr((string)$url, 0, 300), mb_substr((string)$actor, 0, 120)]);
+    } catch (PDOException $e) { /* thông báo hỏng thì thôi, không chặn thao tác chính */ }
+
+    if (!apsa_mail_ready()) return;
+    try {
+        $st = $pdo->prepare("SELECT email, display_name FROM `app_users` WHERE id = ? AND active = 1");
+        $st->execute([$userId]);
+        $u = $st->fetch();
+        if (!$u || empty($u['email'])) return;
+        $abs = 'https://app.apsa.agency/' . ltrim((string)$url, './');
+        $esc = fn($v) => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
+        $html = apsa_mail_html($title, [
+            'Chào ' . $esc($u['display_name']) . ',',
+            $body ? '<span style="color:#bdbdbd">“' . $esc($body) . '”</span>' : '',
+        ], 'Mở trong APSA Tools', $abs);
+        @apsa_mail($u['email'], $title, $html);
+    } catch (Throwable $e) { /* bỏ qua */ }
+}
+
+/** Gói dữ liệu trả về cho khung thảo luận: bình luận + review + quyền */
+function qr_bundle(PDO $pdo, $qid, $scope, $ME) {
+    $qid = (int)$qid;
+    $st = $pdo->prepare("SELECT id, parent_id, user_id, user_name, body, mentions, created_at
+                           FROM `quotation_comments`
+                          WHERE quotation_id = ? AND scope = ? AND deleted_at IS NULL
+                          ORDER BY id ASC");
+    $st->execute([$qid, $scope]);
+    $rows = [];
+    foreach ($st->fetchAll() as $r) {
+        $rows[] = [
+            'id'        => (int)$r['id'],
+            'parent_id' => $r['parent_id'] ? (int)$r['parent_id'] : 0,
+            'user_id'   => (int)$r['user_id'],
+            'user_name' => $r['user_name'],
+            'body'      => $r['body'],
+            'mentions'  => array_values(array_filter(array_map('intval', explode(',', (string)$r['mentions'])))),
+            'created_at'=> $r['created_at'],
+            'mine'      => ((int)$r['user_id'] === (int)$ME['id']),
+        ];
+    }
+
+    $st = $pdo->prepare("SELECT reviewer_id, reviewer_name, requested_by, status, note, created_at, decided_at
+                           FROM `quotation_reviews` WHERE quotation_id = ? AND scope = ?
+                          ORDER BY created_at ASC");
+    $st->execute([$qid, $scope]);
+    $revs = [];
+    foreach ($st->fetchAll() as $r) {
+        $r['reviewer_id'] = (int)$r['reviewer_id'];
+        $revs[] = $r;
+    }
+
+    // Trạng thái chung: có người từ chối => rejected · có duyệt và không ai chờ => approved
+    $state = 'none';
+    $has = ['pending' => 0, 'approved' => 0, 'rejected' => 0];
+    foreach ($revs as $r) { if (isset($has[$r['status']])) $has[$r['status']]++; }
+    if ($has['rejected'])      $state = 'rejected';
+    elseif ($has['pending'])   $state = 'pending';
+    elseif ($has['approved'])  $state = 'approved';
+
+    return [
+        'comments'    => $rows,
+        'reviews'     => $revs,
+        'state'       => $state,
+        'can_decide'  => qr_canDecide($pdo, $qid, $scope, $ME),
+        'is_admin'    => (($ME['role'] ?? '') === 'admin'),
+        'me'          => ['id' => (int)$ME['id'], 'name' => $ME['display_name'] ?: $ME['username']],
+    ];
 }
 
 /** Mã báo giá dạng ddMMyyyy-N theo ngày báo giá */
@@ -1946,6 +2102,163 @@ case 'manage-verify': {
     q_ok(['results' => $out,
           'khop' => count(array_filter($out, fn($r) => !empty($r['ok']))),
           'lech' => count(array_filter($out, fn($r) => empty($r['ok'])))]);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   THẢO LUẬN · MENTION · DUYỆT BÁO GIÁ
+   scope: 'quote' = báo giá · 'liq' = nghiệm thu
+   ══════════════════════════════════════════════════════════════ */
+
+case 'comments': {
+    $qid   = (int)($_GET['id'] ?? 0);
+    $scope = qr_scope($_GET['scope'] ?? 'quote');
+    if (!$qid) q_fail('Thiếu mã báo giá');
+    q_ok(qr_bundle($pdo, $qid, $scope, $ME));
+}
+
+case 'comment-add': {
+    $qid    = (int)($B['quotation_id'] ?? 0);
+    $scope  = qr_scope($B['scope'] ?? 'quote');
+    $body   = trim((string)($B['body'] ?? ''));
+    $parent = (int)($B['parent_id'] ?? 0);
+    if (!$qid)        q_fail('Thiếu mã báo giá');
+    if ($body === '') q_fail('Chưa nhập nội dung');
+    if (mb_strlen($body) > 4000) $body = mb_substr($body, 0, 4000);
+
+    $q = qr_quotation($pdo, $qid);
+    if (!$q) q_fail('Không tìm thấy báo giá', 404);
+
+    if ($parent) {
+        $st = $pdo->prepare("SELECT id, parent_id FROM `quotation_comments` WHERE id = ? AND quotation_id = ?");
+        $st->execute([$parent, $qid]);
+        $pr = $st->fetch();
+        if (!$pr) q_fail('Không tìm thấy bình luận gốc', 404);
+        $parent = (int)($pr['parent_id'] ?: $pr['id']);
+    }
+
+    $ids = [];
+    foreach ((array)($B['mentions'] ?? []) as $m) { $m = (int)$m; if ($m > 0) $ids[$m] = $m; }
+    $ids = array_values($ids);
+
+    $st = $pdo->prepare("INSERT INTO `quotation_comments`
+            (quotation_id, scope, parent_id, user_id, user_name, body, mentions)
+            VALUES (?,?,?,?,?,?,?)");
+    $st->execute([$qid, $scope, $parent ?: null, (int)$ME['id'], $WHO, $body,
+                  $ids ? implode(',', $ids) : null]);
+    $cid = (int)$pdo->lastInsertId();
+
+    $label = qr_label($q, $scope);
+    $url   = qr_url($q, $scope);
+    $short = mb_substr(preg_replace('/\s+/u', ' ', $body), 0, 160);
+
+    foreach ($ids as $uid) {
+        if ($uid === (int)$ME['id']) continue;
+        qr_notify($pdo, $uid, 'mention', $WHO . ' nhắc tên bạn trong ' . $label, $short, $url, $WHO);
+    }
+    if ($parent) {
+        $st = $pdo->prepare("SELECT DISTINCT user_id FROM `quotation_comments`
+                              WHERE quotation_id = ? AND (id = ? OR parent_id = ?) AND deleted_at IS NULL");
+        $st->execute([$qid, $parent, $parent]);
+        foreach ($st->fetchAll() as $r) {
+            $uid = (int)$r['user_id'];
+            if ($uid === (int)$ME['id'] || in_array($uid, $ids, true)) continue;
+            qr_notify($pdo, $uid, 'reply', $WHO . ' trả lời trong ' . $label, $short, $url, $WHO);
+        }
+    }
+    q_ok(array_merge(['id' => $cid, 'message' => 'Đã gửi bình luận'], qr_bundle($pdo, $qid, $scope, $ME)));
+}
+
+case 'comment-delete': {
+    $cid = (int)($B['id'] ?? 0);
+    if (!$cid) q_fail('Thiếu mã bình luận');
+    $st = $pdo->prepare("SELECT * FROM `quotation_comments` WHERE id = ? AND deleted_at IS NULL");
+    $st->execute([$cid]);
+    $c = $st->fetch();
+    if (!$c) q_fail('Không tìm thấy bình luận', 404);
+    if ((int)$c['user_id'] !== (int)$ME['id'] && ($ME['role'] ?? '') !== 'admin')
+        q_fail('Chỉ người viết hoặc Admin mới xoá được', 403);
+    $pdo->prepare("UPDATE `quotation_comments` SET deleted_at = NOW() WHERE id = ? OR parent_id = ?")
+        ->execute([$cid, $cid]);
+    q_ok(array_merge(['message' => 'Đã xoá'],
+         qr_bundle($pdo, (int)$c['quotation_id'], $c['scope'], $ME)));
+}
+
+case 'review-request': {
+    $qid   = (int)($B['quotation_id'] ?? 0);
+    $scope = qr_scope($B['scope'] ?? 'quote');
+    $rid   = (int)($B['reviewer_id'] ?? 0);
+    $note  = s($B['note'] ?? '', 600);
+    if (!$qid || !$rid) q_fail('Thiếu thông tin');
+    $q = qr_quotation($pdo, $qid);
+    if (!$q) q_fail('Không tìm thấy báo giá', 404);
+
+    $st = $pdo->prepare("SELECT id, display_name, email FROM `app_users` WHERE id = ? AND active = 1");
+    $st->execute([$rid]);
+    $u = $st->fetch();
+    if (!$u) q_fail('Không tìm thấy nhân viên', 404);
+
+    $pdo->prepare("INSERT INTO `quotation_reviews`
+            (quotation_id, scope, reviewer_id, reviewer_name, requested_by, status, note)
+            VALUES (?,?,?,?,?, 'pending', ?)
+          ON DUPLICATE KEY UPDATE status='pending', note=VALUES(note),
+            requested_by=VALUES(requested_by), created_at=NOW(), decided_at=NULL")
+        ->execute([$qid, $scope, $rid, $u['display_name'], $WHO, $note]);
+
+    $label = qr_label($q, $scope);
+    qr_notify($pdo, $rid, 'review_request', $WHO . ' mời bạn review ' . $label,
+              $note ?: 'Bấm để mở và duyệt.', qr_url($q, $scope), $WHO);
+    q_ok(array_merge(['message' => 'Đã mời ' . $u['display_name'] . ' review'],
+         qr_bundle($pdo, $qid, $scope, $ME)));
+}
+
+case 'review-decide': {
+    $qid    = (int)($B['quotation_id'] ?? 0);
+    $scope  = qr_scope($B['scope'] ?? 'quote');
+    $st0    = (string)($B['status'] ?? '');
+    $status = $st0 === 'approved' ? 'approved' : ($st0 === 'rejected' ? 'rejected' : '');
+    $note   = s($B['note'] ?? '', 600);
+    if (!$qid || !$status) q_fail('Thiếu thông tin');
+    $q = qr_quotation($pdo, $qid);
+    if (!$q) q_fail('Không tìm thấy báo giá', 404);
+    if (!qr_canDecide($pdo, $qid, $scope, $ME))
+        q_fail('Bạn không có quyền duyệt báo giá này', 403);
+
+    $pdo->prepare("INSERT INTO `quotation_reviews`
+            (quotation_id, scope, reviewer_id, reviewer_name, requested_by, status, note, decided_at)
+            VALUES (?,?,?,?,?,?,?, NOW())
+          ON DUPLICATE KEY UPDATE status=VALUES(status), note=VALUES(note), decided_at=NOW()")
+        ->execute([$qid, $scope, (int)$ME['id'], $WHO, $WHO, $status, $note]);
+
+    $label = qr_label($q, $scope);
+    $word  = $status === 'approved' ? 'đã DUYỆT' : 'đã TỪ CHỐI';
+    $targets = [];
+    $st = $pdo->prepare("SELECT DISTINCT user_id FROM `quotation_comments` WHERE quotation_id = ? AND scope = ?");
+    $st->execute([$qid, $scope]);
+    foreach ($st->fetchAll() as $r) $targets[] = (int)$r['user_id'];
+    $st = $pdo->prepare("SELECT DISTINCT reviewer_id FROM `quotation_reviews` WHERE quotation_id = ? AND scope = ?");
+    $st->execute([$qid, $scope]);
+    foreach ($st->fetchAll() as $r) $targets[] = (int)$r['reviewer_id'];
+    $st = $pdo->prepare("SELECT id FROM `app_users` WHERE display_name = ? AND active = 1 LIMIT 1");
+    $st->execute([$q['created_by']]);
+    if ($own = $st->fetchColumn()) $targets[] = (int)$own;
+    foreach (array_unique($targets) as $uid) {
+        if (!$uid || $uid === (int)$ME['id']) continue;
+        qr_notify($pdo, $uid, 'review_done', $WHO . ' ' . $word . ' ' . $label,
+                  $note ?: '', qr_url($q, $scope), $WHO);
+    }
+    q_ok(array_merge(['message' => $status === 'approved' ? 'Đã duyệt' : 'Đã từ chối'],
+         qr_bundle($pdo, $qid, $scope, $ME)));
+}
+
+case 'review-cancel': {
+    $qid   = (int)($B['quotation_id'] ?? 0);
+    $scope = qr_scope($B['scope'] ?? 'quote');
+    $rid   = (int)($B['reviewer_id'] ?? 0);
+    if (($ME['role'] ?? '') !== 'admin') q_fail('Chỉ Admin mới gỡ được người review', 403);
+    $pdo->prepare("DELETE FROM `quotation_reviews` WHERE quotation_id = ? AND scope = ? AND reviewer_id = ?")
+        ->execute([$qid, $scope, $rid]);
+    q_ok(array_merge(['message' => 'Đã gỡ khỏi danh sách review'],
+         qr_bundle($pdo, $qid, $scope, $ME)));
 }
 
 case 'delete': {

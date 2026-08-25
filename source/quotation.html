@@ -496,6 +496,77 @@ table.imptbl th{ position:sticky; top:0; background:var(--bg3); padding:7px 9px;
   font-size:10px; text-transform:uppercase; letter-spacing:.5px; color:var(--text3); font-weight:700; white-space:nowrap; }
 table.imptbl td{ padding:6px 9px; border-top:1px solid var(--border); vertical-align:top; overflow-wrap:anywhere; }
 table.imptbl tr.sec td{ background:#1f1f1f !important; font-weight:800; color:var(--accent); }
+
+/* ══════════ Thảo luận & duyệt ══════════ */
+.dsc{ margin-top:26px; border:1px solid var(--border); border-radius:14px; background:var(--bg2); overflow:hidden; }
+.dschead{ display:flex; align-items:center; gap:11px; padding:13px 16px; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+.dscttl{ font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; letter-spacing:1.2px; }
+.dsctabs{ display:flex; gap:5px; margin-left:6px; }
+.dsctab{ padding:6px 13px; border-radius:9px; border:1px solid var(--border); background:var(--bg3);
+  color:var(--text3); font-family:inherit; font-size:11.5px; font-weight:800; cursor:pointer; }
+.dsctab:hover{ color:var(--text); border-color:var(--border-hover); }
+.dsctab.on{ background:rgba(223,242,13,.14); border-color:rgba(223,242,13,.5); color:var(--accent); }
+.dscstate{ margin-left:auto; font-size:11.5px; font-weight:800; padding:5px 12px; border-radius:20px; white-space:nowrap; }
+.dscstate.none{ color:var(--text3); border:1px solid var(--border); }
+.dscstate.pending{ color:#ffc357; background:rgba(255,195,87,.13); border:1px solid rgba(255,195,87,.4); }
+.dscstate.approved{ color:#7ee787; background:rgba(126,231,135,.13); border:1px solid rgba(126,231,135,.45); }
+.dscstate.rejected{ color:#ff8f8f; background:rgba(255,77,77,.13); border:1px solid rgba(255,77,77,.45); }
+.dscrev{ display:flex; flex-wrap:wrap; gap:7px; padding:12px 16px 0; }
+.dscrev:empty{ display:none; }
+.rvchip{ display:inline-flex; align-items:center; gap:7px; padding:5px 11px; border-radius:20px;
+  font-size:11.5px; font-weight:700; border:1px solid var(--border); background:var(--bg3); color:var(--text2); }
+.rvchip .rvst{ font-weight:800; }
+.rvchip.pending .rvst{ color:#ffc357; }
+.rvchip.approved .rvst{ color:#7ee787; }
+.rvchip.rejected .rvst{ color:#ff8f8f; }
+.rvchip .rvx{ background:none; border:none; color:var(--text3); cursor:pointer; padding:0 0 0 2px; font-size:12px; }
+.rvchip .rvx:hover{ color:#ff6b6b; }
+.dscact{ display:flex; align-items:center; gap:9px; padding:12px 16px; }
+.dscact .spacer{ flex:1; }
+.hbtn.ok{ border-color:rgba(126,231,135,.45); color:#7ee787; }
+.hbtn.ok:hover{ background:rgba(126,231,135,.15); }
+.hbtn.bad{ border-color:rgba(255,77,77,.45); color:#ff8f8f; }
+.hbtn.bad:hover{ background:rgba(255,77,77,.15); }
+.dsclist{ padding:2px 16px 6px; max-height:520px; overflow-y:auto; }
+.thr{ border-top:1px solid var(--border); padding:13px 0 10px; }
+.thr:first-child{ border-top:none; }
+.cmt{ display:flex; gap:11px; padding:5px 0; }
+.cmt.rep{ margin-left:34px; }
+.cav{ flex:0 0 28px; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:11.5px; font-weight:800; background:rgba(223,242,13,.16); color:var(--accent); text-transform:uppercase; }
+.cmt.rep .cav{ flex:0 0 24px; width:24px; height:24px; font-size:10.5px; }
+.cbody{ flex:1; min-width:0; }
+.cwho{ font-size:12.5px; font-weight:700; }
+.cwhen{ font-size:10.5px; color:var(--text3); font-weight:700; margin-left:7px; }
+.ctext{ font-size:12.5px; line-height:1.55; color:var(--text2); margin-top:2px; overflow-wrap:anywhere; white-space:pre-wrap; }
+.ctext .mn{ color:var(--accent); font-weight:700; }
+.cact{ margin-top:4px; display:flex; gap:12px; }
+.cact button{ background:none; border:none; padding:0; color:var(--text3); font-family:inherit;
+  font-size:11px; font-weight:700; cursor:pointer; }
+.cact button:hover{ color:var(--accent); }
+.cact button.del:hover{ color:#ff6b6b; }
+.repbox{ margin:6px 0 2px 34px; display:none; }
+.repbox.open{ display:block; }
+.repbox textarea{ width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:9px;
+  padding:8px 10px; color:var(--text); font-family:inherit; font-size:12.5px; resize:vertical; }
+.repbox textarea:focus{ outline:none; border-color:var(--accent); }
+.repact{ display:flex; gap:7px; margin-top:6px; }
+.dscempty{ padding:22px 0; text-align:center; color:var(--text3); font-size:12.5px; }
+.dscnew{ padding:12px 16px 16px; border-top:1px solid var(--border); }
+.dscnew .ac{ position:relative; }
+.dscnew textarea{ width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:11px;
+  padding:10px 12px; color:var(--text); font-family:inherit; font-size:12.5px; resize:vertical; min-height:52px; }
+.dscnew textarea:focus{ outline:none; border-color:var(--accent); }
+.dscnewact{ display:flex; align-items:center; gap:10px; margin-top:8px; }
+.dschint{ font-size:11px; color:var(--text3); margin-right:auto; }
+.dsc .acmenu{ display:none; position:absolute; left:10px; bottom:calc(100% + 6px); width:270px; z-index:70;
+  background:var(--bg2); border:1px solid var(--border-hover); border-radius:11px; padding:5px;
+  box-shadow:0 16px 40px rgba(0,0,0,.6); max-height:230px; overflow-y:auto; }
+.dsc .acmenu.open{ display:block; }
+.dsc .acitem{ display:block; width:100%; text-align:left; background:transparent; border:none; cursor:pointer;
+  padding:7px 10px; border-radius:8px; color:var(--text2); font-family:inherit; font-size:12.5px; }
+.dsc .acitem:hover, .dsc .acitem.sel{ background:#161616; color:#fff; }
+.dsc .acitem em{ font-style:normal; color:var(--text3); font-size:11px; margin-left:6px; }
 table.imptbl td.n{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
 .impwarn{ margin-top:12px; font-size:12px; color:#ffc357; background:rgba(255,180,84,.1);
   border:1px solid rgba(255,180,84,.35); border-radius:9px; padding:9px 12px; line-height:1.6; }
@@ -585,8 +656,8 @@ table.q tbody tr.dragblock td{ background:rgba(223,242,13,.05); }
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/theme.css?v=11" />
-<script src="/apsa-ui.js?v=4"></script>
+<link rel="stylesheet" href="/theme.css?v=12" />
+<script src="/apsa-ui.js?v=5"></script>
 </head>
 <body>
 <svg xmlns="http://www.w3.org/2000/svg" id="apsa-ui-sprite" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><symbol id="i-tent" viewBox="0 0 48 48"><path d="M24 4 44 39H4L24 4Z" fill="#ffffff"/><path d="M24 4 31 39H17L24 4Z" fill="#dff20d"/><path d="M24 21c3.1 0 5.2 3.6 5.2 9v9H18.8v-9c0-5.4 2.1-9 5.2-9Z" fill="#0d0d0d"/><rect x="2" y="39" width="44" height="5" rx="2.5" fill="#5e5e5e"/></symbol><symbol id="i-video" viewBox="0 0 48 48"><rect x="2" y="13" width="29" height="23" rx="4" fill="#ffffff"/><path d="M33 22.5 45 14v21l-12-8.5v-4Z" fill="#5e5e5e"/><circle cx="16.5" cy="24.5" r="6.5" fill="#dff20d"/><circle cx="16.5" cy="24.5" r="2.6" fill="#0d0d0d"/></symbol><symbol id="i-printer" viewBox="0 0 48 48"><rect x="12" y="3" width="24" height="12" fill="#5e5e5e"/><rect x="2" y="15" width="44" height="19" rx="4" fill="#ffffff"/><circle cx="39" cy="21.5" r="2.8" fill="#0d0d0d"/><rect x="12" y="29" width="24" height="16" rx="2" fill="#dff20d"/><rect x="16" y="34" width="16" height="3" fill="#0d0d0d"/><rect x="16" y="39" width="11" height="3" fill="#0d0d0d"/></symbol><symbol id="i-box" viewBox="0 0 48 48"><path d="M24 3 44 12.5 24 22 4 12.5 24 3Z" fill="#ffffff"/><path d="M4 12.5 24 22v23L4 35.5v-23Z" fill="#5e5e5e"/><path d="M44 12.5 24 22v23l20-9.5v-23Z" fill="#dff20d"/></symbol><symbol id="i-trash" viewBox="0 0 48 48"><rect x="18" y="3" width="12" height="7" rx="2.5" fill="#dff20d"/><rect x="6" y="11" width="36" height="6.5" rx="3.25" fill="#5e5e5e"/><path d="M10 19h28l-2.4 23.5a3.2 3.2 0 0 1-3.2 2.9H15.6a3.2 3.2 0 0 1-3.2-2.9L10 19Z" fill="#ffffff"/><rect x="17.5" y="24" width="4" height="15" rx="2" fill="#0d0d0d"/><rect x="26.5" y="24" width="4" height="15" rx="2" fill="#0d0d0d"/></symbol><symbol id="i-clock" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="#dff20d"/><circle cx="24" cy="24" r="15.5" fill="#ffffff"/><path d="M24 13.5V25h8.5" fill="none" stroke="#0d0d0d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-download" viewBox="0 0 48 48"><path d="M19.5 3h9v18H39L24 39 9 21h10.5V3Z" fill="#dff20d"/><rect x="6" y="39" width="36" height="6" rx="3" fill="#ffffff"/></symbol><symbol id="i-upload" viewBox="0 0 48 48"><path d="M24 3 39 21H28.5v18h-9V21H9L24 3Z" fill="#dff20d"/><rect x="6" y="39" width="36" height="6" rx="3" fill="#ffffff"/></symbol><symbol id="i-warning" viewBox="0 0 48 48"><path d="M20.5 6.5a4 4 0 0 1 7 0l17.5 31A4 4 0 0 1 41.5 44h-35a4 4 0 0 1-3.5-6l17.5-31.5Z" fill="#dff20d"/><rect x="21.3" y="16" width="5.4" height="15" rx="2.7" fill="#0d0d0d"/><circle cx="24" cy="36.5" r="3.1" fill="#0d0d0d"/></symbol><symbol id="i-check" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20.5" fill="#dff20d"/><path d="M13.5 24.5 21 32l14-14.5" fill="none" stroke="#0d0d0d" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-link" viewBox="0 0 48 48"><path d="M28 13.5 32.5 9a10.5 10.5 0 0 1 15 15L43 28.5a10.5 10.5 0 0 1-15 0" fill="none" stroke="#dff20d" stroke-width="5.5" stroke-linecap="round"/><path d="M20 34.5 15.5 39a10.5 10.5 0 0 1-15-15L5 19.5a10.5 10.5 0 0 1 15 0" fill="none" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/><path d="M17 31 31 17" stroke="#5e5e5e" stroke-width="5.5" stroke-linecap="round"/></symbol><symbol id="i-mail" viewBox="0 0 48 48"><rect x="2" y="9" width="44" height="30" rx="4" fill="#ffffff"/><path d="M2 13a4 4 0 0 1 4-4h36a4 4 0 0 1 4 4L24 28.5 2 13Z" fill="#dff20d"/><path d="M2 17.5 24 33l22-15.5v4L24 37 2 21.5v-4Z" fill="#5e5e5e"/></symbol><symbol id="i-refresh" viewBox="0 0 48 48"><path d="M40 24a16 16 0 1 1-5.6-12.2" fill="none" stroke="#dff20d" stroke-width="6" stroke-linecap="round"/><path d="M36 2.5 39.5 15 27 12.5 36 2.5Z" fill="#ffffff"/></symbol><symbol id="i-file" viewBox="0 0 48 48"><path d="M10 3h19l9 9v33H10V3Z" fill="#ffffff"/><path d="M29 3l9 9h-9V3Z" fill="#5e5e5e"/><rect x="10" y="27" width="28" height="12" fill="#dff20d"/><rect x="14" y="31" width="5" height="4.5" fill="#0d0d0d"/><rect x="21.5" y="31" width="5" height="4.5" fill="#0d0d0d"/><rect x="29" y="31" width="5" height="4.5" fill="#0d0d0d"/></symbol><symbol id="i-eye" viewBox="0 0 48 48"><path d="M24 10c11.5 0 20 8.5 22.5 14C44 29.5 35.5 38 24 38S4 29.5 1.5 24C4 18.5 12.5 10 24 10Z" fill="#ffffff"/><circle cx="24" cy="24" r="9" fill="#dff20d"/><circle cx="24" cy="24" r="4.2" fill="#0d0d0d"/></symbol><symbol id="i-heart" viewBox="0 0 48 48"><path d="M24 43.5C8.5 32 2.5 26 2.5 17.6A10.8 10.8 0 0 1 24 11.8a10.8 10.8 0 0 1 21.5 5.8C45.5 26 39.5 32 24 43.5Z" fill="#dff20d"/></symbol><symbol id="i-pin" viewBox="0 0 48 48"><circle cx="24" cy="14" r="11.5" fill="#dff20d"/><rect x="18" y="22" width="12" height="7.5" rx="1.5" fill="#5e5e5e"/><path d="M24 45.5 20.4 29.5h7.2L24 45.5Z" fill="#ffffff"/></symbol><symbol id="i-camera" viewBox="0 0 48 48"><path d="M17.5 7h13l3.2 5.5H42a3.5 3.5 0 0 1 3.5 3.5v22a3.5 3.5 0 0 1-3.5 3.5H6A3.5 3.5 0 0 1 2.5 38V16A3.5 3.5 0 0 1 6 12.5h8.3L17.5 7Z" fill="#ffffff"/><circle cx="24" cy="27" r="10" fill="#dff20d"/><circle cx="24" cy="27" r="4.6" fill="#0d0d0d"/></symbol><symbol id="i-folder" viewBox="0 0 48 48"><path d="M3 8h14.5l5 6H42a3 3 0 0 1 3 3v6H3V8Z" fill="#5e5e5e"/><path d="M3 17h42a3 3 0 0 1 3 3l-3.2 17.5a3 3 0 0 1-3 2.5H3V17Z" fill="#ffffff"/><rect x="3" y="17" width="42" height="6" fill="#dff20d"/></symbol><symbol id="i-phone" viewBox="0 0 48 48"><rect x="12" y="2" width="24" height="44" rx="5" fill="#ffffff"/><rect x="16" y="9" width="16" height="26" rx="2" fill="#dff20d"/><circle cx="24" cy="40.5" r="2.8" fill="#5e5e5e"/></symbol><symbol id="i-target" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="#ffffff"/><circle cx="24" cy="24" r="13.5" fill="#5e5e5e"/><circle cx="24" cy="24" r="6" fill="#dff20d"/></symbol><symbol id="i-calendar" viewBox="0 0 48 48"><rect x="3" y="7" width="42" height="38" rx="4" fill="#ffffff"/><path d="M3 11a4 4 0 0 1 4-4h34a4 4 0 0 1 4 4v7H3v-7Z" fill="#dff20d"/><rect x="12" y="2" width="5.5" height="10" rx="2.75" fill="#5e5e5e"/><rect x="30.5" y="2" width="5.5" height="10" rx="2.75" fill="#5e5e5e"/><rect x="10" y="24" width="7" height="6" fill="#0d0d0d"/><rect x="20.5" y="24" width="7" height="6" fill="#0d0d0d"/><rect x="31" y="24" width="7" height="6" fill="#5e5e5e"/><rect x="10" y="34" width="7" height="6" fill="#5e5e5e"/><rect x="20.5" y="34" width="7" height="6" fill="#5e5e5e"/></symbol><symbol id="i-search" viewBox="0 0 48 48"><rect x="27" y="30" width="18" height="8.5" rx="4.25" transform="rotate(45 27 30)" fill="#5e5e5e"/><circle cx="20" cy="20" r="16.5" fill="#dff20d"/><circle cx="20" cy="20" r="10" fill="#ffffff"/></symbol><symbol id="i-bolt" viewBox="0 0 48 48"><path d="M28 2 9 27h11.5L18 46 39 20H26.5L28 2Z" fill="#dff20d"/></symbol><symbol id="i-clip" viewBox="0 0 48 48"><path d="M34 14.5v18.8a11 11 0 0 1-22 0V12a6.8 6.8 0 0 1 13.6 0v20.6a2.9 2.9 0 0 1-5.8 0V15" fill="none" stroke="#dff20d" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-copy" viewBox="0 0 48 48"><rect x="7" y="4" width="24" height="32" rx="3" fill="#5e5e5e"/><rect x="17" y="12" width="24" height="32" rx="3" fill="#ffffff"/><rect x="22" y="20" width="14" height="3.6" fill="#5e5e5e"/><rect x="22" y="28" width="10" height="3.6" fill="#dff20d"/></symbol><symbol id="i-money" viewBox="0 0 48 48"><rect x="2" y="10" width="44" height="28" rx="4" fill="#ffffff"/><circle cx="24" cy="24" r="8.5" fill="#dff20d"/><rect x="22.2" y="16" width="3.6" height="16" rx="1.8" fill="#0d0d0d"/><rect x="6" y="14" width="5" height="5" fill="#5e5e5e"/><rect x="37" y="29" width="5" height="5" fill="#5e5e5e"/></symbol><symbol id="i-block" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20.5" fill="#ffffff"/><circle cx="24" cy="24" r="14.5" fill="#0d0d0d"/><path d="M13.5 13.5 34.5 34.5" stroke="#dff20d" stroke-width="6" stroke-linecap="round"/></symbol><symbol id="i-qr" viewBox="0 0 48 48"><rect x="5" y="5" width="16" height="16" rx="2" fill="#dff20d"/><rect x="10" y="10" width="6" height="6" fill="#0d0d0d"/><rect x="27" y="5" width="16" height="16" rx="2" fill="#ffffff"/><rect x="32" y="10" width="6" height="6" fill="#0d0d0d"/><rect x="5" y="27" width="16" height="16" rx="2" fill="#ffffff"/><rect x="10" y="32" width="6" height="6" fill="#0d0d0d"/><rect x="27" y="27" width="7" height="7" fill="#dff20d"/><rect x="36" y="27" width="7" height="7" fill="#5e5e5e"/><rect x="27" y="36" width="7" height="7" fill="#5e5e5e"/><rect x="36" y="36" width="7" height="7" fill="#dff20d"/></symbol><symbol id="i-tag" viewBox="0 0 48 48"><path d="M18 9h18a3 3 0 0 1 3 3v18L22 47 3 28 18 9Z" fill="#5e5e5e" opacity=".55"/><path d="M23 4h18a3 3 0 0 1 3 3v18L26 43 6 23 23 4Z" fill="#dff20d"/><circle cx="35" cy="13" r="4.5" fill="#0d0d0d"/></symbol><symbol id="i-book" viewBox="0 0 48 48"><rect x="5" y="8" width="17" height="32" rx="2" fill="#ffffff"/><rect x="26" y="8" width="17" height="32" rx="2" fill="#dff20d"/><rect x="22" y="6" width="4" height="36" fill="#5e5e5e"/><rect x="9" y="16" width="9" height="3" fill="#0d0d0d"/><rect x="9" y="23" width="9" height="3" fill="#0d0d0d"/><rect x="30" y="16" width="9" height="3" fill="#0d0d0d"/></symbol><symbol id="i-key" viewBox="0 0 48 48"><circle cx="24" cy="13" r="9.5" fill="#dff20d"/><circle cx="24" cy="13" r="3.6" fill="#0d0d0d"/><rect x="20.8" y="21" width="6.4" height="23" rx="1" fill="#ffffff"/><rect x="27.2" y="27" width="9" height="5" fill="#ffffff"/><rect x="27.2" y="36" width="6.5" height="5" fill="#ffffff"/></symbol><symbol id="i-image" viewBox="0 0 48 48"><rect x="4" y="9" width="40" height="30" rx="3" fill="#ffffff"/><circle cx="15" cy="19" r="4.5" fill="#dff20d"/><path d="M4 34l11-11 9 9 7-6 13 12v1H4z" fill="#5e5e5e"/><rect x="4" y="35" width="40" height="4" fill="#5e5e5e"/></symbol><symbol id="i-spark" viewBox="0 0 48 48"><path d="M20 3c1.7 10 4.5 12.8 14.5 14.5C24.5 19.2 21.7 22 20 32 18.3 22 15.5 19.2 5.5 17.5 15.5 15.8 18.3 13 20 3Z" fill="#dff20d"/><path d="M36 26c.9 5.6 2.4 7.1 8 8-5.6.9-7.1 2.4-8 8-.9-5.6-2.4-7.1-8-8 5.6-.9 7.1-2.4 8-8Z" fill="#ffffff"/></symbol><symbol id="i-bulb" viewBox="0 0 48 48"><path d="M24 4c-8.3 0-15 6.7-15 15 0 5.7 3.2 10.6 7.9 13.2V37h14.2v-4.8C35.8 29.6 39 24.7 39 19c0-8.3-6.7-15-15-15Z" fill="#dff20d"/><rect x="17" y="38.5" width="14" height="4" rx="2" fill="#ffffff"/><rect x="19.5" y="43.5" width="9" height="3.5" rx="1.75" fill="#5e5e5e"/></symbol><symbol id="i-price" viewBox="0 0 48 48"><rect x="3" y="12" width="34" height="22" rx="3" fill="#ffffff"/><rect x="3" y="12" width="34" height="5" fill="#5e5e5e"/><rect x="7" y="22" width="13" height="3" fill="#5e5e5e"/><rect x="7" y="28" width="9" height="3" fill="#5e5e5e"/><circle cx="33" cy="31" r="12" fill="#dff20d"/><rect x="31.6" y="22" width="2.8" height="18" fill="#0d0d0d"/><rect x="27" y="26" width="12" height="3" rx="1.5" fill="#0d0d0d"/><rect x="27" y="33" width="12" height="3" rx="1.5" fill="#0d0d0d"/></symbol><symbol id="i-shield" viewBox="0 0 48 48"><path d="M24 3 42 9.5V23c0 10.4-7.3 18.4-18 22-10.7-3.6-18-11.6-18-22V9.5L24 3Z" fill="#dff20d"/><rect x="17" y="22" width="14" height="11" rx="2" fill="#0d0d0d"/><path d="M20 22v-3.5a4 4 0 0 1 8 0V22" fill="none" stroke="#0d0d0d" stroke-width="3.2"/></symbol><symbol id="i-shuttle" viewBox="0 0 48 48"><path d="M24 2 8 28h32L24 2Z" fill="#ffffff"/><path d="M24 3v25M15.5 16 18.5 28M32.5 16 29.5 28" stroke="#0d0d0d" stroke-width="2.2"/><rect x="8" y="26" width="32" height="3" fill="#5e5e5e"/><circle cx="24" cy="37" r="9" fill="#dff20d"/></symbol><symbol id="i-people" viewBox="0 0 48 48"><circle cx="34" cy="17" r="7" fill="#ffffff"/><path d="M23 43c0-6.6 4.9-12 11-12s11 5.4 11 12H23Z" fill="#ffffff"/><circle cx="18" cy="15" r="8.5" fill="#dff20d"/><path d="M3 43c0-8.3 6.7-15 15-15s15 6.7 15 15H3Z" fill="#dff20d"/></symbol><symbol id="i-card" viewBox="0 0 48 48"><rect x="3" y="10" width="42" height="28" rx="4" fill="#ffffff"/><rect x="3" y="16" width="42" height="6" fill="#0d0d0d"/><rect x="8" y="28" width="15" height="4" rx="2" fill="#5e5e5e"/><circle cx="35" cy="30" r="5.5" fill="#dff20d"/></symbol><symbol id="i-chart" viewBox="0 0 48 48"><rect x="4" y="27" width="10" height="17" fill="#ffffff"/><rect x="19" y="16" width="10" height="28" fill="#dff20d"/><rect x="34" y="6" width="10" height="38" fill="#5e5e5e"/></symbol><symbol id="i-signal" viewBox="0 0 48 48"><circle cx="24" cy="34" r="6" fill="#dff20d"/><path d="M13 26a15 15 0 0 1 22 0" fill="none" stroke="#ffffff" stroke-width="5"/><path d="M6 18a25 25 0 0 1 36 0" fill="none" stroke="#5e5e5e" stroke-width="5"/></symbol><symbol id="i-doc" viewBox="0 0 48 48"><path d="M9 4h20l10 10v30H9V4Z" fill="#ffffff"/><path d="M29 4l10 10H29V4Z" fill="#5e5e5e"/><rect x="15" y="22" width="18" height="3.4" fill="#0d0d0d"/><rect x="15" y="30" width="12" height="3.4" fill="#0d0d0d"/><rect x="15" y="38" width="18" height="3.4" fill="#dff20d"/></symbol><symbol id="i-grid" viewBox="0 0 48 48"><rect x="5" y="5" width="17" height="17" rx="2" fill="#dff20d"/><rect x="26" y="5" width="17" height="17" rx="2" fill="#ffffff"/><rect x="5" y="26" width="17" height="17" rx="2" fill="#5e5e5e"/><rect x="26" y="26" width="17" height="17" rx="2" fill="#dff20d"/></symbol><symbol id="i-palette" viewBox="0 0 48 48"><path d="M24 4C12.4 4 3 12.7 3 23.5S12.4 43 24 43c3 0 5-1.8 5-4.3 0-1.3-.6-2.3-1.4-3.2-.8-.9-1.3-1.8-1.3-3 0-2.4 2-4.3 4.5-4.3H36c5.5 0 9-3.6 9-9C45 11.4 35.6 4 24 4Z" fill="#ffffff"/><circle cx="13" cy="20" r="3.6" fill="#dff20d"/><circle cx="21" cy="13" r="3.6" fill="#5e5e5e"/><circle cx="31" cy="14" r="3.6" fill="#dff20d"/><circle cx="12" cy="30" r="3.6" fill="#5e5e5e"/></symbol><symbol id="i-pen" viewBox="0 0 48 48"><path d="M33 4l11 11-4.5 4.5-11-11L33 4Z" fill="#5e5e5e"/><path d="M26 11l11 11L16 43H5v-11L26 11Z" fill="#dff20d"/><path d="M5 32h11v11" fill="#ffffff"/></symbol><symbol id="i-gear" viewBox="0 0 48 48"><path d="M20 3h8l1.2 6.1 4.6 2.7 5.6-2.6 4 6.9-4.4 4.3v5.2l4.4 4.3-4 6.9-5.6-2.6-4.6 2.7L28 45h-8l-1.2-6.1-4.6-2.7-5.6 2.6-4-6.9 4.4-4.3v-5.2L4.6 18l4-6.9 5.6 2.6 4.6-2.7L20 3Z" fill="#dff20d"/><circle cx="24" cy="24" r="7.5" fill="#0d0d0d"/><circle cx="24" cy="24" r="3.6" fill="#ffffff"/></symbol><symbol id="i-wrench" viewBox="0 0 48 48"><path d="M31 4a13 13 0 0 0-11.6 18.8L4 38.2 9.8 44l15.4-15.4A13 13 0 1 0 31 4Zm0 8a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z" fill="#dff20d"/><rect x="6" y="34" width="8" height="4" rx="2" transform="rotate(-45 10 36)" fill="#ffffff"/></symbol><symbol id="i-cap" viewBox="0 0 48 48"><path d="M24 6 46 17 24 28 2 17 24 6Z" fill="#dff20d"/><path d="M11 22v11c0 3.9 5.8 7 13 7s13-3.1 13-7V22l-13 6.5L11 22Z" fill="#ffffff"/><rect x="42" y="17" width="3" height="15" fill="#5e5e5e"/><circle cx="43.5" cy="34" r="3.2" fill="#5e5e5e"/></symbol><symbol id="i-building" viewBox="0 0 48 48"><rect x="3" y="17" width="15" height="27" rx="2" fill="#5e5e5e"/><rect x="7" y="22" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="12.4" y="22" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="7" y="29" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="12.4" y="29" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="7" y="36" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="12.4" y="36" width="3.6" height="3.6" fill="#0d0d0d"/><rect x="19" y="4" width="26" height="40" rx="2" fill="#ffffff"/><rect x="24" y="10" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="34.5" y="10" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="24" y="19" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="34.5" y="19" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="24" y="28" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="34.5" y="28" width="5.5" height="5.5" fill="#0d0d0d"/><rect x="27" y="36" width="10" height="8" rx="1" fill="#dff20d"/></symbol><symbol id="i-invoice" viewBox="0 0 48 48"><path d="M7 3h21l10 10v19H7V3Z" fill="#ffffff"/><path d="M28 3l10 10H28V3Z" fill="#5e5e5e"/><rect x="13" y="17" width="19" height="3.2" fill="#5e5e5e"/><rect x="13" y="24" width="12" height="3.2" fill="#5e5e5e"/><circle cx="33" cy="34" r="13" fill="#dff20d"/><path d="M27 34.4l4 4 8-8.4" fill="none" stroke="#0d0d0d" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-album" viewBox="0 0 48 48"><rect x="11" y="3" width="30" height="21" rx="2" fill="#5e5e5e"/><rect x="3" y="10" width="33" height="26" rx="3" fill="#ffffff"/><path d="M3 30.5 12 21l6.5 6.5L24 22l12 12v2H3v-5.5Z" fill="#5e5e5e"/><circle cx="11.5" cy="18" r="3.4" fill="#dff20d"/><path d="M35 47c-7.2-5.1-10.8-8.2-10.8-12A5.4 5.4 0 0 1 35 32.6a5.4 5.4 0 0 1 10.8 2.4c0 3.8-3.6 6.9-10.8 12Z" fill="#dff20d" stroke="#0d0d0d" stroke-width="2.4" stroke-linejoin="round"/></symbol><symbol id="i-map" viewBox="0 0 48 48"><path d="M24 3c-8.8 0-16 7.2-16 16 0 11.5 16 26 16 26s16-14.5 16-26c0-8.8-7.2-16-16-16Z" fill="#dff20d"/><circle cx="24" cy="19" r="6.5" fill="#0d0d0d"/></symbol><symbol id="i-globe" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20.5" fill="#ffffff"/><path d="M24 3.5c-6 5-9 11.6-9 20.5s3 15.5 9 20.5c6-5 9-11.6 9-20.5s-3-15.5-9-20.5Z" fill="#dff20d"/><rect x="4" y="15" width="40" height="4" fill="#5e5e5e"/><rect x="4" y="29" width="40" height="4" fill="#5e5e5e"/></symbol><symbol id="i-music" viewBox="0 0 48 48"><path d="M20 8 42 4v26h-6V11L26 12.8V36h-6V8Z" fill="#ffffff"/><circle cx="13" cy="36" r="8.5" fill="#dff20d"/><circle cx="36" cy="30" r="7.5" fill="#dff20d"/></symbol><symbol id="i-chat" viewBox="0 0 48 48"><path d="M6 6h36a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H20L9 44v-10H6a4 4 0 0 1-4-4V10a4 4 0 0 1 4-4Z" fill="#ffffff"/><circle cx="15" cy="20" r="3.4" fill="#5e5e5e"/><circle cx="24" cy="20" r="3.4" fill="#dff20d"/><circle cx="33" cy="20" r="3.4" fill="#5e5e5e"/></symbol><symbol id="i-calc" viewBox="0 0 48 48"><rect x="7" y="2" width="34" height="44" rx="4" fill="#ffffff"/><rect x="12" y="7" width="24" height="9" rx="2" fill="#0d0d0d"/><rect x="12" y="21" width="7" height="6" fill="#5e5e5e"/><rect x="22" y="21" width="7" height="6" fill="#5e5e5e"/><rect x="32" y="21" width="4" height="19" rx="2" fill="#dff20d"/><rect x="12" y="31" width="7" height="6" fill="#5e5e5e"/><rect x="22" y="31" width="7" height="6" fill="#5e5e5e"/></symbol></svg>
@@ -891,6 +962,63 @@ table.q tbody tr.dragblock td{ background:rgba(223,242,13,.05); }
 
     <div class="sumbox">
       <div class="sumcard" id="sumcard"></div>
+    </div>
+
+    <!-- ══════════ THẢO LUẬN & DUYỆT ══════════ -->
+    <div class="dsc" id="dscSec">
+      <div class="dschead">
+        <svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-chat"/></svg>
+        <span class="dscttl">THẢO LUẬN &amp; DUYỆT</span>
+        <div class="dsctabs">
+          <button type="button" class="dsctab on" id="dscTabQuote" onclick="dscSetScope('quote')">Báo giá</button>
+          <button type="button" class="dsctab" id="dscTabLiq" onclick="dscSetScope('liq')">Nghiệm thu</button>
+        </div>
+        <span class="dscstate" id="dscState"></span>
+      </div>
+
+      <div class="dscrev" id="dscRev"></div>
+
+      <div class="dscact">
+        <button type="button" class="hbtn" onclick="openReq()"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-people"/></svg> Mời người review</button>
+        <div class="spacer"></div>
+        <button type="button" class="hbtn ok"  id="btnAppr" onclick="decide('approved')"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-check"/></svg> Duyệt</button>
+        <button type="button" class="hbtn bad" id="btnRej"  onclick="decide('rejected')"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-warning"/></svg> Từ chối</button>
+      </div>
+
+      <div class="dsclist" id="dscList"></div>
+
+      <div class="dscnew">
+        <div class="ac">
+          <textarea id="dscBody" rows="2" placeholder="Viết bình luận… gõ @ để nhắc tên người trong team"
+                    oninput="dscType()" onkeydown="dscKey(event)"></textarea>
+          <div class="acmenu" id="dscMenu"></div>
+        </div>
+        <div class="dscnewact">
+          <span class="dschint" id="dscHint">Ctrl + Enter để gửi</span>
+          <button type="button" class="hbtn primary" onclick="sendComment()">Gửi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MỜI REVIEW ══════════ -->
+<div class="ov" id="reqOv" onclick="if(event.target===this)closeReq()">
+  <div class="modal" style="max-width:520px">
+    <button class="x" onclick="closeReq()">✕</button>
+    <h2><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-people"/></svg> Mời người review</h2>
+    <p class="sub" id="reqSub">Người được mời sẽ nhận thông báo và có quyền Duyệt / Từ chối phần này.</p>
+    <div class="fg">
+      <label>Chọn người review *</label>
+      <select id="reqWho"></select>
+    </div>
+    <div class="fg">
+      <label>Lời nhắn</label>
+      <input type="text" id="reqNote" placeholder="Không bắt buộc — VD: nhờ em duyệt trước 5h chiều" />
+    </div>
+    <div class="mlact">
+      <button class="hbtn" onclick="closeReq()">Huỷ</button>
+      <button class="hbtn primary" id="reqOk" onclick="sendReq()">Gửi lời mời</button>
     </div>
   </div>
 </div>
@@ -1440,6 +1568,7 @@ async function newQuote(){
   EXP = [];
   renderExp();
   bindAutoSave(); asReset();
+  DSC = null; dscSetScope('quote');          // báo giá chưa lưu thì ẩn khung thảo luận
   document.getElementById('editHint').textContent = 'Báo giá mới';
   fillForm(EDIT);
   renderRows();
@@ -1505,6 +1634,8 @@ async function openQuote(id, opts){
     renderExp();
     if (EXP.length) toggleExp(true);
     bindAutoSave(); asReset();
+    DSC_SCOPE = (new URLSearchParams(location.search).get('tab') === 'liq') ? 'liq' : DSC_SCOPE;
+    dscSetScope(DSC_SCOPE);
     document.getElementById('editHint').textContent = 'Đang sửa: ' + (EDIT.code || EDIT.title || ('#' + EDIT.id));
     fillForm(EDIT);
     renderRows();
@@ -2113,6 +2244,260 @@ function bindDrag(){
   body.addEventListener('dragend', dragEndAll);
 }
 
+
+/* ══════════════════════════════════════════════════════════
+   THẢO LUẬN · MENTION · DUYỆT
+   ══════════════════════════════════════════════════════════ */
+let DSC_SCOPE = 'quote', DSC = null, DSC_REPLY = 0;
+let MN_ON = false, MN_FROM = -1, MN_SEL = 0, MN_HITS = [], MN_EL = null;
+const DSC_PICKED = new Map();          // tên đã chọn → id, để gửi kèm mentions
+
+function dscSetScope(sc){
+  DSC_SCOPE = (sc === 'liq') ? 'liq' : 'quote';
+  document.getElementById('dscTabQuote').classList.toggle('on', DSC_SCOPE === 'quote');
+  document.getElementById('dscTabLiq').classList.toggle('on', DSC_SCOPE === 'liq');
+  loadDsc();
+}
+
+async function loadDsc(){
+  const box = document.getElementById('dscSec');
+  if (!box) return;
+  if (!EDIT.id){ box.style.display = 'none'; return; }
+  box.style.display = '';
+  try{
+    const j = await api(API, 'comments', { query: '&id=' + EDIT.id + '&scope=' + DSC_SCOPE });
+    DSC = j; renderDsc();
+  }catch(e){ /* im lặng, không chặn trang */ }
+}
+
+function dscWhen(v){
+  const d = new Date(String(v).replace(' ', 'T'));
+  if (isNaN(d)) return v || '';
+  const now = new Date(), m = Math.floor((now - d) / 60000);
+  if (m < 1) return 'vừa xong';
+  if (m < 60) return m + ' phút trước';
+  if (m < 1440) return Math.floor(m / 60) + ' giờ trước';
+  const p = n => String(n).padStart(2, '0');
+  return p(d.getDate()) + '/' + p(d.getMonth() + 1) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+const dscIni = n => String(n || '?').trim().split(/\s+/).slice(-1)[0].charAt(0);
+
+/* Tô sáng @Tên dựa trên danh sách nhân sự đã biết */
+function dscBody(t){
+  let h = esc(t);
+  const names = STAFF.map(u => u.display_name).filter(Boolean)
+    .sort((a, b) => b.length - a.length);
+  names.forEach(n => {
+    const re = new RegExp('@' + n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+    h = h.replace(re, '<span class="mn">@' + esc(n) + '</span>');
+  });
+  return h;
+}
+
+function renderDsc(){
+  if (!DSC) return;
+  const ST = { none:'Chưa có review', pending:'Chờ duyệt', approved:'Đã duyệt', rejected:'Bị từ chối' };
+  const stEl = document.getElementById('dscState');
+  stEl.className = 'dscstate ' + DSC.state;
+  stEl.textContent = ST[DSC.state] || '';
+
+  document.getElementById('dscRev').innerHTML = (DSC.reviews || []).map(r => {
+    const lbl = { pending:'chờ duyệt', approved:'đã duyệt', rejected:'từ chối' }[r.status] || r.status;
+    return '<span class="rvchip ' + r.status + '" title="' + esc(r.note || '') + '">' +
+      esc(r.reviewer_name) + ' · <span class="rvst">' + lbl + '</span>' +
+      (DSC.is_admin ? '<button class="rvx" title="Gỡ khỏi danh sách" onclick="cancelReq(' + r.reviewer_id + ')">✕</button>' : '') +
+      '</span>';
+  }).join('');
+
+  const can = !!DSC.can_decide;
+  document.getElementById('btnAppr').style.display = can ? '' : 'none';
+  document.getElementById('btnRej').style.display  = can ? '' : 'none';
+
+  const list = DSC.comments || [];
+  const roots = list.filter(c => !c.parent_id);
+  const kids  = c => list.filter(x => x.parent_id === c.id);
+  const one = (c, isRep) =>
+    '<div class="cmt' + (isRep ? ' rep' : '') + '">' +
+      '<div class="cav">' + esc(dscIni(c.user_name)) + '</div>' +
+      '<div class="cbody">' +
+        '<div><span class="cwho">' + esc(c.user_name) + '</span>' +
+          '<span class="cwhen">' + dscWhen(c.created_at) + '</span></div>' +
+        '<div class="ctext">' + dscBody(c.body) + '</div>' +
+        '<div class="cact">' +
+          (isRep ? '' : '<button onclick="openReply(' + c.id + ')">Trả lời</button>') +
+          ((c.mine || DSC.is_admin) ? '<button class="del" onclick="delComment(' + c.id + ')">Xoá</button>' : '') +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  document.getElementById('dscList').innerHTML = roots.length
+    ? roots.map(r =>
+        '<div class="thr">' + one(r, false) +
+          kids(r).map(k => one(k, true)).join('') +
+          '<div class="repbox" id="rep' + r.id + '">' +
+            '<textarea rows="2" placeholder="Trả lời ' + esc(r.user_name) + '…"></textarea>' +
+            '<div class="repact">' +
+              '<button type="button" class="hbtn primary" onclick="sendReply(' + r.id + ')">Gửi</button>' +
+              '<button type="button" class="hbtn" onclick="closeReply(' + r.id + ')">Huỷ</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>').join('')
+    : '<div class="dscempty">Chưa có bình luận nào. Gõ <b>@</b> để nhắc tên ai đó vào xem.</div>';
+}
+
+function openReply(id){
+  document.querySelectorAll('.repbox.open').forEach(b => b.classList.remove('open'));
+  const b = document.getElementById('rep' + id);
+  if (b){ b.classList.add('open'); const t = b.querySelector('textarea'); if (t) t.focus(); }
+}
+function closeReply(id){ const b = document.getElementById('rep' + id); if (b) b.classList.remove('open'); }
+
+/* ── Gõ @ để nhắc tên ── */
+function dscType(){ mnScan(document.getElementById('dscBody')); }
+
+function mnScan(el){
+  MN_EL = el;
+  const pos = el.selectionStart, txt = el.value.slice(0, pos);
+  const at = txt.lastIndexOf('@');
+  const menu = document.getElementById('dscMenu');
+  if (at < 0 || (at > 0 && !/[\s(]/.test(txt[at - 1]))){ menu.classList.remove('open'); MN_ON = false; return; }
+  const q = txt.slice(at + 1);
+  if (/[\n]/.test(q) || q.length > 24){ menu.classList.remove('open'); MN_ON = false; return; }
+  const key = q.toLowerCase();
+  MN_HITS = STAFF.filter(u => u.can_login !== 0 && u.display_name &&
+      (!key || u.display_name.toLowerCase().includes(key) ||
+               String(u.username || '').toLowerCase().includes(key))).slice(0, 8);
+  if (!MN_HITS.length){ menu.classList.remove('open'); MN_ON = false; return; }
+  MN_ON = true; MN_FROM = at; MN_SEL = 0;
+  mnPaint();
+}
+function mnPaint(){
+  const menu = document.getElementById('dscMenu');
+  menu.innerHTML = MN_HITS.map((u, i) =>
+    '<button type="button" class="acitem' + (i === MN_SEL ? ' sel' : '') + '" onclick="mnPick(' + i + ')">' +
+    esc(u.display_name) + (u.position ? '<em>' + esc(u.position) + '</em>' : '') + '</button>').join('');
+  menu.classList.add('open');
+}
+function mnPick(i){
+  const u = MN_HITS[i]; if (!u || !MN_EL) return;
+  const el = MN_EL, pos = el.selectionStart;
+  el.value = el.value.slice(0, MN_FROM) + '@' + u.display_name + ' ' + el.value.slice(pos);
+  DSC_PICKED.set(u.display_name, Number(u.id));
+  document.getElementById('dscMenu').classList.remove('open');
+  MN_ON = false;
+  el.focus();
+  const p = MN_FROM + u.display_name.length + 2;
+  el.setSelectionRange(p, p);
+}
+function dscKey(e){
+  if (MN_ON){
+    if (e.key === 'ArrowDown'){ e.preventDefault(); MN_SEL = (MN_SEL + 1) % MN_HITS.length; mnPaint(); return; }
+    if (e.key === 'ArrowUp'){ e.preventDefault(); MN_SEL = (MN_SEL - 1 + MN_HITS.length) % MN_HITS.length; mnPaint(); return; }
+    if (e.key === 'Enter' || e.key === 'Tab'){ e.preventDefault(); mnPick(MN_SEL); return; }
+    if (e.key === 'Escape'){ document.getElementById('dscMenu').classList.remove('open'); MN_ON = false; return; }
+  }
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)){ e.preventDefault(); sendComment(); }
+}
+
+/* Rà lại body để biết chính xác ai được nhắc */
+function mentionsIn(text){
+  const out = [];
+  STAFF.forEach(u => {
+    if (!u.display_name) return;
+    if (text.indexOf('@' + u.display_name) >= 0) out.push(Number(u.id));
+  });
+  return [...new Set(out)];
+}
+
+async function sendComment(){
+  const el = document.getElementById('dscBody');
+  const body = el.value.trim();
+  if (!body) return toast('Chưa nhập nội dung', 'err');
+  try{
+    const j = await api(API, 'comment-add', { body: {
+      quotation_id: EDIT.id, scope: DSC_SCOPE, body: body, mentions: mentionsIn(body) } });
+    el.value = ''; DSC_PICKED.clear();
+    DSC = j; renderDsc(); toast(j.message || 'Đã gửi', 'ok');
+  }catch(e){ toast(e.message, 'err'); }
+}
+
+async function sendReply(pid){
+  const box = document.getElementById('rep' + pid);
+  const t = box ? box.querySelector('textarea') : null;
+  const body = t ? t.value.trim() : '';
+  if (!body) return toast('Chưa nhập nội dung', 'err');
+  try{
+    const j = await api(API, 'comment-add', { body: {
+      quotation_id: EDIT.id, scope: DSC_SCOPE, parent_id: pid, body: body, mentions: mentionsIn(body) } });
+    DSC = j; renderDsc(); toast('Đã trả lời', 'ok');
+  }catch(e){ toast(e.message, 'err'); }
+}
+
+async function delComment(id){
+  if (!confirm('Xoá bình luận này?')) return;
+  try{
+    const j = await api(API, 'comment-delete', { body: { id: id } });
+    DSC = j; renderDsc(); toast('Đã xoá', 'ok');
+  }catch(e){ toast(e.message, 'err'); }
+}
+
+async function decide(status){
+  const word = status === 'approved' ? 'DUYỆT' : 'TỪ CHỐI';
+  const note = prompt(word + ' ' + (DSC_SCOPE === 'liq' ? 'nghiệm thu' : 'báo giá') + ' này?\nGhi chú (không bắt buộc):', '');
+  if (note === null) return;
+  try{
+    const j = await api(API, 'review-decide', { body: {
+      quotation_id: EDIT.id, scope: DSC_SCOPE, status: status, note: note } });
+    DSC = j; renderDsc(); toast(j.message, 'ok');
+  }catch(e){ toast(e.message, 'err'); }
+}
+
+/* ── Mời người review ── */
+function openReq(){
+  if (!EDIT.id) return toast('Lưu báo giá trước đã', 'err');
+  const sel = document.getElementById('reqWho');
+  sel.innerHTML = '<option value="">— Chọn người —</option>' +
+    STAFF.filter(u => u.can_login !== 0)
+         .map(u => '<option value="' + u.id + '">' + esc(u.display_name) +
+                   (u.position ? ' · ' + esc(u.position) : '') + '</option>').join('');
+  document.getElementById('reqNote').value = '';
+  document.getElementById('reqSub').textContent =
+    'Người được mời sẽ nhận thông báo và có quyền Duyệt / Từ chối phần ' +
+    (DSC_SCOPE === 'liq' ? 'nghiệm thu' : 'báo giá') + '.';
+  document.getElementById('reqOv').classList.add('open');
+}
+function closeReq(){ document.getElementById('reqOv').classList.remove('open'); }
+
+async function sendReq(){
+  const id = Number(document.getElementById('reqWho').value) || 0;
+  if (!id) return toast('Chọn người review', 'err');
+  const btn = document.getElementById('reqOk'); btn.disabled = true;
+  try{
+    const j = await api(API, 'review-request', { body: {
+      quotation_id: EDIT.id, scope: DSC_SCOPE,
+      reviewer_id: id, note: document.getElementById('reqNote').value.trim() } });
+    DSC = j; renderDsc(); closeReq(); toast(j.message, 'ok');
+  }catch(e){ toast(e.message, 'err'); }
+  btn.disabled = false;
+}
+
+async function cancelReq(rid){
+  if (!confirm('Gỡ người này khỏi danh sách review?')) return;
+  try{
+    const j = await api(API, 'review-cancel', { body: {
+      quotation_id: EDIT.id, scope: DSC_SCOPE, reviewer_id: rid } });
+    DSC = j; renderDsc(); toast(j.message, 'ok');
+  }catch(e){ toast(e.message, 'err'); }
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest || !e.target.closest('.dscnew .ac')){
+    const m = document.getElementById('dscMenu');
+    if (m) m.classList.remove('open');
+    MN_ON = false;
+  }
+});
+
 /* ── Ô mô tả tự cao dần theo số dòng ─────────── */
 function grow(el){
   if (!el) return;
@@ -2427,6 +2812,7 @@ async function saveQuote(silent, quiet){
     pushRecent(EDIT);                     // lưu xong thì cập nhật lại mã / tiêu đề trong menu Gần đây
     await saveAsg(d.id, quiet);           // phân công lưu theo báo giá
     await saveExp(d.id, quiet);           // chi phí thực tế lưu theo báo giá
+    if (!DSC) loadDsc();                  // lưu lần đầu xong thì mở khung thảo luận
     if (!silent) { toast(d.message, 'ok'); AS_dirty = false; clearTimeout(AS_timer); asState('manual'); }
     btn.disabled = false;
     return d.id;

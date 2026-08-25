@@ -294,6 +294,37 @@ LOCK TABLES `album_picks` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `app_notifications`
+--
+
+DROP TABLE IF EXISTS `app_notifications`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `app_notifications` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL,
+  `kind` varchar(24) NOT NULL,
+  `title` varchar(200) NOT NULL,
+  `body` varchar(500) DEFAULT NULL,
+  `url` varchar(300) DEFAULT NULL,
+  `actor` varchar(120) DEFAULT NULL,
+  `is_read` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_user` (`user_id`,`is_read`,`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `app_notifications`
+--
+
+LOCK TABLES `app_notifications` WRITE;
+/*!40000 ALTER TABLE `app_notifications` DISABLE KEYS */;
+/*!40000 ALTER TABLE `app_notifications` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `app_user_prefs`
 --
 
@@ -316,7 +347,7 @@ CREATE TABLE `app_user_prefs` (
 LOCK TABLES `app_user_prefs` WRITE;
 /*!40000 ALTER TABLE `app_user_prefs` DISABLE KEYS */;
 INSERT INTO `app_user_prefs` VALUES (1,'home','{\"order\":[32,33,30,29,26,31,90,17,18,1,23,25,28,24,35,34,27],\"hidden\":[28,18,17],\"custom\":[],\"pinned\":[32,30,29,26,31]}','2026-08-24 16:11:14');
-INSERT INTO `app_user_prefs` VALUES (1,'quo_recent','[{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787568163546},{\"id\":282,\"code\":\"25022026-150\",\"title\":\"AZ-R&I-RESPI-SUMMIT\",\"client\":\"AstraZeneca\",\"date\":\"2026-02-25\",\"at\":1787567097632},{\"id\":160,\"code\":\"02122025-257\",\"title\":\"AZ_OBU-RDU Plenary and TA session (NC 2026)\",\"client\":\"Công Ty TNHH AstraZeneca\",\"date\":\"2025-12-02\",\"at\":1787566879376},{\"id\":150,\"code\":\"26122025-267\",\"title\":\"AZ-BBC - Recap 2025\",\"client\":\"Công Ty TNHH AstraZeneca\",\"date\":\"2025-12-26\",\"at\":1787566446152},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787565030127},{\"id\":20,\"code\":\"28072026-130\",\"title\":\"AZ-RI-Synagis-Booth-1408\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-28\",\"at\":1787564644515},{\"id\":123,\"code\":\"25022026-27\",\"title\":\"AZ-ONCO-SUMMIT-LC-Launch\",\"client\":\"AstraZeneca\",\"date\":\"2026-02-25\",\"at\":1787564093760},{\"id\":8,\"code\":\"12082026-142\",\"title\":\"AZ-ONCO-PEAKSharing-VietDuc-25Aug\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-12\",\"at\":1787557279547},{\"id\":55,\"code\":\"18062026-95\",\"title\":\"AZ-CVRM-Teabreak Internal Meeting T6\\/2026\",\"client\":\"AstraZeneca\",\"date\":\"2026-06-18\",\"at\":1787546396881},{\"id\":78,\"code\":\"19052026-72\",\"title\":\"AZ-ONCO-PEAKRising\",\"client\":\"AstraZeneca\",\"date\":\"2026-05-19\",\"at\":1787544300371}]','2026-08-24 10:42:44');
+INSERT INTO `app_user_prefs` VALUES (1,'quo_recent','[{\"id\":2,\"code\":\"20082026-148\",\"title\":\"AZ-CVRM-TRANING-2508\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-20\",\"at\":1787627724142},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787627587040},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787568163546},{\"id\":282,\"code\":\"25022026-150\",\"title\":\"AZ-R&I-RESPI-SUMMIT\",\"client\":\"AstraZeneca\",\"date\":\"2026-02-25\",\"at\":1787567097632},{\"id\":160,\"code\":\"02122025-257\",\"title\":\"AZ_OBU-RDU Plenary and TA session (NC 2026)\",\"client\":\"Công Ty TNHH AstraZeneca\",\"date\":\"2025-12-02\",\"at\":1787566879376},{\"id\":150,\"code\":\"26122025-267\",\"title\":\"AZ-BBC - Recap 2025\",\"client\":\"Công Ty TNHH AstraZeneca\",\"date\":\"2025-12-26\",\"at\":1787566446152},{\"id\":20,\"code\":\"28072026-130\",\"title\":\"AZ-RI-Synagis-Booth-1408\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-28\",\"at\":1787564644515},{\"id\":123,\"code\":\"25022026-27\",\"title\":\"AZ-ONCO-SUMMIT-LC-Launch\",\"client\":\"AstraZeneca\",\"date\":\"2026-02-25\",\"at\":1787564093760},{\"id\":8,\"code\":\"12082026-142\",\"title\":\"AZ-ONCO-PEAKSharing-VietDuc-25Aug\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-12\",\"at\":1787557279547},{\"id\":55,\"code\":\"18062026-95\",\"title\":\"AZ-CVRM-Teabreak Internal Meeting T6\\/2026\",\"client\":\"AstraZeneca\",\"date\":\"2026-06-18\",\"at\":1787546396881}]','2026-08-25 03:15:25');
 INSERT INTO `app_user_prefs` VALUES (1,'ui','{\"font_size\":\"md\"}','2026-08-24 15:39:49');
 INSERT INTO `app_user_prefs` VALUES (3,'home','{\"order\":[32,26,30,1,17,18,90,23,24,25,27,28,29,35,34,31],\"hidden\":[28],\"custom\":[]}','2026-08-24 02:48:51');
 INSERT INTO `app_user_prefs` VALUES (3,'quo_recent','[{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787565621783},{\"id\":30,\"code\":\"19072026-120\",\"title\":\"AZ-ONCO-PEAKSharing-175\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-19\",\"at\":1787540605254},{\"id\":8,\"code\":\"12082026-142\",\"title\":\"AZ-ONCO-PEAKSharing-VietDuc-25Aug\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-12\",\"at\":1787540250289},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787539299199}]','2026-08-24 10:00:22');
@@ -363,7 +394,7 @@ CREATE TABLE `app_users` (
 
 LOCK TABLES `app_users` WRITE;
 /*!40000 ALTER TABLE `app_users` DISABLE KEYS */;
-INSERT INTO `app_users` VALUES (1,'admin','$2y$10$tgjxDVP41TkZC7QgOnnIbuaB8HFuMpI8iZCJQTqih1BFPVh6ksnU2','Harris','admin',1,'2026-08-05 16:47:25','2026-08-25 02:29:28','2026-08-25 02:29:28',NULL,'inhouse',1,NULL,NULL,NULL);
+INSERT INTO `app_users` VALUES (1,'admin','$2y$10$tgjxDVP41TkZC7QgOnnIbuaB8HFuMpI8iZCJQTqih1BFPVh6ksnU2','Harris','admin',1,'2026-08-05 16:47:25','2026-08-25 02:44:27','2026-08-25 02:44:27',NULL,'inhouse',1,NULL,NULL,NULL);
 INSERT INTO `app_users` VALUES (3,'thaoly','$2y$10$apwNXhmb03WC5brdnZnV2unSiF6fKbehZHlK2/lojsPd4MtBAB3LS','Thảo Lý','member',1,'2026-08-11 04:37:01','2026-08-24 02:39:19','2026-08-24 02:39:19',NULL,'inhouse',1,NULL,NULL,NULL);
 INSERT INTO `app_users` VALUES (4,'trangdo','$2y$10$8m6yCJl5LcyfI86PkVMFI.f01sVuzxNrgbtB4QOpGwyFHg2oG2iqi','Trang Đỗ','member',1,'2026-08-11 04:37:51','2026-08-11 04:37:51',NULL,NULL,'inhouse',1,NULL,NULL,NULL);
 INSERT INTO `app_users` VALUES (5,'nhattan','$2y$10$W8tp/Ef.JYD/V.XURuNJseFsfThk2KGlZM71rxdupY6chvGTv9Ep.','Nhật Tân','member',1,'2026-08-11 04:38:13','2026-08-24 08:57:34','2026-08-24 08:57:34',NULL,'inhouse',1,NULL,NULL,NULL);
@@ -1045,7 +1076,7 @@ CREATE TABLE `quotation_assignees` (
   KEY `idx_user` (`user_id`),
   KEY `idx_stat` (`status`),
   KEY `idx_due` (`due_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1055,7 +1086,41 @@ CREATE TABLE `quotation_assignees` (
 LOCK TABLES `quotation_assignees` WRITE;
 /*!40000 ALTER TABLE `quotation_assignees` DISABLE KEYS */;
 INSERT INTO `quotation_assignees` VALUES (1,3,7,'account','Quản lý chính','2026-08-24','doing',0,'Harris','2026-08-24 10:42:43','2026-08-24 10:42:43');
+INSERT INTO `quotation_assignees` VALUES (2,284,4,'admin','Liên hệ với chị Nga và làm việc menu','2026-08-25','doing',0,'Harris','2026-08-25 02:50:30','2026-08-25 02:50:30');
 /*!40000 ALTER TABLE `quotation_assignees` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `quotation_comments`
+--
+
+DROP TABLE IF EXISTS `quotation_comments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `quotation_comments` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `quotation_id` int(10) unsigned NOT NULL,
+  `scope` varchar(10) NOT NULL DEFAULT 'quote',
+  `parent_id` int(10) unsigned DEFAULT NULL COMMENT 'NULL = mo thread moi',
+  `user_id` int(10) unsigned NOT NULL,
+  `user_name` varchar(120) NOT NULL,
+  `body` text NOT NULL,
+  `mentions` varchar(500) DEFAULT NULL COMMENT 'danh sach id, ngan cach dau phay',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_q` (`quotation_id`,`scope`,`id`),
+  KEY `idx_parent` (`parent_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `quotation_comments`
+--
+
+LOCK TABLES `quotation_comments` WRITE;
+/*!40000 ALTER TABLE `quotation_comments` DISABLE KEYS */;
+/*!40000 ALTER TABLE `quotation_comments` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1658,7 +1723,7 @@ CREATE TABLE `quotation_items` (
   `act_file_name` varchar(200) DEFAULT NULL COMMENT 'Tên file gốc',
   PRIMARY KEY (`id`),
   KEY `idx_quotation` (`quotation_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6662 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6688 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3593,9 +3658,6 @@ INSERT INTO `quotation_items` VALUES (4605,30,'item','Bảng tên chủ tọa v�
 INSERT INTO `quotation_items` VALUES (4606,30,'item','In handout','',20.00,'Cuốn',61000.00,'',6,20.00,'Cuốn',61000.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (4607,30,'item','In standee','',2.00,'Cái',600000.00,'',7,2.00,'Cái',600000.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (4608,30,'item','Phí vận chuyển','',1.00,'Gói',1000000.00,'',8,1.00,'Gói',1000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (4667,148,'section','Shooting','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (4668,148,'item','Shooting','1h',1.00,'',3000000.00,'',1,1.00,'',5000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (4669,148,'item','Editor','',1.00,'',1000000.00,'',2,1.00,'',1000000.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (4670,8,'section','Webinar','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (4671,8,'item','Internet','150mbs',1.00,'Gói',5000000.00,'',1,1.00,'Gói',5000000.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (4672,8,'section','Thiết kế và in ấn','',0.00,'',0.00,'',2,0.00,'',0.00,0.00,'',NULL,NULL);
@@ -4967,7 +5029,47 @@ INSERT INTO `quotation_items` VALUES (6658,3,'item','Hashtag','',4.00,'Cái',150
 INSERT INTO `quotation_items` VALUES (6659,3,'item','Chú hề ảo thuật','30 phút',1.00,'Người',1400000.00,'',15,1.00,'Người',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (6660,3,'item','Chú hề vặn bong bóng','60 phút',1.00,'Người',1200000.00,'',16,1.00,'Người',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (6661,3,'item','Lắp đặt, vận chuyển, tháo dỡ','',1.00,'Gói',4000000.00,'',17,1.00,'Gói',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (6666,284,'section','','Teabreak',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (6667,284,'item','Tea-break Sáng','HCM: 50\nHN: 15',65.00,'Pax',120000.00,'',1,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (6668,284,'item','Tea-break Chiều','HCM: 50\nHN: 15',65.00,'Pax',120000.00,'',2,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (6669,284,'item','Lunch','HCM: 50\nHN: 15',65.00,'Pax',150000.00,'',3,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (6685,148,'section','Shooting','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (6686,148,'item','Shooting','1h',1.00,'',3000000.00,'',1,1.00,'',3000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (6687,148,'item','Editor','',1.00,'',1000000.00,'',2,1.00,'',0.00,0.00,'',NULL,NULL);
 /*!40000 ALTER TABLE `quotation_items` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `quotation_reviews`
+--
+
+DROP TABLE IF EXISTS `quotation_reviews`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `quotation_reviews` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `quotation_id` int(10) unsigned NOT NULL,
+  `scope` varchar(10) NOT NULL DEFAULT 'quote',
+  `reviewer_id` int(10) unsigned NOT NULL,
+  `reviewer_name` varchar(120) NOT NULL,
+  `requested_by` varchar(120) DEFAULT NULL,
+  `status` varchar(12) NOT NULL DEFAULT 'pending',
+  `note` varchar(600) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `decided_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_rev` (`quotation_id`,`scope`,`reviewer_id`),
+  KEY `idx_reviewer` (`reviewer_id`,`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `quotation_reviews`
+--
+
+LOCK TABLES `quotation_reviews` WRITE;
+/*!40000 ALTER TABLE `quotation_reviews` DISABLE KEYS */;
+/*!40000 ALTER TABLE `quotation_reviews` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -5015,7 +5117,7 @@ CREATE TABLE `quotations` (
   KEY `idx_kind` (`kind`),
   KEY `idx_status` (`status`),
   KEY `idx_manage_id` (`manage_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=284 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=285 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -5307,6 +5409,7 @@ INSERT INTO `quotations` VALUES (280,'media','22072025-138','AZ RIGI VIDEOS NHI 
 INSERT INTO `quotations` VALUES (281,'other','11072025-136','BREZTRI WORKSHOP HAI PHONG',NULL,NULL,'Xuyến',NULL,NULL,NULL,'2025-07-11',NULL,'VND',10.00,8.00,1,1,NULL,'Harris',NULL,'2026-08-24 10:16:02','2026-08-24 10:16:02',0,NULL,'awaiting_payment',NULL,NULL,NULL,NULL,NULL,'687142b36c01096ca2e8d4ee');
 INSERT INTO `quotations` VALUES (282,'event','25022026-150','AZ-R&I-RESPI-SUMMIT',NULL,NULL,'AstraZeneca',NULL,NULL,NULL,'2026-02-25',NULL,'VND',10.00,8.00,1,1,NULL,'Harris',NULL,'2026-08-24 10:16:02','2026-08-24 10:16:02',1,NULL,'awaiting_payment',NULL,NULL,NULL,NULL,NULL,'699e5cbbce7194035b90b413');
 INSERT INTO `quotations` VALUES (283,'other','29012026-151','AZ-ONCO-Thiết kế PI Lynparza',NULL,NULL,'AstraZeneca',NULL,NULL,NULL,'2026-01-29',NULL,'VND',10.00,8.00,1,1,NULL,'Harris',NULL,'2026-08-24 10:16:02','2026-08-24 10:16:02',1,NULL,'request',NULL,NULL,NULL,NULL,NULL,'697b477dce7194035b909aa3');
+INSERT INTO `quotations` VALUES (284,'event','25082026-152','AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop',1,11,'AstraZeneca Việt Nam','khanhthiennga.huynh1@astrazeneca.com','0315158696','Tầng 18, Tòa nhà AB, Số 76, Đường Lê Lai, Phường Bến Thành, Thành phố Hồ Chí Minh, Việt Nam','2026-08-25','','VND',10.00,8.00,1,1,'','Harris',NULL,'2026-08-25 02:49:56','2026-08-25 02:49:56',0,NULL,'quote','',NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `quotations` ENABLE KEYS */;
 UNLOCK TABLES;
 

@@ -156,6 +156,20 @@ $body   = json_decode(file_get_contents('php://input'), true) ?? [];
 
 if ($method === 'OPTIONS') { http_response_code(204); exit; }
 
+au_mig($pdo, "CREATE TABLE IF NOT EXISTS `app_notifications` (
+  `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id`    INT UNSIGNED NOT NULL,
+  `kind`       VARCHAR(24)  NOT NULL,
+  `title`      VARCHAR(200) NOT NULL,
+  `body`       VARCHAR(500) DEFAULT NULL,
+  `url`        VARCHAR(300) DEFAULT NULL,
+  `actor`      VARCHAR(120) DEFAULT NULL,
+  `is_read`    TINYINT(1)   NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_user` (`user_id`, `is_read`, `id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
 if ($DO_MIGRATE) @touch($MIG_LOCK);   // đánh dấu đã migrate cho lần sau
 
 switch ($action) {
@@ -242,6 +256,36 @@ switch ($action) {
     case 'positions':
         ok($POSITIONS);
         break;
+
+    case 'notif-list': {
+        $me = requireAuth($pdo);
+        $limit = max(1, min(50, (int)($_GET['limit'] ?? 20)));
+        $st = $pdo->prepare("SELECT id, kind, title, body, url, actor, is_read, created_at
+                               FROM `app_notifications` WHERE user_id = ?
+                              ORDER BY id DESC LIMIT $limit");
+        $st->execute([(int)$me['id']]);
+        $rows = $st->fetchAll();
+        foreach ($rows as &$r) { $r['id'] = (int)$r['id']; $r['is_read'] = (int)$r['is_read']; }
+        $c = $pdo->prepare("SELECT COUNT(*) FROM `app_notifications` WHERE user_id = ? AND is_read = 0");
+        $c->execute([(int)$me['id']]);
+        ok(['rows' => $rows, 'unread' => (int)$c->fetchColumn()]);
+        break;
+    }
+
+    case 'notif-read': {
+        $me = requireAuth($pdo);
+        if (!empty($body['all'])) {
+            $pdo->prepare("UPDATE `app_notifications` SET is_read = 1 WHERE user_id = ? AND is_read = 0")
+                ->execute([(int)$me['id']]);
+        } else {
+            $id = (int)($body['id'] ?? 0);
+            if (!$id) fail('Thiếu mã thông báo');
+            $pdo->prepare("UPDATE `app_notifications` SET is_read = 1 WHERE id = ? AND user_id = ?")
+                ->execute([$id, (int)$me['id']]);
+        }
+        ok(['message' => 'ok']);
+        break;
+    }
 
     case 'basic-list':
         // Danh sách rút gọn cho mọi user đã đăng nhập (không cần quyền Admin) —

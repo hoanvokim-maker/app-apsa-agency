@@ -313,6 +313,7 @@
     qr:      '<rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/><path d="M14 14h3v3h-3zM18.5 18.5H21V21h-2.5zM14 21h1.5M21 14v1.5"/>',
     key:     '<circle cx="8.5" cy="8.5" r="4.5"/><path d="M11.8 11.8 21 21M17.5 17.5l2-2M14.8 14.8l2-2"/>',
     shield:  '<path d="M12 2.8 20 5.6v6.1c0 4.9-3.3 8.7-8 9.9-4.7-1.2-8-5-8-9.9V5.6z"/><path d="M9 12l2.2 2.2L15.2 10"/>',
+    bell:    '<path d="M18 15.5V10a6 6 0 1 0-12 0v5.5L4 18h16z"/><path d="M9.5 21h5"/>',
     trophy:  '<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 5.5H4.5V7A3.5 3.5 0 0 0 7 10.3M17 5.5h2.5V7A3.5 3.5 0 0 1 17 10.3"/><path d="M12 14v3.5M8.5 20.5h7l-.7-3h-5.6z"/>'
   };
 
@@ -395,6 +396,39 @@
       ' width:3px; border-radius:0 3px 3px 0; background:#dff20d; }' +
     '@media (max-width:760px){ body{ padding-left:46px; } #apsaSide{ width:46px; }' +
       ' #apsaSide .as-brand{ padding:0 9px; } #apsaSide .as-item{ padding:0 11px; } }' +
+    '#apsaSide .as-bell{ position:relative; }' +
+    '#apsaSide .as-bell .as-dot{ position:absolute; left:26px; top:7px; min-width:16px; height:16px;' +
+      ' padding:0 4px; border-radius:9px; background:#ff4d4d; color:#fff; font-size:9.5px; font-weight:800;' +
+      ' display:none; align-items:center; justify-content:center; line-height:1; }' +
+    '#apsaSide .as-bell.has .as-dot{ display:flex; }' +
+    '#apsaNoOv{ position:fixed; inset:0; z-index:100001; display:none;' +
+      ' background:rgba(0,0,0,.6); align-items:flex-start; justify-content:flex-start;' +
+      ' padding:64px 0 0 66px; font-family:"Oxanium",sans-serif; }' +
+    '#apsaNoOv.open{ display:flex; }' +
+    '#apsaNoOv .nobox{ width:min(430px,92vw); max-height:min(70vh,620px); display:flex; flex-direction:column;' +
+      ' background:#0b0b0b; border:1px solid rgba(255,255,255,.11); border-radius:15px;' +
+      ' box-shadow:0 26px 70px rgba(0,0,0,.75); overflow:hidden; }' +
+    '#apsaNoOv .nohead{ display:flex; align-items:center; gap:10px; padding:14px 16px;' +
+      ' border-bottom:1px solid rgba(255,255,255,.09); }' +
+    '#apsaNoOv .nottl{ font-family:"Orbitron",sans-serif; font-size:12px; font-weight:800; letter-spacing:1.1px; color:#fff; }' +
+    '#apsaNoOv .noall{ margin-left:auto; background:none; border:none; color:#8d8d8d; cursor:pointer;' +
+      ' font-family:inherit; font-size:11px; font-weight:700; }' +
+    '#apsaNoOv .noall:hover{ color:#dff20d; }' +
+    '#apsaNoOv .nobody{ overflow-y:auto; }' +
+    '#apsaNoOv .noitem{ display:flex; gap:10px; width:100%; text-align:left; background:transparent;' +
+      ' border:none; border-bottom:1px solid rgba(255,255,255,.055); padding:12px 16px; cursor:pointer;' +
+      ' font-family:inherit; }' +
+    '#apsaNoOv .noitem:hover{ background:rgba(255,255,255,.045); }' +
+    '#apsaNoOv .noitem.unread{ background:rgba(223,242,13,.045); }' +
+    '#apsaNoOv .noav{ flex:0 0 26px; width:26px; height:26px; border-radius:50%; margin-top:2px;' +
+      ' display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800;' +
+      ' background:rgba(223,242,13,.16); color:#dff20d; text-transform:uppercase; }' +
+    '#apsaNoOv .notx{ flex:1; min-width:0; }' +
+    '#apsaNoOv .noti{ font-size:12.5px; font-weight:600; color:#e8e8e8; line-height:1.45; }' +
+    '#apsaNoOv .nobd{ font-size:11.5px; color:#8d8d8d; margin-top:2px; overflow:hidden;' +
+      ' display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }' +
+    '#apsaNoOv .nowh{ font-size:10.5px; color:#5e5e5e; font-weight:700; margin-top:3px; }' +
+    '#apsaNoOv .noempty{ padding:32px 16px; text-align:center; color:#5e5e5e; font-size:12.5px; }' +
     '@media print{ body{ padding-left:0; } #apsaSide{ display:none !important; } }';
   }
 
@@ -445,6 +479,7 @@
 
     var out = [];
     if (home) out.push(home);
+    out.push({ bell: 1 });
     if (pin.length) {
       out.push({ grp: 'Thường dùng', pin: 1 });
       for (i = 0; i < pin.length; i++) out.push(pin[i]);
@@ -456,6 +491,111 @@
     }
     return out;
   }
+
+  /* ══════════ CHUÔNG THÔNG BÁO ══════════ */
+  var NOTIF = { rows: [], unread: 0 }, noOv = null, noTimer = null;
+
+  function noWhen(v) {
+    var d = new Date(String(v).replace(' ', 'T'));
+    if (isNaN(d)) return v || '';
+    var m = Math.floor((Date.now() - d.getTime()) / 60000);
+    if (m < 1) return 'vừa xong';
+    if (m < 60) return m + ' phút trước';
+    if (m < 1440) return Math.floor(m / 60) + ' giờ trước';
+    var p = function (n) { return String(n).padStart(2, '0'); };
+    return p(d.getDate()) + '/' + p(d.getMonth() + 1) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+  function noEsc(v) {
+    return String(v == null ? '' : v).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+  function noIni(v) {
+    var t = String(v || '?').trim().split(/\s+/);
+    return t[t.length - 1].charAt(0);
+  }
+
+  function paintBell() {
+    var b = document.getElementById('apsaBell');
+    if (!b) return;
+    b.classList.toggle('has', NOTIF.unread > 0);
+    var d = b.querySelector('.as-dot');
+    if (d) d.textContent = NOTIF.unread > 99 ? '99+' : String(NOTIF.unread);
+  }
+
+  function paintNotif() {
+    var body = document.getElementById('apsaNoBody');
+    if (!body) return;
+    if (!NOTIF.rows.length) {
+      body.innerHTML = '<div class="noempty">Chưa có thông báo nào.</div>';
+      return;
+    }
+    body.innerHTML = NOTIF.rows.map(function (n) {
+      return '<button type="button" class="noitem' + (n.is_read ? '' : ' unread') + '" data-id="' + n.id +
+             '" data-url="' + noEsc(n.url || '') + '">' +
+        '<span class="noav">' + noEsc(noIni(n.actor)) + '</span>' +
+        '<span class="notx">' +
+          '<span class="noti">' + noEsc(n.title) + '</span>' +
+          (n.body ? '<span class="nobd">' + noEsc(n.body) + '</span>' : '') +
+          '<span class="nowh">' + noWhen(n.created_at) + '</span>' +
+        '</span></button>';
+    }).join('');
+  }
+
+  function pullNotif(then) {
+    fetch('./api/auth-api.php?action=notif-list&limit=25', { credentials: 'same-origin', cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (j && j.ok && j.data) { NOTIF = j.data; paintBell(); if (then) then(); }
+      })
+      .catch(function () {});
+  }
+
+  function markRead(payload) {
+    return fetch('./api/auth-api.php?action=notif-read', {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(function () {});
+  }
+
+  function ensureNoUi() {
+    if (noOv) return noOv;
+    var ov = document.createElement('div');
+    ov.id = 'apsaNoOv';
+    ov.innerHTML =
+      '<div class="nobox">' +
+        '<div class="nohead"><span class="nottl">Thông báo</span>' +
+          '<button type="button" class="noall" id="apsaNoAll">Đánh dấu đã đọc hết</button></div>' +
+        '<div class="nobody" id="apsaNoBody"></div>' +
+      '</div>';
+    document.body.appendChild(ov);
+    ov.addEventListener('click', function (e) {
+      if (e.target === ov) { closeNotif(); return; }
+      if (e.target.closest && e.target.closest('#apsaNoAll')) {
+        markRead({ all: 1 }).then(function () {
+          NOTIF.rows.forEach(function (n) { n.is_read = 1; });
+          NOTIF.unread = 0; paintBell(); paintNotif();
+        });
+        return;
+      }
+      var it = e.target.closest ? e.target.closest('.noitem') : null;
+      if (!it) return;
+      var id = Number(it.getAttribute('data-id')), url = it.getAttribute('data-url');
+      markRead({ id: id }).then(function () { if (url) location.href = url; });
+      if (!url) { it.classList.remove('unread'); NOTIF.unread = Math.max(0, NOTIF.unread - 1); paintBell(); }
+    });
+    noOv = ov;
+    return ov;
+  }
+
+  function openNotif() {
+    ensureNoUi();
+    noOv.classList.add('open');
+    paintNotif();
+    pullNotif(paintNotif);
+  }
+  function closeNotif() { if (noOv) noOv.classList.remove('open'); }
 
   function here() {
     var f = (location.pathname || '/').toLowerCase().replace(/^\/+/, '');
@@ -473,6 +613,13 @@
             '<div class="as-scroll">';
     for (var i = 0; i < list.length; i++) {
       var n = list[i];
+      if (n.bell) {
+        h += '<a class="as-item as-bell" id="apsaBell" href="javascript:void(0)" title="Thông báo">' +
+               '<svg viewBox="0 0 24 24" aria-hidden="true">' + I.bell + '</svg>' +
+               '<span class="as-dot">0</span>' +
+               '<span class="as-txt">Thông báo</span></a>';
+        continue;
+      }
       if (n.grp) {
         h += '<div class="as-grp' + (n.pin ? ' pin' : '') + '">' +
              '<span class="as-gl">' + (n.pin ? '★ ' : '') + n.grp + '</span></div>';
@@ -502,8 +649,16 @@
     nav.setAttribute('aria-label', 'Điều hướng APSA');
     document.body.insertBefore(nav, document.body.firstChild);
 
-    paint(NAV);          // vẽ ngay bố cục mặc định
+    paint(layout(null));   // vẽ ngay bố cục mặc định (kèm chuông)
     pullHome();          // rồi áp thiết lập riêng của user
+
+    nav.addEventListener('click', function (e) {
+      if (e.target.closest && e.target.closest('#apsaBell')) { e.preventDefault(); openNotif(); }
+    });
+    pullNotif();
+    clearInterval(noTimer);
+    noTimer = setInterval(pullNotif, 60000);      // 1 phút kiểm tra 1 lần
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeNotif(); });
   }
 
   /* Đọc thiết lập trang chủ (thứ tự · ghim · đã ẩn) — dùng chung cho cả sidebar */

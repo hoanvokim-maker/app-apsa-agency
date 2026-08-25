@@ -1,13 +1,24 @@
 {
   "version": "1.1",
-  "updated": "2026-08-24",
+  "updated": "2026-08-25",
   "releases": [
     {
       "v": "1.1",
       "date": "2026-08-24",
       "note": "Mốc phiên bản mới — từ đây mọi thay đổi đều được ghi lại tại trang này.",
       "items": [
-        { "d": "2026-08-24", "t": "Thêm Nhật ký cập nhật vào menu cài đặt và đánh dấu hệ thống là phiên bản 1.1." }
+        {
+          "d": "2026-08-25",
+          "t": "Báo giá & nghiệm thu có phần Thảo luận & Duyệt: bình luận theo thread, gõ @ để nhắc tên đồng nghiệp, mời người vào review, nút Duyệt / Từ chối cho Admin và người được mời."
+        },
+        {
+          "d": "2026-08-25",
+          "t": "Thêm chuông thông báo trên thanh bên trái: ai nhắc tên bạn, mời bạn review hay duyệt báo giá đều hiện ở đây, bấm vào là nhảy thẳng tới nơi cần xem."
+        },
+        {
+          "d": "2026-08-24",
+          "t": "Thêm Nhật ký cập nhật vào menu cài đặt và đánh dấu hệ thống là phiên bản 1.1."
+        }
       ]
     },
     {
@@ -15,20 +26,62 @@
       "date": "2026-08-24",
       "note": "Toàn bộ nền tảng trước khi bắt đầu đánh số phiên bản.",
       "items": [
-        { "d": "2026-08-24", "t": "Đặt favicon APSA cho toàn bộ app: bộ icon 16/32/48/180/192/512, favicon.ico và webmanifest. Cỡ 16px dùng chữ A cho rõ nét." },
-        { "d": "2026-08-24", "t": "Trang chủ tách hai nhóm module: Thường dùng (ghim bằng dấu ★) và Còn lại. Sidebar dùng chung thiết lập ghim · thứ tự · mục đã ẩn, lưu riêng theo từng user." },
-        { "d": "2026-08-24", "t": "Nhập bổ sung 135 dự án từ manage.apsa.agency còn thiếu — 133 dự án năm 2025 và 2 dự án 2026 bị trùng mã. Kèm đủ báo giá, nghiệm thu và chi phí thực tế." },
-        { "d": "2026-08-24", "t": "Thêm công ty TBP (Công Ty TNHH Lời Hứa Thương Hiệu) cùng thông tin pháp lý, tài khoản ngân hàng và người liên hệ." },
-        { "d": "2026-08-24", "t": "Thêm thanh sidebar dọc xuyên suốt app: rail icon 52px, rê chuột mở rộng, gom nhóm theo chức năng." },
-        { "d": "2026-08-24", "t": "Báo giá & nghiệm thu: kéo thả đổi thứ tự dòng (kéo dòng nhóm thì cả nhóm đi theo), nhân đôi nhóm hoặc dòng, nền dòng nhóm đổi sang xám cho dễ phân biệt." },
-        { "d": "2026-08-24", "t": "Công nợ: sửa được giao dịch đã ghi, ghi nợ / trừ nợ nhanh ngay trên dòng nhân viên, ô số tiền nhận cú pháp 2e6 · 35tr · 500k và tự viết lại thành số đầy đủ." },
-        { "d": "2026-08-23", "t": "Làm lại trang Công nợ theo hướng đơn giản: gom theo công ty, liệt kê nhân viên còn nợ, thêm nợ chỉ qua vài bước." },
-        { "d": "2026-08-23", "t": "Rà soát và tối ưu toàn bộ mã nguồn: giảm dung lượng dữ liệu danh sách, bỏ migrate lặp mỗi request, tăng tốc mở trang." },
-        { "d": "2026-08-22", "t": "Gộp các nút thao tác lên thanh điều hướng, thêm tuỳ chỉnh cỡ chữ theo từng user." },
-        { "d": "2026-08-22", "t": "Tự động lưu sau 20 giây kể từ thao tác cuối trong trang báo giá." },
-        { "d": "2026-08-21", "t": "Nhập ngược file Excel vào báo giá / nghiệm thu, gộp hoá đơn thành một file tổng hợp." },
-        { "d": "2026-08-20", "t": "Thêm phần chi phí thực tế vào từng dự án và nhập dữ liệu chi phí từ manage.apsa.agency." },
-        { "d": "2026-08-19", "t": "Trang Làm việc: danh sách dự án đang thực hiện, phân công người phụ trách ngay trong báo giá." }
+        {
+          "d": "2026-08-24",
+          "t": "Đặt favicon APSA cho toàn bộ app: bộ icon 16/32/48/180/192/512, favicon.ico và webmanifest. Cỡ 16px dùng chữ A cho rõ nét."
+        },
+        {
+          "d": "2026-08-24",
+          "t": "Trang chủ tách hai nhóm module: Thường dùng (ghim bằng dấu ★) và Còn lại. Sidebar dùng chung thiết lập ghim · thứ tự · mục đã ẩn, lưu riêng theo từng user."
+        },
+        {
+          "d": "2026-08-24",
+          "t": "Nhập bổ sung 135 dự án từ manage.apsa.agency còn thiếu — 133 dự án năm 2025 và 2 dự án 2026 bị trùng mã. Kèm đủ báo giá, nghiệm thu và chi phí thực tế."
+        },
+        {
+          "d": "2026-08-24",
+          "t": "Thêm công ty TBP (Công Ty TNHH Lời Hứa Thương Hiệu) cùng thông tin pháp lý, tài khoản ngân hàng và người liên hệ."
+        },
+        {
+          "d": "2026-08-24",
+          "t": "Thêm thanh sidebar dọc xuyên suốt app: rail icon 52px, rê chuột mở rộng, gom nhóm theo chức năng."
+        },
+        {
+          "d": "2026-08-24",
+          "t": "Báo giá & nghiệm thu: kéo thả đổi thứ tự dòng (kéo dòng nhóm thì cả nhóm đi theo), nhân đôi nhóm hoặc dòng, nền dòng nhóm đổi sang xám cho dễ phân biệt."
+        },
+        {
+          "d": "2026-08-24",
+          "t": "Công nợ: sửa được giao dịch đã ghi, ghi nợ / trừ nợ nhanh ngay trên dòng nhân viên, ô số tiền nhận cú pháp 2e6 · 35tr · 500k và tự viết lại thành số đầy đủ."
+        },
+        {
+          "d": "2026-08-23",
+          "t": "Làm lại trang Công nợ theo hướng đơn giản: gom theo công ty, liệt kê nhân viên còn nợ, thêm nợ chỉ qua vài bước."
+        },
+        {
+          "d": "2026-08-23",
+          "t": "Rà soát và tối ưu toàn bộ mã nguồn: giảm dung lượng dữ liệu danh sách, bỏ migrate lặp mỗi request, tăng tốc mở trang."
+        },
+        {
+          "d": "2026-08-22",
+          "t": "Gộp các nút thao tác lên thanh điều hướng, thêm tuỳ chỉnh cỡ chữ theo từng user."
+        },
+        {
+          "d": "2026-08-22",
+          "t": "Tự động lưu sau 20 giây kể từ thao tác cuối trong trang báo giá."
+        },
+        {
+          "d": "2026-08-21",
+          "t": "Nhập ngược file Excel vào báo giá / nghiệm thu, gộp hoá đơn thành một file tổng hợp."
+        },
+        {
+          "d": "2026-08-20",
+          "t": "Thêm phần chi phí thực tế vào từng dự án và nhập dữ liệu chi phí từ manage.apsa.agency."
+        },
+        {
+          "d": "2026-08-19",
+          "t": "Trang Làm việc: danh sách dự án đang thực hiện, phân công người phụ trách ngay trong báo giá."
+        }
       ]
     }
   ]
