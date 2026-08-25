@@ -708,3 +708,218 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
   else build();
 })();
+
+/* ==========================================================================
+   APSA v1.2.5
+   1) Khoa pop-up: khong dong khi click ra ngoai hoac bam Esc
+   2) Thong bao noi (toast) o goc duoi ben trai, nhieu cai xep chong len tren
+   ========================================================================== */
+(function () {
+  'use strict';
+
+  /* ------------------------------------------------------------------ */
+  /* 1. KHOA POP-UP                                                      */
+  /* ------------------------------------------------------------------ */
+
+  var OVERLAY_RE = /(^|[\s\-_])(mask|modal|overlay|backdrop|scrim|dimmer)([\s\-_]|$)/i;
+
+  function isOverlay(el) {
+    if (!el || el.nodeType !== 1 || !el.getAttribute) return false;
+    var cls = el.getAttribute('class') || '';
+    if (cls && OVERLAY_RE.test(cls)) return true;
+    var oc = (el.getAttribute('onclick') || '').replace(/\s+/g, '');
+    return oc.indexOf('event.target===this') === 0 || oc.indexOf('closeModalOutside') === 0;
+  }
+
+  function overlayVisible() {
+    var els = document.querySelectorAll(
+      '.mask,[class*="mask"],[class*="modal"],[class*="overlay"],[class*="backdrop"]');
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      if (!el.getClientRects || !el.getClientRects().length) continue;
+      if (el.offsetWidth < 200 || el.offsetHeight < 100) continue;
+      var st = window.getComputedStyle(el);
+      if (st.display === 'none' || st.visibility === 'hidden') continue;
+      if (parseFloat(st.opacity || '1') < 0.05) continue;
+      return true;
+    }
+    return false;
+  }
+
+  /* Chan o pha capture -> handler cua tung trang khong bao gio chay */
+  document.addEventListener('mousedown', function (e) {
+    if (isOverlay(e.target)) e.stopPropagation();
+  }, true);
+
+  document.addEventListener('click', function (e) {
+    if (isOverlay(e.target)) { e.preventDefault(); e.stopPropagation(); }
+  }, true);
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' && e.keyCode !== 27) return;
+    var a = document.activeElement;
+    if (a && (a.tagName === 'SELECT' || a.isContentEditable)) return;
+    if (overlayVisible()) e.stopPropagation();
+  }, true);
+
+  /* ------------------------------------------------------------------ */
+  /* 2. TOAST THONG BAO                                                  */
+  /* ------------------------------------------------------------------ */
+
+  var SEEN_KEY  = 'apsa_toast_seen';
+  var POLL_MS   = 45000;
+  var LIFE_MS   = 15000;
+  var MAX_TOAST = 4;
+
+  var ICONS = {
+    mention:          '@',
+    reply:            '↩',
+    assign:           '✓',
+    task_done:        '✓',
+    leave_request:    '⚑',
+    leave_approved:   '⚑',
+    leave_rejected:   '⚑',
+    reopen_request:   '↺',
+    project_closed:   '■',
+    project_reopened: '□'
+  };
+
+  function seenLoad() {
+    try { var o = JSON.parse(localStorage.getItem(SEEN_KEY) || '{}'); return o && typeof o === 'object' ? o : {}; }
+    catch (e) { return {}; }
+  }
+  function seenSave(o) {
+    try {
+      var ks = Object.keys(o);
+      if (ks.length > 300) { ks.sort(function (a, b) { return a - b; }); for (var i = 0; i < ks.length - 200; i++) delete o[ks[i]]; }
+      localStorage.setItem(SEEN_KEY, JSON.stringify(o));
+    } catch (e) { /* bo qua */ }
+  }
+
+  function css() {
+    if (document.getElementById('apsa-nt-css')) return;
+    var s = document.createElement('style');
+    s.id = 'apsa-nt-css';
+    s.textContent =
+      '#apsaNtWrap{position:fixed;left:18px;bottom:18px;z-index:99999;display:flex;' +
+      'flex-direction:column-reverse;gap:10px;max-width:360px;pointer-events:none}' +
+      '.apsa-nt{pointer-events:auto;display:flex;gap:10px;align-items:flex-start;' +
+      'background:#14161c;border:1px solid #2a2f3a;border-left:3px solid #39ff88;' +
+      'border-radius:10px;padding:11px 12px;box-shadow:0 10px 30px rgba(0,0,0,.45);' +
+      'color:#e8ebf0;font-size:12.5px;line-height:1.45;cursor:pointer;' +
+      'transform:translateX(-120%);opacity:0;transition:transform .28s cubic-bezier(.2,.9,.3,1.2),opacity .28s}' +
+      '.apsa-nt.on{transform:translateX(0);opacity:1}' +
+      '.apsa-nt.out{transform:translateX(-120%);opacity:0}' +
+      '.apsa-nt .ti{flex:0 0 22px;height:22px;border-radius:6px;background:#1e2430;display:flex;' +
+      'align-items:center;justify-content:center;font-weight:700;color:#39ff88;font-size:12px}' +
+      '.apsa-nt .tb{flex:1;min-width:0}' +
+      '.apsa-nt .tt{font-weight:700;margin-bottom:2px}' +
+      '.apsa-nt .td{color:#9aa3b2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}' +
+      '.apsa-nt .tx{flex:0 0 auto;color:#6b7280;font-size:15px;line-height:1;padding:0 2px;' +
+      'background:none;border:0;cursor:pointer}' +
+      '.apsa-nt .tx:hover{color:#e8ebf0}';
+    document.head.appendChild(s);
+  }
+
+  function wrap() {
+    var w = document.getElementById('apsaNtWrap');
+    if (!w) {
+      w = document.createElement('div');
+      w.id = 'apsaNtWrap';
+      document.body.appendChild(w);
+    }
+    return w;
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function markRead(id) {
+    try {
+      fetch('/api/auth-api.php?action=notif-read', {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id })
+      });
+    } catch (e) { /* bo qua */ }
+  }
+
+  function show(n) {
+    css();
+    var w  = wrap();
+    var el = document.createElement('div');
+    el.className = 'apsa-nt';
+    var ic = ICONS[n.kind] || '•';
+    el.innerHTML =
+      '<div class="ti">' + esc(ic) + '</div>' +
+      '<div class="tb"><div class="tt">' + esc(n.title || 'Thông báo') + '</div>' +
+      (n.body ? '<div class="td">' + esc(n.body) + '</div>' : '') + '</div>' +
+      '<button class="tx" title="Đóng">&times;</button>';
+
+    var gone = false;
+    function close(read) {
+      if (gone) return;
+      gone = true;
+      el.classList.add('out');
+      setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
+      if (read) markRead(n.id);
+    }
+
+    el.querySelector('.tx').addEventListener('click', function (ev) {
+      ev.stopPropagation();
+      close(true);
+    });
+    el.addEventListener('click', function () {
+      markRead(n.id);
+      if (n.url) location.href = n.url;
+      else close(false);
+    });
+
+    w.appendChild(el);
+    while (w.children.length > MAX_TOAST) w.removeChild(w.firstChild);
+    setTimeout(function () { el.classList.add('on'); }, 20);
+    setTimeout(function () { close(false); }, LIFE_MS);
+  }
+
+  var busy = false;
+  function poll(first) {
+    if (busy || document.hidden) return;
+    busy = true;
+    fetch('/api/auth-api.php?action=notif-list&limit=15', { credentials: 'same-origin' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        busy = false;
+        if (!j) return;
+        if (j.data && j.data.rows) j = j.data;
+        if (!j.rows) return;
+        var seen = seenLoad(), fresh = [], i, n;
+        for (i = 0; i < j.rows.length; i++) {
+          n = j.rows[i];
+          if (Number(n.is_read) === 1) { seen[n.id] = 1; continue; }
+          if (seen[n.id]) continue;
+          seen[n.id] = 1;
+          fresh.push(n);
+        }
+        seenSave(seen);
+        if (first && fresh.length > MAX_TOAST) fresh = fresh.slice(0, MAX_TOAST);
+        fresh.reverse();
+        for (i = 0; i < fresh.length; i++) (function (x, d) { setTimeout(function () { show(x); }, d * 260); })(fresh[i], i);
+        if (typeof window.apsaOnNotif === 'function') { try { window.apsaOnNotif(j); } catch (e) {} }
+      })
+      .catch(function () { busy = false; });
+  }
+
+  function boot() {
+    if (!document.body) return;
+    setTimeout(function () { poll(true); }, 1500);
+    setInterval(function () { poll(false); }, POLL_MS);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) poll(false); });
+    window.apsaNotifyToast = show;
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+})();

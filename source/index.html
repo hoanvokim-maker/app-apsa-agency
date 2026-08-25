@@ -719,7 +719,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/theme.css?v=12" />
-<script src="/apsa-ui.js?v=8"></script>
+<script src="/apsa-ui.js?v=11"></script>
 </head>
 <body>
 <svg xmlns="http://www.w3.org/2000/svg" id="apsa-sprite" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><symbol id="ico-qr" viewBox="0 0 48 48"><rect x="5" y="5" width="16" height="16" rx="2" fill="#dff20d"/><rect x="10" y="10" width="6" height="6" fill="#0d0d0d"/>
@@ -872,7 +872,18 @@
 
 <!-- ── GRID ── -->
 <div class="container">
-  <section class="gsec pin" id="secPin" style="display:none">
+      <!-- ===== TO-DO LIST (v1.2.5) ===== -->
+    <section class="gsec" id="secTodo" style="display:none">
+      <div class="ghead">
+        <span class="gttl" id="todoTtl">✔ Việc của tôi</span>
+        <span class="gline"></span>
+        <span class="gnum" id="todoNum">0</span>
+        <button class="tdo-rf" id="todoRefresh" title="Tải lại">⟳</button>
+      </div>
+      <div class="tdo-wrap" id="todoWrap"></div>
+    </section>
+
+    <section class="gsec pin" id="secPin" style="display:none">
     <div class="ghead"><span class="gttl">★ Thường dùng</span><span class="gline"></span><span class="gnum" id="pinNum"></span></div>
     <div class="grid" id="gridPin"></div>
   </section>
@@ -1501,5 +1512,127 @@
     });
   })();
 </script>
+<style>
+/* ===== To-do list (v1.2.5) ===== */
+#secTodo .ghead{align-items:center}
+.tdo-rf{background:none;border:0;color:var(--text2,#9aa3b2);cursor:pointer;font-size:15px;line-height:1;padding:2px 6px;border-radius:6px}
+.tdo-rf:hover{color:var(--text,#e8ebf0);background:rgba(255,255,255,.06)}
+.tdo-wrap{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.tdo-grp{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text2,#9aa3b2);margin:6px 0 2px}
+.tdo-row{display:flex;align-items:flex-start;gap:10px;background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);border-left:3px solid #7c9cff;border-radius:10px;padding:9px 12px}
+.tdo-row.late{border-left-color:#ff4d6d}
+.tdo-row.lv{border-left-color:#c77dff}
+.tdo-row.ro{border-left-color:#ffd23f}
+.tdo-row.gone{opacity:.35;transition:opacity .3s}
+.tdo-ck{flex:0 0 auto;width:22px;height:22px;border-radius:50%;border:1.5px solid #39ff88;background:none;
+  color:#39ff88;cursor:pointer;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.tdo-ck:hover{background:#39ff88;color:#0f1115}
+.tdo-ck[disabled]{opacity:.4;cursor:default}
+.tdo-main{flex:1;min-width:0}
+.tdo-t{font-weight:600;font-size:13px;word-break:break-word}
+.tdo-s{font-size:11.5px;color:var(--text2,#9aa3b2);margin-top:2px;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.tdo-s a{color:#7c9cff;text-decoration:none}
+.tdo-s a:hover{text-decoration:underline}
+.tdo-s .due.late{color:#ff4d6d;font-weight:600}
+.tdo-empty{font-size:12px;color:var(--text2,#9aa3b2);padding:6px 2px}
+</style>
+<script>
+/* ===== To-do list tren dashboard (v1.2.5) ===== */
+(function () {
+  var sec = document.getElementById('secTodo');
+  var box = document.getElementById('todoWrap');
+  var num = document.getElementById('todoNum');
+  var btn = document.getElementById('todoRefresh');
+  if (!sec || !box) return;
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function dmy(s) {
+    if (!s) return '';
+    var p = String(s).slice(0, 10).split('-');
+    return p.length === 3 ? p[2] + '/' + p[1] : String(s);
+  }
+
+  function taskRow(t) {
+    var cls = 'tdo-row' + (t.late ? ' late' : '');
+    var sub = '<a href="' + esc(t.url) + '">' + esc(t.code) + (t.title ? ' • ' + esc(t.title) : '') + '</a>';
+    if (t.due_date) sub += '<span class="due' + (t.late ? ' late' : '') + '">hạn ' + esc(dmy(t.due_date)) + '</span>';
+    if (t.status_label) sub += '<span>' + esc(t.status_label) + '</span>';
+    if (t.position) sub += '<span>' + esc(t.position) + '</span>';
+    return '<div class="' + cls + '" data-id="' + t.id + '">' +
+      '<button class="tdo-ck" title="Đánh dấu đã xong" onclick="todoDone(' + t.id + ',this)">✓</button>' +
+      '<div class="tdo-main"><div class="tdo-t">' + esc(t.task || 'Việc được giao') + '</div>' +
+      '<div class="tdo-s">' + sub + '</div></div></div>';
+  }
+
+  function leaveRow(l) {
+    var sub = '<span>' + esc(dmy(l.start_date)) + ' → ' + esc(dmy(l.end_date)) + '</span>' +
+      '<span>' + esc(l.days) + ' ngày</span>' +
+      (l.reason ? '<span>' + esc(l.reason) + '</span>' : '') +
+      '<a href="' + esc(l.url) + '">Duyệt đơn →</a>';
+    return '<div class="tdo-row lv"><button class="tdo-ck" disabled title="Mở trang Nghỉ phép để duyệt">⚑</button>' +
+      '<div class="tdo-main"><div class="tdo-t">' + esc(l.user_name) + ' xin nghỉ phép</div>' +
+      '<div class="tdo-s">' + sub + '</div></div></div>';
+  }
+
+  function reopenRow(r) {
+    var sub = '<a href="' + esc(r.url) + '">' + esc(r.code) + (r.title ? ' • ' + esc(r.title) : '') + '</a>' +
+      (r.reason ? '<span>' + esc(r.reason) + '</span>' : '');
+    return '<div class="tdo-row ro"><button class="tdo-ck" disabled title="Mở dự án để xử lý">↺</button>' +
+      '<div class="tdo-main"><div class="tdo-t">' + esc(r.user_name) + ' xin mở lại dự án</div>' +
+      '<div class="tdo-s">' + sub + '</div></div></div>';
+  }
+
+  function render(j) {
+    if (!j || !j.ok) { sec.style.display = 'none'; return; }
+    var h = '';
+    if (j.tasks && j.tasks.length) {
+      h += '<div class="tdo-grp">Việc được giao</div>' + j.tasks.map(taskRow).join('');
+    }
+    if (j.leaves && j.leaves.length) {
+      h += '<div class="tdo-grp">Đơn xin nghỉ chờ duyệt</div>' + j.leaves.map(leaveRow).join('');
+    }
+    if (j.reopens && j.reopens.length) {
+      h += '<div class="tdo-grp">Yêu cầu mở lại dự án</div>' + j.reopens.map(reopenRow).join('');
+    }
+    if (h === '') { sec.style.display = 'none'; box.innerHTML = ''; return; }
+    box.innerHTML = h;
+    num.textContent = j.total || 0;
+    sec.style.display = '';
+  }
+
+  window.todoLoad = function () {
+    fetch('/api/todo-api.php?action=list', { credentials: 'same-origin' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(render)
+      .catch(function () { sec.style.display = 'none'; });
+  };
+
+  window.todoDone = function (id, el) {
+    if (el) el.disabled = true;
+    fetch('/api/todo-api.php?action=done', {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: id })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (!j || !j.ok) { if (el) el.disabled = false; alert((j && j.error) || 'Không cập nhật được.'); return; }
+        var row = el ? el.closest('.tdo-row') : null;
+        if (row) { row.classList.add('gone'); setTimeout(window.todoLoad, 350); }
+        else window.todoLoad();
+      })
+      .catch(function () { if (el) el.disabled = false; });
+  };
+
+  if (btn) btn.addEventListener('click', window.todoLoad);
+  window.todoLoad();
+  setInterval(window.todoLoad, 120000);
+})();
+</script>
+
 </body>
 </html>

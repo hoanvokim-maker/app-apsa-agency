@@ -1471,7 +1471,14 @@ case 'assignees-save': {
     if (!$st->fetchColumn()) q_fail('Không tìm thấy báo giá', 404);
 
     $list = is_array($B['list'] ?? null) ? $B['list'] : [];
-    $pdo->beginTransaction();
+    /* APSA125-ASSIGN-NOTIFY */
+        $qOldAsg = [];
+        try {
+            $stOldAsg = $pdo->prepare("SELECT user_id, task FROM `quotation_assignees` WHERE quotation_id = ?");
+            $stOldAsg->execute([$qid]);
+            foreach ($stOldAsg->fetchAll() as $roAsg) $qOldAsg[(int)$roAsg['user_id']] = (string)$roAsg['task'];
+        } catch (Exception $eAsg) { $qOldAsg = []; }
+        $pdo->beginTransaction();
     try {
         $pdo->prepare("DELETE FROM `quotation_assignees` WHERE quotation_id = ?")->execute([$qid]);
         $ins = $pdo->prepare("INSERT INTO `quotation_assignees`
@@ -1487,6 +1494,22 @@ case 'assignees-save': {
             $n++;
         }
         $pdo->commit();
+            /* APSA125: bao cho nguoi vua duoc giao viec */
+            try {
+                $meAsg = is_array($ME) && isset($ME['id']) ? (int)$ME['id'] : 0;
+                $qInfoAsg = qr_quotation($pdo, $qid);
+                $lblAsg = $qInfoAsg ? qr_label($qInfoAsg, 'quote') : ('#' . $qid);
+                $lnkAsg = './quotation.html?q=' . rawurlencode((string)($qInfoAsg['code'] ?? '')) . '&tab=quote#giaoviec';
+                foreach (loadAssignees($pdo, $qid) as $rowAsg) {
+                    $uidAsg = (int)$rowAsg['user_id'];
+                    if ($uidAsg <= 0 || $uidAsg === $meAsg) continue;
+                    $taskAsg = (string)($rowAsg['task'] ?? '');
+                    if (array_key_exists($uidAsg, $qOldAsg) && $qOldAsg[$uidAsg] === $taskAsg) continue;
+                    qr_notify($pdo, $uidAsg, 'assign', $WHO . ' giao việc cho bạn',
+                        (trim($taskAsg) !== '' ? trim($taskAsg) . ' — ' : '') . $lblAsg, $lnkAsg, $WHO);
+                }
+            } catch (Exception $eNotiAsg) { /* thong bao hong thi thoi */ }
+
         q_ok(['count' => $n, 'list' => loadAssignees($pdo, $qid), 'message' => 'Đã lưu phân công']);
     } catch (Exception $e) { $pdo->rollBack(); q_fail('Lưu phân công thất bại: ' . $e->getMessage(), 500); }
 }
