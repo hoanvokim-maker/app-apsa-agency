@@ -335,7 +335,7 @@
     { ico: 'image',   name: 'Thư viện ảnh',      url: 'https://imglib.apsa.agency', id: 23 },
     { ico: 'ai',      name: 'AI Studio',         url: 'https://ai.apsa.agency', id: 24 },
     { grp: 'Tiện ích' },
-    { ico: 'qr',      name: 'Tạo mã QR',         url: './event-qr-generator.html', id: 1 },
+    { ico: 'qr',      name: 'Quản lý Link',         url: './event-qr-generator.html', id: 1 },
     { ico: 'key',     name: 'Accounts nhân viên', url: './accounts.html', id: 90 },
     { ico: 'shield',  name: 'Quản lý User',      url: './users.html', id: 27 },
     { ico: 'trophy',  name: 'Badminton',         url: './badminton/index.html', id: 28 }

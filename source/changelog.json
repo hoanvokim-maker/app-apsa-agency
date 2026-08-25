@@ -9,6 +9,10 @@
             "items": [
                 {
                     "d": "2026-08-25",
+                    "t": "Đổi tên module Tạo mã QR thành Quản lý Link — tên mới hiện ở trang chủ, thanh bên trái và tiêu đề trang."
+                },
+                {
+                    "d": "2026-08-25",
                     "t": "Trang Tạo mã QR có thêm mục Link rút gọn: tạo link dạng app.apsa.agency/u/… (tự sinh mã hoặc tự đặt), xem mã QR, sửa, xoá và đếm lượt bấm. Khi tạo QR cho một link có thể tick Rút gọn trước — sau này đổi link đích mà không phải in lại mã QR."
                 },
                 {
