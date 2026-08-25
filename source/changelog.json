@@ -1,5 +1,5 @@
 {
-    "version": "1.2.2",
+    "version": "1.2.3",
     "updated": "2026-08-25",
     "releases": [
         {
@@ -9,8 +9,8 @@
             "items": [
                 {
                     "d": "2026-08-25",
-                    "v": "1.2.2",
-                    "t": "Sua bo kiem tra cu phap: bo qua thu vien vendor va contract-gen, quet dung 23 file cua app",
+                    "v": "1.2.3",
+                    "t": "Bo cong cu apsa: deploy tu tang 1.2.x, chup DB truoc moi lan deploy (giu 10 ban), rollback quay ca ma nguon lan database va go file thua, luon chup an toan truoc khi quay lui",
                     "by": "mee53661"
                 },
                 {
