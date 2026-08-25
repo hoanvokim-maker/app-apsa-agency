@@ -1223,6 +1223,7 @@ const STATUS = {
   running:          'Đang thực hiện',
   service_done:     'Hoàn thành dịch vụ',
   liq_sent:         'Gửi nghiệm thu',
+  awaiting_payment: 'Chờ thanh toán',
   done:              'Đóng và chờ thanh toán',
   lost:             'Trượt Bidding'
 };

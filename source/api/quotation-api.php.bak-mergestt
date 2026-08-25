@@ -250,6 +250,7 @@ $Q_STATUS = [
     'running'          => 'Đang thực hiện',
     'service_done'     => 'Hoàn thành dịch vụ',
     'liq_sent'         => 'Gửi nghiệm thu',
+    'awaiting_payment' => 'Chờ thanh toán',
     'done'             => 'Đóng và chờ thanh toán',
     'lost'             => 'Trượt Bidding',
 ];
@@ -369,7 +370,7 @@ if (!q_hasColumn($pdo, 'quotations', 'status')) {
         'Xác nhận báo giá'   => 'confirmed',
         'Đang thực hiện'     => 'running',
         'Gửi nghiệm thu'     => 'liq_sent',
-        'Chờ thanh toán'     => 'done',
+        'Chờ thanh toán'     => 'awaiting_payment',
         // 'Hoàn thành' phải chạy TRƯỚC 'Hoàn thành dịch vụ' vì LIKE %...% khớp cả hai
         'Hoàn thành'         => 'done',
         'Đóng và chờ thanh toán' => 'done',
@@ -1637,13 +1638,13 @@ case 'project-board': {
     // Nhóm trạng thái cho trang Làm việc
     $SCOPES = [
         // Đã chốt và đang chạy — mặc định của trang Làm việc
-        'active'  => ['confirmed','order','running','service_done','liq_sent'],
+        'active'  => ['confirmed','order','running','service_done','liq_sent','awaiting_payment'],
         // Chỉ đúng "Đang thực hiện"
         'running' => ['running'],
         // Chưa chốt: còn ở bước yêu cầu / báo giá
         'presale' => ['request','quote'],
         // Mọi dự án còn mở (bỏ Hoàn thành + Trượt Bidding)
-        'open'    => ['request','quote','confirmed','order','running','service_done','liq_sent'],
+        'open'    => ['request','quote','confirmed','order','running','service_done','liq_sent','awaiting_payment'],
     ];
     $stt   = trim((string)($_GET['status'] ?? ''));
     $scope = trim((string)($_GET['scope'] ?? ''));
@@ -1678,7 +1679,7 @@ case 'project-board': {
               FROM `quotations` q
          LEFT JOIN `crm_companies` c ON c.id = q.company_id
              WHERE " . implode(' AND ', $where) . "
-          ORDER BY FIELD(q.status,'running','order','confirmed','service_done','liq_sent','quote','request') ASC,
+          ORDER BY FIELD(q.status,'running','order','confirmed','service_done','liq_sent','awaiting_payment','quote','request') ASC,
                    q.quotation_date DESC, q.id DESC";
     $st = $pdo->prepare($sql);
     $st->execute($params);

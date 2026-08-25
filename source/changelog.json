@@ -9,6 +9,10 @@
             "items": [
                 {
                     "d": "2026-08-25",
+                    "t": "Gộp trạng thái: 43 dự án đang ở Chờ thanh toán đã chuyển sang Đóng và chờ thanh toán, và bỏ hẳn trạng thái Chờ thanh toán khỏi danh sách. Danh sách trạng thái còn 9 mục."
+                },
+                {
+                    "d": "2026-08-25",
                     "t": "Báo giá: ô Trạng thái dự án trong trang chi tiết đổi sang dạng pill màu giống trang danh sách. Thêm nút Đóng dự án — khi đóng, mọi ô nhập bị khoá và máy chủ chặn luôn mọi thao tác ghi; muốn sửa phải gửi yêu cầu để Admin mở lại (có thông báo hai chiều). Trạng thái Hoàn thành đổi tên thành Đóng và chờ thanh toán."
                 },
                 {
