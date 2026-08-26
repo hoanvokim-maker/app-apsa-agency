@@ -1029,3 +1029,210 @@ function pullHome() {
   else boot();
 
 })();
+
+/* ═══════════ APSA v1.2.16 · Combo box: gõ để tìm trong dropdown ═══════════
+   Nâng cấp <select data-combo> thành ô gõ được + gợi ý.
+   Thẻ <select> gốc vẫn nằm nguyên trong DOM (chỉ ẩn đi) nên mọi đoạn code
+   cũ đọc/ghi .value và bắt sự kiện change vẫn chạy y như trước. */
+(function () {
+  'use strict';
+
+  var path = (location.pathname || '').toLowerCase();
+  if (/login|share|view-album|public/.test(path)) return;
+
+  function css() {
+    return '' +
+      '.apsa-cb{ position:relative; display:block; }' +
+      '.apsa-cb > select.apsa-cb-raw{ position:absolute !important; left:0; top:0;' +
+      ' width:100% !important; height:100% !important; opacity:0 !important;' +
+      ' pointer-events:none !important; }' +
+      '.apsa-cb > input.apsa-cb-inp{ width:100%; padding-right:30px; }' +
+      '.apsa-cb > .apsa-cb-ar{ position:absolute; right:11px; top:50%; width:12px; height:12px;' +
+      ' margin-top:-6px; pointer-events:none; opacity:.75;' +
+      ' background:no-repeat center/12px url("data:image/svg+xml;charset=utf-8,' +
+      '%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\'' +
+      ' stroke=\'%239a9a9a\' stroke-width=\'2.2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'' +
+      '%3E%3Cpath d=\'M6 9l6 6 6-6\'/%3E%3C/svg%3E"); }' +
+      '.apsa-cb-list{ display:none; position:absolute; left:0; right:0; top:calc(100% + 5px);' +
+      ' z-index:400; max-height:262px; overflow-y:auto; padding:5px;' +
+      ' background:#0e0e0e; border:1px solid rgba(255,255,255,.14); border-radius:11px;' +
+      ' box-shadow:0 18px 44px rgba(0,0,0,.7); font-family:"Oxanium",sans-serif; }' +
+      '.apsa-cb.open .apsa-cb-list{ display:block; }' +
+      '.apsa-cb-it{ padding:8px 10px; border-radius:8px; font-size:13px; color:#d6d6d6;' +
+      ' cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }' +
+      '.apsa-cb-it:hover{ background:rgba(255,255,255,.06); color:#fff; }' +
+      '.apsa-cb-it.on{ background:rgba(223,242,13,.14); color:#eaff6b; }' +
+      '.apsa-cb-it b{ color:#dff20d; font-weight:700; }' +
+      '.apsa-cb-no{ padding:12px 10px; font-size:12.5px; color:#5e5e5e; text-align:center; }';
+  }
+
+  function injectCss() {
+    if (document.getElementById('apsa-cb-css')) return;
+    var s = document.createElement('style');
+    s.id = 'apsa-cb-css';
+    s.textContent = css();
+    document.head.appendChild(s);
+  }
+
+  /* Bỏ dấu tiếng Việt để gõ "phuong loan" vẫn ra "Phương Loan" */
+  function flat(v) {
+    return String(v == null ? '' : v)
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd');
+  }
+
+  function esc(v) {
+    return String(v == null ? '' : v).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  /* Tô đậm đoạn khớp */
+  function mark(text, q) {
+    if (!q) return esc(text);
+    var i = flat(text).indexOf(q);
+    if (i < 0) return esc(text);
+    return esc(text.slice(0, i)) + '<b>' + esc(text.slice(i, i + q.length)) + '</b>' + esc(text.slice(i + q.length));
+  }
+
+  function build(sel) {
+    if (sel.__apsaCb) return;
+    sel.__apsaCb = true;
+    injectCss();
+
+    var wrap = document.createElement('div');
+    wrap.className = 'apsa-cb';
+    sel.parentNode.insertBefore(wrap, sel);
+    wrap.appendChild(sel);
+    sel.classList.add('apsa-cb-raw');
+    sel.setAttribute('tabindex', '-1');
+
+    var inp = document.createElement('input');
+    inp.type = 'text';
+    inp.className = 'apsa-cb-inp';
+    inp.autocomplete = 'off';
+    inp.spellcheck = false;
+    inp.placeholder = sel.getAttribute('data-ph') || 'Gõ để tìm…';
+    if (sel.disabled) inp.disabled = true;
+    wrap.appendChild(inp);
+
+    var ar = document.createElement('span');
+    ar.className = 'apsa-cb-ar';
+    wrap.appendChild(ar);
+
+    var list = document.createElement('div');
+    list.className = 'apsa-cb-list';
+    wrap.appendChild(list);
+
+    var rows = [], cur = -1;
+
+    function labelOf() {
+      var o = sel.options[sel.selectedIndex];
+      return o ? o.text : '';
+    }
+
+    function paint(q) {
+      var all = [].slice.call(sel.options);
+      rows = q ? all.filter(function (o) { return flat(o.text).indexOf(q) >= 0; }) : all;
+      cur = rows.length ? 0 : -1;
+      list.innerHTML = rows.length
+        ? rows.map(function (o, i) {
+            return '<div class="apsa-cb-it' + (i === cur ? ' on' : '') + '" data-i="' + i + '">' + mark(o.text, q) + '</div>';
+          }).join('')
+        : '<div class="apsa-cb-no">Không tìm thấy</div>';
+    }
+
+    function highlight() {
+      var els = list.querySelectorAll('.apsa-cb-it');
+      for (var i = 0; i < els.length; i++) els[i].classList.toggle('on', i === cur);
+      if (cur >= 0 && els[cur]) {
+        var el = els[cur], lt = list.scrollTop, lb = lt + list.clientHeight;
+        if (el.offsetTop < lt) list.scrollTop = el.offsetTop;
+        else if (el.offsetTop + el.offsetHeight > lb) list.scrollTop = el.offsetTop + el.offsetHeight - list.clientHeight;
+      }
+    }
+
+    function open(q) {
+      paint(q || '');
+      wrap.classList.add('open');
+      highlight();
+    }
+
+    function close(restore) {
+      wrap.classList.remove('open');
+      if (restore !== false) inp.value = labelOf();
+    }
+
+    function pick(i) {
+      var o = rows[i];
+      if (!o) return;
+      sel.value = o.value;
+      inp.value = o.text;
+      close(false);
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    inp.addEventListener('focus', function () { inp.select(); open(''); });
+    inp.addEventListener('input', function () { open(flat(inp.value)); });
+    inp.addEventListener('blur', function () { setTimeout(function () { close(true); }, 140); });
+
+    inp.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (!wrap.classList.contains('open')) { open(''); return; }
+        if (!rows.length) return;
+        cur += (e.key === 'ArrowDown') ? 1 : -1;
+        if (cur < 0) cur = rows.length - 1;
+        if (cur >= rows.length) cur = 0;
+        highlight();
+      } else if (e.key === 'Enter') {
+        if (wrap.classList.contains('open') && cur >= 0) { e.preventDefault(); pick(cur); }
+      } else if (e.key === 'Escape') {
+        if (wrap.classList.contains('open')) { e.stopPropagation(); close(true); }
+      }
+    });
+
+    list.addEventListener('mousedown', function (e) {
+      var it = e.target.closest ? e.target.closest('.apsa-cb-it') : null;
+      if (!it) return;
+      e.preventDefault();
+      pick(Number(it.getAttribute('data-i')));
+    });
+
+    ar.addEventListener('mousedown', function (e) { e.preventDefault(); inp.focus(); });
+
+    /* Trang tự nạp lại danh sách option hoặc đổi .value thì ô gõ phải theo */
+    inp.value = labelOf();
+    try {
+      new MutationObserver(function () {
+        inp.disabled = sel.disabled;
+        if (!wrap.classList.contains('open')) inp.value = labelOf();
+      }).observe(sel, { childList: true, subtree: true, attributes: true });
+    } catch (e) {}
+    sel.addEventListener('change', function () {
+      if (!wrap.classList.contains('open')) inp.value = labelOf();
+    });
+    setInterval(function () {
+      if (!wrap.classList.contains('open') && document.activeElement !== inp && inp.value !== labelOf()) {
+        inp.value = labelOf();
+      }
+    }, 700);
+  }
+
+  function scan() {
+    var els = document.querySelectorAll('select[data-combo]');
+    for (var i = 0; i < els.length; i++) build(els[i]);
+  }
+
+  function boot() {
+    scan();
+    setTimeout(scan, 900);
+    setTimeout(scan, 2500);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+  window.apsaCombo = build;
+})();

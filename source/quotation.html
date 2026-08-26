@@ -656,8 +656,8 @@ table.q tbody tr.dragblock td{ background:rgba(223,242,13,.05); }
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/theme.css?v=18" />
-<script src="/apsa-ui.js?v=17"></script>
+<link rel="stylesheet" href="/theme.css?v=20" />
+<script src="/apsa-ui.js?v=18"></script>
 <style id="apsa-qclose-css">
 /* ══ Trạng thái dự án ở trang chi tiết: pill màu như trang danh sách ══ */
 select#fStatus{
@@ -958,7 +958,7 @@ select#fStatus option{background:#141414;color:#f2f2f2;font-weight:600;text-shad
         </div>
         <div class="fg">
           <label>Người liên hệ</label>
-          <select id="fCt" onchange="onCtChange()"><option value="">— Không chọn —</option></select>
+          <select id="fCt" data-combo data-ph="Gõ tên người liên hệ…" onchange="onCtChange()"><option value="">— Không chọn —</option></select>
         </div>
         <div class="fg"><label>Tên khách hàng (in trên báo giá)</label><input type="text" id="fClient" /></div>
         <div class="fg"><label>Email khách hàng</label><input type="text" id="fEmail" /></div>

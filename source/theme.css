@@ -371,3 +371,110 @@ html body select#fStatus:hover {
   background-color: color-mix(in srgb, var(--neon) 25%, transparent) !important;
   border-color: color-mix(in srgb, var(--neon) 60%, transparent) !important;
 }
+
+/* ── APSA v1.2.16 — bộ khung chung cho pop-up nhập liệu ────────────────
+   Đồng bộ mọi hộp thoại về đúng kiểu "SỬA CÔNG TY": nền tối bo góc lớn,
+   tiêu đề Orbitron in hoa, nhãn nhỏ in hoa, ô nhập bo tròn, nút chính
+   màu neon. Chỉ chỉnh phần nhìn — không đụng vào cấu trúc HTML của trang. */
+@media screen {
+
+  /* ── Tấm nền ─────────────────────────────────────────────────── */
+  .modal, .mbox, .dlg, .sheet, .popup-box {
+    border-radius: 18px !important;
+    border: 1px solid rgba(255,255,255,.10) !important;
+    background: #131313 !important;
+    box-shadow: 0 34px 90px rgba(0,0,0,.72) !important;
+    padding: 30px !important;
+  }
+
+  /* ── Tiêu đề ─────────────────────────────────────────────────── */
+  .modal > h2, .modal > form > h2, .mbox > h2, .dlg > h2,
+  .modal > h3, .mbox > h3 {
+    font-family: "Orbitron", sans-serif !important;
+    font-weight: 800 !important;
+    font-size: 19px !important;
+    letter-spacing: 1.4px !important;
+    text-transform: uppercase !important;
+    color: #ffffff !important;
+    margin: 0 0 20px !important;
+  }
+  .modal > .mh-sub, .modal .modal-sub, .mbox > .mh-sub {
+    font-size: 13px !important;
+    color: #8d8d8d !important;
+    margin: -14px 0 22px !important;
+    line-height: 1.5 !important;
+  }
+
+  /* ── Nhãn ────────────────────────────────────────────────────── */
+  .modal label, .mbox label, .dlg label,
+  .modal .fg > label, .mbox .fg > label {
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    letter-spacing: 1.1px !important;
+    text-transform: uppercase !important;
+    color: #6f6f6f !important;
+  }
+  .modal label.ck, .mbox label.ck, .modal .ck, .mbox .ck {
+    font-size: 13px !important;
+    font-weight: 400 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    color: #9a9a9a !important;
+  }
+
+  /* ── Ô nhập ──────────────────────────────────────────────────── */
+  .modal input[type="text"], .modal input[type="date"], .modal input[type="number"],
+  .modal input[type="email"], .modal input[type="tel"], .modal input[type="password"],
+  .modal input:not([type]), .modal select, .modal textarea,
+  .mbox input[type="text"], .mbox input[type="date"], .mbox input[type="number"],
+  .mbox input:not([type]), .mbox select, .mbox textarea {
+    border-radius: 10px !important;
+    padding-top: 11px !important;
+    padding-bottom: 11px !important;
+    background: #0b0b0b !important;
+    border: 1px solid rgba(255,255,255,.11) !important;
+    color: #ffffff !important;
+    font-size: 13.5px !important;
+  }
+  .modal input:focus, .modal select:focus, .modal textarea:focus,
+  .mbox input:focus, .mbox select:focus, .mbox textarea:focus {
+    border-color: #dff20d !important;
+    box-shadow: 0 0 0 1px rgba(223,242,13,.35) !important;
+    outline: none !important;
+  }
+  .modal input::placeholder, .modal textarea::placeholder,
+  .mbox input::placeholder, .mbox textarea::placeholder { color: #5a5a5a !important; }
+
+  /* ── Nút chính ───────────────────────────────────────────────── */
+  .modal .btn.primary, .modal .btn-add, .modal button[type="submit"],
+  .mbox .btn.primary, .mbox .btn-add, .mbox button[type="submit"] {
+    border-radius: 10px !important;
+    padding: 13px 20px !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+    background: #dff20d !important;
+    border: 1px solid #dff20d !important;
+    color: #000000 !important;
+    box-shadow: 0 0 26px rgba(223,242,13,.30) !important;
+  }
+  .modal .btn.primary:hover, .modal .btn-add:hover, .modal button[type="submit"]:hover,
+  .mbox .btn.primary:hover, .mbox .btn-add:hover, .mbox button[type="submit"]:hover {
+    background: #eaff45 !important;
+    border-color: #eaff45 !important;
+  }
+
+  /* ── Nút phụ (Huỷ / Đóng) ────────────────────────────────────── */
+  .modal .btn-cancel, .modal .btn:not(.primary):not(.btn-add):not(.danger):not(.dg),
+  .mbox .btn-cancel, .mbox .btn:not(.primary):not(.btn-add):not(.danger):not(.dg) {
+    border-radius: 10px !important;
+    padding: 13px 20px !important;
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+  }
+
+  /* ── Hàng nút ────────────────────────────────────────────────── */
+  .modal .modal-acts, .modal .modal-actions, .mbox .modal-acts, .mbox .modal-actions {
+    margin-top: 26px !important;
+    gap: 10px !important;
+  }
+}

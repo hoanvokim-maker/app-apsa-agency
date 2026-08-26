@@ -312,7 +312,7 @@ CREATE TABLE `app_notifications` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `idx_user` (`user_id`,`is_read`,`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -341,10 +341,15 @@ INSERT INTO `app_notifications` VALUES (22,5,'leave_approved','Đơn nghỉ đã
 INSERT INTO `app_notifications` VALUES (23,1,'leave_new','Đơn xin nghỉ mới','Nhật Tân xin nghỉ 1 ngày (Nghỉ ốm): 27/08/2026','/leave.html?id=8','Nhật Tân',1,'2026-08-26 05:00:39');
 INSERT INTO `app_notifications` VALUES (24,5,'leave_approved','Đơn nghỉ đã được duyệt','Harris đã duyệt đơn nghỉ 27/08/2026 của bạn.','/leave.html?id=8','Harris',1,'2026-08-26 05:01:06');
 INSERT INTO `app_notifications` VALUES (25,1,'leave_new','Đơn xin nghỉ mới','Thảo Lý xin nghỉ 1 ngày (Work From Home): 04/09/2026','/leave.html?id=9','Thảo Lý',1,'2026-08-26 05:01:18');
-INSERT INTO `app_notifications` VALUES (26,3,'leave_approved','Đơn nghỉ đã được duyệt','Harris đã duyệt đơn nghỉ 04/09/2026 của bạn.','/leave.html?id=9','Harris',0,'2026-08-26 05:15:21');
+INSERT INTO `app_notifications` VALUES (26,3,'leave_approved','Đơn nghỉ đã được duyệt','Harris đã duyệt đơn nghỉ 04/09/2026 của bạn.','/leave.html?id=9','Harris',1,'2026-08-26 05:15:21');
 INSERT INTO `app_notifications` VALUES (27,5,'leave_canceled','Đơn nghỉ bị huỷ','Harris đã huỷ đơn nghỉ 27/08/2026 của bạn.','/leave.html?id=8','Harris',1,'2026-08-26 06:02:04');
 INSERT INTO `app_notifications` VALUES (28,1,'leave_new','Đơn xin nghỉ mới','Hoàng Been xin nghỉ 0,5 ngày (Phép năm): 27/08/2026 (buổi sáng)','/leave.html?id=10','Hoàng Been',1,'2026-08-26 06:25:45');
 INSERT INTO `app_notifications` VALUES (29,14,'leave_approved','Đơn nghỉ đã được duyệt','Harris đã duyệt đơn nghỉ 27/08/2026 (buổi sáng) của bạn.','/leave.html?id=10','Harris',1,'2026-08-26 06:26:29');
+INSERT INTO `app_notifications` VALUES (30,1,'leave_new','Đơn xin nghỉ mới','Anh Thư xin nghỉ 1 ngày (Khác): 27/08/2026','/leave.html?id=11','Anh Thư',1,'2026-08-26 10:54:32');
+INSERT INTO `app_notifications` VALUES (31,7,'leave_approved','Đơn nghỉ đã được duyệt','Harris đã duyệt đơn nghỉ 27/08/2026 của bạn.','/leave.html?id=11','Harris',1,'2026-08-26 11:45:28');
+INSERT INTO `app_notifications` VALUES (32,12,'assign','Harris giao việc cho bạn','Video 1 - BS Luận — báo giá 16012026-9 · AZ-VDO Hope Nexium','./quotation.html?q=16012026-9&tab=quote#giaoviec','Harris',0,'2026-08-26 14:51:44');
+INSERT INTO `app_notifications` VALUES (33,11,'assign','Harris giao việc cho bạn','Video 2 - BS Luận — báo giá 16012026-9 · AZ-VDO Hope Nexium','./quotation.html?q=16012026-9&tab=quote#giaoviec','Harris',0,'2026-08-26 14:51:44');
+INSERT INTO `app_notifications` VALUES (34,9,'assign','Harris giao việc cho bạn','BS Luận - VDO 1 - 2 — báo giá 16012026-9 · AZ-VDO Hope Nexium','./quotation.html?q=16012026-9&tab=quote#giaoviec','Harris',0,'2026-08-26 14:55:07');
 /*!40000 ALTER TABLE `app_notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -375,7 +380,7 @@ INSERT INTO `app_settings` VALUES ('leave.default_quota','12','2026-08-25 16:16:
 INSERT INTO `app_settings` VALUES ('leave.work_days','[1,2,3,4,5,6]','2026-08-25 16:13:31','');
 INSERT INTO `app_settings` VALUES ('leave.work_hours','{\"am_start\":\"09:30\",\"am_end\":\"12:00\",\"pm_start\":\"13:30\",\"pm_end\":\"18:00\"}','2026-08-25 16:07:08','Harris');
 INSERT INTO `app_settings` VALUES ('ui.font_sizes','{\"default\":13.5,\"large\":15,\"max\":16}','2026-08-25 16:21:35','Harris');
-INSERT INTO `app_settings` VALUES ('ui.sidebar','{\"order\":[],\"hidden\":[]}','2026-08-26 14:36:39','Harris');
+INSERT INTO `app_settings` VALUES ('ui.sidebar','{\"order\":[35,32,26,31,29,30,17,18,34,25,23,24,1,90,91,27,92,93,28],\"hidden\":[]}','2026-08-26 15:07:59','Harris');
 /*!40000 ALTER TABLE `app_settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -402,7 +407,7 @@ CREATE TABLE `app_user_prefs` (
 LOCK TABLES `app_user_prefs` WRITE;
 /*!40000 ALTER TABLE `app_user_prefs` DISABLE KEYS */;
 INSERT INTO `app_user_prefs` VALUES (1,'home','{\"order\":[32,33,30,29,26,31,90,17,18,1,23,25,28,24,35,34,27],\"hidden\":[28],\"custom\":[],\"pinned\":[32,30,29,26,31]}','2026-08-25 06:08:36');
-INSERT INTO `app_user_prefs` VALUES (1,'quo_recent','[{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787730664111},{\"id\":291,\"code\":\"26082026-154\",\"title\":\"TSS-Media-Go-Supermarket\",\"client\":\"CÔNG TY CỔ PHẦN TONA SYNTEGRA SOLAR\",\"date\":\"2026-08-26\",\"at\":1787728940244},{\"id\":5,\"code\":\"17082026-145\",\"title\":\"AZ-R&I-NEXIUM-BOOTH\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-17\",\"at\":1787725116650},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787714877957},{\"id\":264,\"code\":\"30072025-153\",\"title\":\"Media Danone MKT DN\",\"client\":\"Gia Linh Danone\",\"date\":\"2025-07-30\",\"at\":1787667429995},{\"id\":2,\"code\":\"20082026-148\",\"title\":\"AZ-CVRM-TRANING-2508\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-20\",\"at\":1787661898986},{\"id\":20,\"code\":\"28072026-130\",\"title\":\"AZ-RI-Synagis-Booth-1408\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-28\",\"at\":1787661459113},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787637383225},{\"id\":282,\"code\":\"25022026-150\",\"title\":\"AZ-R&I-RESPI-SUMMIT\",\"client\":\"AstraZeneca\",\"date\":\"2026-02-25\",\"at\":1787567097632},{\"id\":160,\"code\":\"02122025-257\",\"title\":\"AZ_OBU-RDU Plenary and TA session (NC 2026)\",\"client\":\"Công Ty TNHH AstraZeneca\",\"date\":\"2025-12-02\",\"at\":1787566879376}]','2026-08-26 07:51:05');
+INSERT INTO `app_user_prefs` VALUES (1,'quo_recent','[{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787756785549},{\"id\":291,\"code\":\"26082026-154\",\"title\":\"TSS-Media-Go-Supermarket\",\"client\":\"CÔNG TY CỔ PHẦN TONA SYNTEGRA SOLAR\",\"date\":\"2026-08-26\",\"at\":1787756624013},{\"id\":140,\"code\":\"16012026-9\",\"title\":\"AZ-VDO Hope Nexium\",\"client\":\"AstraZeneca\",\"date\":\"2026-01-16\",\"at\":1787756107312},{\"id\":41,\"code\":\"07072026-109\",\"title\":\"OGN-MMA-VDO\",\"client\":\"Organon\",\"date\":\"2026-07-07\",\"at\":1787731705785},{\"id\":5,\"code\":\"17082026-145\",\"title\":\"AZ-R&I-NEXIUM-BOOTH\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-17\",\"at\":1787725116650},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787714877957},{\"id\":264,\"code\":\"30072025-153\",\"title\":\"Media Danone MKT DN\",\"client\":\"Gia Linh Danone\",\"date\":\"2025-07-30\",\"at\":1787667429995},{\"id\":2,\"code\":\"20082026-148\",\"title\":\"AZ-CVRM-TRANING-2508\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-20\",\"at\":1787661898986},{\"id\":20,\"code\":\"28072026-130\",\"title\":\"AZ-RI-Synagis-Booth-1408\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-28\",\"at\":1787661459113},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787637383225}]','2026-08-26 15:06:26');
 INSERT INTO `app_user_prefs` VALUES (1,'ui','{\"font_size\":\"md\"}','2026-08-26 07:23:53');
 INSERT INTO `app_user_prefs` VALUES (3,'home','{\"order\":[32,26,30,1,17,18,90,23,24,25,27,28,29,35,34,31],\"hidden\":[28],\"custom\":[]}','2026-08-24 02:48:51');
 INSERT INTO `app_user_prefs` VALUES (3,'quo_recent','[{\"id\":44,\"code\":\"02072026-106\",\"title\":\"AZ-MSD-ONCO-ImAE-ExpertMeeting\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-02\",\"at\":1787713497617},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787713384014},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787565621783},{\"id\":30,\"code\":\"19072026-120\",\"title\":\"AZ-ONCO-PEAKSharing-175\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-19\",\"at\":1787540605254},{\"id\":8,\"code\":\"12082026-142\",\"title\":\"AZ-ONCO-PEAKSharing-VietDuc-25Aug\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-12\",\"at\":1787540250289},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787539299199}]','2026-08-26 03:04:58');
@@ -467,7 +472,7 @@ INSERT INTO `app_users` VALUES (3,'thaoly','$2y$10$apwNXhmb03WC5brdnZnV2unSiF6fK
 INSERT INTO `app_users` VALUES (4,'trangdo','$2y$10$1Dj1IZCt0H6BNWX/DmN0LulFIoMya7pYPc0PedQJmsleIOSfIFfni','Trang Đỗ','member',1,'2026-08-11 04:37:51','2026-08-26 05:08:03','2026-08-26 03:33:56','admin','inhouse',1,'','','','4235f4df0980e0deb991','Trang','2026-08-26 12:08:03',NULL,NULL);
 INSERT INTO `app_users` VALUES (5,'nhattan','$2y$10$W8tp/Ef.JYD/V.XURuNJseFsfThk2KGlZM71rxdupY6chvGTv9Ep.','Nhật Tân','member',1,'2026-08-11 04:38:13','2026-08-26 05:00:09','2026-08-26 02:58:12','account','inhouse',1,'','','','61f88bb9bff556ab0fe4','Nhật Tân','2026-08-26 12:00:09',NULL,NULL);
 INSERT INTO `app_users` VALUES (6,'cankim','$2y$10$02p2Ljt1T7pbjDC5aFZ.T.H90nY52ggV0V8iYRxCIyc2FmQuAnbA.','Can Kim','member',1,'2026-08-11 04:39:10','2026-08-26 05:06:47','2026-08-26 03:11:08','account','inhouse',1,'','','','c622f49807d1ee8fb7c0','Can Kim','2026-08-26 12:06:47',NULL,NULL);
-INSERT INTO `app_users` VALUES (7,'anhthu','$2y$10$XdyxyHCs3lSZ.fJG3NOBvOlk5KhQONtosEv0oLyVUDfaJXeUIiU6G','Anh Thư','member',1,'2026-08-11 04:39:27','2026-08-26 05:02:49','2026-08-26 03:12:40','designer','inhouse',1,'','','','4637a8d8d18e38d0619f','Anh Thư','2026-08-26 12:02:49',NULL,NULL);
+INSERT INTO `app_users` VALUES (7,'anhthu','$2y$10$XdyxyHCs3lSZ.fJG3NOBvOlk5KhQONtosEv0oLyVUDfaJXeUIiU6G','Anh Thư','member',1,'2026-08-11 04:39:27','2026-08-26 13:35:21','2026-08-26 13:35:21','designer','inhouse',1,'','','','4637a8d8d18e38d0619f','Anh Thư','2026-08-26 12:02:49',NULL,NULL);
 INSERT INTO `app_users` VALUES (8,'minhtri','$2y$10$DefjfsNDrXtCXWlJku2fDujVDtvLlaW3aCmVGcAzJbqEjhgMDw6za','Minh Trí','member',1,'2026-08-11 14:03:06','2026-08-26 05:58:25','2026-08-26 05:58:25','designer','inhouse',1,'','','','65991a3da6724f2c1663','Minh Trí','2026-08-26 12:25:01',NULL,NULL);
 INSERT INTO `app_users` VALUES (9,'tientien','$2y$10$CjtsEP9TagGQMDVRln5Ftu0GFNKjGsGJL6wUhrrLxBg4ZR34qCxQS','Tiên Tiên','member',1,'2026-08-11 14:03:32','2026-08-26 05:22:33','2026-08-26 04:58:57','designer','inhouse',1,'','','','b0d0139ba4cc4d9214dd','Ngô Tiên','2026-08-26 12:22:33',NULL,NULL);
 INSERT INTO `app_users` VALUES (10,'vyvy','$2y$10$JCqFrpMvEx7J.Q0/Lhb8Wu1FcQqsrHP4ihPFGUt455/iezkoVjm6a','Vy Vy','member',1,'2026-08-11 14:03:44','2026-08-26 05:24:33','2026-08-26 04:37:22','designer','inhouse',1,'','','','7d49e0bdebe902b75bf8','Thảo Vy','2026-08-26 12:24:33',NULL,NULL);
@@ -644,7 +649,7 @@ CREATE TABLE `crm_audit_log` (
   KEY `idx_customer` (`customer_id`),
   KEY `idx_created` (`created_at`),
   KEY `idx_company_id` (`company_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=99 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=154 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -751,6 +756,61 @@ INSERT INTO `crm_audit_log` VALUES (95,22,NULL,NULL,NULL,'company','create','Th�
 INSERT INTO `crm_audit_log` VALUES (96,23,NULL,NULL,NULL,'company','create','Thêm công ty CÔNG TY CỔ PHẦN TONA SYNTEGRA SOLAR',NULL,'Harris','2026-08-26 06:34:49');
 INSERT INTO `crm_audit_log` VALUES (97,23,66,NULL,NULL,'customer','create','Thêm khách hàng Minh Anh (CÔNG TY CỔ PHẦN TONA SYNTEGRA SOLAR)',NULL,'Harris','2026-08-26 06:36:55');
 INSERT INTO `crm_audit_log` VALUES (98,23,66,NULL,NULL,'customer','update','Cập nhật khách hàng Minh Anh (CÔNG TY CỔ PHẦN TONA SYNTEGRA SOLAR)',NULL,'Harris','2026-08-26 06:37:16');
+INSERT INTO `crm_audit_log` VALUES (99,1,7,NULL,NULL,'customer','update','Cập nhật khách hàng Nguyễn Hùng Cường (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:10');
+INSERT INTO `crm_audit_log` VALUES (100,1,12,NULL,NULL,'customer','update','Cập nhật khách hàng Nguyễn Minh Tín (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:10');
+INSERT INTO `crm_audit_log` VALUES (101,1,10,NULL,NULL,'customer','update','Cập nhật khách hàng Phan Gia Huy (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:10');
+INSERT INTO `crm_audit_log` VALUES (102,1,14,NULL,NULL,'customer','update','Cập nhật khách hàng Nguyễn Nữ Diệu Anh (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:10');
+INSERT INTO `crm_audit_log` VALUES (103,1,1,NULL,NULL,'customer','update','Cập nhật khách hàng Trần Văn Duy Thái (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:10');
+INSERT INTO `crm_audit_log` VALUES (104,1,2,NULL,NULL,'customer','update','Cập nhật khách hàng Trần Văn Quyền (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:10');
+INSERT INTO `crm_audit_log` VALUES (105,1,11,NULL,NULL,'customer','update','Cập nhật khách hàng Huỳnh Khánh Thiên Nga (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:10');
+INSERT INTO `crm_audit_log` VALUES (106,1,15,NULL,NULL,'customer','update','Cập nhật khách hàng Hứa Thị Quang Duy (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:10');
+INSERT INTO `crm_audit_log` VALUES (107,1,19,NULL,NULL,'customer','update','Cập nhật khách hàng Nguyễn Ngọc Phương Loan (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:10');
+INSERT INTO `crm_audit_log` VALUES (108,1,16,NULL,NULL,'customer','update','Cập nhật khách hàng Đinh Nguyễn Hoàng Thiên (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:10');
+INSERT INTO `crm_audit_log` VALUES (109,1,20,NULL,NULL,'customer','update','Cập nhật khách hàng Lê Quỳnh Mai (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:10');
+INSERT INTO `crm_audit_log` VALUES (110,1,22,NULL,NULL,'customer','update','Cập nhật khách hàng Kim Hoàng Hạ (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:10');
+INSERT INTO `crm_audit_log` VALUES (111,1,17,NULL,NULL,'customer','update','Cập nhật khách hàng Nguyễn Ngọc Minh Tú (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:10');
+INSERT INTO `crm_audit_log` VALUES (112,1,25,NULL,NULL,'customer','update','Cập nhật khách hàng Vũ Nguyễn Thùy Đan (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:10');
+INSERT INTO `crm_audit_log` VALUES (113,1,26,NULL,NULL,'customer','update','Cập nhật khách hàng Võ Thanh Tài (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:10');
+INSERT INTO `crm_audit_log` VALUES (114,1,33,NULL,NULL,'customer','update','Cập nhật khách hàng Lâm Vĩnh Phát (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:10');
+INSERT INTO `crm_audit_log` VALUES (115,1,41,NULL,NULL,'customer','update','Cập nhật khách hàng Hoàng Lan Vi (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (116,1,29,NULL,NULL,'customer','update','Cập nhật khách hàng Võ Thị Phương Thảo (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (117,1,39,NULL,NULL,'customer','update','Cập nhật khách hàng Dương Thị Hồng Nhung (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (118,1,36,NULL,NULL,'customer','update','Cập nhật khách hàng Cung Vũ Ánh Nguyệt (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (119,1,42,NULL,NULL,'customer','update','Cập nhật khách hàng Nguyễn Phan Ngọc Thảo (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (120,1,45,NULL,NULL,'customer','update','Cập nhật khách hàng Lê Thị Ngọc Tuyết (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (121,1,54,NULL,NULL,'customer','update','Cập nhật khách hàng Phan Thị Uyên (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (122,1,53,NULL,NULL,'customer','update','Cập nhật khách hàng Nguyễn Thị Chinh (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (123,1,56,NULL,NULL,'customer','update','Cập nhật khách hàng Lê Hoàng Quỳnh Trâm (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (124,1,51,NULL,NULL,'customer','update','Cập nhật khách hàng Trần Thị Mỹ Duyên (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (125,1,50,NULL,NULL,'customer','update','Cập nhật khách hàng Trần Bảo Châu (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (126,1,57,NULL,NULL,'customer','update','Cập nhật khách hàng Dương Công Vinh Phúc (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (127,5,9,NULL,NULL,'customer','update','Cập nhật khách hàng Lê Thị Lan Anh (Organon)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (128,1,58,NULL,NULL,'customer','update','Cập nhật khách hàng Nguyễn Thị Dự (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (129,5,23,NULL,NULL,'customer','update','Cập nhật khách hàng Trần Thu Hương (Organon)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (130,2,4,NULL,NULL,'customer','update','Cập nhật khách hàng Võ Nguyễn Bảo Trân (SonKim Land)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (131,6,13,NULL,NULL,'customer','update','Cập nhật khách hàng Lưu Vĩnh Khang (Johnson&Johnson)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (132,7,18,NULL,NULL,'customer','update','Cập nhật khách hàng Trần Thị Huệ Chi (Pharmactiy)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (133,1,65,NULL,NULL,'customer','update','Cập nhật khách hàng Khổng Thanh Long (AstraZeneca Việt Nam)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (134,5,28,NULL,NULL,'customer','update','Cập nhật khách hàng Huỳnh Kim Chi (Organon)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (135,11,35,NULL,NULL,'customer','update','Cập nhật khách hàng Bảo ngọc (Keiser)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (136,5,24,NULL,NULL,'customer','update','Cập nhật khách hàng Phạm Tiến Đạt (Organon)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (137,14,43,NULL,NULL,'customer','update','Cập nhật khách hàng Huỳnh Dương Diễm (Novo Nordisk)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (138,5,31,NULL,NULL,'customer','update','Cập nhật khách hàng Trần Thị Ly Na (Organon)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (139,10,34,NULL,NULL,'customer','update','Cập nhật khách hàng Đoàn Anh Thư (Gigamed)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (140,9,30,NULL,NULL,'customer','update','Cập nhật khách hàng Lê Thị Ngọc Dung (Decathlon)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (141,15,44,NULL,NULL,'customer','update','Cập nhật khách hàng Cấp Xuân Sang (Novartis)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (142,20,61,NULL,NULL,'customer','update','Cập nhật khách hàng Nguyễn Hoàng Nhật Tiến (VietCredit)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (143,5,48,NULL,NULL,'customer','update','Cập nhật khách hàng Lê Chúc Anh (Organon)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (144,5,64,NULL,NULL,'customer','update','Cập nhật khách hàng Văn Bảo Trâm (Tess) (Organon)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (145,2,55,NULL,NULL,'customer','update','Cập nhật khách hàng Lê Thị Trung Trinh (SonKim Land)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (146,17,47,NULL,NULL,'customer','update','Cập nhật khách hàng Lưu Nhân (Wörwag)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (147,18,52,NULL,NULL,'customer','update','Cập nhật khách hàng Trần Kiều Anh Thơ (Abbot)',NULL,'Harris','2026-08-26 14:28:11');
+INSERT INTO `crm_audit_log` VALUES (148,22,NULL,NULL,NULL,'company','update','Cập nhật công ty TONA',NULL,'Harris','2026-08-26 14:57:35');
+INSERT INTO `crm_audit_log` VALUES (149,23,NULL,NULL,NULL,'company','update','Cập nhật công ty TONA SYNTEGRA SOLAR',NULL,'Harris','2026-08-26 14:58:10');
+INSERT INTO `crm_audit_log` VALUES (150,21,NULL,NULL,NULL,'company','update','Cập nhật công ty Lời Hứa Thương Hiệu (TBP)',NULL,'Harris','2026-08-26 14:58:26');
+INSERT INTO `crm_audit_log` VALUES (151,1,NULL,NULL,NULL,'company','update','Cập nhật công ty AstraZeneca Việt Nam',NULL,'Harris','2026-08-26 15:00:30');
+INSERT INTO `crm_audit_log` VALUES (152,8,NULL,NULL,NULL,'company','delete','Xoá công ty Freelancer',NULL,'Harris','2026-08-26 15:01:56');
+INSERT INTO `crm_audit_log` VALUES (153,18,NULL,NULL,NULL,'company','update','Cập nhật công ty Abbott',NULL,'Harris','2026-08-26 15:02:07');
 /*!40000 ALTER TABLE `crm_audit_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -791,7 +851,7 @@ INSERT INTO `crm_companies` VALUES (4,'APSA','0317301221','26 ung van khiêm, ph
 INSERT INTO `crm_companies` VALUES (5,'Organon','0317975100','Phòng 03-135, Tầng 3, Lim Tower 3, 29A Nguyễn Đình Chiểu, Phường Sài Gòn, Thành phố Hồ Chí Minh, Việt Nam','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:58:15','2026-08-20 18:58:15');
 INSERT INTO `crm_companies` VALUES (6,'Johnson&Johnson','0310671135','Tầng 12, Tòa nhà Vietcombank, Số 5 Công Trường Mê Linh, Phường Sài Gòn, Thành phố Hồ Chí Minh, Việt Nam','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:58:15','2026-08-20 18:58:15');
 INSERT INTO `crm_companies` VALUES (7,'Pharmactiy','0311770883','248A Nơ Trang Long, Phường Bình Thạnh, TP Hồ Chí Minh, Việt Nam','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:58:15','2026-08-20 18:58:15');
-INSERT INTO `crm_companies` VALUES (8,'Freelancer','Freelancer','Freelancer','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:58:15','2026-08-20 18:58:15');
+INSERT INTO `crm_companies` VALUES (8,'Freelancer','Freelancer','Freelancer','Đồng bộ từ manage.apsa.agency',1,'Harris','2026-08-26 22:01:56','2026-08-20 18:58:15','2026-08-26 15:01:56');
 INSERT INTO `crm_companies` VALUES (9,'Decathlon','0305728805','Lầu 5, số 26 Ung Văn Khiêm, Phường Thạnh Mỹ Tây, TP Hồ Chí Minh, Việt Nam','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:58:15','2026-08-20 18:58:15');
 INSERT INTO `crm_companies` VALUES (10,'Gigamed','0316417470','13.05A. Tầng 13 Toà nhà Viettel, 285 Cách Mạng Tháng 8, Phường Hòa Hưng, TP Hồ Chí Minh, Việt Nam','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:58:15','2026-08-20 18:58:15');
 INSERT INTO `crm_companies` VALUES (11,'Keiser','0316580660','Lầu 3, toà nhà Quỳnh Lan, 60 Hai Bà Trưng, Phường Sài Gòn, TP Hồ Chí Minh, Việt Nam','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:58:15','2026-08-20 18:58:15');
@@ -801,12 +861,12 @@ INSERT INTO `crm_companies` VALUES (14,'Novo Nordisk','0317132654','Phòng 3.01b
 INSERT INTO `crm_companies` VALUES (15,'Novartis','0315531029','Phòng 1001, lầu 10, Centec Tower, 72-74 Nguyễn Thị Minh Khai, Phường Xuân Hòa, Thành phố Hồ Chí Minh, Việt Nam','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:58:15','2026-08-20 18:58:15');
 INSERT INTO `crm_companies` VALUES (16,'Workpath','0000000000','Quận 3','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:58:15','2026-08-20 18:58:15');
 INSERT INTO `crm_companies` VALUES (17,'Wörwag','0311562509','Unit 8.02, T8,tòa nhà MB Sunny Tower, số 259 Trần Hưng Đạo, Phường Cầu Ông Lãnh, TP Hồ Chí Minh, Việt Nam','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:58:15','2026-08-20 18:58:15');
-INSERT INTO `crm_companies` VALUES (18,'Abbot','3700754914','Số 35 Đại Lộ Tự Do, KCN Việt Nam - Singapore, Phường An Phú, Thành phố Thuận An, Bình Dương','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:58:15','2026-08-20 18:58:15');
+INSERT INTO `crm_companies` VALUES (18,'Abbott','3700754914','Số 35 Đại Lộ Tự Do, KCN Việt Nam - Singapore, Phường An Phú, Thành phố Thuận An, Bình Dương','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:58:15','2026-08-26 15:02:07');
 INSERT INTO `crm_companies` VALUES (19,'JTB-TNT','0305612046','NA','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:58:15','2026-08-20 18:58:15');
 INSERT INTO `crm_companies` VALUES (20,'VietCredit','0102766770','Tầng 9, Tòa nhà V.E.T, số 98 đường Hoàng Quốc Việt, Phường Nghĩa Đô, TP Hà Nội, Việt Nam','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:58:15','2026-08-20 18:58:15');
-INSERT INTO `crm_companies` VALUES (21,'Công Ty TNHH Lời Hứa Thương Hiệu (TBP)','0318226859','Số 64/12 Đường 34, Khu phố 27, Phường An Khánh, Thành phố Hồ Chí Minh, Việt Nam','Điện thoại: 079 853 2933\nEmail: finance@thebrandpromise.group\nNgười đại diện: Bà ĐINH THỊ BÍCH TRÀ — Giám đốc',1,'Harris',NULL,'2026-08-24 10:29:50','2026-08-24 10:32:34');
-INSERT INTO `crm_companies` VALUES (22,'CÔNG TY CỔ PHẦN ĐẦU TƯ TONA','0309178479','101B Khu TMDV, Tầng trệt, Block B Tòa nhà Topaz Garden, số 4 Trịnh Đình Thảo, Phường Tân Phú, Thành phố Hồ Chí Minh, Việt Nam','',1,'Harris',NULL,'2026-08-26 06:34:49','2026-08-26 06:34:49');
-INSERT INTO `crm_companies` VALUES (23,'CÔNG TY CỔ PHẦN TONA SYNTEGRA SOLAR','0314404282','G-2417, The Manor Officetel, 89 Nguyễn Hữu Cảnh, Phường Thạnh Mỹ Tây, TP. Hồ Chí Minh, Việt Nam','',1,'Harris',NULL,'2026-08-26 06:34:49','2026-08-26 06:34:49');
+INSERT INTO `crm_companies` VALUES (21,'Lời Hứa Thương Hiệu (TBP)','0318226859','Số 64/12 Đường 34, Khu phố 27, Phường An Khánh, Thành phố Hồ Chí Minh, Việt Nam','Điện thoại: 079 853 2933\nEmail: finance@thebrandpromise.group\nNgười đại diện: Bà ĐINH THỊ BÍCH TRÀ — Giám đốc',1,'Harris',NULL,'2026-08-24 10:29:50','2026-08-26 14:58:26');
+INSERT INTO `crm_companies` VALUES (22,'TONA','0309178479','101B Khu TMDV, Tầng trệt, Block B Tòa nhà Topaz Garden, số 4 Trịnh Đình Thảo, Phường Tân Phú, Thành phố Hồ Chí Minh, Việt Nam','',1,'Harris',NULL,'2026-08-26 06:34:49','2026-08-26 14:57:35');
+INSERT INTO `crm_companies` VALUES (23,'TONA SYNTEGRA SOLAR','0314404282','G-2417, The Manor Officetel, 89 Nguyễn Hữu Cảnh, Phường Thạnh Mỹ Tây, TP. Hồ Chí Minh, Việt Nam','',1,'Harris',NULL,'2026-08-26 06:34:49','2026-08-26 14:58:10');
 /*!40000 ALTER TABLE `crm_companies` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -845,70 +905,70 @@ CREATE TABLE `crm_customers` (
 
 LOCK TABLES `crm_customers` WRITE;
 /*!40000 ALTER TABLE `crm_customers` DISABLE KEYS */;
-INSERT INTO `crm_customers` VALUES (1,1,'Thái Nexium','Marketing','AstraZeneca Việt anm','','','',1,'Harris',NULL,'2026-08-18 16:04:45','2026-08-20 07:39:19');
-INSERT INTO `crm_customers` VALUES (2,1,'Quyền','KACD','AstraZeneca Việt anm','','','',1,'Harris',NULL,'2026-08-18 16:05:00','2026-08-20 07:39:19');
-INSERT INTO `crm_customers` VALUES (4,2,'Bao Tran SKLand','Marketing','SonKim Land','0823979279','','',1,'Harris',NULL,'2026-08-20 10:53:54','2026-08-20 10:53:54');
+INSERT INTO `crm_customers` VALUES (1,1,'Trần Văn Duy Thái','Marketing','AstraZeneca Việt Nam','','vanduythai.tran1@astrazeneca.com','Biệt danh: Thái Nexium',1,'Harris',NULL,'2026-08-18 16:04:45','2026-08-26 14:28:10');
+INSERT INTO `crm_customers` VALUES (2,1,'Trần Văn Quyền','KACD','AstraZeneca Việt Nam','(+84) 944411088','vanquyen.tran@astrazeneca.com','Biệt danh: Quyền',1,'Harris',NULL,'2026-08-18 16:05:00','2026-08-26 14:28:10');
+INSERT INTO `crm_customers` VALUES (4,2,'Võ Nguyễn Bảo Trân','Marketing','SonKim Land','0823979279','tran.vo@sonkimland.vn','Biệt danh: Bao Tran SKLand',1,'Harris',NULL,'2026-08-20 10:53:54','2026-08-26 14:28:11');
 INSERT INTO `crm_customers` VALUES (5,3,'Chị Hà','Designer','VFR','0938234305','','',1,'Harris',NULL,'2026-08-20 10:57:19','2026-08-20 10:57:58');
 INSERT INTO `crm_customers` VALUES (6,3,'Hương','Purchase','VFR','0379034241','','',1,'Harris',NULL,'2026-08-20 10:57:45','2026-08-20 10:57:45');
-INSERT INTO `crm_customers` VALUES (7,1,'Cường CVRM','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-20 18:59:05');
+INSERT INTO `crm_customers` VALUES (7,1,'Nguyễn Hùng Cường','CVRM','AstraZeneca Việt Nam','','hungcuong.nguyen@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Cường CVRM',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-26 14:28:10');
 INSERT INTO `crm_customers` VALUES (8,4,'Harris','','APSA','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-20 18:59:05');
-INSERT INTO `crm_customers` VALUES (9,5,'Lan Anh','','Organon','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-20 18:59:05');
-INSERT INTO `crm_customers` VALUES (10,1,'Anh Huy RIGI','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-20 18:59:05');
-INSERT INTO `crm_customers` VALUES (11,1,'Chị Nga','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-20 18:59:05');
-INSERT INTO `crm_customers` VALUES (12,1,'Minh Tin','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-20 18:59:05');
-INSERT INTO `crm_customers` VALUES (13,6,'Anh Khang ONCO','','Johnson&Johnson','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-24 16:06:06');
-INSERT INTO `crm_customers` VALUES (14,1,'Chị Diệu Anh CVRM','CME CVRM','AstraZeneca Việt Nam','','nudieuanh.nguyen@astrazeneca.com','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-24 16:09:25');
-INSERT INTO `crm_customers` VALUES (15,1,'Chị Duy RIGI','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-20 18:59:05');
-INSERT INTO `crm_customers` VALUES (16,1,'Thiên ONCO MKT','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-20 18:59:05');
-INSERT INTO `crm_customers` VALUES (17,1,'Minh Tú OBU','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-20 18:59:05');
-INSERT INTO `crm_customers` VALUES (18,7,'Ms. Huệ Chi','','Pharmactiy','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:06','2026-08-20 18:59:06');
-INSERT INTO `crm_customers` VALUES (19,1,'Chị Phương Loan','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:06','2026-08-20 18:59:06');
-INSERT INTO `crm_customers` VALUES (20,1,'Mai Lê R&I BU','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:06','2026-08-20 18:59:06');
+INSERT INTO `crm_customers` VALUES (9,5,'Lê Thị Lan Anh','Commercial Operation Specialist','Organon','','thi.lan.anh.thi.lan.anh@organon.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Lan Anh',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (10,1,'Phan Gia Huy','R&I BU','AstraZeneca Việt Nam','','giahuy.phan@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Anh Huy RIGI',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-26 14:28:10');
+INSERT INTO `crm_customers` VALUES (11,1,'Huỳnh Khánh Thiên Nga','','AstraZeneca Việt Nam','','khanhthiennga.huynh1@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Chị Nga',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-26 14:28:10');
+INSERT INTO `crm_customers` VALUES (12,1,'Nguyễn Minh Tín','Associate Brand Manager · ONCO-SC','AstraZeneca Việt Nam','0834 589 678','minhtin.nguyen@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Minh Tin',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-26 14:28:10');
+INSERT INTO `crm_customers` VALUES (13,6,'Lưu Vĩnh Khang','Senior Product Manager, Hematology - Specialty Care, J&J Innovative Medicine','Johnson&Johnson','0907881913','VLuu2@ITS.JNJ.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Anh Khang ONCO',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (14,1,'Nguyễn Nữ Diệu Anh','CME CVRM','AstraZeneca Việt Nam','+84 38 546 0214','nudieuanh.nguyen@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Chị Diệu Anh CVRM',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-26 14:28:10');
+INSERT INTO `crm_customers` VALUES (15,1,'Hứa Thị Quang Duy','R&I BU (RIGI)','AstraZeneca Việt Nam','','thiquangduy.hua@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Chị Duy RIGI',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-26 14:28:10');
+INSERT INTO `crm_customers` VALUES (16,1,'Đinh Nguyễn Hoàng Thiên','Brand Manager - Breast, Gyn & GU Cancers Franchise, OBU','AstraZeneca Việt Nam','','nguyenhoangthien.dinh@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Thiên ONCO MKT',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-26 14:28:10');
+INSERT INTO `crm_customers` VALUES (17,1,'Nguyễn Ngọc Minh Tú','Associate Brand Manager, Rare Diseases Unit','AstraZeneca Việt Nam','','ngocminhtu.nguyen@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Minh Tú OBU',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-26 14:28:10');
+INSERT INTO `crm_customers` VALUES (18,7,'Trần Thị Huệ Chi','Sr. Non-trade Procurement Specialist (NTP)','Pharmactiy','+84 369 984 518','chi.tth@pharmacity.vn','Đồng bộ từ manage.apsa.agency · Biệt danh: Ms. Huệ Chi',1,'Harris',NULL,'2026-08-20 18:59:06','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (19,1,'Nguyễn Ngọc Phương Loan','CME Executive · Oncology BU','AstraZeneca Việt Nam','(+84) 902 516 003','ngocphuongloan.nguyen@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Chị Phương Loan',1,'Harris',NULL,'2026-08-20 18:59:06','2026-08-26 14:28:10');
+INSERT INTO `crm_customers` VALUES (20,1,'Lê Quỳnh Mai','Continuing Medical Education Executive, R&I BU','AstraZeneca Việt Nam','+84 903354480','quynhmai.le@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Mai Lê R&I BU',1,'Harris',NULL,'2026-08-20 18:59:06','2026-08-26 14:28:10');
 INSERT INTO `crm_customers` VALUES (21,6,'Chị Hà','Marketing','Johnson&Johnson','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:06','2026-08-24 16:09:49');
-INSERT INTO `crm_customers` VALUES (22,1,'Hoàng Kim Hạ','HR Team','AstraZeneca Việt Nam','','hoangha.kim@astrazeneca.com','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:06','2026-08-24 16:10:13');
-INSERT INTO `crm_customers` VALUES (23,5,'Hương','','Organon','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-20 18:59:07');
-INSERT INTO `crm_customers` VALUES (24,5,'Đạt','','Organon','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-20 18:59:07');
-INSERT INTO `crm_customers` VALUES (25,1,'Đan CVRM','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-20 18:59:07');
-INSERT INTO `crm_customers` VALUES (26,1,'Anh Tài','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-20 18:59:07');
+INSERT INTO `crm_customers` VALUES (22,1,'Kim Hoàng Hạ','HR Team','AstraZeneca Việt Nam','','hoangha.kim@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Hoàng Kim Hạ',1,'Harris',NULL,'2026-08-20 18:59:06','2026-08-26 14:28:10');
+INSERT INTO `crm_customers` VALUES (23,5,'Trần Thu Hương','','Organon','','huong.tran@organon.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Hương',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (24,5,'Phạm Tiến Đạt','','Organon','','dat.pham@phytopharma.com.vn','Đồng bộ từ manage.apsa.agency · Biệt danh: Đạt',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (25,1,'Vũ Nguyễn Thùy Đan','CVRM','AstraZeneca Việt Nam','','nguyenthuydan.vu@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Đan CVRM',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-26 14:28:10');
+INSERT INTO `crm_customers` VALUES (26,1,'Võ Thanh Tài','','AstraZeneca Việt Nam','','ThanhTai.Vo@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Anh Tài',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-26 14:28:10');
 INSERT INTO `crm_customers` VALUES (27,8,'Nhạn','','Freelancer','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-20 18:59:07');
-INSERT INTO `crm_customers` VALUES (28,5,'Kim Chi','','Organon','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-20 18:59:07');
-INSERT INTO `crm_customers` VALUES (29,1,'Thảo CVRM','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-20 18:59:07');
-INSERT INTO `crm_customers` VALUES (30,9,'Dung','','Decathlon','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-20 18:59:07');
-INSERT INTO `crm_customers` VALUES (31,5,'Ly Na','','Organon','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-20 18:59:07');
+INSERT INTO `crm_customers` VALUES (28,5,'Huỳnh Kim Chi','','Organon','','kim.chi.huynh@organon.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Kim Chi',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (29,1,'Võ Thị Phương Thảo','CVRM','AstraZeneca Việt Nam','','thiphuongthao.vo@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Thảo CVRM',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (30,9,'Lê Thị Ngọc Dung','','Decathlon','','dung.lethingoc@decathlon.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Dung',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (31,5,'Trần Thị Ly Na','Established Brands (EB) / WHEB Lead','Organon','+84 908143524','thi.ly.na.tran@organon.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Ly Na',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-26 14:28:11');
 INSERT INTO `crm_customers` VALUES (32,3,'Thu Hà Trần','','VFR','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-20 18:59:07');
-INSERT INTO `crm_customers` VALUES (33,1,'Phát CVRM DAPA','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-20 18:59:07');
-INSERT INTO `crm_customers` VALUES (34,10,'Thư','','Gigamed','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-20 18:59:07');
-INSERT INTO `crm_customers` VALUES (35,11,'Bảo ngọc','','Keiser','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-20 18:59:07');
-INSERT INTO `crm_customers` VALUES (36,1,'Cung Vũ Ánh Nguyệt CVRM','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-20 18:59:07');
+INSERT INTO `crm_customers` VALUES (33,1,'Lâm Vĩnh Phát','CVRM','AstraZeneca Việt Nam','','vinhphat.lam@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Phát CVRM DAPA',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-26 14:28:10');
+INSERT INTO `crm_customers` VALUES (34,10,'Đoàn Anh Thư','','Gigamed','','thu.anh.doan@gigamed.com.vn','Đồng bộ từ manage.apsa.agency · Biệt danh: Thư',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (35,11,'Bảo ngọc','','Keiser','','ngoc.tran1@kuv.edu.vn','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (36,1,'Cung Vũ Ánh Nguyệt','CVRM','AstraZeneca Việt Nam','','vuanhnguyet.cung@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Cung Vũ Ánh Nguyệt CVRM',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-26 14:28:11');
 INSERT INTO `crm_customers` VALUES (37,1,'Quyền KACD RIGI','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris','2026-08-24 16:01:27','2026-08-20 18:59:07','2026-08-24 09:01:27');
 INSERT INTO `crm_customers` VALUES (38,12,'Thu','','Ezicom','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-20 18:59:07');
-INSERT INTO `crm_customers` VALUES (39,1,'Nhung Đường','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-20 18:59:07');
+INSERT INTO `crm_customers` VALUES (39,1,'Dương Thị Hồng Nhung','MED (Medical)','AstraZeneca Việt Nam','','thihongnhung.duong@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Nhung Đường',1,'Harris',NULL,'2026-08-20 18:59:07','2026-08-26 14:28:11');
 INSERT INTO `crm_customers` VALUES (40,13,'Kiên','','Everon Vietnam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
-INSERT INTO `crm_customers` VALUES (41,1,'Hoàng Lan Vi Breztri','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
-INSERT INTO `crm_customers` VALUES (42,1,'Ngọc Thảo','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
-INSERT INTO `crm_customers` VALUES (43,14,'Huỳnh Điểm','','Novo Nordisk','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
-INSERT INTO `crm_customers` VALUES (44,15,'A Sang MKT','','Novartis','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
-INSERT INTO `crm_customers` VALUES (45,1,'Chị Tuyết training','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
+INSERT INTO `crm_customers` VALUES (41,1,'Hoàng Lan Vi','R&I BU','AstraZeneca Việt Nam','','lanvi.hoang@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Hoàng Lan Vi Breztri',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (42,1,'Nguyễn Phan Ngọc Thảo','Event Operations Executive','AstraZeneca Việt Nam','+84 908 998 440','phanngocthao.nguyen@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Ngọc Thảo',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (43,14,'Huỳnh Dương Diễm','','Novo Nordisk','','DEUY@novonordisk.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Huỳnh Điểm',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (44,15,'Cấp Xuân Sang','','Novartis','','cap_xuan.sang@novartis.com','Đồng bộ từ manage.apsa.agency · Biệt danh: A Sang MKT',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (45,1,'Lê Thị Ngọc Tuyết','COMEX DEPT','AstraZeneca Việt Nam','','thingoctuyet.le@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Chị Tuyết training',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-26 14:28:11');
 INSERT INTO `crm_customers` VALUES (46,16,'Yamada','','Workpath','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
-INSERT INTO `crm_customers` VALUES (47,17,'Nhân Lưu','','Wörwag','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
-INSERT INTO `crm_customers` VALUES (48,5,'Chúc Anh','','Organon','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
+INSERT INTO `crm_customers` VALUES (47,17,'Lưu Nhân','Associate Brand Manager, WÖRWAG Pharma','Wörwag','+84916317941','nhan.luu@woerwagpharma.vn','Đồng bộ từ manage.apsa.agency · Biệt danh: Nhân Lưu',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (48,5,'Lê Chúc Anh','Digital Marketing Intern','Organon','+84 936238055','chucanhle@outlook.com.vn','Đồng bộ từ manage.apsa.agency · Biệt danh: Chúc Anh',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-26 14:28:11');
 INSERT INTO `crm_customers` VALUES (49,1,'Mai MKT R&I','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
-INSERT INTO `crm_customers` VALUES (50,1,'Chị Châu','CME ONCO','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-24 16:09:02');
-INSERT INTO `crm_customers` VALUES (51,1,'Mỹ Duyên GI','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
-INSERT INTO `crm_customers` VALUES (52,18,'Chị Thơ','','Abbot','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
-INSERT INTO `crm_customers` VALUES (53,1,'Chinh KACD','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
-INSERT INTO `crm_customers` VALUES (54,1,'Phan Uyên (HN)','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
-INSERT INTO `crm_customers` VALUES (55,2,'Trinh Le','','SonKim Land','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
-INSERT INTO `crm_customers` VALUES (56,1,'Quỳnh Trâm - CVRM','','AstraZeneca Việt Nam','0903329596','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-24 16:06:37');
-INSERT INTO `crm_customers` VALUES (57,1,'Vinh Phúc Crestor CVRM','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
-INSERT INTO `crm_customers` VALUES (58,1,'Dự CME Medical','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
+INSERT INTO `crm_customers` VALUES (50,1,'Trần Bảo Châu','CME ONCO','AstraZeneca Việt Nam','','BaoChau.Tran@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Chị Châu',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (51,1,'Trần Thị Mỹ Duyên','','AstraZeneca Việt Nam','','thimyduyen.tran@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Mỹ Duyên GI',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (52,18,'Trần Kiều Anh Thơ','','Abbot','','kieuanhtho.tran@abbott.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Chị Thơ',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (53,1,'Nguyễn Thị Chinh','KACD / CVRM','AstraZeneca Việt Nam','','thichinh.nguyen@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Chinh KACD',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (54,1,'Phan Thị Uyên','Brand Manager (Onco)','AstraZeneca Việt Nam','+84987358085','thiuyen.phan1@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Phan Uyên (HN)',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (55,2,'Lê Thị Trung Trinh','Acting Procurement Manager, Bidding & Procurement','SonKim Land','','trungtrinh.le@sonkimland.vn','Đồng bộ từ manage.apsa.agency · Biệt danh: Trinh Le',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (56,1,'Lê Hoàng Quỳnh Trâm','CME CVRM','AstraZeneca Việt Nam','0903329596','hoangquynhtram.le@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Quỳnh Trâm - CVRM',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (57,1,'Dương Công Vinh Phúc','CVRM','AstraZeneca Việt Nam','','congvinhphuc.duong@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Vinh Phúc Crestor CVRM',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (58,1,'Nguyễn Thị Dự','','AstraZeneca Việt Nam','+84 903 658 013','thidu.nguyen1@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Dự CME Medical',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-26 14:28:11');
 INSERT INTO `crm_customers` VALUES (59,19,'Phương Trinh','','JTB-TNT','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
 INSERT INTO `crm_customers` VALUES (60,1,'Chị Trang CME ONCO','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
-INSERT INTO `crm_customers` VALUES (61,20,'A Tiến','','VietCredit','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-20 18:59:08');
+INSERT INTO `crm_customers` VALUES (61,20,'Nguyễn Hoàng Nhật Tiến','','VietCredit','','nguyenhoangnhat.tien@vietcredit.com.vn','Đồng bộ từ manage.apsa.agency · Biệt danh: A Tiến',1,'Harris',NULL,'2026-08-20 18:59:08','2026-08-26 14:28:11');
 INSERT INTO `crm_customers` VALUES (62,1,'Thanh Phương Training','','AstraZeneca Việt Nam','','','Đồng bộ từ manage.apsa.agency',1,'Harris',NULL,'2026-08-20 18:59:09','2026-08-20 18:59:09');
 INSERT INTO `crm_customers` VALUES (63,21,'Thùy','Purchasing','Công Ty TNHH Lời Hứa Thương Hiệu (TBP)','','','',1,'Harris',NULL,'2026-08-24 10:30:04','2026-08-24 10:30:04');
-INSERT INTO `crm_customers` VALUES (64,5,'Trâm Anh','Marketing WHEB','Organon','','tram.anh.pham@organon.com','',1,'Harris',NULL,'2026-08-24 16:07:50','2026-08-24 16:07:50');
-INSERT INTO `crm_customers` VALUES (65,1,'Long Khong','Marketing R&I','AstraZeneca Việt Nam','','thanhlong.khong@astrazeneca.com','',1,'Harris',NULL,'2026-08-24 16:08:37','2026-08-24 16:08:37');
+INSERT INTO `crm_customers` VALUES (64,5,'Văn Bảo Trâm (Tess)','Marketing WHEB','Organon','','tram.anh.pham@organon.com','Biệt danh: Trâm Anh',1,'Harris',NULL,'2026-08-24 16:07:50','2026-08-26 14:28:11');
+INSERT INTO `crm_customers` VALUES (65,1,'Khổng Thanh Long','Marketing R&I','AstraZeneca Việt Nam','','thanhlong.khong@astrazeneca.com','Biệt danh: Long Khong',1,'Harris',NULL,'2026-08-24 16:08:37','2026-08-26 14:28:11');
 INSERT INTO `crm_customers` VALUES (66,23,'Minh Anh','Marketing','CÔNG TY CỔ PHẦN TONA SYNTEGRA SOLAR','0974071906','','The Manor 2, 89 NGuyễn HỮu Cảnh, P. Thạnh Mỹ Tây, HCM',1,'Harris',NULL,'2026-08-26 06:36:55','2026-08-26 06:37:16');
 /*!40000 ALTER TABLE `crm_customers` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -1175,7 +1235,7 @@ CREATE TABLE `leave_requests` (
   KEY `ix_user` (`user_id`),
   KEY `ix_status` (`status`),
   KEY `ix_start` (`start_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1190,6 +1250,7 @@ INSERT INTO `leave_requests` VALUES (6,4,'Trang Đỗ','','annual','2026-10-17',
 INSERT INTO `leave_requests` VALUES (7,5,'Nhật Tân','','work_from_home','2026-08-28','full','2026-08-28','full',1,1.0,'WFH','','approved',1,'Harris','2026-08-26 11:59:27','Oce','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIllmAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIllmAAA%3D&exvsurl=1&path=/calendar/item','2026-08-26 11:58:28','2026-08-26 11:59:29');
 INSERT INTO `leave_requests` VALUES (9,3,'Thảo Lý','','work_from_home','2026-09-04','full','2026-09-04','full',1,1.0,'Xin wfh nhoé','','approved',1,'Harris','2026-08-26 12:15:20','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIllqAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIllqAAA%3D&exvsurl=1&path=/calendar/item','2026-08-26 12:01:18','2026-08-26 12:15:21');
 INSERT INTO `leave_requests` VALUES (10,14,'Hoàng Been','','annual','2026-08-27','am','2026-08-27','am',0,0.5,'đưa ông đi khám bệnh định kì','','approved',1,'Harris','2026-08-26 13:26:27','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIllsAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIllsAAA%3D&exvsurl=1&path=/calendar/item','2026-08-26 13:25:45','2026-08-26 13:26:29');
+INSERT INTO `leave_requests` VALUES (11,7,'Anh Thư','','other','2026-08-27','full','2026-08-27','full',1,1.0,'em Thư Work From Hutech university','','approved',1,'Harris','2026-08-26 18:45:26','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIlluAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIlluAAA%3D&exvsurl=1&path=/calendar/item','2026-08-26 17:54:32','2026-08-26 18:45:28');
 /*!40000 ALTER TABLE `leave_requests` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1860,7 +1921,7 @@ CREATE TABLE `quotation_assignees` (
   KEY `idx_user` (`user_id`),
   KEY `idx_stat` (`status`),
   KEY `idx_due` (`due_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1872,7 +1933,10 @@ LOCK TABLES `quotation_assignees` WRITE;
 INSERT INTO `quotation_assignees` VALUES (1,3,7,'account','Quản lý chính','2026-08-24','doing',0,'Harris','2026-08-24 10:42:43','2026-08-24 10:42:43');
 INSERT INTO `quotation_assignees` VALUES (19,284,4,'admin','Liên hệ với chị Nga và làm việc menu','2026-08-25','doing',0,'Nhật Tân','2026-08-26 03:04:58','2026-08-26 03:04:58');
 INSERT INTO `quotation_assignees` VALUES (20,284,9,'designer','G',NULL,'todo',1,'Nhật Tân','2026-08-26 03:04:58','2026-08-26 03:04:58');
-INSERT INTO `quotation_assignees` VALUES (22,291,1,'account','','2026-08-28','review',0,'Harris','2026-08-26 07:22:20','2026-08-26 07:22:20');
+INSERT INTO `quotation_assignees` VALUES (27,140,12,'editor','Video 1 - BS Luận','2026-08-26','doing',0,'Harris','2026-08-26 14:55:07','2026-08-26 14:55:07');
+INSERT INTO `quotation_assignees` VALUES (28,140,11,'editor','Video 2 - BS Luận','2026-08-26','doing',1,'Harris','2026-08-26 14:55:07','2026-08-26 14:55:07');
+INSERT INTO `quotation_assignees` VALUES (29,140,9,'designer','BS Luận - VDO 1 - 2','2026-08-25','done',2,'Harris','2026-08-26 14:55:07','2026-08-26 14:55:07');
+INSERT INTO `quotation_assignees` VALUES (30,291,1,'account','','2026-08-28','review',0,'Harris','2026-08-26 15:03:44','2026-08-26 15:03:44');
 /*!40000 ALTER TABLE `quotation_assignees` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2509,7 +2573,7 @@ CREATE TABLE `quotation_items` (
   `act_file_name` varchar(200) DEFAULT NULL COMMENT 'Tên file gốc',
   PRIMARY KEY (`id`),
   KEY `idx_quotation` (`quotation_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6959 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7026 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4334,22 +4398,6 @@ INSERT INTO `quotation_items` VALUES (4364,139,'section','Media','',0.00,'',0.00
 INSERT INTO `quotation_items` VALUES (4365,139,'item','Chụp ảnh','',1.00,'Gói',8000000.00,'',1,1.00,'Gói',8000000.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (4366,139,'item','Quay phim','',1.00,'Gói',12000000.00,'',2,1.00,'Gói',12000000.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (4367,139,'item','Flycam','',1.00,'Gói',10000000.00,'',3,1.00,'Gói',10000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (4368,140,'section','Idea & Design','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (4369,140,'item','Intro/ outro','',1.00,'Gói',4000000.00,'',1,1.00,'Gói',4000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (4370,140,'item','Teasing','30s with voice over',1.00,'Gói',10000000.00,'',2,1.00,'Gói',10000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (4371,140,'section','Video - option 1 | Quay tại phòng webcast (AZ HCM)','',0.00,'',0.00,'',3,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (4372,140,'item','Film & voice recording 4-5 minute video shooting 1 indoor place at AZ office HR: 2 cameramen, 1 person in charge of voice recording, 1 person in charge of lighting','Main cameramen',2.00,'Session',2000000.00,'',4,2.00,'Session',2000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (4373,140,'item','Sản phẩm mới','Supporter for lighting and sound recording (1)',2.00,'Session',500000.00,'',5,2.00,'Session',500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (4374,140,'item','Sản phẩm mới','Shooting equipments: - 1 cameras - 2 tripods - Microphone',2.00,'Session',3500000.00,'',6,2.00,'Session',3500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (4375,140,'item','Sản phẩm mới','- 3 Led lights - 3 lightstand',2.00,'Session',4000000.00,'',7,2.00,'Session',4000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (4376,140,'item','Sản phẩm mới','- Laptops + laser pointer',2.00,'Session',300000.00,'',8,2.00,'Session',300000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (4377,140,'item','Sản phẩm mới','- Teleprompter 28\"',2.00,'Session',2000000.00,'',9,2.00,'Session',2000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (4378,140,'item','Makeup','',1.00,'Session',1000000.00,'',10,1.00,'Session',1000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (4379,140,'item','Edit videos','',6.00,'Clip',500000.00,'',11,12.00,'Clip',500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (4380,140,'item','Storyboard','',6.00,'Clip',4000000.00,'',12,6.00,'Clip',4000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (4381,140,'item','Animation from 5-7 mins','Landscape',6.00,'Clip',12000000.00,'',13,6.00,'Clip',12000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (4382,140,'item','Sản phẩm mới','Vertical',6.00,'Clip',5000000.00,'',14,6.00,'Clip',5000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (4383,140,'item','Teabreak HCM','Nước cam + trái cây *80k/pax',2.00,'Times',480000.00,'',15,2.00,'Times',480000.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (4384,141,'section','In Hộp','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (4385,141,'item','Hộp quà tặng - mô hình ngựa + Túi giấy Kraft','13cm x 17cm x 7cm',200.00,'Gói',134000.00,'',1,200.00,'Gói',134000.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (4386,141,'item','Hộp quà tặng - mô hình cây + Túi giấy Kraft','18 x 28 x 7)',217.00,'Gói',157000.00,'',2,217.00,'Gói',157000.00,0.00,'',NULL,NULL);
@@ -5824,9 +5872,25 @@ INSERT INTO `quotation_items` VALUES (6949,5,'item','Bàn','W:2m*H:750cm*D: 500 
 INSERT INTO `quotation_items` VALUES (6950,5,'item','Đèn hắc bàn','',1.00,'Bộ',1500000.00,'',6,1.00,'Bộ',1500000.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (6951,5,'item','Lắp đặt, Tháo dỡ','',1.00,'Bộ',7000000.00,'',7,1.00,'Bộ',7000000.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (6952,5,'item','Vận chuyển 2 chiều','',1.00,'Bộ',7000000.00,'',8,1.00,'Bộ',7000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (6956,291,'section','Media','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (6957,291,'item','Quay phim','',1.00,'Gói',5000000.00,'',1,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (6958,291,'item','Flycam','',1.00,'Gói',3000000.00,'',2,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7007,140,'section','Idea & Design','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7008,140,'item','Intro/ outro','',1.00,'Gói',4000000.00,'',1,1.00,'Gói',4000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7009,140,'item','Teasing','30s with voice over',1.00,'Gói',10000000.00,'',2,1.00,'Gói',10000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7010,140,'section','Video - option 1 | Quay tại phòng webcast (AZ HCM)','',0.00,'',0.00,'',3,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7011,140,'item','Film & voice recording 4-5 minute video shooting 1 indoor place at AZ office HR: 2 cameramen, 1 person in charge of voice recording, 1 person in charge of lighting','Main cameramen',2.00,'Session',2000000.00,'',4,2.00,'Session',2000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7012,140,'item','','Supporter for lighting and sound recording (1)\n',2.00,'Session',500000.00,'',5,2.00,'Session',500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7013,140,'item','','Shooting equipments: - 1 cameras - 2 tripods - Microphone',2.00,'Session',3500000.00,'',6,2.00,'Session',3500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7014,140,'item','','- 3 Led lights - 3 lightstand',2.00,'Session',4000000.00,'',7,2.00,'Session',4000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7015,140,'item','','- Laptops + laser pointer',2.00,'Session',300000.00,'',8,2.00,'Session',300000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7016,140,'item','','- Teleprompter 28\"',2.00,'Session',2000000.00,'',9,2.00,'Session',2000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7017,140,'item','Makeup','',1.00,'Session',1000000.00,'',10,1.00,'Session',1000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7018,140,'item','Edit videos','',6.00,'Clip',500000.00,'',11,12.00,'Clip',500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7019,140,'item','Storyboard','',6.00,'Clip',4000000.00,'',12,6.00,'Clip',4000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7020,140,'item','Animation from 5-7 mins','Landscape',6.00,'Clip',12000000.00,'',13,6.00,'Clip',12000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7021,140,'item','Sản phẩm mới','Vertical',6.00,'Clip',5000000.00,'',14,6.00,'Clip',5000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7022,140,'item','Teabreak HCM','Nước cam + trái cây *80k/pax',2.00,'Times',480000.00,'',15,2.00,'Times',480000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7023,291,'section','Media','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7024,291,'item','Quay phim','',1.00,'Gói',5000000.00,'',1,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7025,291,'item','Flycam','',1.00,'Gói',3000000.00,'',2,0.00,'',0.00,0.00,'',NULL,NULL);
 /*!40000 ALTER TABLE `quotation_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -5885,7 +5949,7 @@ CREATE TABLE `quotation_reviews` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_rev` (`quotation_id`,`scope`,`reviewer_id`),
   KEY `idx_reviewer` (`reviewer_id`,`status`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -5898,6 +5962,7 @@ INSERT INTO `quotation_reviews` VALUES (1,20,'quote',1,'Harris','Harris','approv
 INSERT INTO `quotation_reviews` VALUES (2,2,'quote',1,'Harris','Harris','approved','','2026-08-25 12:39:37','2026-08-25 19:39:37');
 INSERT INTO `quotation_reviews` VALUES (3,284,'quote',1,'Harris','Nhật Tân','pending','hhii','2026-08-26 03:02:40',NULL);
 INSERT INTO `quotation_reviews` VALUES (5,284,'quote',3,'Thảo Lý','Nhật Tân','pending','dô iiii','2026-08-26 03:02:52',NULL);
+INSERT INTO `quotation_reviews` VALUES (6,291,'quote',1,'Harris','Harris','approved','','2026-08-26 08:07:11','2026-08-26 15:07:11');
 /*!40000 ALTER TABLE `quotation_reviews` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -6139,7 +6204,7 @@ INSERT INTO `quotations` VALUES (136,'other','23012026-14','OGN-MKT-Design-H1-20
 INSERT INTO `quotations` VALUES (137,'event','23012026-13','AZ-ONCO-Brilliant-Opportunities-Series',1,16,'AstraZeneca','','0315158696','76 Lê Lai, Phường Bến Thành, Tp. HCM, Việt Nam','2026-01-23','','VND',10.00,8.00,1,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Nhận yêu cầu','Harris',NULL,'2026-08-20 19:02:43','2026-08-21 02:11:02',1,NULL,'request',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `quotations` VALUES (138,'event','23012026-11','AZ-ONCO-GI-Peakedu',1,12,'AstraZeneca','','0315158696','76 Lê Lai, Phường Bến Thành, Tp. HCM, Việt Nam','2026-01-23','','VND',10.00,8.00,1,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Báo giá','Harris',NULL,'2026-08-20 19:02:43','2026-08-21 03:11:22',1,NULL,'quote',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `quotations` VALUES (139,'media','22012026-10','TONA-MEDIA-YEP',5,31,'Organon','thi.lan.anh.thi.lan.anh@organon.com','0317975100','Phòng 03-135, Tầng 3, Lim Tower 3, 29A Nguyễn Đình Chiểu, Phường Sài Gòn, Thành phố Hồ Chí Minh, Việt Nam','2026-01-22','','VND',0.00,8.00,0,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Chờ thanh toán','Harris',NULL,'2026-08-20 19:02:44','2026-08-25 12:26:56',1,NULL,'done',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-INSERT INTO `quotations` VALUES (140,'media','16012026-9','AZ-VDO Hope Nexium',1,37,'AstraZeneca','','0315158696','76 Lê Lai, Phường Bến Thành, Tp. HCM, Việt Nam','2026-01-16','','VND',10.00,8.00,1,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Báo giá','Harris',NULL,'2026-08-20 19:02:44','2026-08-21 03:11:22',1,NULL,'quote',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `quotations` VALUES (140,'media','16012026-9','AZ-VDO Hope Nexium',1,1,'AstraZeneca','vanduythai.tran1@astrazeneca.com','0315158696','76 Lê Lai, Phường Bến Thành, Tp. HCM, Việt Nam','2026-01-16','','VND',10.00,8.00,1,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Báo giá','Harris',NULL,'2026-08-20 19:02:44','2026-08-26 14:52:42',1,NULL,'running','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `quotations` VALUES (141,'other','14012026-8','VFR-IN-HOP-YEP-2026',3,32,'VFR','','3702289042','47/4, DT 743 Street, Binh Phuoc B Area, An Phu Ward, Ho Chi Minh City, Vietnam','2026-01-14','','VND',0.00,8.00,0,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Hoàn thành dịch vụ','Harris',NULL,'2026-08-20 19:02:44','2026-08-21 03:11:22',1,NULL,'service_done',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `quotations` VALUES (142,'event','09012026-7','AZ-OBU-BU Dinner',1,60,'AstraZeneca','','0315158696','76 Lê Lai, Phường Bến Thành, Tp. HCM, Việt Nam','2026-01-09','','VND',10.00,8.00,1,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Nhận yêu cầu','Harris',NULL,'2026-08-20 19:02:44','2026-08-20 19:02:44',0,NULL,'request',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `quotations` VALUES (143,'other','08012026-6','AZ-RI-NC-Breztri-Material',1,10,'AstraZeneca','','0315158696','76 Lê Lai, Phường Bến Thành, Tp. HCM, Việt Nam','2026-01-08','','VND',10.00,8.00,1,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Nhận yêu cầu','Harris',NULL,'2026-08-20 19:02:44','2026-08-21 02:11:03',1,NULL,'request',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
