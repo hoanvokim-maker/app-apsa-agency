@@ -124,6 +124,19 @@
 
     .acts { display: flex; gap: 6px; flex-wrap: wrap; }
 
+/* APSA1213: thanh loc + tieu de sap xep cho danh sach nghi phep */
+.lvbar { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-bottom:14px;
+         background:var(--bg2); border:1px solid var(--border); border-radius:var(--r); padding:12px 14px; }
+.lvf { display:flex; flex-direction:column; gap:5px; }
+.lvf > span { font-size:10.5px; font-weight:800; letter-spacing:.6px; text-transform:uppercase; color:var(--text3); }
+.lvf select, .lvf input { background:var(--bg3); border:1px solid var(--border); color:var(--text);
+         border-radius:9px; padding:7px 10px; font:inherit; font-size:12.5px; outline:none; min-width:150px; }
+.lvf select:focus, .lvf input:focus { border-color:var(--green); }
+.lvf select { cursor:pointer; }
+.lvcnt { font-size:12px; color:var(--text3); align-self:center; white-space:nowrap; }
+th.lv-sort { cursor:pointer; user-select:none; }
+th.lv-sort:hover { color:var(--text); }
+
     .empty { padding: 60px 20px; text-align: center; color: var(--text3); font-size: 13.5px; }
     .empty b { display: block; color: var(--text2); font-size: 15px; margin-bottom: 6px; }
 
@@ -453,6 +466,7 @@ async function refreshPending() {
 /* ── tabs ── */
 function setTab(t) {
   TAB = t;
+  LVF = { who: '', type: '', status: '', from: '', to: '' };
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
   if (t === 'quota') loadQuota(); else loadList();
 }
@@ -472,6 +486,115 @@ async function loadList() {
   }
 }
 
+/* ── APSA1213: bo loc + sap xep cho danh sach nghi phep ───────────────── */
+var LVF = { who: '', type: '', status: '', from: '', to: '' };
+var LVS = { key: 'time', dir: -1 };
+
+function lvReset() {
+  LVF = { who: '', type: '', status: '', from: '', to: '' };
+  lvRender(TAB !== 'mine');
+}
+
+function lvSet(k, v) { LVF[k] = v; lvPaintRows(); }
+
+function lvSort(k) {
+  if (LVS.key === k) LVS.dir = -LVS.dir;
+  else { LVS.key = k; LVS.dir = (k === 'time' || k === 'days') ? -1 : 1; }
+  lvPaintRows();
+}
+
+function lvKey(r, k) {
+  if (k === 'who')    return (r.user_name  || '').toLowerCase();
+  if (k === 'type')   return (r.type_label || '').toLowerCase();
+  if (k === 'time')   return String(r.start_date || '');
+  if (k === 'days')   return Number(r.days) || 0;
+  if (k === 'status') return (r.status_label || '').toLowerCase();
+  return '';
+}
+
+function lvRows() {
+  var out = ROWS.filter(function (r) {
+    if (LVF.who    && r.user_name  !== LVF.who)    return false;
+    if (LVF.type   && r.leave_type !== LVF.type)   return false;
+    if (LVF.status && r.status     !== LVF.status) return false;
+    if (LVF.from && String(r.end_date || r.start_date) < LVF.from) return false;
+    if (LVF.to   && String(r.start_date) > LVF.to) return false;
+    return true;
+  });
+  var d = LVS.dir;
+  out.sort(function (a, b) {
+    var x = lvKey(a, LVS.key), y = lvKey(b, LVS.key);
+    if (x < y) return -d;
+    if (x > y) return d;
+    return (a.id - b.id) * d;
+  });
+  return out;
+}
+
+function lvTh(k, label, show) {
+  if (show === false) return '';
+  var ar = (LVS.key === k) ? (LVS.dir > 0 ? ' ▲' : ' ▼') : '';
+  return '<th class="lv-sort" onclick="lvSort(\'' + k + '\')" title="Bấm để sắp xếp">' + label + ar + '</th>';
+}
+
+function lvPaintRows() {
+  var showWho = (TAB !== 'mine');
+  var rows = lvRows();
+  var head =
+    '<div class="tbl-wrap"><table><thead><tr>' +
+    lvTh('who', 'Người xin nghỉ', showWho) +
+    lvTh('type', 'Loại') +
+    lvTh('time', 'Thời gian') +
+    lvTh('days', 'Số ngày') +
+    '<th>Lý do</th>' +
+    lvTh('status', 'Trạng thái') +
+    (IS_ADMIN ? '<th>Lịch</th>' : '') +
+    '<th></th></tr></thead><tbody>';
+  var body = rows.length
+    ? rows.map(function (r) { return rowHtml(r, showWho); }).join('')
+    : '<tr><td colspan="9" style="text-align:center;color:var(--text3);padding:34px">Không có đơn nào khớp bộ lọc.</td></tr>';
+  document.getElementById('lvTable').innerHTML = head + body + '</tbody></table></div>';
+  var c = document.getElementById('lvCount');
+  if (c) c.textContent = rows.length + ' / ' + ROWS.length + ' đơn';
+}
+
+function lvRender(showWho) {
+  if (!showWho) LVF.who = '';
+
+  var whos = [], stats = [], stLb = {};
+  ROWS.forEach(function (r) {
+    if (r.user_name && whos.indexOf(r.user_name) < 0) whos.push(r.user_name);
+    if (r.status && stats.indexOf(r.status) < 0) stats.push(r.status);
+    if (r.status) stLb[r.status] = r.status_label;
+  });
+  whos.sort(function (a, b) { return String(a).localeCompare(String(b), 'vi'); });
+
+  var sel = function (key, label, opts) {
+    return '<label class="lvf"><span>' + label + '</span>' +
+      '<select onchange="lvSet(\'' + key + '\', this.value)"><option value="">Tất cả</option>' +
+      opts.map(function (o) {
+        return '<option value="' + esc(o[0]) + '"' + (LVF[key] === o[0] ? ' selected' : '') + '>' + esc(o[1]) + '</option>';
+      }).join('') +
+      '</select></label>';
+  };
+
+  var typeOpts = Object.keys(TYPES).map(function (k) { return [k, TYPES[k]]; });
+
+  var bar =
+    '<div class="lvbar">' +
+    (showWho ? sel('who', 'Nhân viên', whos.map(function (w) { return [w, w]; })) : '') +
+    sel('type', 'Loại nghỉ', typeOpts) +
+    sel('status', 'Trạng thái', stats.map(function (s) { return [s, stLb[s] || s]; })) +
+    '<label class="lvf"><span>Từ ngày</span><input type="date" value="' + esc(LVF.from) + '" onchange="lvSet(\'from\', this.value)"></label>' +
+    '<label class="lvf"><span>Đến ngày</span><input type="date" value="' + esc(LVF.to) + '" onchange="lvSet(\'to\', this.value)"></label>' +
+    '<button class="btn sm" onclick="lvReset()">✕ Xoá lọc</button>' +
+    '<span class="spacer"></span><span class="lvcnt" id="lvCount"></span>' +
+    '</div>';
+
+  document.getElementById('view').innerHTML = bar + '<div id="lvTable"></div>';
+  lvPaintRows();
+}
+
 function renderList() {
   if (!ROWS.length) {
     const msg = TAB === 'pending' ? 'Không có đơn nào đang chờ duyệt.' : 'Chưa có đơn xin nghỉ nào.';
@@ -479,6 +602,7 @@ function renderList() {
     return;
   }
   const showWho = (TAB !== 'mine');
+  return lvRender(showWho);   /* APSA1213 */
   const html =
     '<div class="tbl-wrap"><table><thead><tr>' +
     (showWho ? '<th>Người xin nghỉ</th>' : '') +

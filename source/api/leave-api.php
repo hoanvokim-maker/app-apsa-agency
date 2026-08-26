@@ -505,7 +505,7 @@ function lv_push_calendar($r)
 
     $tname = lv_type_label($r['leave_type']);
 
-    $body  = '<b>' . htmlspecialchars($r['user_name'], ENT_QUOTES, 'UTF-8') . '</b> — ' . $tname
+    $body  = '<b>' . htmlspecialchars($tname, ENT_QUOTES, 'UTF-8') . '</b> — ' . htmlspecialchars($r['user_name'], ENT_QUOTES, 'UTF-8')
            . '<br>Thời gian: ' . htmlspecialchars(lv_range_text($r), ENT_QUOTES, 'UTF-8')
            . '<br>Số ngày: <b>' . rtrim(rtrim(number_format((float) $r['days'], 1, ',', ''), '0'), ',') . '</b>';
     if (trim((string) $r['reason']) !== '') {
@@ -517,7 +517,7 @@ function lv_push_calendar($r)
     $body .= '<br><br><i>Tạo tự động từ app.apsa.agency — đơn #' . (int) $r['id'] . '</i>';
 
     return mg_create_event(array(
-        'subject'  => 'Nghỉ phép — ' . $r['user_name'],
+        'subject'  => ($tname !== '' ? $tname : 'Nghỉ phép') . ' — ' . $r['user_name'],
         'body'     => $body,
         'all_day'  => $allDay,
         'start'    => $start,

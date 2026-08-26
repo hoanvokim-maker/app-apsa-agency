@@ -891,14 +891,15 @@ select#fStatus option{background:#141414;color:#f2f2f2;font-weight:600;text-shad
     </div>
 
     <div class="tbl-wrap" id="tblWrap">
-      <table class="t" style="min-width:1240px">
+      <table class="t" style="min-width:1330px">
         <thead>
           <tr>
             <th style="width:90px" class="sortable" id="thKind" data-key="kind" onclick="sortBy('kind')">Loại</th>
             <th style="width:150px" class="sortable" data-key="code" onclick="sortBy('code')">Mã báo giá</th>
             <th class="sortable" data-key="title" onclick="sortBy('title')">Tiêu đề</th>
-            <th style="width:18%" class="sortable" data-key="client" onclick="sortBy('client')">Khách hàng</th>
+            <th style="width:18%" class="sortable" data-key="client" onclick="sortBy('client')">Người liên hệ</th>
             <th style="width:150px" class="sortable" data-key="status" onclick="sortBy('status')">Trạng thái</th>
+            <th style="width:96px" class="sortable" data-key="appr" onclick="sortBy('appr')">Duyệt BG</th>
             <th style="width:110px" class="sortable" data-key="date" onclick="sortBy('date')">Ngày báo giá</th>
             <th style="width:80px" class="sortable" data-key="items" onclick="sortBy('items')">Hạng mục</th>
             <th class="num sortable" style="width:150px" data-key="total" onclick="sortBy('total')">Tổng cộng</th>
@@ -1427,7 +1428,8 @@ function applyFilters(){
     kind:  r => r.kind || '',
     code:  r => { const m = /^(\d{2})(\d{2})(\d{4})-(\d+)$/.exec(r.code || ''); return m ? (Number(m[3]+m[2]+m[1]) * 1e6 + Number(m[4])) : (r.code || ''); },
     title: r => (r.title || '').toLowerCase(),
-    client:r => (r.client_name || r.company_name || '').toLowerCase(),
+    client:r => (r.contact_name || r.client_name || r.company_name || '').toLowerCase(),
+    appr:r => apprRank(r),
     status:r => STATUS_ORDER.indexOf(r.status || 'request'),
     date:  r => (r.quotation_date || '') + String(r.id).padStart(8,'0'),
     items: r => Number(r.item_count || 0),
@@ -1530,8 +1532,9 @@ function renderRows2(){
       '<td class="sm"><span class="chip ' + (r.kind === 'event' ? 'partial' : 'ok') + '">' + esc(KIND_LABEL[r.kind] || r.kind || '—') + '</span></td>' +
       '<td class="nm" onclick="openQuote(' + r.id + ')" style="cursor:pointer">' + esc(r.code || '—') + '</td>' +
       '<td class="sm" onclick="openQuote(' + r.id + ')" style="cursor:pointer">' + esc(r.title || '') + '</td>' +
-      '<td class="sm">' + esc(r.client_name || r.company_name || '—') + '</td>' +
+      '<td class="sm">' + esc(r.contact_name || r.client_name || r.company_name || '—') + '</td>' +
       statusCell(r) +
+        apprCell(r) +
       '<td class="sm">' + dmy(r.quotation_date) + '</td>' +
       '<td class="sm">' + r.item_count + '</td>' +
       '<td class="num" style="font-weight:800">' + fmt(r.grand_total) + '</td>' +
@@ -1539,6 +1542,24 @@ function renderRows2(){
       '<td class="actions-cell">' + acts + '</td>' +
     '</tr>';
   }).join('');
+}
+
+/* APSA1212: cot "Duyet BG" suy tu trang thai du an
+   >= "Xac nhan bao gia" => da duyet; "Truot Bidding" tinh rieng */
+function apprRank(r){
+  const k = r.status || '';
+  if (k === 'lost') return -1;
+  const i = STATUS_ORDER.indexOf(k), c = STATUS_ORDER.indexOf('confirmed');
+  if (i < 0 || c < 0) return 0;
+  return i >= c ? 1 : 0;
+}
+
+function apprCell(r){
+  const v = apprRank(r);
+  const css = 'display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;';
+  if (v === 1)  return '<td class="sm"><span style="' + css + 'background:rgba(59,201,255,.16);color:#3bc9ff">Đã duyệt</span></td>';
+  if (v === -1) return '<td class="sm"><span style="' + css + 'background:rgba(255,77,77,.14);color:#ff6b6b">Trượt</span></td>';
+  return '<td class="sm"><span style="' + css + 'background:rgba(255,255,255,.07);color:#8a8a8a">Chưa duyệt</span></td>';
 }
 
 function statusCell(r){

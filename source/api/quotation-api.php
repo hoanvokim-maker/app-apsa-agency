@@ -1376,17 +1376,18 @@ switch ($action) {
 case 'list': {
     $trash = !empty($_GET['trash']);
     $q     = trim((string)($_GET['q'] ?? ''));
-    $sql = "SELECT q.*, co.name AS company_name,
+    $sql = "SELECT q.*, co.name AS company_name, cu.name AS contact_name,
                    (SELECT COUNT(*) FROM quotation_items i WHERE i.quotation_id = q.id AND i.kind = 'item') AS item_count,
                    (SELECT COALESCE(SUM(i.qty * i.unit_price),0) FROM quotation_items i WHERE i.quotation_id = q.id AND i.kind = 'item') AS subtotal,
                    (SELECT COALESCE(SUM(CASE WHEN i.act_amount > 0 THEN i.act_amount ELSE i.act_qty * i.act_price END),0)
                       FROM quotation_items i WHERE i.quotation_id = q.id AND i.kind = 'item') AS liq_subtotal
               FROM quotations q
               LEFT JOIN crm_companies co ON co.id = q.company_id
+                     LEFT JOIN crm_customers  cu ON cu.id = q.customer_id
              WHERE q.deleted_at IS " . ($trash ? "NOT NULL" : "NULL");
     $params = [];
     if ($q !== '') {
-        $sql .= " AND (q.code LIKE :q OR q.title LIKE :q OR q.client_name LIKE :q OR co.name LIKE :q)";
+        $sql .= " AND (q.code LIKE :q OR q.title LIKE :q OR q.client_name LIKE :q OR co.name LIKE :q OR cu.name LIKE :q)";
         $params[':q'] = '%' . $q . '%';
     }
     $kind = trim((string)($_GET['kind'] ?? ''));
@@ -1418,7 +1419,7 @@ case 'list': {
 
     // Chỉ trả về những cột danh sách thực sự hiển thị — payload nhẹ hơn ~60%
     $KEEP = ['id','kind','code','title','client_name','company_name','status','status_label',
-             'quotation_date','item_count','grand_total','liq_subtotal','liq_grand_total','has_liquidation'];
+             'quotation_date','item_count','grand_total','liq_subtotal','liq_grand_total','has_liquidation','contact_name'];
     $slim = [];
     foreach ($rows as $r) {
         $o = [];
