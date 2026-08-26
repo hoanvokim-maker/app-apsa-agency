@@ -42,7 +42,8 @@ $raw = file_get_contents('php://input');
 $ev  = json_decode((string) $raw, true);
 if (!is_array($ev)) zh_out(array('ok' => true, 'message' => 'Bỏ qua'));
 
-$res  = isset($ev['result']) && is_array($ev['result']) ? $ev['result'] : array();
+/* Zalo gui event_name/message o cap ngoai cung, KHONG boc trong result nhu tai lieu */
+$res  = (isset($ev['result']) && is_array($ev['result'])) ? $ev['result'] : $ev;
 $name = isset($res['event_name']) ? (string) $res['event_name'] : '';
 $msg  = isset($res['message']) && is_array($res['message']) ? $res['message'] : array();
 

@@ -111,6 +111,20 @@
       box-shadow: 0 0 0 3px rgba(223,242,13,0.1);
     }
 
+    /* --- Nut hien/an mat khau --- */
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 46px; }
+    .pw-eye {
+      position: absolute; top: 50%; right: 6px; transform: translateY(-50%);
+      display: flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; padding: 0;
+      background: none; border: 0; border-radius: 8px; cursor: pointer;
+      color: #9a9a9a; transition: color .15s, background .15s;
+    }
+    .pw-eye:hover { color: var(--accent, #dff20d); background: rgba(255,255,255,.07); }
+    .pw-eye:focus-visible { outline: 2px solid var(--accent, #dff20d); outline-offset: 2px; }
+    .pw-eye svg { width: 18px; height: 18px; display: block; }
+
     .btn {
       width: 100%;
       margin-top: 24px;
@@ -167,7 +181,10 @@
     <input type="text" id="username" name="username" autocomplete="username" required autofocus />
 
     <label for="password">Mật khẩu</label>
-    <input type="password" id="password" name="password" autocomplete="current-password" required />
+    <div class="pw-wrap">
+      <input type="password" id="password" name="password" autocomplete="current-password" required />
+      <button type="button" class="pw-eye" id="pwEye" title="Hiện mật khẩu" aria-label="Hiện mật khẩu" tabindex="-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+    </div>
 
     <button class="btn" type="submit" id="submitBtn">Đăng nhập</button>
 
@@ -176,6 +193,23 @@
   </form>
 
   <script>
+    /* --- Hien / an mat khau --- */
+    (function () {
+      var pw = document.getElementById('password'), eye = document.getElementById('pwEye');
+      if (!pw || !eye) return;
+      var OPEN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+      var SHUT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 6.2A9.9 9.9 0 0 1 12 6c6.4 0 10 7 10 7a17 17 0 0 1-3.2 3.9"/><path d="M6.4 7.6A17 17 0 0 0 2 13s3.6 7 10 7c1.6 0 3-.4 4.3-1"/><path d="M9.9 10.1a3 3 0 0 0 4.1 4.2"/></svg>';
+      eye.addEventListener('click', function () {
+        var show = pw.type === 'password';
+        pw.type = show ? 'text' : 'password';
+        eye.innerHTML = show ? SHUT : OPEN;
+        var lbl = show ? 'Ẩn mật khẩu' : 'Hiện mật khẩu';
+        eye.title = lbl; eye.setAttribute('aria-label', lbl);
+        pw.focus();
+        try { pw.setSelectionRange(pw.value.length, pw.value.length); } catch (e) {}
+      });
+    })();
+
     const form = document.getElementById('loginForm');
     const errorBox = document.getElementById('errorBox');
     const submitBtn = document.getElementById('submitBtn');

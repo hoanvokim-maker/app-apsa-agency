@@ -872,7 +872,9 @@
 
 <!-- ── GRID ── -->
 <div class="container">
-      <!-- ===== TO-DO LIST (v1.2.5) ===== -->
+      <a id="zaloNudge" href="./zalo.html" style="display:none;align-items:center;gap:10px;margin:0 0 12px;padding:10px 14px;border:1px solid rgba(223,242,13,.35);background:rgba(223,242,13,.07);border-radius:10px;text-decoration:none;color:inherit;font-size:12.5px"><span style="font-size:15px">🔔</span><span style="flex:1">Bật <b>thông báo Zalo</b> để nhận ngay khi được giao việc, bị nhắc tên hay đơn nghỉ được duyệt.</span><span style="font-weight:700;color:#dff20d">Kết nối →</span></a>
+
+    <!-- ===== TO-DO LIST (v1.2.5) ===== -->
     <section class="gsec" id="secTodo" style="display:none">
       <div class="ghead">
         <span class="gttl" id="todoTtl">✔ Việc của tôi</span>
@@ -1627,6 +1629,17 @@
       })
       .catch(function () { if (el) el.disabled = false; });
   };
+
+  /* Nhac bat thong bao Zalo neu chua ket noi */
+  fetch('/api/zalo-api.php?action=status', { credentials: 'same-origin' })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (j) {
+      if (!j || !j.ok || !j.configured || !j.enabled) return;
+      if (j.me && j.me.linked) return;
+      var n = document.getElementById('zaloNudge');
+      if (n) n.style.display = 'flex';
+    })
+    .catch(function () {});
 
   if (btn) btn.addEventListener('click', window.todoLoad);
   window.todoLoad();

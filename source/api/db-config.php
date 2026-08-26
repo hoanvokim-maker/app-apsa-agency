@@ -12,3 +12,6 @@ define('DB_CHARSET', 'utf8mb4');
 
 // API secret key — frontend phải gửi key này trong header X-API-Key
 define('API_SECRET', 'APSA_mee53661_X9k2Lp7vQwZn4Rb8');
+
+// Mui gio VN - PHP mac dinh chay UTC, phai khop voi MySQL (+07)
+date_default_timezone_set("Asia/Ho_Chi_Minh");

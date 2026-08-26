@@ -239,9 +239,9 @@ function zb_make_code(PDO $pdo, $userId)
 {
     zb_migrate($pdo);
     $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-    $exp  = date('Y-m-d H:i:s', time() + 900);
-    $pdo->prepare('UPDATE `app_users` SET zalo_code = ?, zalo_code_exp = ? WHERE id = ?')
-        ->execute(array($code, $exp, (int) $userId));
+    $pdo->prepare('UPDATE `app_users` SET zalo_code = ?, zalo_code_exp = DATE_ADD(NOW(), INTERVAL 15 MINUTE) WHERE id = ?')
+        ->execute(array($code, (int) $userId));
+    $exp = date('Y-m-d H:i:s', time() + 900);
     return array('code' => $code, 'expires_at' => $exp);
 }
 
