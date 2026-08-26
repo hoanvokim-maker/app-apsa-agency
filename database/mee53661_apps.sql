@@ -405,7 +405,7 @@ INSERT INTO `app_user_prefs` VALUES (3,'quo_recent','[{\"id\":44,\"code\":\"0207
 INSERT INTO `app_user_prefs` VALUES (3,'ui','{\"font_size\":\"md\"}','2026-08-26 03:12:49');
 INSERT INTO `app_user_prefs` VALUES (4,'home','{\"order\":[32,1,17,18,90,23,24,25,26,35,27,34,31,29,30,28],\"hidden\":[],\"custom\":[],\"pinned\":[32]}','2026-08-25 10:57:50');
 INSERT INTO `app_user_prefs` VALUES (4,'quo_recent','[{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787719569227},{\"id\":25,\"code\":\"23072026-125\",\"title\":\"OGN-SympoChain-TS-CanTho-2807\",\"client\":\"Organon\",\"date\":\"2026-07-23\",\"at\":1787719140760},{\"id\":6,\"code\":\"17082026-144\",\"title\":\"AZ-R&I-Meeting-1908\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-17\",\"at\":1787715974569},{\"id\":63,\"code\":\"10062026-87\",\"title\":\"AZ-CVRM-VIDEO-TRANING\",\"client\":\"AstraZeneca\",\"date\":\"2026-06-10\",\"at\":1787715823809}]','2026-08-26 04:46:09');
-INSERT INTO `app_user_prefs` VALUES (5,'home','{\"order\":[32,26,30,29,1,27,91,17,18,90,91,23,24,25,28,35,34,31,92],\"hidden\":[],\"custom\":[{\"id\":91,\"name\":\"JD Account Executive\",\"desc\":\"Không có mô tả.\",\"url\":\"https:\\/\\/apsa.agency\\/\",\"cat\":\"utility\",\"color\":\"#6c63ff\",\"emoji\":\"🧩\",\"isNew\":true,\"_i\":18}],\"pinned\":[]}','2026-08-26 04:57:12');
+INSERT INTO `app_user_prefs` VALUES (5,'home','{\"order\":[32,26,30,29,1,27,91,17,18,90,91,23,24,25,28,35,34,31,92],\"hidden\":[],\"custom\":[],\"pinned\":[]}','2026-08-26 05:32:05');
 INSERT INTO `app_user_prefs` VALUES (5,'quo_recent','[{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787713498056},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787557635740},{\"id\":65,\"code\":\"03062026-85\",\"title\":\"AZ-ONCO-aHUS speaker tour-GS. Rostaing\",\"client\":\"AstraZeneca\",\"date\":\"2026-06-03\",\"at\":1787540468281},{\"id\":2,\"code\":\"20082026-148\",\"title\":\"AZ-CVRM-TRANING-2508\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-20\",\"at\":1787540368897}]','2026-08-26 03:12:04');
 INSERT INTO `app_user_prefs` VALUES (5,'ui','{\"font_size\":\"xl\"}','2026-08-26 03:12:53');
 INSERT INTO `app_user_prefs` VALUES (6,'quo_recent','[{\"id\":7,\"code\":\"12082026-143\",\"title\":\"AZ-ONCO-GI-SOTAYBENHNHAN\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-12\",\"at\":1787714099126}]','2026-08-26 03:14:59');
@@ -458,7 +458,7 @@ CREATE TABLE `app_users` (
 
 LOCK TABLES `app_users` WRITE;
 /*!40000 ALTER TABLE `app_users` DISABLE KEYS */;
-INSERT INTO `app_users` VALUES (1,'admin','$2y$10$tgjxDVP41TkZC7QgOnnIbuaB8HFuMpI8iZCJQTqih1BFPVh6ksnU2','Harris','admin',1,'2026-08-05 16:47:25','2026-08-26 05:15:07','2026-08-26 05:15:07','account','inhouse',1,'','','','4a984eea65a98cf7d5b8','Harris Vo','2026-08-26 11:54:06',NULL,NULL);
+INSERT INTO `app_users` VALUES (1,'admin','$2y$10$tgjxDVP41TkZC7QgOnnIbuaB8HFuMpI8iZCJQTqih1BFPVh6ksnU2','Harris','admin',1,'2026-08-05 16:47:25','2026-08-26 05:31:44','2026-08-26 05:31:44','account','inhouse',1,'','','','4a984eea65a98cf7d5b8','Harris Vo','2026-08-26 11:54:06',NULL,NULL);
 INSERT INTO `app_users` VALUES (3,'thaoly','$2y$10$apwNXhmb03WC5brdnZnV2unSiF6fKbehZHlK2/lojsPd4MtBAB3LS','Thảo Lý','member',1,'2026-08-11 04:37:01','2026-08-26 05:00:43','2026-08-26 02:58:01','account','inhouse',1,'','','','639651dd5d97b4c9ed86','Nguyên Thảo','2026-08-26 12:00:43',NULL,NULL);
 INSERT INTO `app_users` VALUES (4,'trangdo','$2y$10$1Dj1IZCt0H6BNWX/DmN0LulFIoMya7pYPc0PedQJmsleIOSfIFfni','Trang Đỗ','member',1,'2026-08-11 04:37:51','2026-08-26 05:08:03','2026-08-26 03:33:56','admin','inhouse',1,'','','','4235f4df0980e0deb991','Trang','2026-08-26 12:08:03',NULL,NULL);
 INSERT INTO `app_users` VALUES (5,'nhattan','$2y$10$W8tp/Ef.JYD/V.XURuNJseFsfThk2KGlZM71rxdupY6chvGTv9Ep.','Nhật Tân','member',1,'2026-08-11 04:38:13','2026-08-26 05:00:09','2026-08-26 02:58:12','account','inhouse',1,'','','','61f88bb9bff556ab0fe4','Nhật Tân','2026-08-26 12:00:09',NULL,NULL);
@@ -470,7 +470,7 @@ INSERT INTO `app_users` VALUES (10,'vyvy','$2y$10$JCqFrpMvEx7J.Q0/Lhb8Wu1FcQqsrH
 INSERT INTO `app_users` VALUES (11,'fl.anh.kiet','$2y$10$g/6Q33K0brrl31mculArY.fRg2y5L3vdmolhUja7C0C4KxbEJEeni','Anh Kiệt','member',1,'2026-08-26 04:10:30','2026-08-26 04:27:50',NULL,'editor','freelancer',0,'0931326075','','Làm buổi tối + Cuối tuần',NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `app_users` VALUES (12,'fl.duy.ngoc','$2y$10$li3y9elsMzZLxBX1yTORgONl0MoAnPt/vFsnrDiyStyyVz0KW7RqO','Duy Ngọc','member',1,'2026-08-26 04:12:42','2026-08-26 04:28:42',NULL,'editor','freelancer',0,'0367375014','','',NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `app_users` VALUES (13,'fl.quang.linh','$2y$10$FGL9O6ALiNP7.n3hJ7iOBeGGd8vyRND/.Ok.eiFpt6PCVMAIx7bXS','Quang Linh','member',1,'2026-08-26 04:12:57','2026-08-26 04:30:18',NULL,'editor','freelancer',0,'0329219507','','',NULL,NULL,NULL,NULL,NULL);
-INSERT INTO `app_users` VALUES (14,'hoangbeen','$2y$10$b8Z5mDxIHvl9Wrhr83UY4ex8ceqzwl7n5Nhrv5Vmzi2mueolHU2zi','Hoàng Been','member',1,'2026-08-26 04:47:29','2026-08-26 05:03:07','2026-08-26 04:47:52',NULL,'inhouse',1,'','','','16cd5ce5efac06f25fbd','Bin Hoàng','2026-08-26 12:03:07',NULL,NULL);
+INSERT INTO `app_users` VALUES (14,'hoangbeen','$2y$10$b8Z5mDxIHvl9Wrhr83UY4ex8ceqzwl7n5Nhrv5Vmzi2mueolHU2zi','Hoàng Been','member',1,'2026-08-26 04:47:29','2026-08-26 05:32:01','2026-08-26 04:47:52','editor','inhouse',1,'','','','16cd5ce5efac06f25fbd','Bin Hoàng','2026-08-26 12:03:07',NULL,NULL);
 /*!40000 ALTER TABLE `app_users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -6548,7 +6548,7 @@ CREATE TABLE `staff_positions` (
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `pkey` (`pkey`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -6557,10 +6557,11 @@ CREATE TABLE `staff_positions` (
 
 LOCK TABLES `staff_positions` WRITE;
 /*!40000 ALTER TABLE `staff_positions` DISABLE KEYS */;
-INSERT INTO `staff_positions` VALUES (1,'account','Account',1,1,'2026-08-26 12:23:57','2026-08-26 12:26:03');
-INSERT INTO `staff_positions` VALUES (2,'admin','Admin',2,1,'2026-08-26 12:23:57','2026-08-26 12:26:03');
-INSERT INTO `staff_positions` VALUES (3,'designer','Designer',3,1,'2026-08-26 12:23:57','2026-08-26 12:26:03');
-INSERT INTO `staff_positions` VALUES (4,'editor','Video editor',4,1,'2026-08-26 12:23:57','2026-08-26 12:26:03');
+INSERT INTO `staff_positions` VALUES (1,'account','Account',1,1,'2026-08-26 12:23:57','2026-08-26 12:30:55');
+INSERT INTO `staff_positions` VALUES (2,'admin','Admin',2,1,'2026-08-26 12:23:57','2026-08-26 12:30:55');
+INSERT INTO `staff_positions` VALUES (3,'designer','Designer',3,1,'2026-08-26 12:23:57','2026-08-26 12:30:55');
+INSERT INTO `staff_positions` VALUES (4,'editor','Video editor',4,1,'2026-08-26 12:23:57','2026-08-26 12:30:55');
+INSERT INTO `staff_positions` VALUES (6,'production','Production',5,1,'2026-08-26 12:30:31','2026-08-26 12:30:55');
 /*!40000 ALTER TABLE `staff_positions` ENABLE KEYS */;
 UNLOCK TABLES;
 

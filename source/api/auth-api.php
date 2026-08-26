@@ -232,6 +232,10 @@ switch ($action) {
         $key = preg_replace('/[^a-z0-9_\-]/i', '', (string)($body['key'] ?? 'home'));
         if ($key === '') $key = 'home';
         if (!array_key_exists('value', $body)) fail('value is required');
+        /* APSA1210-NOADD: chi Admin moi luu duoc cong cu tu tao o trang chu */
+        if ($key === 'home' && strtolower((string) ($u['role'] ?? '')) !== 'admin') {
+            if (is_array($body['value'])) $body['value']['custom'] = [];
+        }
         $json = json_encode($body['value'], JSON_UNESCAPED_UNICODE);
         if ($json === false) fail('Dữ liệu không hợp lệ');
         if (strlen($json) > 400000) fail('Dữ liệu quá lớn', 413);

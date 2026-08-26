@@ -137,6 +137,10 @@
       background: var(--bg3);
     }
 
+    /* Khoa tao cong cu moi voi nguoi khong phai Admin (v1.2.10) */
+    body.no-add .btn-add,
+    body.no-add .card-add { display: none !important; }
+
     .btn-add {
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       color: white !important;
@@ -1647,5 +1651,23 @@
 })();
 </script>
 
+<script>
+/* ===== Chi Admin moi them duoc cong cu moi (v1.2.10) ===== */
+(function () {
+  var tries = 0;
+  function lock() {
+    var u = window.__APSA_USER;
+    if (!u) { if (++tries < 60) return setTimeout(lock, 200); return; }
+    if (String(u.role || '').toLowerCase() === 'admin') return;
+    document.body.classList.add('no-add');
+    window.openModal = function () {
+      alert('Chỉ Admin mới thêm được công cụ mới. Cần thêm công cụ, bạn nhắn cho Admin nhé.');
+      return false;
+    };
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', lock);
+  else lock();
+})();
+</script>
 </body>
 </html>
