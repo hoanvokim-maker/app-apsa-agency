@@ -26,7 +26,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/theme.css?v=13" />
-  <script src="/apsa-ui.js?v=13"></script>
+  <script src="/apsa-ui.js?v=14"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -132,7 +132,29 @@
   </div>
 
   <!-- ===== Quản trị ===== -->
-  <div class="card adm" id="admCard">
+  <div class="card">
+      <h2>Âm thanh thông báo</h2>
+      <div class="sub">Phát một tiếng chuông ngắn khi có thông báo mới hiện lên ở góc màn hình. Cài đặt lưu riêng cho từng trình duyệt.</div>
+      <div class="row" style="margin-top:12px;align-items:center;gap:14px">
+        <label style="display:flex;align-items:center;gap:9px;font-size:13px;cursor:pointer">
+          <input type="checkbox" id="ntSound" style="width:16px;height:16px;accent-color:#dff20d;cursor:pointer" onchange="ntSoundSet(this.checked)" />
+          <span>Bật âm thanh thông báo</span>
+        </label>
+        <button class="btn" type="button" onclick="if (window.apsaNotifyDing) window.apsaNotifyDing(true)">Nghe thử</button>
+      </div>
+    </div>
+
+    <script>
+      function ntSoundSet(on) { try { localStorage.setItem('apsa_notif_sound', on ? '1' : '0'); } catch (e) {} }
+      (function () {
+        var v = '1';
+        try { v = localStorage.getItem('apsa_notif_sound'); if (v === null) v = '1'; } catch (e) {}
+        var el = document.getElementById('ntSound');
+        if (el) el.checked = (v !== '0');
+      })();
+    </script>
+
+    <div class="card adm" id="admCard">
     <h2>Cấu hình bot (Admin)</h2>
     <div class="sub">Bot Token và khoá bí mật nằm trong <code>api/zalo-config.php</code> trên máy chủ — không hiển thị ở đây.</div>
     <div class="row" style="margin-bottom:12px">

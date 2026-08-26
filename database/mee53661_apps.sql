@@ -343,7 +343,7 @@ INSERT INTO `app_notifications` VALUES (24,5,'leave_approved','Đơn nghỉ đã
 INSERT INTO `app_notifications` VALUES (25,1,'leave_new','Đơn xin nghỉ mới','Thảo Lý xin nghỉ 1 ngày (Work From Home): 04/09/2026','/leave.html?id=9','Thảo Lý',1,'2026-08-26 05:01:18');
 INSERT INTO `app_notifications` VALUES (26,3,'leave_approved','Đơn nghỉ đã được duyệt','Harris đã duyệt đơn nghỉ 04/09/2026 của bạn.','/leave.html?id=9','Harris',0,'2026-08-26 05:15:21');
 INSERT INTO `app_notifications` VALUES (27,5,'leave_canceled','Đơn nghỉ bị huỷ','Harris đã huỷ đơn nghỉ 27/08/2026 của bạn.','/leave.html?id=8','Harris',1,'2026-08-26 06:02:04');
-INSERT INTO `app_notifications` VALUES (28,1,'leave_new','Đơn xin nghỉ mới','Hoàng Been xin nghỉ 0,5 ngày (Phép năm): 27/08/2026 (buổi sáng)','/leave.html?id=10','Hoàng Been',0,'2026-08-26 06:25:45');
+INSERT INTO `app_notifications` VALUES (28,1,'leave_new','Đơn xin nghỉ mới','Hoàng Been xin nghỉ 0,5 ngày (Phép năm): 27/08/2026 (buổi sáng)','/leave.html?id=10','Hoàng Been',1,'2026-08-26 06:25:45');
 INSERT INTO `app_notifications` VALUES (29,14,'leave_approved','Đơn nghỉ đã được duyệt','Harris đã duyệt đơn nghỉ 27/08/2026 (buổi sáng) của bạn.','/leave.html?id=10','Harris',0,'2026-08-26 06:26:29');
 /*!40000 ALTER TABLE `app_notifications` ENABLE KEYS */;
 UNLOCK TABLES;

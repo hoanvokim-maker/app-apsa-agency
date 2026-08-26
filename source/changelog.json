@@ -1,5 +1,5 @@
 {
-    "version": "1.2.12",
+    "version": "1.2.13",
     "updated": "2026-08-26",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-25",
             "note": "Phiên bản 1.2",
             "items": [
+                {
+                    "d": "2026-08-26",
+                    "v": "1.2.13",
+                    "t": "am thanh thong bao + tab Cho duyet mac dinh cho Admin",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-26",
                     "v": "1.2.12",

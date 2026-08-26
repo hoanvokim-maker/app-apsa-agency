@@ -768,6 +768,37 @@
   /* ------------------------------------------------------------------ */
 
   var SEEN_KEY  = 'apsa_toast_seen';
+
+  /* ── APSA1214: tieng chuong ngan khi co thong bao moi (WebAudio, khong can file) ── */
+  var SOUND_KEY = 'apsa_notif_sound';
+  var ntActx = null;
+
+  function ntSoundOn() {
+    try { return localStorage.getItem(SOUND_KEY) !== '0'; } catch (e) { return true; }
+  }
+
+  function ntDing(force) {
+    if (!force && !ntSoundOn()) return;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!ntActx) ntActx = new AC();
+      if (ntActx.state === 'suspended') ntActx.resume();
+      var t0 = ntActx.currentTime;
+      var notes = [[880, 0], [1318.5, 0.13]];
+      for (var i = 0; i < notes.length; i++) {
+        var f = notes[i][0], d = notes[i][1];
+        var o = ntActx.createOscillator(), g = ntActx.createGain();
+        o.type = 'sine';
+        o.frequency.setValueAtTime(f, t0 + d);
+        g.gain.setValueAtTime(0.0001, t0 + d);
+        g.gain.exponentialRampToValueAtTime(0.16, t0 + d + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + d + 0.30);
+        o.connect(g); g.connect(ntActx.destination);
+        o.start(t0 + d); o.stop(t0 + d + 0.34);
+      }
+    } catch (e) {}
+  }
   var POLL_MS   = 45000;
   var LIFE_MS   = 15000;
   var MAX_TOAST = 4;
@@ -906,6 +937,7 @@
         seenSave(seen);
         if (first && fresh.length > MAX_TOAST) fresh = fresh.slice(0, MAX_TOAST);
         fresh.reverse();
+        if (fresh.length && !first) ntDing();
         for (i = 0; i < fresh.length; i++) (function (x, d) { setTimeout(function () { show(x); }, d * 260); })(fresh[i], i);
         if (typeof window.apsaOnNotif === 'function') { try { window.apsaOnNotif(j); } catch (e) {} }
       })
@@ -918,6 +950,7 @@
     setInterval(function () { poll(false); }, POLL_MS);
     document.addEventListener('visibilitychange', function () { if (!document.hidden) poll(false); });
     window.apsaNotifyToast = show;
+    window.apsaNotifyDing  = ntDing;
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
