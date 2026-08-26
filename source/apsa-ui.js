@@ -370,6 +370,9 @@
   ];
 
   /* Trang con nào tính là đang ở mục nào */
+  window.APSA_NAV = NAV;
+  var GLOB = null;   /* APSA1215: thu tu dung chung ca cong ty */
+
   var ALIAS = { 'debt-detail.html': 'debts.html', 'qr-tool.html': 'event-qr-generator.html' };
 
   function css() {
@@ -457,13 +460,33 @@
       ' display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }' +
     '#apsaNoOv .nowh{ font-size:10.5px; color:#5e5e5e; font-weight:700; margin-top:3px; }' +
     '#apsaNoOv .noempty{ padding:32px 16px; text-align:center; color:#5e5e5e; font-size:12.5px; }' +
-    '@media print{ body{ padding-left:0; } #apsaSide{ display:none !important; } }';
+    /* ── APSA1215: bang thong bao truot ben phai (kieu macOS) + nut hamburger ── */
+'#apsaNoOv{ background:rgba(0,0,0,.45); padding:0; align-items:stretch; justify-content:flex-end; }' +
+'#apsaNoOv .nobox{ width:min(400px,92vw); max-height:none; height:100%; border-radius:0;' +
+' border:0; border-left:1px solid rgba(255,255,255,.11);' +
+' box-shadow:-26px 0 70px rgba(0,0,0,.75); }' +
+'#apsaNoOv .nohead{ padding:17px 62px 14px 18px; }' +
+'#apsaNoOv .nobody{ flex:1 1 auto; }' +
+'#apsaHam{ position:fixed; top:11px; right:14px; z-index:100002; width:38px; height:38px;' +
+' border-radius:11px; border:1px solid rgba(255,255,255,.12); background:rgba(11,11,11,.88);' +
+' -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); color:#c9c9c9; cursor:pointer;' +
+' display:flex; align-items:center; justify-content:center; padding:0;' +
+' font-family:"Oxanium",sans-serif; }' +
+'#apsaHam:hover{ color:#fff; border-color:rgba(255,255,255,.26); background:rgba(20,20,20,.95); }' +
+'#apsaHam svg{ width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2;' +
+' stroke-linecap:round; }' +
+'#apsaHam .hdot{ position:absolute; top:-6px; right:-6px; min-width:18px; height:18px; padding:0 5px;' +
+' border-radius:9px; background:#ff4d4d; color:#fff; font-size:10px; font-weight:800;' +
+' display:none; align-items:center; justify-content:center; line-height:1; }' +
+'#apsaHam.has .hdot{ display:flex; }' +
+'@media print{ #apsaHam{ display:none !important; } }' +
+'@media print{ body{ padding-left:0; } #apsaSide{ display:none !important; } }';
   }
 
   /* Sắp lại sidebar theo thiết lập trang chủ của user: ghim · thứ tự · đã ẩn */
   function layout(prefs) {
-    var order  = (prefs && prefs.order)  || [];
-    var hidden = (prefs && prefs.hidden) || [];
+    var order = (GLOB && GLOB.order && GLOB.order.length) ? GLOB.order : ((prefs && prefs.order) || []);
+    var hidden = (GLOB && GLOB.hidden && GLOB.hidden.length) ? GLOB.hidden : ((prefs && prefs.hidden) || []);
     var pinned = (prefs && prefs.pinned) || [];
     var custom = (prefs && prefs.custom) || [];
 
@@ -543,7 +566,39 @@
     return t[t.length - 1].charAt(0);
   }
 
-  function paintBell() {
+  /* ── APSA1215: nut hamburger mo bang thong bao ben phai ── */
+function ensureHam() {
+  if (document.getElementById('apsaHam')) return;
+  var b = document.createElement('button');
+  b.id = 'apsaHam';
+  b.type = 'button';
+  b.title = 'Thông báo';
+  b.setAttribute('aria-label', 'Thông báo');
+  b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>' +
+                '<span class="hdot">0</span>';
+  b.addEventListener('click', function (e) {
+    e.stopPropagation();
+    if (noOv && noOv.classList.contains('open')) closeNotif(); else openNotif();
+  });
+  document.body.appendChild(b);
+
+  /* Chua cho nut o header, tranh de len nut san co */
+  var hd = document.querySelector('header') || document.querySelector('.topbar');
+  if (hd) {
+    var cs = window.getComputedStyle(hd);
+    if (cs.position === 'sticky' || cs.position === 'fixed' || hd.getBoundingClientRect().top < 70) {
+      hd.style.paddingRight = (parseFloat(cs.paddingRight || 0) + 46) + 'px';
+    }
+  }
+}
+
+function paintBell() {
+  var hb = document.getElementById('apsaHam');
+  if (hb) {
+    hb.classList.toggle('has', NOTIF.unread > 0);
+    var hd = hb.querySelector('.hdot');
+    if (hd) hd.textContent = NOTIF.unread > 99 ? '99+' : String(NOTIF.unread);
+  }
     var b = document.getElementById('apsaBell');
     if (!b) return;
     b.classList.toggle('has', NOTIF.unread > 0);
@@ -678,11 +733,13 @@
     document.body.insertBefore(nav, document.body.firstChild);
 
     paint(layout(null));   // vẽ ngay bố cục mặc định (kèm chuông)
-    pullHome();          // rồi áp thiết lập riêng của user
+    pullHome();
+    pullSideGlobal();          // rồi áp thiết lập riêng của user
 
     nav.addEventListener('click', function (e) {
       if (e.target.closest && e.target.closest('#apsaBell')) { e.preventDefault(); openNotif(); }
     });
+    ensureHam();
     pullNotif();
     clearInterval(noTimer);
     noTimer = setInterval(pullNotif, 60000);      // 1 phút kiểm tra 1 lần
@@ -690,7 +747,19 @@
   }
 
   /* Đọc thiết lập trang chủ (thứ tự · ghim · đã ẩn) — dùng chung cho cả sidebar */
-  function pullHome() {
+  /* ── APSA1215: thu tu thanh menu dung chung ca cong ty (Admin dat o Cai dat) ── */
+function pullSideGlobal() {
+  fetch('./api/settings-api.php?action=sidebar', { credentials: 'same-origin' })
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      if (!j || !j.ok) return;
+      GLOB = { order: j.order || [], hidden: j.hidden || [] };
+      paint(layout(window.__APSA_HOME_PREFS || null));
+    })
+    .catch(function () {});
+}
+
+function pullHome() {
     fetch('./api/auth-api.php?action=prefs-get&key=home', { credentials: 'same-origin' })
       .then(function (r) { return r.json(); })
       .then(function (j) {
@@ -701,6 +770,8 @@
   }
 
   /* Trang chủ gọi lại sau khi user ghim / kéo thả để sidebar đổi theo ngay */
+  window.apsaRefreshNotif = function () { pullNotif(paintNotif); };
+
   window.apsaSyncSidebar = function (prefs) {
     var v = prefs || window.__APSA_HOME_PREFS;
     if (v) { window.__APSA_HOME_PREFS = v; paint(layout(v)); }
@@ -938,7 +1009,8 @@
         if (first && fresh.length > MAX_TOAST) fresh = fresh.slice(0, MAX_TOAST);
         fresh.reverse();
         if (fresh.length && !first) ntDing();
-        for (i = 0; i < fresh.length; i++) (function (x, d) { setTimeout(function () { show(x); }, d * 260); })(fresh[i], i);
+        if (fresh.length && typeof window.apsaRefreshNotif === 'function') window.apsaRefreshNotif();
+        /* APSA1215: khong bat toast nua — thong bao gom vao bang ben phai */
         if (typeof window.apsaOnNotif === 'function') { try { window.apsaOnNotif(j); } catch (e) {} }
       })
       .catch(function () { busy = false; });

@@ -181,8 +181,8 @@
   </style>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/theme.css?v=13" />
-  <script src="/apsa-ui.js?v=14"></script>
+  <link rel="stylesheet" href="/theme.css?v=16" />
+  <script src="/apsa-ui.js?v=17"></script>
 </head>
 <body>
 
@@ -209,6 +209,7 @@
     <button class="tab"     data-p="status"  onclick="tab('status')">Trạng thái dự án</button>
     <button class="tab"      data-p="position" onclick="tab('position')">Vị trí nhân viên</button>
     <button class="tab"     data-p="company" onclick="tab('company')">Thông tin công ty</button>
+    <button class="tab" data-p="menu" onclick="tab('menu')">Thanh menu</button>
   </div>
 
   <!-- ── CHUNG ── -->
@@ -347,7 +348,155 @@
     </div>
   </div>
 
-  <div class="pane" id="p-company">
+  <div class="pane" id="p-menu">
+      <h2>Thanh menu bên trái</h2>
+      <div class="hint">Thứ tự và các mục bị ẩn ở đây <b>dùng chung cho cả công ty</b> — mọi tài khoản đều thấy giống nhau. Chỉ Admin sửa được.</div>
+
+      <style>
+        #p-menu .mblist { margin-top: 14px; border: 1px solid var(--border, rgba(255,255,255,.08)); border-radius: 12px; overflow: hidden; }
+        #p-menu .mbrow { display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+                         border-bottom: 1px solid var(--border, rgba(255,255,255,.06)); font-size: 13px; }
+        #p-menu .mbrow:last-child { border-bottom: none; }
+        #p-menu .mbrow.hid .mbn { opacity: .42; text-decoration: line-through; }
+        #p-menu .mbi { width: 26px; text-align: right; color: #5e5e5e; font-size: 11.5px; font-weight: 700; flex: 0 0 26px; }
+        #p-menu .mbn { flex: 1; min-width: 0; }
+        #p-menu .mbh { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #9a9a9a; cursor: pointer; white-space: nowrap; }
+        #p-menu .mbh input { width: 15px; height: 15px; accent-color: #dff20d; cursor: pointer; }
+        #p-menu .mbb { width: 28px; height: 28px; border-radius: 8px; cursor: pointer;
+                       border: 1px solid var(--border, rgba(255,255,255,.1)); background: transparent;
+                       color: #9a9a9a; font: inherit; font-size: 13px; line-height: 1; }
+        #p-menu .mbb:hover { color: #fff; border-color: rgba(255,255,255,.26); }
+        #p-menu .mbacts { margin-top: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        #p-menu .mbmsg { font-size: 12px; color: #dff20d; }
+      </style>
+
+      <div class="mblist" id="mbList"></div>
+      <div class="mbacts">
+        <button class="btn" type="button" id="mbSaveBtn">Lưu thứ tự</button>
+        <button class="btn" type="button" id="mbResetBtn">Về mặc định</button>
+        <span class="mbmsg" id="mbMsg"></span>
+      </div>
+
+      <script>
+        (function () {
+          var MB = { order: [], hidden: [] };
+
+          function navItems() {
+            var nav = window.APSA_NAV || [], out = [];
+            for (var i = 0; i < nav.length; i++) {
+              var n = nav[i];
+              if (n && n.id != null && n.name) out.push({ id: Number(n.id), name: String(n.name) });
+            }
+            return out;
+          }
+
+          function sorted() {
+            var list = navItems(), pos = {}, i;
+            for (i = 0; i < MB.order.length; i++) pos[MB.order[i]] = i;
+            for (i = 0; i < list.length; i++) list[i]._i = i;
+            list.sort(function (a, b) {
+              var ra = (pos[a.id] != null) ? pos[a.id] : 9000 + a._i;
+              var rb = (pos[b.id] != null) ? pos[b.id] : 9000 + b._i;
+              return ra - rb;
+            });
+            return list;
+          }
+
+          function esc2(s) {
+            return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+              return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+            });
+          }
+
+          function paint() {
+            var box = document.getElementById('mbList');
+            if (!box) return;
+            var L = sorted();
+            MB.order = L.map(function (x) { return x.id; });
+            box.innerHTML = L.map(function (x, i) {
+              var hid = MB.hidden.indexOf(x.id) >= 0;
+              return '<div class="mbrow' + (hid ? ' hid' : '') + '">' +
+                '<span class="mbi">' + (i + 1) + '</span>' +
+                '<span class="mbn">' + esc2(x.name) + '</span>' +
+                '<label class="mbh"><input type="checkbox" data-h="' + x.id + '"' + (hid ? ' checked' : '') + '> Ẩn</label>' +
+                '<button type="button" class="mbb" data-u="' + x.id + '" title="Lên">&#9650;</button>' +
+                '<button type="button" class="mbb" data-d="' + x.id + '" title="Xuống">&#9660;</button>' +
+                '</div>';
+            }).join('');
+          }
+
+          function move(id, dir) {
+            var i = MB.order.indexOf(id), j = i + dir;
+            if (i < 0 || j < 0 || j >= MB.order.length) return;
+            var t = MB.order[i]; MB.order[i] = MB.order[j]; MB.order[j] = t;
+            paint();
+          }
+
+          function msg(t) {
+            var m = document.getElementById('mbMsg');
+            if (!m) return;
+            m.textContent = t || '';
+            clearTimeout(m._t);
+            m._t = setTimeout(function () { m.textContent = ''; }, 4000);
+          }
+
+          function load() {
+            fetch('./api/settings-api.php?action=sidebar', { credentials: 'same-origin' })
+              .then(function (r) { return r.json(); })
+              .then(function (j) {
+                if (j && j.ok) MB = { order: j.order || [], hidden: j.hidden || [] };
+                paint();
+              })
+              .catch(paint);
+          }
+
+          function save() {
+            fetch('./api/settings-api.php?action=sidebar-save', {
+              method: 'POST', credentials: 'same-origin',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ order: MB.order, hidden: MB.hidden })
+            })
+              .then(function (r) { return r.json(); })
+              .then(function (j) {
+                msg(j && j.ok ? (j.message || 'Đã lưu.') : ((j && j.error) || 'Không lưu được.'));
+                if (j && j.ok && window.apsaSyncSidebar) location.reload();
+              })
+              .catch(function () { msg('Không lưu được.'); });
+          }
+
+          function boot() {
+            var box = document.getElementById('mbList');
+            if (!box) return;
+            box.addEventListener('click', function (e) {
+              var t = e.target;
+              if (!t || !t.getAttribute) return;
+              if (t.getAttribute('data-u')) move(Number(t.getAttribute('data-u')), -1);
+              else if (t.getAttribute('data-d')) move(Number(t.getAttribute('data-d')), 1);
+            });
+            box.addEventListener('change', function (e) {
+              var t = e.target;
+              if (!t || !t.getAttribute || !t.getAttribute('data-h')) return;
+              var id = Number(t.getAttribute('data-h')), k = MB.hidden.indexOf(id);
+              if (t.checked) { if (k < 0) MB.hidden.push(id); }
+              else if (k >= 0) MB.hidden.splice(k, 1);
+              paint();
+            });
+            document.getElementById('mbSaveBtn').addEventListener('click', save);
+            document.getElementById('mbResetBtn').addEventListener('click', function () {
+              MB = { order: [], hidden: [] };
+              paint();
+              msg('Đã về mặc định — bấm "Lưu thứ tự" để áp dụng.');
+            });
+            load();
+          }
+
+          if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+          else boot();
+        })();
+      </script>
+    </div>
+
+    <div class="pane" id="p-company">
     <div class="card">
       <h2>Thông tin công ty</h2>
       <div class="hint">In trên đầu báo giá, và sẽ dùng lại khi kết nối xuất hoá đơn MISA.</div>

@@ -324,6 +324,22 @@ function st_pos_usage()
     return $u;
 }
 
+/* ── APSA1215: thu tu thanh menu ben trai — dung chung toan cong ty ── */
+function st_sidebar()
+{
+    $d = st_json('ui.sidebar', array());
+    $out = array('order' => array(), 'hidden' => array());
+    if (isset($d['order']) && is_array($d['order'])) {
+        foreach ($d['order'] as $v) { $v = (int) $v; if ($v > 0) $out['order'][] = $v; }
+    }
+    if (isset($d['hidden']) && is_array($d['hidden'])) {
+        foreach ($d['hidden'] as $v) { $v = (int) $v; if ($v > 0) $out['hidden'][] = $v; }
+    }
+    $out['order']  = array_values(array_unique($out['order']));
+    $out['hidden'] = array_values(array_unique($out['hidden']));
+    return $out;
+}
+
 function st_leave_types()
 {
     static $cache = null;
@@ -568,6 +584,24 @@ case 'pos-delete': {
     s_out(array('ok' => true, 'message' => 'Đã xoá vị trí ' . $row['label']
         . ($n > 0 ? ' và chuyển ' . $n . ' mục sang vị trí khác.' : '.')));
     break;
+}
+
+case 'sidebar': {
+    s_me();
+    $d = st_sidebar();
+    s_out(array('ok' => true, 'order' => $d['order'], 'hidden' => $d['hidden']));
+}
+
+case 'sidebar-save': {
+    s_admin();
+    $order = array(); $hidden = array();
+    $bo = isset($B['order'])  && is_array($B['order'])  ? $B['order']  : array();
+    $bh = isset($B['hidden']) && is_array($B['hidden']) ? $B['hidden'] : array();
+    foreach ($bo as $v) { $v = (int) $v; if ($v > 0 && !in_array($v, $order))  $order[]  = $v; }
+    foreach ($bh as $v) { $v = (int) $v; if ($v > 0 && !in_array($v, $hidden)) $hidden[] = $v; }
+    if (count($order) > 200 || count($hidden) > 200) s_fail('Danh sách quá dài.');
+    s_put('ui.sidebar', json_encode(array('order' => $order, 'hidden' => $hidden), JSON_UNESCAPED_UNICODE));
+    s_out(array('ok' => true, 'message' => 'Đã lưu thứ tự thanh menu cho cả công ty.'));
 }
 
 case 'all':

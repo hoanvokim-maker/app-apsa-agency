@@ -330,3 +330,19 @@ header .hmenu button:hover{ background:#141414; color:#fff; }
   .filter-bar,
   .personal-bar { max-width: min(90vw, 1920px) !important; }
 }
+
+/* ── APSA v1.2.14 — dong bo dropdown voi o nhap lieu ──────────────────
+   Safari bo qua padding cua <select> khi con appearance mac dinh nen
+   dropdown thap hon text field. Tat appearance va tu ve mui ten. */
+select:not([class*="stt"]):not([multiple]):not([size]) {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-right: 30px;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a9a9a' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 10px center !important;
+  background-size: 12px !important;
+  line-height: 1.26;
+}
+select:not([class*="stt"]):not([multiple]):not([size])::-ms-expand { display: none; }
