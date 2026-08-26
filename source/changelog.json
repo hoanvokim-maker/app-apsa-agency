@@ -1,5 +1,5 @@
 {
-    "version": "1.2.8",
+    "version": "1.2.9",
     "updated": "2026-08-26",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-25",
             "note": "Phiên bản 1.2",
             "items": [
+                {
+                    "d": "2026-08-26",
+                    "v": "1.2.9",
+                    "t": "Them tab Vi tri nhan vien trong Cai dat he thong: them/sua/doi thu tu/xoa (co chuyen sang vi tri khac); auth-api va quotation-api lay danh sach vi tri tu day",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-26",
                     "v": "1.2.8",

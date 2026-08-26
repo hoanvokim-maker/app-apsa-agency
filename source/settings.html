@@ -207,6 +207,7 @@
     <button class="tab"     data-p="leave"   onclick="tab('leave')">Nghỉ phép</button>
     <button class="tab"     data-p="holiday" onclick="tab('holiday')">Ngày lễ</button>
     <button class="tab"     data-p="status"  onclick="tab('status')">Trạng thái dự án</button>
+    <button class="tab"      data-p="position" onclick="tab('position')">Vị trí nhân viên</button>
     <button class="tab"     data-p="company" onclick="tab('company')">Thông tin công ty</button>
   </div>
 
@@ -314,6 +315,38 @@
   </div>
 
   <!-- ── CÔNG TY ── -->
+    <!-- ── VỊ TRÍ NHÂN VIÊN ── -->
+  <div class="pane" id="p-position">
+    <style>
+      #p-position .ptbl { width:100%; border-collapse:collapse; font-size:13px; margin-top:4px; }
+      #p-position .ptbl th { text-align:left; font-size:10.5px; letter-spacing:.09em; text-transform:uppercase;
+        opacity:.55; padding:6px 8px; border-bottom:1px solid rgba(255,255,255,.1); font-weight:600; }
+      #p-position .ptbl td { padding:7px 8px; border-bottom:1px solid rgba(255,255,255,.07); vertical-align:middle; }
+      #p-position .ptbl tr:last-child td { border-bottom:0; }
+      #p-position .ptbl .r { text-align:right; white-space:nowrap; }
+      #p-position .ptbl code { opacity:.55; font-size:11.5px; }
+      #p-position .btn { padding:5px 10px; font-size:12px; }
+      #p-position .btn.dg { background:#ff4d4d; color:#fff; border-color:#ff4d4d; }
+      #p-position .btn.dg:hover { background:#ff6b6b; }
+      #p-position .pmini { opacity:.6; font-size:11.5px; }
+    </style>
+    <div class="card">
+      <h2>Vị trí nhân viên</h2>
+      <div class="hint">Danh sách này dùng chung cho trang <b>Accounts nhân viên</b> và ô <b>Vị trí</b> khi giao việc trong báo giá.
+        Khi xoá một vị trí đang có người dùng, hệ thống sẽ hỏi chuyển sang vị trí nào.</div>
+
+      <div class="grid3" style="align-items:end">
+        <div class="fg" style="grid-column:span 2">
+          <label>Tên vị trí</label>
+          <input type="text" id="posName" placeholder="Ví dụ: Content, Photographer, Sales…" onkeydown="if(event.key==='Enter'){event.preventDefault();savePos(0)}" />
+        </div>
+        <div class="fg"><button class="btn primary" style="width:100%" onclick="savePos(0)">+ Thêm vị trí</button></div>
+      </div>
+
+      <div style="margin-top:18px" id="posList"></div>
+    </div>
+  </div>
+
   <div class="pane" id="p-company">
     <div class="card">
       <h2>Thông tin công ty</h2>
@@ -738,7 +771,114 @@ function closeModal() { document.querySelectorAll('.mask').forEach(m => m.classL
 document.querySelectorAll('.mask').forEach(m => m.addEventListener('click', e => { if (e.target === m) closeModal(); }));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
+/* ── Vị trí nhân viên (v1.2.9) ── */
+let POS = [];
+
+function pesc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+async function paintPositions() {
+  const box = document.getElementById('posList');
+  if (!box) return;
+  try {
+    const j = await api('pos-list');
+    POS = j.rows || [];
+  } catch (e) {
+    box.innerHTML = '<div class="hint">Không tải được danh sách vị trí.</div>';
+    return;
+  }
+  if (!POS.length) { box.innerHTML = '<div class="hint">Chưa có vị trí nào.</div>'; return; }
+
+  box.innerHTML =
+    '<table class="ptbl"><thead><tr>'
+    + '<th>Vị trí</th><th>Mã</th><th>Đang dùng</th><th></th>'
+    + '</tr></thead><tbody>'
+    + POS.map(function (p, i) {
+        const use = [];
+        if (p.users) use.push(p.users + ' nhân viên');
+        if (p.tasks) use.push(p.tasks + ' việc');
+        return '<tr>'
+          + '<td><b>' + pesc(p.label) + '</b>' + (p.active ? '' : ' <span class="pmini">(đang ẩn)</span>') + '</td>'
+          + '<td><code>' + pesc(p.key) + '</code></td>'
+          + '<td class="pmini">' + (use.length ? use.join(' · ') : '—') + '</td>'
+          + '<td class="r" id="posAct' + p.id + '">'
+          + '<button class="btn" title="Lên" onclick="movePos(' + i + ',-1)">↑</button> '
+          + '<button class="btn" title="Xuống" onclick="movePos(' + i + ',1)">↓</button> '
+          + '<button class="btn" onclick="renamePos(' + p.id + ')">Sửa</button> '
+          + '<button class="btn dg" onclick="delPos(' + p.id + ')">Xoá</button>'
+          + '</td></tr>';
+      }).join('')
+    + '</tbody></table>';
+}
+
+async function savePos(id) {
+  const inp = document.getElementById('posName');
+  const label = (inp.value || '').trim();
+  if (!label) { inp.focus(); return; }
+  try {
+    const j = await api('pos-save', { body: { id: id, label: label, active: 1 } });
+    inp.value = '';
+    toast(j.message);
+    await paintPositions();
+  } catch (e) { /* api() da bao loi */ }
+}
+
+async function renamePos(id) {
+  const p = POS.find(function (x) { return x.id === id; });
+  if (!p) return;
+  const name = prompt('Đổi tên vị trí:', p.label);
+  if (name === null || !name.trim()) return;
+  try {
+    const j = await api('pos-save', { body: { id: id, label: name.trim(), active: p.active ? 1 : 0 } });
+    toast(j.message);
+    await paintPositions();
+  } catch (e) {}
+}
+
+function delPos(id) {
+  const p = POS.find(function (x) { return x.id === id; });
+  if (!p) return;
+  const n = (p.users || 0) + (p.tasks || 0);
+  if (n === 0) {
+    if (!confirm('Xoá vị trí "' + p.label + '"?')) return;
+    doDelPos(id, '');
+    return;
+  }
+  const cell = document.getElementById('posAct' + id);
+  if (!cell) return;
+  const opts = POS.filter(function (o) { return o.id !== id; })
+    .map(function (o) { return '<option value="' + pesc(o.key) + '">' + pesc(o.label) + '</option>'; }).join('')
+    + '<option value="-">(Để trống)</option>';
+  cell.innerHTML =
+    '<span class="pmini">Chuyển ' + n + ' mục sang</span> '
+    + '<select id="posMove' + id + '" style="padding:4px 6px;font-size:12px">' + opts + '</select> '
+    + '<button class="btn dg" onclick="doDelPos(' + id + ', document.getElementById(\'posMove' + id + '\').value)">Xoá</button> '
+    + '<button class="btn" onclick="paintPositions()">Huỷ</button>';
+}
+
+async function doDelPos(id, moveTo) {
+  try {
+    const j = await api('pos-delete', { body: { id: id, move_to: moveTo } });
+    toast(j.message);
+    await paintPositions();
+  } catch (e) {}
+}
+
+async function movePos(i, d) {
+  const j2 = i + d;
+  if (j2 < 0 || j2 >= POS.length) return;
+  const t = POS[i]; POS[i] = POS[j2]; POS[j2] = t;
+  try {
+    await api('pos-order', { body: { ids: POS.map(function (p) { return p.id; }) } });
+    await paintPositions();
+  } catch (e) { await paintPositions(); }
+}
+
+
 load();
+paintPositions();
 </script>
 </body>
 </html>

@@ -249,6 +249,81 @@ function st_status_prio_keys()
     return $out;
 }
 
+/* ===================================================================== *
+ *  VỊ TRÍ NHÂN VIÊN (v1.2.9)
+ *  Dùng chung cho app_users.position và quotation_assignees.position
+ * ===================================================================== */
+
+/** Tạo bảng + nạp 4 vị trí gốc nếu bảng còn rỗng. */
+function st_pos_boot()
+{
+    static $done = false;
+    if ($done) return;
+    $done = true;
+    try {
+        st_pdo()->exec("CREATE TABLE IF NOT EXISTS `staff_positions` (
+            `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            `pkey` VARCHAR(40) NOT NULL,
+            `label` VARCHAR(80) NOT NULL,
+            `sort` INT NOT NULL DEFAULT 0,
+            `active` TINYINT(1) NOT NULL DEFAULT 1,
+            `created_at` DATETIME NULL DEFAULT NULL,
+            `updated_at` DATETIME NULL DEFAULT NULL,
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `pkey` (`pkey`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+        $n = (int) st_pdo()->query('SELECT COUNT(*) FROM `staff_positions`')->fetchColumn();
+        if ($n === 0) {
+            $seed = array(
+                array('account',  'Account',      1),
+                array('admin',    'Admin',        2),
+                array('designer', 'Designer',     3),
+                array('editor',   'Video editor', 4),
+            );
+            $ins = st_pdo()->prepare('INSERT INTO `staff_positions` (pkey,label,sort,active,created_at,updated_at)
+                                      VALUES (?,?,?,1,NOW(),NOW())');
+            foreach ($seed as $s) $ins->execute($s);
+        }
+    } catch (Exception $e) { /* bỏ qua */ }
+}
+
+/** array(pkey => label) theo thứ tự hiển thị. */
+function st_positions()
+{
+    static $cache = null;
+    if ($cache !== null) return $cache;
+    st_pos_boot();
+    $cache = array();
+    try {
+        foreach (st_pdo()->query('SELECT pkey, label FROM `staff_positions` WHERE active = 1 ORDER BY sort, id') as $r) {
+            $cache[$r['pkey']] = $r['label'];
+        }
+    } catch (Exception $e) { $cache = array(); }
+    if (!$cache) {
+        $cache = array('account' => 'Account', 'admin' => 'Admin', 'designer' => 'Designer', 'editor' => 'Video editor');
+    }
+    return $cache;
+}
+
+/** Đếm số nhân viên / số dòng phân công đang dùng mỗi vị trí. */
+function st_pos_usage()
+{
+    $u = array();
+    $tables = array(array('app_users', 'users'), array('quotation_assignees', 'tasks'));
+    foreach ($tables as $t) {
+        try {
+            foreach (st_pdo()->query('SELECT `position` k, COUNT(*) n FROM `' . $t[0] . '` GROUP BY `position`') as $r) {
+                $k = (string) $r['k'];
+                if ($k === '') continue;
+                if (!isset($u[$k])) $u[$k] = array('users' => 0, 'tasks' => 0);
+                $u[$k][$t[1]] += (int) $r['n'];
+            }
+        } catch (Exception $e) { /* bảng chưa có thì bỏ qua */ }
+    }
+    return $u;
+}
+
 function st_leave_types()
 {
     static $cache = null;
@@ -399,6 +474,102 @@ case 'public':
     break;
 
 /* ---- Toan bo cai dat cho trang Settings (Admin) ---- */
+case 'pos-list': {
+    s_me();
+    st_pos_boot();
+    $use  = st_pos_usage();
+    $rows = array();
+    foreach (st_pdo()->query('SELECT id, pkey, label, sort, active FROM `staff_positions` ORDER BY sort, id') as $r) {
+        $k = (string) $r['pkey'];
+        $rows[] = array(
+            'id'     => (int) $r['id'],
+            'key'    => $k,
+            'label'  => (string) $r['label'],
+            'sort'   => (int) $r['sort'],
+            'active' => ((int) $r['active'] === 1),
+            'users'  => isset($use[$k]) ? $use[$k]['users'] : 0,
+            'tasks'  => isset($use[$k]) ? $use[$k]['tasks'] : 0,
+        );
+    }
+    s_out(array('ok' => true, 'rows' => $rows));
+    break;
+}
+
+case 'pos-save': {
+    s_admin();
+    st_pos_boot();
+    $id    = isset($B['id'])    ? (int) $B['id'] : 0;
+    $label = isset($B['label']) ? trim((string) $B['label']) : '';
+    $act   = !empty($B['active']) ? 1 : 0;
+    if ($label === '') s_fail('Nhập tên vị trí.');
+    if (mb_strlen($label, 'UTF-8') > 80) s_fail('Tên vị trí quá dài.');
+
+    if ($id > 0) {
+        st_pdo()->prepare('UPDATE `staff_positions` SET label = ?, active = ?, updated_at = NOW() WHERE id = ?')
+            ->execute(array($label, $act, $id));
+        s_out(array('ok' => true, 'message' => 'Đã lưu vị trí.'));
+    }
+
+    $base = s_slug($label);
+    if ($base === '') $base = 'vitri';
+    $key = $base; $i = 2;
+    $chk = st_pdo()->prepare('SELECT COUNT(*) FROM `staff_positions` WHERE pkey = ?');
+    while (true) {
+        $chk->execute(array($key));
+        if ((int) $chk->fetchColumn() === 0) break;
+        $key = $base . '_' . $i; $i++;
+        if ($i > 50) s_fail('Không tạo được mã cho vị trí này.');
+    }
+    $max = (int) st_pdo()->query('SELECT COALESCE(MAX(sort),0) FROM `staff_positions`')->fetchColumn();
+    st_pdo()->prepare('INSERT INTO `staff_positions` (pkey,label,sort,active,created_at,updated_at)
+                       VALUES (?,?,?,?,NOW(),NOW())')
+        ->execute(array($key, $label, $max + 1, $act));
+    s_out(array('ok' => true, 'message' => 'Đã thêm vị trí ' . $label . '.'));
+    break;
+}
+
+case 'pos-order': {
+    s_admin();
+    $ids = (isset($B['ids']) && is_array($B['ids'])) ? array_values($B['ids']) : array();
+    if (!$ids) s_fail('Thiếu thứ tự.');
+    $u = st_pdo()->prepare('UPDATE `staff_positions` SET sort = ?, updated_at = NOW() WHERE id = ?');
+    foreach ($ids as $i => $id) $u->execute(array($i + 1, (int) $id));
+    s_out(array('ok' => true, 'message' => 'Đã lưu thứ tự.'));
+    break;
+}
+
+case 'pos-delete': {
+    s_admin();
+    st_pos_boot();
+    $id = isset($B['id']) ? (int) $B['id'] : 0;
+    $to = isset($B['move_to']) ? trim((string) $B['move_to']) : '';
+
+    $st = st_pdo()->prepare('SELECT pkey, label FROM `staff_positions` WHERE id = ?');
+    $st->execute(array($id));
+    $row = $st->fetch();
+    if (!$row) s_fail('Không tìm thấy vị trí.', 404);
+    $key = (string) $row['pkey'];
+
+    $use = st_pos_usage();
+    $n   = isset($use[$key]) ? ($use[$key]['users'] + $use[$key]['tasks']) : 0;
+
+    if ($n > 0) {
+        if ($to === '') s_fail('Vị trí này đang được dùng, hãy chọn vị trí thay thế.', 409);
+        if ($to !== '-') {
+            $pos = st_positions();
+            if (!isset($pos[$to])) s_fail('Vị trí thay thế không hợp lệ.');
+        }
+        $newVal = ($to === '-') ? null : $to;
+        try { st_pdo()->prepare('UPDATE `app_users` SET position = ? WHERE position = ?')->execute(array($newVal, $key)); } catch (Exception $e) {}
+        try { st_pdo()->prepare('UPDATE `quotation_assignees` SET position = ? WHERE position = ?')->execute(array($newVal, $key)); } catch (Exception $e) {}
+    }
+
+    st_pdo()->prepare('DELETE FROM `staff_positions` WHERE id = ?')->execute(array($id));
+    s_out(array('ok' => true, 'message' => 'Đã xoá vị trí ' . $row['label']
+        . ($n > 0 ? ' và chuyển ' . $n . ' mục sang vị trí khác.' : '.')));
+    break;
+}
+
 case 'all':
     s_admin();
     $counts = array();

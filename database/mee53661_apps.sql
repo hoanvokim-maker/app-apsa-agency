@@ -312,7 +312,7 @@ CREATE TABLE `app_notifications` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `idx_user` (`user_id`,`is_read`,`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -341,6 +341,7 @@ INSERT INTO `app_notifications` VALUES (22,5,'leave_approved','Đơn nghỉ đã
 INSERT INTO `app_notifications` VALUES (23,1,'leave_new','Đơn xin nghỉ mới','Nhật Tân xin nghỉ 1 ngày (Nghỉ ốm): 27/08/2026','/leave.html?id=8','Nhật Tân',0,'2026-08-26 05:00:39');
 INSERT INTO `app_notifications` VALUES (24,5,'leave_approved','Đơn nghỉ đã được duyệt','Harris đã duyệt đơn nghỉ 27/08/2026 của bạn.','/leave.html?id=8','Harris',1,'2026-08-26 05:01:06');
 INSERT INTO `app_notifications` VALUES (25,1,'leave_new','Đơn xin nghỉ mới','Thảo Lý xin nghỉ 1 ngày (Work From Home): 04/09/2026','/leave.html?id=9','Thảo Lý',1,'2026-08-26 05:01:18');
+INSERT INTO `app_notifications` VALUES (26,3,'leave_approved','Đơn nghỉ đã được duyệt','Harris đã duyệt đơn nghỉ 04/09/2026 của bạn.','/leave.html?id=9','Harris',0,'2026-08-26 05:15:21');
 /*!40000 ALTER TABLE `app_notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -457,15 +458,15 @@ CREATE TABLE `app_users` (
 
 LOCK TABLES `app_users` WRITE;
 /*!40000 ALTER TABLE `app_users` DISABLE KEYS */;
-INSERT INTO `app_users` VALUES (1,'admin','$2y$10$tgjxDVP41TkZC7QgOnnIbuaB8HFuMpI8iZCJQTqih1BFPVh6ksnU2','Harris','admin',1,'2026-08-05 16:47:25','2026-08-26 04:59:14','2026-08-26 04:59:14','account','inhouse',1,'','','','4a984eea65a98cf7d5b8','Harris Vo','2026-08-26 11:54:06',NULL,NULL);
+INSERT INTO `app_users` VALUES (1,'admin','$2y$10$tgjxDVP41TkZC7QgOnnIbuaB8HFuMpI8iZCJQTqih1BFPVh6ksnU2','Harris','admin',1,'2026-08-05 16:47:25','2026-08-26 05:15:07','2026-08-26 05:15:07','account','inhouse',1,'','','','4a984eea65a98cf7d5b8','Harris Vo','2026-08-26 11:54:06',NULL,NULL);
 INSERT INTO `app_users` VALUES (3,'thaoly','$2y$10$apwNXhmb03WC5brdnZnV2unSiF6fKbehZHlK2/lojsPd4MtBAB3LS','Thảo Lý','member',1,'2026-08-11 04:37:01','2026-08-26 05:00:43','2026-08-26 02:58:01','account','inhouse',1,'','','','639651dd5d97b4c9ed86','Nguyên Thảo','2026-08-26 12:00:43',NULL,NULL);
 INSERT INTO `app_users` VALUES (4,'trangdo','$2y$10$1Dj1IZCt0H6BNWX/DmN0LulFIoMya7pYPc0PedQJmsleIOSfIFfni','Trang Đỗ','member',1,'2026-08-11 04:37:51','2026-08-26 05:08:03','2026-08-26 03:33:56','admin','inhouse',1,'','','','4235f4df0980e0deb991','Trang','2026-08-26 12:08:03',NULL,NULL);
 INSERT INTO `app_users` VALUES (5,'nhattan','$2y$10$W8tp/Ef.JYD/V.XURuNJseFsfThk2KGlZM71rxdupY6chvGTv9Ep.','Nhật Tân','member',1,'2026-08-11 04:38:13','2026-08-26 05:00:09','2026-08-26 02:58:12','account','inhouse',1,'','','','61f88bb9bff556ab0fe4','Nhật Tân','2026-08-26 12:00:09',NULL,NULL);
 INSERT INTO `app_users` VALUES (6,'cankim','$2y$10$02p2Ljt1T7pbjDC5aFZ.T.H90nY52ggV0V8iYRxCIyc2FmQuAnbA.','Can Kim','member',1,'2026-08-11 04:39:10','2026-08-26 05:06:47','2026-08-26 03:11:08','account','inhouse',1,'','','','c622f49807d1ee8fb7c0','Can Kim','2026-08-26 12:06:47',NULL,NULL);
 INSERT INTO `app_users` VALUES (7,'anhthu','$2y$10$XdyxyHCs3lSZ.fJG3NOBvOlk5KhQONtosEv0oLyVUDfaJXeUIiU6G','Anh Thư','member',1,'2026-08-11 04:39:27','2026-08-26 05:02:49','2026-08-26 03:12:40','designer','inhouse',1,'','','','4637a8d8d18e38d0619f','Anh Thư','2026-08-26 12:02:49',NULL,NULL);
-INSERT INTO `app_users` VALUES (8,'minhtri','$2y$10$DefjfsNDrXtCXWlJku2fDujVDtvLlaW3aCmVGcAzJbqEjhgMDw6za','Minh Trí','member',1,'2026-08-11 14:03:06','2026-08-26 04:29:19','2026-08-25 06:00:06','designer','inhouse',1,'','','',NULL,NULL,NULL,NULL,NULL);
-INSERT INTO `app_users` VALUES (9,'tientien','$2y$10$CjtsEP9TagGQMDVRln5Ftu0GFNKjGsGJL6wUhrrLxBg4ZR34qCxQS','Tiên Tiên','member',1,'2026-08-11 14:03:32','2026-08-26 04:58:57','2026-08-26 04:58:57','designer','inhouse',1,'','','',NULL,NULL,NULL,NULL,NULL);
-INSERT INTO `app_users` VALUES (10,'vyvy','$2y$10$JCqFrpMvEx7J.Q0/Lhb8Wu1FcQqsrHP4ihPFGUt455/iezkoVjm6a','Vy Vy','member',1,'2026-08-11 14:03:44','2026-08-26 04:37:22','2026-08-26 04:37:22','designer','inhouse',1,'','','',NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `app_users` VALUES (8,'minhtri','$2y$10$DefjfsNDrXtCXWlJku2fDujVDtvLlaW3aCmVGcAzJbqEjhgMDw6za','Minh Trí','member',1,'2026-08-11 14:03:06','2026-08-26 05:25:01','2026-08-26 05:23:51','designer','inhouse',1,'','','','65991a3da6724f2c1663','Minh Trí','2026-08-26 12:25:01',NULL,NULL);
+INSERT INTO `app_users` VALUES (9,'tientien','$2y$10$CjtsEP9TagGQMDVRln5Ftu0GFNKjGsGJL6wUhrrLxBg4ZR34qCxQS','Tiên Tiên','member',1,'2026-08-11 14:03:32','2026-08-26 05:22:33','2026-08-26 04:58:57','designer','inhouse',1,'','','','b0d0139ba4cc4d9214dd','Ngô Tiên','2026-08-26 12:22:33',NULL,NULL);
+INSERT INTO `app_users` VALUES (10,'vyvy','$2y$10$JCqFrpMvEx7J.Q0/Lhb8Wu1FcQqsrHP4ihPFGUt455/iezkoVjm6a','Vy Vy','member',1,'2026-08-11 14:03:44','2026-08-26 05:24:33','2026-08-26 04:37:22','designer','inhouse',1,'','','','7d49e0bdebe902b75bf8','Thảo Vy','2026-08-26 12:24:33',NULL,NULL);
 INSERT INTO `app_users` VALUES (11,'fl.anh.kiet','$2y$10$g/6Q33K0brrl31mculArY.fRg2y5L3vdmolhUja7C0C4KxbEJEeni','Anh Kiệt','member',1,'2026-08-26 04:10:30','2026-08-26 04:27:50',NULL,'editor','freelancer',0,'0931326075','','Làm buổi tối + Cuối tuần',NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `app_users` VALUES (12,'fl.duy.ngoc','$2y$10$li3y9elsMzZLxBX1yTORgONl0MoAnPt/vFsnrDiyStyyVz0KW7RqO','Duy Ngọc','member',1,'2026-08-26 04:12:42','2026-08-26 04:28:42',NULL,'editor','freelancer',0,'0367375014','','',NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `app_users` VALUES (13,'fl.quang.linh','$2y$10$FGL9O6ALiNP7.n3hJ7iOBeGGd8vyRND/.Ok.eiFpt6PCVMAIx7bXS','Quang Linh','member',1,'2026-08-26 04:12:57','2026-08-26 04:30:18',NULL,'editor','freelancer',0,'0329219507','','',NULL,NULL,NULL,NULL,NULL);
@@ -1177,7 +1178,7 @@ INSERT INTO `leave_requests` VALUES (5,3,'Thảo Lý','','annual','2026-09-03','
 INSERT INTO `leave_requests` VALUES (6,4,'Trang Đỗ','','annual','2026-10-17','full','2026-10-17','full',1,1.0,'Em có kế hoạch nghỉ ngày đó.','Trang có thể hỗ trợ online','approved',1,'Harris','2026-08-26 11:53:15','Okie em, chúc em nghỉ phép vui vẻ nhé','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIllkAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIllkAAA%3D&exvsurl=1&path=/calendar/item','2026-08-26 11:44:19','2026-08-26 11:53:18');
 INSERT INTO `leave_requests` VALUES (7,5,'Nhật Tân','','work_from_home','2026-08-28','full','2026-08-28','full',1,1.0,'WFH','','approved',1,'Harris','2026-08-26 11:59:27','Oce','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIllmAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIllmAAA%3D&exvsurl=1&path=/calendar/item','2026-08-26 11:58:28','2026-08-26 11:59:29');
 INSERT INTO `leave_requests` VALUES (8,5,'Nhật Tân','','sick','2026-08-27','full','2026-08-27','full',1,1.0,'Nhật Tân bị sốt ậ','','approved',1,'Harris','2026-08-26 12:01:00','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIlloAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIlloAAA%3D&exvsurl=1&path=/calendar/item','2026-08-26 12:00:39','2026-08-26 12:01:01');
-INSERT INTO `leave_requests` VALUES (9,3,'Thảo Lý','','work_from_home','2026-09-04','full','2026-09-04','full',1,1.0,'Xin wfh nhoé','','pending',NULL,'',NULL,NULL,'','',NULL,'','2026-08-26 12:01:18','2026-08-26 12:01:18');
+INSERT INTO `leave_requests` VALUES (9,3,'Thảo Lý','','work_from_home','2026-09-04','full','2026-09-04','full',1,1.0,'Xin wfh nhoé','','approved',1,'Harris','2026-08-26 12:15:20','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIllqAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIllqAAA%3D&exvsurl=1&path=/calendar/item','2026-08-26 12:01:18','2026-08-26 12:15:21');
 /*!40000 ALTER TABLE `leave_requests` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -6528,6 +6529,39 @@ CREATE TABLE `short_links` (
 LOCK TABLES `short_links` WRITE;
 /*!40000 ALTER TABLE `short_links` DISABLE KEYS */;
 /*!40000 ALTER TABLE `short_links` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `staff_positions`
+--
+
+DROP TABLE IF EXISTS `staff_positions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `staff_positions` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `pkey` varchar(40) NOT NULL,
+  `label` varchar(80) NOT NULL,
+  `sort` int(11) NOT NULL DEFAULT 0,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `pkey` (`pkey`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `staff_positions`
+--
+
+LOCK TABLES `staff_positions` WRITE;
+/*!40000 ALTER TABLE `staff_positions` DISABLE KEYS */;
+INSERT INTO `staff_positions` VALUES (1,'account','Account',1,1,'2026-08-26 12:23:57','2026-08-26 12:26:03');
+INSERT INTO `staff_positions` VALUES (2,'admin','Admin',2,1,'2026-08-26 12:23:57','2026-08-26 12:26:03');
+INSERT INTO `staff_positions` VALUES (3,'designer','Designer',3,1,'2026-08-26 12:23:57','2026-08-26 12:26:03');
+INSERT INTO `staff_positions` VALUES (4,'editor','Video editor',4,1,'2026-08-26 12:23:57','2026-08-26 12:26:03');
+/*!40000 ALTER TABLE `staff_positions` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

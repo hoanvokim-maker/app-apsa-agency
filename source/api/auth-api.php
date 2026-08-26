@@ -71,12 +71,9 @@ if (!au_hasColumn($pdo, 'app_users', 'position')) {
 }
 
 /** Danh sách vị trí — sửa ở đây thì UI tự đổi theo (auth-api?action=positions). */
-$POSITIONS = [
-    'account'  => 'Account',
-    'admin'    => 'Admin',
-    'designer' => 'Designer',
-    'editor'   => 'Video editor',
-];
+require_once __DIR__ . '/settings-api.php';
+/* Danh sach vi tri lay tu trang Cai dat he thong */
+$POSITIONS = st_positions();
 function au_position($v) {
     global $POSITIONS;
     $v = strtolower(trim((string)$v));

@@ -99,12 +99,9 @@ $ASSIGN_STATUS = [
     'review' => 'Chờ duyệt',
     'done'   => 'Xong',
 ];
-$ASSIGN_POS = [
-    'account'  => 'Account',
-    'admin'    => 'Admin',
-    'designer' => 'Designer',
-    'editor'   => 'Video editor',
-];
+require_once __DIR__ . '/settings-api.php';
+/* Danh sach vi tri lay tu trang Cai dat he thong */
+$ASSIGN_POS = st_positions();
 function q_asgStatus($v) { global $ASSIGN_STATUS; $v = strtolower(trim((string)$v)); return isset($ASSIGN_STATUS[$v]) ? $v : 'todo'; }
 function q_asgPos($v)    { global $ASSIGN_POS;    $v = strtolower(trim((string)$v)); return isset($ASSIGN_POS[$v]) ? $v : null; }
 
