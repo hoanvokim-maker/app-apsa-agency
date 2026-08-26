@@ -346,3 +346,28 @@ select:not([class*="stt"]):not([multiple]):not([size]) {
   line-height: 1.26;
 }
 select:not([class*="stt"]):not([multiple]):not([size])::-ms-expand { display: none; }
+
+/* -- APSA v1.2.15 - dropdown phang, bo hieu ung neon phat sang -----------
+   Cung tone voi chip Loai bao gia: nen mo, vien mo, chu sang. */
+html body select[class*="stt"],
+html body select[class*="stt"]:hover,
+html body select[class*="stt"]:focus,
+html body select#fStatus,
+html body select#fStatus:hover,
+html body select#fStatus:focus {
+  box-shadow: none !important;
+  text-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
+  outline: none !important;
+  border-width: 1px !important;
+  border-style: solid !important;
+  background-color: color-mix(in srgb, var(--neon) 15%, transparent) !important;
+  border-color: color-mix(in srgb, var(--neon) 40%, transparent) !important;
+  color: color-mix(in srgb, var(--neon) 78%, #ffffff) !important;
+}
+html body select[class*="stt"]:hover,
+html body select#fStatus:hover {
+  background-color: color-mix(in srgb, var(--neon) 25%, transparent) !important;
+  border-color: color-mix(in srgb, var(--neon) 60%, transparent) !important;
+}

@@ -1,5 +1,5 @@
 {
-    "version": "1.2.14",
+    "version": "1.2.15",
     "updated": "2026-08-26",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-25",
             "note": "Phiên bản 1.2",
             "items": [
+                {
+                    "d": "2026-08-26",
+                    "v": "1.2.15",
+                    "t": "dropdown phang: bo hieu ung neon phat sang, dong bo mau voi chip loai bao gia",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-26",
                     "v": "1.2.14",
