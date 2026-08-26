@@ -125,11 +125,17 @@
     .modal-overlay.open { display: flex; }
     .modal {
       background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
-      width: 100%; max-width: 420px; padding: 24px;
+      width: 100%; max-width: 460px; padding: 24px; max-height: calc(100vh - 48px); overflow-y: auto;
     }
     .modal h2 { font-size: 16px; margin-bottom: 18px; }
     .modal label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin: 14px 0 6px; }
-    .modal label:first-of-type { margin-top: 0; }
+    /* APSA1211: chi label dau tien cua form moi bo margin-top.
+   Truoc day :first-of-type an ca vao label dau trong .row2col va #loginBlock
+   khien cac o "So dien thoai / Email / Username" bi dinh sat hang tren. */
+.modal form > label:first-of-type { margin-top: 0; }
+.modal .row2col { margin-top: 0; }
+.modal .row2col > div { min-width: 0; }
+.modal .hint + label { margin-top: 12px; }
     .modal input, .modal select {
       width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
       padding: 9px 12px; color: var(--text); font-size: 13px; font-family: inherit; outline: none;
@@ -154,7 +160,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/theme.css?v=12" />
+<link rel="stylesheet" href="/theme.css?v=13" />
 <script src="/apsa-ui.js?v=13"></script>
 </head>
 <body>
@@ -209,12 +215,8 @@
 
       <label for="f_position">Vị trí</label>
       <select id="f_position">
-        <option value="">— Chưa đặt —</option>
-        <option value="account">Account</option>
-        <option value="admin">Admin</option>
-        <option value="designer">Designer</option>
-        <option value="editor">Video editor</option>
-      </select>
+            <option value="">— Chưa đặt —</option>
+          </select>
 
       <div class="row2col">
         <div>
@@ -289,11 +291,41 @@
     }
   }
 
-  const POS_LABEL = { account:'Account', admin:'Admin', designer:'Designer', editor:'Video editor' };
+  /* APSA1211: danh sach vi tri lay tu trang Cai dat he thong */
+let POS_LABEL = {};
+
+async function loadPositions() {
+  try {
+    const d = await api('positions');
+    POS_LABEL = (d && typeof d === 'object') ? d : {};
+  } catch (e) { POS_LABEL = {}; }
+  const sel = document.getElementById('f_position');
+  if (!sel) return;
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">— Chưa đặt —</option>' +
+    Object.keys(POS_LABEL).map(k => '<option value="' + esc(k) + '">' + esc(POS_LABEL[k]) + '</option>').join('');
+  sel.value = cur;
+}
+
+/* Nhan su dang giu mot vi tri da bi xoa trong Cai dat van phai hien dung */
+function setPosValue(v) {
+  const sel = document.getElementById('f_position');
+  if (!sel) return;
+  v = v || '';
+  sel.value = v;
+  if (v !== '' && sel.value !== v) {
+    const o = document.createElement('option');
+    o.value = v;
+    o.textContent = v + ' (đã gỡ khỏi Cài đặt)';
+    sel.appendChild(o);
+    sel.value = v;
+  }
+}
   let FILTER = 'all';   // all | inhouse | freelancer | pos:<key>
 
   async function loadUsers() {
-    users = await api('list');
+    await loadPositions();
+  users = await api('list');
     document.getElementById('countBadge').textContent = users.length;
     renderFilters();
     renderUsers();
@@ -335,7 +367,7 @@
           ${contact ? `<div class="contact">${esc(contact)}</div>` : ''}
           ${u.note ? `<div class="contact">${esc(u.note)}</div>` : ''}
         </td>
-        <td><span class="pos-pill ${pos ? 'pos-' + pos : 'pos-none'}">${pos ? POS_LABEL[pos] : '— chưa đặt —'}</span></td>
+        <td><span class="pos-pill ${pos ? 'pos-' + pos : 'pos-none'}">${pos ? (POS_LABEL[pos] || pos) : '— chưa đặt —'}</span></td>
         <td><span class="type-pill type-${type}">${type === 'freelancer' ? 'Freelancer' : 'Nhân viên'}</span></td>
         <td>${Number(u.can_login) ? `<span class="role-pill role-${u.role}">${u.role === 'admin' ? 'Admin' : 'Member'}</span>` : '<span class="nologin">—</span>'}</td>
         <td><span class="status-pill ${u.active == 1 ? 'status-active' : 'status-inactive'}">${u.active == 1 ? 'Đang cộng tác' : 'Ngưng'}</span></td>
@@ -392,7 +424,7 @@
     $u('f_role').value = u.role;
     $u('f_active').value = String(u.active);
     $u('f_type').value = u.staff_type || 'inhouse';
-    $u('f_position').value = u.position || '';
+    setPosValue(u.position || '');
     $u('f_phone').value = u.phone || '';
     $u('f_email').value = u.email || '';
     $u('f_note').value = u.note || '';

@@ -322,3 +322,11 @@ header .hmenu button{
   padding:9px 10px; border-radius:9px; transition:.15s; white-space:nowrap;
 }
 header .hmenu button:hover{ background:#141414; color:#fff; }
+
+/* ── APSA v1.2.11 — tan dung ~90% be ngang man hinh laptop ───────────── */
+@media (min-width: 1180px) {
+  .wrap,
+  .container,
+  .filter-bar,
+  .personal-bar { max-width: min(90vw, 1920px) !important; }
+}
