@@ -1,5 +1,5 @@
 {
-    "version": "1.2.20",
+    "version": "1.2.21",
     "updated": "2026-08-27",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-25",
             "note": "Phiên bản 1.2",
             "items": [
+                {
+                    "d": "2026-08-27",
+                    "v": "1.2.21",
+                    "t": "don file .bak khoi docroot - chan lo source code qua HTTP",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-27",
                     "v": "1.2.20",

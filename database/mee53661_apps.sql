@@ -312,7 +312,7 @@ CREATE TABLE `app_notifications` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `idx_user` (`user_id`,`is_read`,`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -350,11 +350,15 @@ INSERT INTO `app_notifications` VALUES (31,7,'leave_approved','Đơn nghỉ đã
 INSERT INTO `app_notifications` VALUES (32,12,'assign','Harris giao việc cho bạn','Video 1 - BS Luận — báo giá 16012026-9 · AZ-VDO Hope Nexium','./quotation.html?q=16012026-9&tab=quote#giaoviec','Harris',0,'2026-08-26 14:51:44');
 INSERT INTO `app_notifications` VALUES (33,11,'assign','Harris giao việc cho bạn','Video 2 - BS Luận — báo giá 16012026-9 · AZ-VDO Hope Nexium','./quotation.html?q=16012026-9&tab=quote#giaoviec','Harris',0,'2026-08-26 14:51:44');
 INSERT INTO `app_notifications` VALUES (34,9,'assign','Harris giao việc cho bạn','BS Luận - VDO 1 - 2 — báo giá 16012026-9 · AZ-VDO Hope Nexium','./quotation.html?q=16012026-9&tab=quote#giaoviec','Harris',1,'2026-08-26 14:55:07');
-INSERT INTO `app_notifications` VALUES (35,1,'leave_new','Đơn nghỉ mới: Work From Somewhere — Tiên Tiên','Tiên Tiên xin nghỉ 1 ngày (Work From Somewhere): 27/08/2026','/leave.html?id=12','Tiên Tiên',0,'2026-08-27 02:39:10');
+INSERT INTO `app_notifications` VALUES (35,1,'leave_new','Đơn nghỉ mới: Work From Somewhere — Tiên Tiên','Tiên Tiên xin nghỉ 1 ngày (Work From Somewhere): 27/08/2026','/leave.html?id=12','Tiên Tiên',1,'2026-08-27 02:39:10');
 INSERT INTO `app_notifications` VALUES (36,9,'leave_approved','Đã duyệt: Work From Somewhere — Tiên Tiên','Harris đã duyệt đơn nghỉ 27/08/2026 của bạn.','/leave.html?id=12','Harris',1,'2026-08-27 02:45:34');
 INSERT INTO `app_notifications` VALUES (37,5,'task_done','Trang Đỗ đã hoàn thành việc được giao','Liên hệ với chị Nga và làm việc menu — 25082026-152 • AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop','./quotation.html?q=25082026-152&tab=quote#giaoviec','Trang Đỗ',0,'2026-08-27 03:04:11');
-INSERT INTO `app_notifications` VALUES (38,1,'leave_new','Đơn nghỉ mới: Phép năm — Vy Vy','Vy Vy xin nghỉ 1 ngày (Phép năm): 28/08/2026','/leave.html?id=13','Vy Vy',0,'2026-08-27 03:09:12');
-INSERT INTO `app_notifications` VALUES (39,1,'leave_new','Đơn nghỉ mới: Phép năm — Vy Vy','Vy Vy xin nghỉ 1 ngày (Phép năm): 29/08/2026','/leave.html?id=14','Vy Vy',0,'2026-08-27 03:12:03');
+INSERT INTO `app_notifications` VALUES (38,1,'leave_new','Đơn nghỉ mới: Phép năm — Vy Vy','Vy Vy xin nghỉ 1 ngày (Phép năm): 28/08/2026','/leave.html?id=13','Vy Vy',1,'2026-08-27 03:09:12');
+INSERT INTO `app_notifications` VALUES (39,1,'leave_new','Đơn nghỉ mới: Phép năm — Vy Vy','Vy Vy xin nghỉ 1 ngày (Phép năm): 29/08/2026','/leave.html?id=14','Vy Vy',1,'2026-08-27 03:12:03');
+INSERT INTO `app_notifications` VALUES (40,1,'leave_new','Đơn nghỉ mới: Work From Somewhere — Vy Vy','Vy Vy xin nghỉ 1 ngày (Work From Somewhere): 03/09/2026','/leave.html?id=15','Vy Vy',1,'2026-08-27 03:17:01');
+INSERT INTO `app_notifications` VALUES (41,10,'leave_approved','Đã duyệt: Phép năm — Vy Vy','Harris đã duyệt đơn nghỉ 28/08/2026 của bạn.','/leave.html?id=13','Harris',0,'2026-08-27 03:21:12');
+INSERT INTO `app_notifications` VALUES (42,10,'leave_approved','Đã duyệt: Phép năm — Vy Vy','Harris đã duyệt đơn nghỉ 29/08/2026 của bạn.','/leave.html?id=14','Harris',0,'2026-08-27 03:21:16');
+INSERT INTO `app_notifications` VALUES (43,10,'leave_approved','Đã duyệt: Work From Somewhere — Vy Vy','Harris đã duyệt đơn nghỉ 03/09/2026 của bạn.','/leave.html?id=15','Harris',0,'2026-08-27 03:21:22');
 /*!40000 ALTER TABLE `app_notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1285,7 +1289,7 @@ CREATE TABLE `leave_requests` (
   KEY `ix_user` (`user_id`),
   KEY `ix_status` (`status`),
   KEY `ix_start` (`start_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1302,8 +1306,9 @@ INSERT INTO `leave_requests` VALUES (9,3,'Thảo Lý','','work_from_home','2026-
 INSERT INTO `leave_requests` VALUES (10,14,'Hoàng Been','','annual','2026-08-27','am','2026-08-27','am',0,0.5,'đưa ông đi khám bệnh định kì','','approved',1,'Harris','2026-08-26 13:26:27','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIllsAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIllsAAA%3D&exvsurl=1&path=/calendar/item','2026-08-26 13:25:45','2026-08-26 13:26:29');
 INSERT INTO `leave_requests` VALUES (11,7,'Anh Thư','','other','2026-08-27','full','2026-08-27','full',1,1.0,'em Thư Work From Hutech university','','approved',1,'Harris','2026-08-26 18:45:26','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIlluAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABOIlluAAA%3D&exvsurl=1&path=/calendar/item','2026-08-26 17:54:32','2026-08-26 18:45:28');
 INSERT INTO `leave_requests` VALUES (12,9,'Tiên Tiên','','work_from_home','2026-08-27','full','2026-08-27','full',1,1.0,'cá nhân','','approved',1,'Harris','2026-08-27 09:45:32','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABO_9HTAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABO%2B9HTAAA%3D&exvsurl=1&path=/calendar/item','2026-08-27 09:39:10','2026-08-27 09:45:34');
-INSERT INTO `leave_requests` VALUES (13,10,'Vy Vy','','annual','2026-08-28','full','2026-08-28','full',1,1.0,'Làm lễ tốt nghiệp','','pending',NULL,'',NULL,NULL,'','',NULL,'','2026-08-27 10:09:12','2026-08-27 10:09:12');
-INSERT INTO `leave_requests` VALUES (14,10,'Vy Vy','','annual','2026-08-29','full','2026-08-29','full',1,1.0,'Về quê','','pending',NULL,'',NULL,NULL,'','',NULL,'','2026-08-27 10:12:03','2026-08-27 10:12:03');
+INSERT INTO `leave_requests` VALUES (13,10,'Vy Vy','','annual','2026-08-28','full','2026-08-28','full',1,1.0,'Làm lễ tốt nghiệp','','approved',1,'Harris','2026-08-27 10:21:09','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABO_9HVAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABO%2B9HVAAA%3D&exvsurl=1&path=/calendar/item','2026-08-27 10:09:12','2026-08-27 10:21:12');
+INSERT INTO `leave_requests` VALUES (14,10,'Vy Vy','','annual','2026-08-29','full','2026-08-29','full',1,1.0,'Về quê','','approved',1,'Harris','2026-08-27 10:21:15','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABO_9HXAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABO%2B9HXAAA%3D&exvsurl=1&path=/calendar/item','2026-08-27 10:12:03','2026-08-27 10:21:16');
+INSERT INTO `leave_requests` VALUES (15,10,'Vy Vy','','work_from_home','2026-09-03','full','2026-09-03','full',1,1.0,'Còn bị kẹt dưới quê do lễ Quốc Khánh','','approved',1,'Harris','2026-08-27 10:21:21','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABO_9HZAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABO%2B9HZAAA%3D&exvsurl=1&path=/calendar/item','2026-08-27 10:17:01','2026-08-27 10:21:22');
 /*!40000 ALTER TABLE `leave_requests` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1898,6 +1903,77 @@ INSERT INTO `logo_items` VALUES (189,'logo hội hô hấp việt nam','h
 INSERT INTO `logo_items` VALUES (190,'Logo hội nhi khoa','hội nhi khoa','other',NULL,261,NULL,NULL,'2026-08-25 13:33:31','2026-08-25 13:33:31');
 INSERT INTO `logo_items` VALUES (191,'logo trung sơn white outline','trung sơn white outline','other',NULL,262,NULL,NULL,'2026-08-25 13:33:31','2026-08-25 13:33:31');
 /*!40000 ALTER TABLE `logo_items` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `policy_docs`
+--
+
+DROP TABLE IF EXISTS `policy_docs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `policy_docs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `section_id` int(11) NOT NULL,
+  `title` varchar(200) NOT NULL,
+  `summary` varchar(400) NOT NULL DEFAULT '',
+  `body` mediumtext DEFAULT NULL,
+  `sort` int(11) NOT NULL DEFAULT 0,
+  `pinned` tinyint(1) NOT NULL DEFAULT 0,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `author_id` int(11) DEFAULT NULL,
+  `author_name` varchar(190) NOT NULL DEFAULT '',
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `ix_sec` (`section_id`),
+  KEY `ix_sort` (`sort`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `policy_docs`
+--
+
+LOCK TABLES `policy_docs` WRITE;
+/*!40000 ALTER TABLE `policy_docs` DISABLE KEYS */;
+INSERT INTO `policy_docs` VALUES (1,2,'Chính sách phép năm','Thử việc 2 tháng chưa có phép. Từ khi chính thức, mỗi tháng làm việc cộng 1 ngày. Ngày 1/1 cộng 12 ngày mới; ngày tồn năm trước dùng đến hết 31/03.','<h2>Phạm vi áp dụng</h2><p>Chính sách này áp dụng cho nhân sự chính thức gia nhập APSA <b>từ tháng 08/2026</b>. Nhân sự đã làm việc trước mốc này giữ nguyên chế độ cũ là 12 ngày phép/năm.</p><h2>1. Thời gian thử việc</h2><p><b>Hai tháng đầu tiên</b> kể từ ngày vào làm là thời gian thử việc. Trong giai đoạn này nhân viên <b>chưa được hưởng chế độ phép năm</b>. Nghỉ trong thời gian thử việc ghi nhận là nghỉ không lương hoặc loại nghỉ tương ứng, không trừ vào quỹ phép.</p><h2>2. Bắt đầu tính phép</h2><p>Kể từ ngày được duyệt trở thành <b>nhân viên chính thức</b>, nhân viên bắt đầu tích luỹ phép năm. Admin ghi nhận mốc này trong <i>Xin nghỉ phép → Quỹ phép → Lưu mốc</i>.</p><h2>3. Cách tích luỹ</h2><ul><li><b>Mỗi tháng làm việc tương ứng 1 ngày phép.</b></li><li>Tính từ tháng trở thành nhân viên chính thức cho đến hết tháng 12 của năm đó.</li><li>Ví dụ: chính thức từ 01/10 → được 3 ngày phép cho năm đó (tháng 10, 11, 12).</li></ul><h2>4. Cấp phép hằng năm</h2><p>Ngày <b>01/01</b> mỗi năm, quỹ phép được tự động cộng <b>12 ngày mới</b> cho năm đó.</p><h2>5. Ngày phép tồn của năm trước</h2><p>Số ngày phép chưa dùng hết của năm trước được mang sang và sử dụng đến <b>hết ngày 31/03</b> của năm kế tiếp. Sau 31/03, số ngày tồn này <b>tự động hết hạn</b> và không được quy đổi.</p><h2>6. Nguyên tắc trừ quỹ</h2><ul><li>Chỉ những loại nghỉ được đánh dấu <i>Trừ quỹ phép</i> trong Cài đặt hệ thống mới trừ vào phép năm.</li><li>Nghỉ nửa ngày tính 0,5 ngày.</li><li>Ngày nghỉ hằng tuần và ngày lễ không tính vào số ngày phép.</li></ul><h2>7. Trường hợp đặc biệt</h2><p>Admin có thể chỉnh tay quỹ phép của từng người trong từng năm tại ô <i>Quỹ [năm]</i>. Số chỉnh tay sẽ ghi đè công thức tự động cho riêng người đó trong năm đã chọn.</p>',0,1,1,NULL,'Hệ thống','2026-08-27 10:12:39','2026-08-27 10:12:39');
+/*!40000 ALTER TABLE `policy_docs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `policy_sections`
+--
+
+DROP TABLE IF EXISTS `policy_sections`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `policy_sections` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `skey` varchar(40) NOT NULL,
+  `name` varchar(120) NOT NULL,
+  `blurb` varchar(255) NOT NULL DEFAULT '',
+  `sort` int(11) NOT NULL DEFAULT 0,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_skey` (`skey`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `policy_sections`
+--
+
+LOCK TABLES `policy_sections` WRITE;
+/*!40000 ALTER TABLE `policy_sections` DISABLE KEYS */;
+INSERT INTO `policy_sections` VALUES (1,'company','Công ty','Giới thiệu, giá trị cốt lõi, quy trình làm việc chung.',0,1,'2026-08-27 10:12:39','2026-08-27 10:12:39');
+INSERT INTO `policy_sections` VALUES (2,'hr','Nhân sự','Chế độ, phép năm, chấm công, quyền lợi nhân viên.',10,1,'2026-08-27 10:12:39','2026-08-27 10:12:39');
+INSERT INTO `policy_sections` VALUES (3,'education','Education','Tài liệu đào tạo, onboarding, kiến thức nền.',20,1,'2026-08-27 10:12:39','2026-08-27 10:12:39');
+INSERT INTO `policy_sections` VALUES (4,'skill','Skill','Hướng dẫn kỹ năng, công cụ, tips theo từng vị trí.',30,1,'2026-08-27 10:12:39','2026-08-27 10:12:39');
+INSERT INTO `policy_sections` VALUES (5,'sharing','Sharing','Bài chia sẻ nội bộ, kinh nghiệm dự án, case study.',40,1,'2026-08-27 10:12:39','2026-08-27 10:12:39');
+/*!40000 ALTER TABLE `policy_sections` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
