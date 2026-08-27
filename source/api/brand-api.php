@@ -220,8 +220,8 @@ $BG_SELECT = 'id,name,size,folder,file,webUrl,lastModifiedDateTime,createdDateTi
 function bg_item($id, $withUrl = false)
 {
     global $BG_SELECT;
-    $sel = $BG_SELECT . ($withUrl ? ',@microsoft.graph.downloadUrl' : '');
-    list($c, $r) = bg_g('GET', bg_drive() . '/items/' . rawurlencode($id) . '?$select=' . rawurlencode($sel));
+    $sel = $withUrl ? '' : ('?$select=' . $BG_SELECT);
+    list($c, $r) = bg_g('GET', bg_drive() . '/items/' . rawurlencode($id) . $sel);
     if ($c !== 200 || !isset($r['id'])) bg_fail(mg_err($r, $c, 'Khong doc duoc muc nay tren SharePoint.'), $c === 404 ? 404 : 502);
     return $r;
 }
@@ -316,7 +316,7 @@ case 'list':
 
     global $BG_SELECT;
     $items = array();
-    $url   = bg_drive() . '/items/' . rawurlencode($f['id']) . '/children?$top=999&$select=' . rawurlencode($BG_SELECT);
+    $url   = bg_drive() . '/items/' . rawurlencode($f['id']) . '/children?$top=999&$select=' . $BG_SELECT;
     $loops = 0;
     while ($url !== '' && $loops < 20) {
         $loops++;
@@ -356,7 +356,7 @@ case 'search':
     list($c, $r) = bg_g(
         'GET',
         bg_drive() . '/items/' . rawurlencode($CFG['root_id'])
-        . "/search(q='" . rawurlencode(str_replace("'", "''", $q)) . "')?\$top=200&\$select=" . rawurlencode($BG_SELECT)
+        . "/search(q='" . rawurlencode(str_replace("'", "''", $q)) . "')?\$top=200&\$select=" . $BG_SELECT
     );
     if ($c !== 200 || !isset($r['value'])) bg_fail(mg_err($r, $c, 'Khong tim duoc.'), 502);
     $items = array();

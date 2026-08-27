@@ -1,5 +1,5 @@
 {
-    "version": "1.2.25",
+    "version": "1.2.26",
     "updated": "2026-08-27",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-25",
             "note": "Phiên bản 1.2",
             "items": [
+                {
+                    "d": "2026-08-27",
+                    "v": "1.2.26",
+                    "t": "Brand Guidelines: nap theme.css + font chung; sua duong dan tai file tu SharePoint",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-27",
                     "v": "1.2.25",

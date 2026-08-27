@@ -639,6 +639,42 @@ INSERT INTO `badminton_registrations` VALUES (11,'doi_nam_nu','Organon','Nguyễ
 UNLOCK TABLES;
 
 --
+-- Table structure for table `brand_log`
+--
+
+DROP TABLE IF EXISTS `brand_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `brand_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `user_name` varchar(150) NOT NULL DEFAULT '',
+  `act` varchar(20) NOT NULL DEFAULT '',
+  `item_name` varchar(400) NOT NULL DEFAULT '',
+  `detail` varchar(400) NOT NULL DEFAULT '',
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `k_time` (`created_at`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `brand_log`
+--
+
+LOCK TABLES `brand_log` WRITE;
+/*!40000 ALTER TABLE `brand_log` DISABLE KEYS */;
+INSERT INTO `brand_log` VALUES (1,1,'Harris','mkdir','_apsa-test-tmp','','2026-08-27 19:03:45');
+INSERT INTO `brand_log` VALUES (2,1,'Harris','rename','_apsa-test-renamed','tu: _apsa-test-tmp','2026-08-27 19:04:04');
+INSERT INTO `brand_log` VALUES (3,1,'Harris','delete','_apsa-test-renamed','thu muc','2026-08-27 19:04:27');
+INSERT INTO `brand_log` VALUES (4,1,'Harris','upload','_apsa-upload-test.bin','0 MB','2026-08-27 19:04:53');
+INSERT INTO `brand_log` VALUES (5,1,'Harris','upload','_apsa-upload-big.bin','8.6 MB','2026-08-27 19:05:11');
+INSERT INTO `brand_log` VALUES (6,1,'Harris','delete','_apsa-upload-big.bin','file','2026-08-27 19:05:55');
+INSERT INTO `brand_log` VALUES (7,1,'Harris','delete','_apsa-upload-test.bin','file','2026-08-27 19:05:59');
+/*!40000 ALTER TABLE `brand_log` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `crm_audit_log`
 --
 
