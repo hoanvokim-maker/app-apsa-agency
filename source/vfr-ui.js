@@ -98,6 +98,80 @@
     document.head.appendChild(s);
   }
 
+  /* ── nhập tiền: gõ tắt kiểu Excel + tự chấm phân cách ────── *
+   *  4tr = 4.000.000 · 1tr5 = 1.500.000 · 500k = 500.000 · 4e6  */
+  function pm(v) {
+    var s2 = String(v == null ? '' : v).trim().toLowerCase()
+      .replace(/\s+/g, '').replace(/đ|vnd|vnđ/g, '');
+    if (!s2) return 0;
+    var neg = s2.charAt(0) === '-';
+    if (neg) s2 = s2.slice(1);
+
+    var MULT = { k: 1e3, ng: 1e3, ngan: 1e3, nghin: 1e3, tr: 1e6, m: 1e6, trieu: 1e6, ty: 1e9, 'tỷ': 1e9, b: 1e9 };
+    var suf = s2.match(/^([\d.,]+)(k|ng|ngan|nghin|tr|trieu|m|ty|tỷ|b)(\d*)$/);
+    if (suf) {
+      var base = suf[1].replace(/,/g, '.');
+      if (base.split('.').length - 1 > 1) base = base.replace(/\./g, '');
+      var n1 = parseFloat(base) || 0;
+      var mult = MULT[suf[2]] || 1;
+      var val = n1 * mult;
+      if (suf[3]) val += (parseInt(suf[3], 10) || 0) * mult / Math.pow(10, suf[3].length);
+      return Math.round(neg ? -val : val);
+    }
+
+    var sci = s2.match(/^([\d.,]+)e([+-]?\d+)$/);
+    if (sci) {
+      var mant = parseFloat(sci[1].replace(/,/g, '.')) || 0;
+      var ex = parseInt(sci[2], 10) || 0;
+      return Math.round((neg ? -1 : 1) * mant * Math.pow(10, ex));
+    }
+
+    var plain = s2.replace(/[.,]/g, '');
+    if (!/^\d+$/.test(plain)) return 0;
+    var p2 = Number(plain) || 0;
+    return Math.round(neg ? -p2 : p2);
+  }
+  function fmtM(v) {
+    var n1 = Math.round(Number(v) || 0);
+    return n1 ? n1.toLocaleString('vi-VN') : '';
+  }
+  function mBind(inp, after) {
+    if (!inp || inp.getAttribute('data-mny')) return inp;
+    inp.setAttribute('data-mny', '1');
+    try { inp.type = 'text'; } catch (e) {}
+    inp.setAttribute('inputmode', 'text');
+    inp.setAttribute('autocomplete', 'off');
+    inp.removeAttribute('step');
+    inp.removeAttribute('min');
+    if (!inp.placeholder) inp.placeholder = 'VD: 210k · 1tr5';
+    inp.addEventListener('blur', function () {
+      var n1 = pm(this.value);
+      this.value = fmtM(n1);
+      if (after) after(n1, this);
+    });
+    inp.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); this.blur(); }
+    });
+    return inp;
+  }
+  function mBindAll() {
+    ['itBasic', 'itStandard', 'itPremium', 'itQ1', 'itQ2', 'itQ3'].forEach(function (id) { mBind(el(id)); });
+    var cn = el('calcNet');
+    if (cn && !cn.getAttribute('data-mny')) {
+      cn.setAttribute('data-mny', '1');
+      cn.setAttribute('autocomplete', 'off');
+      cn.placeholder = 'VD: 150tr · 150.000.000 · 1e8';
+      cn.addEventListener('blur', function () {
+        this.value = fmtM(pm(this.value));
+        if (typeof runCalc === 'function') runCalc();
+      });
+      cn.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); this.blur(); }
+      });
+    }
+  }
+  window.apsaMoney = { parse: pm, fmt: fmtM };
+
   /* ── dựng thêm phần cho modal thêm/sửa ───────────────────── */
   function buildModal() {
     var priceDiv = el('vfrPriceDiv'), priceRow = el('vfrPriceRow'), zipRow = el('vfrZipRow');
@@ -107,9 +181,10 @@
     if (lbl) lbl.textContent = 'Giá bán theo số lượng (VND, giá NET)';
 
     priceRow.innerHTML =
-      '<div class="fg"><label>' + QL[0] + ' cái</label><input type="number" id="itQ1" min="0" step="1000" /></div>' +
-      '<div class="fg"><label>' + QL[1] + ' cái</label><input type="number" id="itQ2" min="0" step="1000" /></div>' +
-      '<div class="fg"><label>' + QL[2] + ' cái</label><input type="number" id="itQ3" min="0" step="1000" /></div>';
+      '<div class="fg"><label>' + QL[0] + ' cái</label><input type="text" id="itQ1" inputmode="text" autocomplete="off" placeholder="VD: 210k · 1tr5" /></div>' +
+      '<div class="fg"><label>' + QL[1] + ' cái</label><input type="text" id="itQ2" inputmode="text" autocomplete="off" placeholder="VD: 195k" /></div>' +
+      '<div class="fg"><label>' + QL[2] + ' cái</label><input type="text" id="itQ3" inputmode="text" autocomplete="off" placeholder="VD: 180k" /></div>';
+    mBindAll();
 
     // Thông số — đặt ngay trước khối giá
     var spec = document.createElement('div');
@@ -211,7 +286,7 @@
     var rows = SUPPLY[String(it.id)] || [];
     var best = null, who = '';
     rows.forEach(function (r) {
-      var v = n0(r.p1);
+      var v = pm(r.p1);
       if (v > 0 && (best === null || v < best)) { best = v; who = r.supplier_name; }
     });
     return { v: best, who: who, n: rows.length };
@@ -230,7 +305,7 @@
     var rows = SUPPLY[String(it.id)] || [];
     if (!rows.length) return '<td class="sup-cell"><span class="none">— chưa có —</span></td>';
     var h = rows.slice(0, 3).map(function (r) {
-      var ps = [r.p1, r.p2, r.p3].map(function (x) { return n0(x) ? fmtVnd(n0(x)) : '—'; }).join(' / ');
+      var ps = [r.p1, r.p2, r.p3].map(function (x) { return pm(x) ? fmtVnd(pm(x)) : '—'; }).join(' / ');
       return '<span class="s"><b>' + esc(r.supplier_name || '?') + '</b> · ' + ps + '</span>';
     }).join('');
     if (rows.length > 3) h += '<span class="s">+' + (rows.length - 3) + ' NCC khác</span>';
@@ -330,6 +405,7 @@
     el('stdPriceRow').style.display = v ? 'none' : 'grid';
     el('vfrPriceDiv').style.display = v ? 'flex' : 'none';
     el('vfrPriceRow').style.display = v ? 'grid' : 'none';
+    mBindAll();
     el('vfrZipRow').style.display   = v ? 'block' : 'none';
     if (el('vfrSpecRow')) el('vfrSpecRow').style.display = v ? 'block' : 'none';
     if (el('vfrSupDiv')) el('vfrSupDiv').style.display = (v && IS_ADMIN) ? 'flex' : 'none';
@@ -368,9 +444,9 @@
     var body = editRows.map(function (r, i) {
       return '<tr>' +
         '<td><select onchange="vfrSupSet(' + i + ',\'supplier_id\',this.value)">' + supOptions(r.supplier_id) + '</select></td>' +
-        '<td><input type="number" min="0" step="1000" value="' + (r.p1 || '') + '" oninput="vfrSupSet(' + i + ',\'p1\',this.value)" /></td>' +
-        '<td><input type="number" min="0" step="1000" value="' + (r.p2 || '') + '" oninput="vfrSupSet(' + i + ',\'p2\',this.value)" /></td>' +
-        '<td><input type="number" min="0" step="1000" value="' + (r.p3 || '') + '" oninput="vfrSupSet(' + i + ',\'p3\',this.value)" /></td>' +
+        '<td><input type="text" inputmode="text" autocomplete="off" value="' + esc(fmtM(pm(r.p1))) + '" placeholder="VD: 150k" oninput="vfrSupSet(' + i + ',\'p1\',this.value)" onblur="vfrSupNorm(' + i + ',\'p1\',this)" /></td>' +
+        '<td><input type="text" inputmode="text" autocomplete="off" value="' + esc(fmtM(pm(r.p2))) + '" placeholder="—" oninput="vfrSupSet(' + i + ',\'p2\',this.value)" onblur="vfrSupNorm(' + i + ',\'p2\',this)" /></td>' +
+        '<td><input type="text" inputmode="text" autocomplete="off" value="' + esc(fmtM(pm(r.p3))) + '" placeholder="—" oninput="vfrSupSet(' + i + ',\'p3\',this.value)" onblur="vfrSupNorm(' + i + ',\'p3\',this)" /></td>' +
         '<td><input type="text" value="' + esc(r.note || '') + '" placeholder="ghi chú" oninput="vfrSupSet(' + i + ',\'note\',this.value)" /></td>' +
         '<td><button class="xr" title="Bỏ dòng này" onclick="vfrSupDel(' + i + ')">✕</button></td>' +
       '</tr>';
@@ -390,6 +466,12 @@
     if (!editRows[i]) return;
     editRows[i][k] = (k === 'supplier_id') ? (parseInt(v, 10) || 0) : (k === 'note' ? v : v);
     if (k === 'supplier_id') renderSupBox();
+  };
+  window.vfrSupNorm = function (i, k, box) {
+    if (!editRows[i]) return;
+    var n1 = pm(box.value);
+    editRows[i][k] = n1 ? String(n1) : '';
+    box.value = fmtM(n1);
   };
   window.vfrSupDel = function (i) { editRows.splice(i, 1); renderSupBox(); };
   window.vfrSupAddRow = function () {
@@ -582,6 +664,7 @@
       .forEach(function (id) { el(id).value = ''; });
     ['itBasic','itStandard','itPremium'].forEach(function (id) { if (el(id)) el(id).value = ''; });
     ['itQ1','itQ2','itQ3'].forEach(function (id) { if (el(id)) el(id).value = ''; });
+    mBindAll();
     if (el('itSpecs')) el('itSpecs').value = '';
     el('itSheet').value = inTrash ? 'event' : curSheet;
     fillCatSelect(el('itSheet').value, null);
@@ -606,19 +689,20 @@
     el('itDescVn').value = it.desc_vn || '';
     el('itUnitEn').value = it.unit_en || '';
     el('itUnitVn').value = it.unit_vn || '';
-    if (el('itBasic')) el('itBasic').value = nz(it.basic);
-    if (el('itStandard')) el('itStandard').value = nz(it.standard);
-    if (el('itPremium')) el('itPremium').value = nz(it.premium);
-    if (el('itQ1')) el('itQ1').value = nz(it.basic);
-    if (el('itQ2')) el('itQ2').value = nz(it.standard);
-    if (el('itQ3')) el('itQ3').value = nz(it.premium);
+    mBindAll();
+    if (el('itBasic')) el('itBasic').value = fmtM(it.basic);
+    if (el('itStandard')) el('itStandard').value = fmtM(it.standard);
+    if (el('itPremium')) el('itPremium').value = fmtM(it.premium);
+    if (el('itQ1')) el('itQ1').value = fmtM(it.basic);
+    if (el('itQ2')) el('itQ2').value = fmtM(it.standard);
+    if (el('itQ3')) el('itQ3').value = fmtM(it.premium);
     if (el('itSpecs')) el('itSpecs').value = it.specs || '';
     el('itNotesEn').value = it.notes_en || '';
     el('itNotesVn').value = it.notes_vn || '';
 
     pendProd = it.prod_url ? { url: it.prod_url, name: it.prod_name || 'SharePoint', id: it.prod_id || '', dir: parseInt(it.prod_dir || 0, 10) } : null;
     editRows = (SUPPLY[String(it.id)] || []).map(function (r) {
-      return { supplier_id: r.supplier_id, p1: n0(r.p1) || '', p2: n0(r.p2) || '', p3: n0(r.p3) || '', note: r.note || '' };
+      return { supplier_id: r.supplier_id, p1: pm(r.p1) || '', p2: pm(r.p2) || '', p3: pm(r.p3) || '', note: r.note || '' };
     });
 
     applyVfrMode();
@@ -647,7 +731,7 @@
 
     var rows = editRows.filter(function (r) { return r.supplier_id > 0; });
     var bestP1 = null;
-    rows.forEach(function (r) { var v = n0(r.p1); if (v > 0 && (bestP1 === null || v < bestP1)) bestP1 = v; });
+    rows.forEach(function (r) { var v = pm(r.p1); if (v > 0 && (bestP1 === null || v < bestP1)) bestP1 = v; });
 
     askName(false).then(function (name) {
       var payload = {
@@ -656,9 +740,9 @@
         item_en: itemEn, item_vn: el('itItemVn').value.trim(),
         desc_en: el('itDescEn').value.trim(), desc_vn: el('itDescVn').value.trim(),
         unit_en: el('itUnitEn').value.trim(), unit_vn: el('itUnitVn').value.trim(),
-        basic:    vfrMode ? (el('itQ1').value || 0) : (el('itBasic').value || 0),
-        standard: vfrMode ? (el('itQ2').value || 0) : (el('itStandard').value || 0),
-        premium:  vfrMode ? (el('itQ3').value || 0) : (el('itPremium').value || 0),
+        basic:    pm(vfrMode ? el('itQ1').value : el('itBasic').value),
+        standard: pm(vfrMode ? el('itQ2').value : el('itStandard').value),
+        premium:  pm(vfrMode ? el('itQ3').value : el('itPremium').value),
         notes_en: el('itNotesEn').value.trim(), notes_vn: el('itNotesVn').value.trim(),
         updated_by: name
       };
@@ -772,7 +856,10 @@
   /* Bo dong "+MA" trong ket qua tinh tong khi dang o sheet VFR */
   var origCalc = window.runCalc;
   window.runCalc = function () {
+    var cn = document.getElementById('calcNet'), keep = null;
+    if (cn) { keep = cn.value; cn.value = String(pm(keep)); }
     var r = origCalc ? origCalc.apply(this, arguments) : undefined;
+    if (cn) cn.value = keep;
     if (curSheet === VFR && !inTrash) {
       var box = document.getElementById('calcResult');
       if (box && box.innerHTML.indexOf('+MA') >= 0) {
@@ -801,6 +888,13 @@
 
   injectCss();
   buildModal();
+  var origPH = window.updProfitHint;
+  window.updProfitHint = function () {
+    if (!document.getElementById('itSell') || !document.getElementById('itCost')) return;
+    try { return origPH.apply(this, arguments); } catch (e) {}
+  };
+
+  mBindAll();
   applyTerms();
   ensureMeta().then(function () {
     if (curSheet === VFR && !inTrash) ensureVfrData();

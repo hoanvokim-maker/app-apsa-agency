@@ -653,9 +653,10 @@ CREATE TABLE `brand_log` (
   `item_name` varchar(400) NOT NULL DEFAULT '',
   `detail` varchar(400) NOT NULL DEFAULT '',
   `created_at` datetime NOT NULL,
+  `root` varchar(20) NOT NULL DEFAULT 'brand',
   PRIMARY KEY (`id`),
   KEY `k_time` (`created_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -664,14 +665,19 @@ CREATE TABLE `brand_log` (
 
 LOCK TABLES `brand_log` WRITE;
 /*!40000 ALTER TABLE `brand_log` DISABLE KEYS */;
-INSERT INTO `brand_log` VALUES (1,1,'Harris','mkdir','_apsa-test-tmp','','2026-08-27 19:03:45');
-INSERT INTO `brand_log` VALUES (2,1,'Harris','rename','_apsa-test-renamed','tu: _apsa-test-tmp','2026-08-27 19:04:04');
-INSERT INTO `brand_log` VALUES (3,1,'Harris','delete','_apsa-test-renamed','thu muc','2026-08-27 19:04:27');
-INSERT INTO `brand_log` VALUES (4,1,'Harris','upload','_apsa-upload-test.bin','0 MB','2026-08-27 19:04:53');
-INSERT INTO `brand_log` VALUES (5,1,'Harris','upload','_apsa-upload-big.bin','8.6 MB','2026-08-27 19:05:11');
-INSERT INTO `brand_log` VALUES (6,1,'Harris','delete','_apsa-upload-big.bin','file','2026-08-27 19:05:55');
-INSERT INTO `brand_log` VALUES (7,1,'Harris','delete','_apsa-upload-test.bin','file','2026-08-27 19:05:59');
-INSERT INTO `brand_log` VALUES (8,1,'Harris','upload','Global TRUQAP Brand Book V3.pdf','14.4 MB','2026-08-27 19:19:40');
+INSERT INTO `brand_log` VALUES (1,1,'Harris','mkdir','_apsa-test-tmp','','2026-08-27 19:03:45','brand');
+INSERT INTO `brand_log` VALUES (2,1,'Harris','rename','_apsa-test-renamed','tu: _apsa-test-tmp','2026-08-27 19:04:04','brand');
+INSERT INTO `brand_log` VALUES (3,1,'Harris','delete','_apsa-test-renamed','thu muc','2026-08-27 19:04:27','brand');
+INSERT INTO `brand_log` VALUES (4,1,'Harris','upload','_apsa-upload-test.bin','0 MB','2026-08-27 19:04:53','brand');
+INSERT INTO `brand_log` VALUES (5,1,'Harris','upload','_apsa-upload-big.bin','8.6 MB','2026-08-27 19:05:11','brand');
+INSERT INTO `brand_log` VALUES (6,1,'Harris','delete','_apsa-upload-big.bin','file','2026-08-27 19:05:55','brand');
+INSERT INTO `brand_log` VALUES (7,1,'Harris','delete','_apsa-upload-test.bin','file','2026-08-27 19:05:59','brand');
+INSERT INTO `brand_log` VALUES (8,1,'Harris','upload','Global TRUQAP Brand Book V3.pdf','14.4 MB','2026-08-27 19:19:40','brand');
+INSERT INTO `brand_log` VALUES (9,1,'Harris','upload','Handle_Small Box 1S-2L-4B.pdf','0.1 MB','2026-08-27 23:02:13','vfr');
+INSERT INTO `brand_log` VALUES (10,1,'Harris','upload','FA-2024-12-Handle samples in box.pdf','0.6 MB','2026-08-27 23:02:16','vfr');
+INSERT INTO `brand_log` VALUES (11,1,'Harris','upload','Handle_Large Box 8S-6L-4L.pdf','0.1 MB','2026-08-27 23:02:18','vfr');
+INSERT INTO `brand_log` VALUES (12,1,'Harris','upload','FA-2024-12-Handle samples in box - LARGE.pdf','0.8 MB','2026-08-27 23:31:08','vfr');
+INSERT INTO `brand_log` VALUES (13,1,'Harris','upload','FA-2024-12-Handle samples in box - SMALL.pdf','0.7 MB','2026-08-27 23:31:12','vfr');
 /*!40000 ALTER TABLE `brand_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -6407,7 +6413,7 @@ INSERT INTO `quotations` VALUES (144,'media','08012026-5','VietCredit-YEP2025',2
 INSERT INTO `quotations` VALUES (145,'event','07012026-3','AZ-COMMEX-NC-VideoShowCases',1,62,'AstraZeneca','','0315158696','76 Lê Lai, Phường Bến Thành, Tp. HCM, Việt Nam','2026-01-07','','VND',10.00,8.00,1,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Hoàn thành','Harris',NULL,'2026-08-20 19:02:44','2026-08-21 03:11:22',0,NULL,'done',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `quotations` VALUES (146,'event','07012026-2','AZ-RI-NC-VideoShowCases',1,10,'AstraZeneca','','0315158696','76 Lê Lai, Phường Bến Thành, Tp. HCM, Việt Nam','2026-01-07','','VND',10.00,8.00,1,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Nhận yêu cầu','Harris',NULL,'2026-08-20 19:02:44','2026-08-21 02:11:03',1,NULL,'request',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `quotations` VALUES (147,'media','06012026-1','AZ-KACD-Showcase-VDO-NC',1,53,'AstraZeneca','','0315158696','76 Lê Lai, Phường Bến Thành, Tp. HCM, Việt Nam','2026-01-06','','VND',10.00,8.00,1,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Nhận yêu cầu','Harris',NULL,'2026-08-20 19:02:44','2026-08-21 02:11:03',1,NULL,'request',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-INSERT INTO `quotations` VALUES (148,'event','21082026-149','AZ-ONCO-SHOOTING-VDO-VJ',1,50,'AstraZeneca Việt Nam','baochau.tran@astrazeneca.com','0315158696','Tầng 18, Tòa nhà AB, Số 76, Đường Lê Lai, Phường Bến Thành, Thành phố Hồ Chí Minh, Việt Nam','2026-08-21','','VND',10.00,8.00,1,1,'','Harris',NULL,'2026-08-20 21:12:24','2026-08-22 22:30:41',1,NULL,'liq_sent','https://az.box.com/s/gigebum4mcjwohd92lgsnfn91fu8i57m','po-20260823035558-e85415.pdf','PO video AA.pdf',NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `quotations` VALUES (148,'event','21082026-149','AZ-ONCO-SHOOTING-VDO-VJ',1,50,'AstraZeneca Việt Nam','baochau.tran@astrazeneca.com','0315158696','Tầng 18, Tòa nhà AB, Số 76, Đường Lê Lai, Phường Bến Thành, Thành phố Hồ Chí Minh, Việt Nam','2026-08-21','','VND',10.00,8.00,1,1,'','Harris',NULL,'2026-08-20 21:12:24','2026-08-27 15:29:14',1,NULL,'service_done','https://az.box.com/s/gigebum4mcjwohd92lgsnfn91fu8i57m','po-20260823035558-e85415.pdf','PO video AA.pdf',NULL,NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `quotations` VALUES (149,'event','26122025-268','AZ-ONCO-GI-NIAGARA-Launch',NULL,NULL,'AstraZeneca',NULL,NULL,NULL,'2025-12-26',NULL,'VND',10.00,8.00,1,1,NULL,'Harris',NULL,'2026-08-24 10:13:56','2026-08-24 10:13:56',1,NULL,'request',NULL,NULL,NULL,NULL,NULL,'694e5a2610fbaf58066d05ab',NULL,NULL,NULL);
 INSERT INTO `quotations` VALUES (150,'other','26122025-267','AZ-BBC - Recap 2025',NULL,NULL,'Công Ty TNHH AstraZeneca',NULL,NULL,NULL,'2025-12-26',NULL,'VND',10.00,8.00,1,1,NULL,'Harris',NULL,'2026-08-24 10:13:56','2026-08-24 10:13:56',1,NULL,'quote',NULL,NULL,NULL,NULL,NULL,'694e0af310fbaf58066d019e',NULL,NULL,NULL);
 INSERT INTO `quotations` VALUES (151,'other','23122025-266','AZ-Medical-LandingPageManagement',NULL,NULL,'Công Ty TNHH AstraZeneca',NULL,NULL,NULL,'2025-12-23',NULL,'VND',10.00,8.00,1,1,NULL,'Harris',NULL,'2026-08-24 10:13:56','2026-08-24 10:13:56',1,NULL,'quote',NULL,NULL,NULL,NULL,NULL,'694a611a10fbaf58066cffe0',NULL,NULL,NULL);
@@ -6570,7 +6576,7 @@ CREATE TABLE `ratecard_item_supply` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `u_pair` (`item_id`,`supplier_id`),
   KEY `k_item` (`item_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -6579,6 +6585,9 @@ CREATE TABLE `ratecard_item_supply` (
 
 LOCK TABLES `ratecard_item_supply` WRITE;
 /*!40000 ALTER TABLE `ratecard_item_supply` DISABLE KEYS */;
+INSERT INTO `ratecard_item_supply` VALUES (5,174,3,0.00,0.00,0.00,'',0,'Harris','2026-08-27 15:47:52');
+INSERT INTO `ratecard_item_supply` VALUES (6,174,4,0.00,0.00,0.00,'',1,'Harris','2026-08-27 15:47:52');
+INSERT INTO `ratecard_item_supply` VALUES (9,175,3,140000.00,110000.00,95000.00,'',0,'Harris','2026-08-27 16:31:36');
 /*!40000 ALTER TABLE `ratecard_item_supply` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -6626,7 +6635,7 @@ CREATE TABLE `ratecard_items` (
   KEY `idx_sheet` (`sheet_key`),
   KEY `idx_cat` (`sheet_key`,`cat_code`),
   KEY `idx_deleted` (`deleted_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=174 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=176 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -6808,6 +6817,8 @@ INSERT INTO `ratecard_items` VALUES (170,'media','B','EVENT VIDEOGRAPHY','QUAY P
 INSERT INTO `ratecard_items` VALUES (171,'event','A','PHOTO BOOTH & CHECK-IN','','','Vách ván uốn cong','','','','m2','m2',800000.00,800000.00,800000.00,'','',13,'Thảo',NULL,'2026-08-21 04:01:39','2026-08-21 04:01:39',0.00,NULL,NULL,0,NULL,NULL,NULL,NULL,NULL,0);
 INSERT INTO `ratecard_items` VALUES (172,'vfr','','','','','TEST DELETE ME','Sản phẩm test','','','','Cái',100000.00,0.00,0.00,'','',1,'test','2026-08-23 11:28:06','2026-08-23 04:27:48','2026-08-23 04:28:06',60000.00,NULL,NULL,0,NULL,NULL,NULL,NULL,NULL,0);
 INSERT INTO `ratecard_items` VALUES (173,'vfr','','','','','_Test acrylic trophy','Kỷ niệm chương thử nghiệm','','','','',500000.00,420000.00,350000.00,'','',1,'Harris','2026-08-27 21:37:59','2026-08-27 14:37:00','2026-08-27 14:38:21',0.00,NULL,NULL,0,NULL,'Mica trong 5mm, in UV 4 màu, 200x300mm','https://apsaagency.sharepoint.com/Shared%20Documents/VFR/FA-Gift%20Box_2026.pdf','FA-Gift Box_2026.pdf','01UTW2SKO4DVWLWXIAJ5ELOIIPLDK7LILJ',0);
+INSERT INTO `ratecard_items` VALUES (174,'vfr','','','','','FA-Gift Box _ 2026','Hộp con lửng','','','','',313000.00,283000.00,0.00,'','',1,'Harris',NULL,'2026-08-27 15:45:57','2026-08-27 15:47:52',0.00,NULL,NULL,0,NULL,'Giấy ECO BLACK CARD','https://apsaagency.sharepoint.com/Shared%20Documents/VFR/FA-Gift%20Box_2026.pdf','FA-Gift Box_2026.pdf','01UTW2SKO4DVWLWXIAJ5ELOIIPLDK7LILJ',0);
+INSERT INTO `ratecard_items` VALUES (175,'vfr','','','','','FA-2024-12-Handle samples in box','Hộp sừng trâu nhỏ','','','','',0.00,0.00,0.00,'','',2,'Harris',NULL,'2026-08-27 16:00:09','2026-08-27 16:31:36',140000.00,NULL,NULL,0,NULL,'','https://apsaagency.sharepoint.com/Shared%20Documents/VFR/FA-2024-12-Handle%20samples%20in%20box%20-%20SMALL.pdf','FA-2024-12-Handle samples in box - SMALL.pdf','01UTW2SKMWHTD22TKFTVDI5QX4D2RJD2OO',0);
 /*!40000 ALTER TABLE `ratecard_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -6827,7 +6838,7 @@ CREATE TABLE `ratecard_suppliers` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `u_name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -6836,6 +6847,8 @@ CREATE TABLE `ratecard_suppliers` (
 
 LOCK TABLES `ratecard_suppliers` WRITE;
 /*!40000 ALTER TABLE `ratecard_suppliers` DISABLE KEYS */;
+INSERT INTO `ratecard_suppliers` VALUES (3,'Mixbook','Hùng','',1,'2026-08-27 15:45:44');
+INSERT INTO `ratecard_suppliers` VALUES (4,'Thanh Ngan','Phụng','',1,'2026-08-27 15:45:53');
 /*!40000 ALTER TABLE `ratecard_suppliers` ENABLE KEYS */;
 UNLOCK TABLES;
 

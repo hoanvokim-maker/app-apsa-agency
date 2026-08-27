@@ -1,5 +1,5 @@
 {
-    "version": "1.2.28",
+    "version": "1.2.29",
     "updated": "2026-08-27",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-25",
             "note": "Phiên bản 1.2",
             "items": [
+                {
+                    "d": "2026-08-27",
+                    "v": "1.2.29",
+                    "t": "Rate card: o nhap gia dung quy cach cu cua trang Bao gia - go tat 4tr/1tr5/500k/4e6, tu chen dau cham phan cach nghin (8.640.000)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-27",
                     "v": "1.2.28",
