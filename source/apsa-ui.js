@@ -1237,3 +1237,43 @@ function pullHome() {
 
   window.apsaCombo = build;
 })();
+
+/* ── APSA1222: khoa click ra ngoai de dong pop-up (ap dung moi trang) ──
+   Chi chan dung lop nen (backdrop) cua hop thoai: phan tu position:fixed
+   phu gan kin man hinh, boc mot hop noi dung va co nut bam ben trong.
+   Bo qua: thanh menu / bang thong bao cua apsa-ui (id bat dau bang "apsa")
+           va cac lop phu khong co gi de bam (vd trinh xem anh) -> van dong duoc. */
+(function () {
+  'use strict';
+
+  function interactive(el) {
+    return el.querySelector('button, a, input, select, textarea, [onclick], [contenteditable="true"]') !== null;
+  }
+
+  function isBackdrop(el) {
+    if (!el || el.nodeType !== 1) return false;
+    if (el === document.body || el === document.documentElement) return false;
+    if (el.id && el.id.indexOf('apsa') === 0) return false;
+    var cs;
+    try { cs = window.getComputedStyle(el); } catch (e) { return false; }
+    if (cs.position !== 'fixed') return false;
+    if (cs.display === 'none' || cs.visibility === 'hidden') return false;
+    var r = el.getBoundingClientRect();
+    if (r.width < window.innerWidth * 0.9 || r.height < window.innerHeight * 0.9) return false;
+    if (!el.firstElementChild) return false;
+    return interactive(el);
+  }
+
+  function guard(e) {
+    if (typeof e.button === 'number' && e.button !== 0) return;
+    if (!isBackdrop(e.target)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+  }
+
+  var ev = ['mousedown', 'mouseup', 'click', 'dblclick'];
+  for (var i = 0; i < ev.length; i++) document.addEventListener(ev[i], guard, true);
+
+  window.apsaModalLockOutside = true;
+})();
