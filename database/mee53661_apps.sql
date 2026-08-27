@@ -6167,6 +6167,40 @@ INSERT INTO `quotation_reviews` VALUES (6,291,'quote',1,'Harris','Harris','appro
 UNLOCK TABLES;
 
 --
+-- Table structure for table `quotation_shares`
+--
+
+DROP TABLE IF EXISTS `quotation_shares`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `quotation_shares` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `quotation_id` int(10) unsigned NOT NULL,
+  `scope` varchar(10) NOT NULL DEFAULT 'quote' COMMENT 'quote | liq',
+  `token` char(40) NOT NULL,
+  `created_by` varchar(120) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `revoked_at` datetime DEFAULT NULL,
+  `views` int(10) unsigned NOT NULL DEFAULT 0,
+  `last_view_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_token` (`token`),
+  KEY `idx_quo` (`quotation_id`,`scope`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `quotation_shares`
+--
+
+LOCK TABLES `quotation_shares` WRITE;
+/*!40000 ALTER TABLE `quotation_shares` DISABLE KEYS */;
+INSERT INTO `quotation_shares` VALUES (1,5,'quote','e6641b8e70c16756a7c167a6e88782f141d2ac61','Harris','2026-08-27 17:09:15','2026-08-28 00:14:46',2,'2026-08-28 00:11:15');
+INSERT INTO `quotation_shares` VALUES (2,5,'liq','9a93c0e006c95d0ce519701b44c87393232042bf','Harris','2026-08-27 17:09:17','2026-08-28 00:14:45',3,'2026-08-28 00:14:17');
+/*!40000 ALTER TABLE `quotation_shares` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `quotation_statuses`
 --
 

@@ -1525,6 +1525,7 @@ function renderRows2(){
       ? '<button class="act" title="Khôi phục" onclick="restoreQuote(' + r.id + ')">↩︎</button>'
       : '<button class="act" title="Sửa" onclick="openQuote(' + r.id + ')">✎</button>' +
         '<button class="act" title="Nhân bản" onclick="dupQuote(' + r.id + ')">⧉</button>' +
+        '<button class="act" title="Chia sẻ cho khách" onclick="shareQuo(' + r.id + ')"><svg class="pill-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M10.6 13.4a4 4 0 006 .4l2.4-2.4a4 4 0 00-5.7-5.7l-1.3 1.4"/><path d="M13.4 10.6a4 4 0 00-6-.4L5 12.6a4 4 0 005.7 5.7l1.3-1.4"/></svg></button>' +
         '<button class="act" title="Xuất báo giá" onclick="dl(' + r.id + ')"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-download"/></svg></button>' +
         (Number(r.has_liquidation) ? '<button class="act" title="Xuất nghiệm thu" onclick="dl(' + r.id + ',\'liq\')"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-invoice"/></svg></button>' : '') +
         '<button class="act del" title="Xoá" onclick="delQuote(' + r.id + ')"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-trash"/></svg></button>';
@@ -4086,5 +4087,6 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') qcAskClose();
 });
 </script>
+<script src="./quo-share.js?v=1"></script>
 </body>
 </html>

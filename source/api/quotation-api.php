@@ -61,8 +61,12 @@ function currentUser($pdo) {
     } catch (PDOException $e) { return null; }
 }
 $ME = currentUser($pdo);
-if (!$ME) q_fail('Unauthorized — vui lòng đăng nhập', 401);
-$WHO = $ME['display_name'] ?: $ME['username'];
+/* Hai action duoi day phuc vu link chia se cho khach — khong can dang nhap.
+   Chung CHI doc du lieu tu token, khong bao gio tin $_GET['id']. */
+$Q_ACT0   = isset($_GET['action']) ? (string) $_GET['action'] : '';
+$Q_PUBLIC = ($Q_ACT0 === 'share-view' || $Q_ACT0 === 'share-xlsx');
+if (!$ME && !$Q_PUBLIC) q_fail('Unauthorized — vui lòng đăng nhập', 401);
+$WHO = $ME ? ($ME['display_name'] ?: $ME['username']) : '';
 
 // ── Migrate schema: chỉ chạy 1 lần sau mỗi lần deploy file này ──
 // Trước đây mọi request đều chạy lại ~15 câu lệnh kiểm tra bảng/cột.
@@ -1366,12 +1370,216 @@ function buildXlsx($quo, $items, $logoBinary, $withLiq = false) {
 }
 
 $action = $_GET['action'] ?? '';
+
+/* ══ Chia se link chi-xem cho khach hang ═══════════════════════════════ */
+function qs_ensure(PDO $pdo)
+{
+    static $done = false;
+    if ($done) return;
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `quotation_shares` (
+        `id`           INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        `quotation_id` INT UNSIGNED NOT NULL,
+        `scope`        VARCHAR(10)  NOT NULL DEFAULT 'quote' COMMENT 'quote | liq',
+        `token`        CHAR(40)     NOT NULL,
+        `created_by`   VARCHAR(120) DEFAULT NULL,
+        `created_at`   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `revoked_at`   DATETIME     DEFAULT NULL,
+        `views`        INT UNSIGNED NOT NULL DEFAULT 0,
+        `last_view_at` DATETIME     DEFAULT NULL,
+        PRIMARY KEY (`id`),
+        UNIQUE KEY `uq_token` (`token`),
+        KEY `idx_quo` (`quotation_id`, `scope`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    $done = true;
+}
+
+function qs_scope($v)
+{
+    $v = strtolower(trim((string) $v));
+    return in_array($v, array('liq', 'liquidation', 'nghiemthu'), true) ? 'liq' : 'quote';
+}
+
+/** Doc ban ghi chia se tu token — nguon duy nhat cho moi trang cong khai. */
+function qs_byToken(PDO $pdo, $tok)
+{
+    if (!preg_match('/^[a-f0-9]{40}$/', (string) $tok)) return null;
+    qs_ensure($pdo);
+    $st = $pdo->prepare("SELECT * FROM `quotation_shares` WHERE `token` = ? AND `revoked_at` IS NULL LIMIT 1");
+    $st->execute(array((string) $tok));
+    $r = $st->fetch();
+    return $r ? $r : null;
+}
+
+/** Nap ho so tu token, da kiem tra ton tai / chua xoa / co nghiem thu. */
+function qs_load(PDO $pdo, $tok)
+{
+    $sh = qs_byToken($pdo, $tok);
+    if (!$sh) q_fail('Link không tồn tại hoặc đã bị thu hồi.', 404);
+
+    $q = loadQuotation($pdo, (int) $sh['quotation_id']);
+    if (!$q) q_fail('Bản ghi không còn tồn tại.', 404);
+    if (isset($q['deleted_at']) && $q['deleted_at'] !== null && $q['deleted_at'] !== '') {
+        q_fail('Bản ghi đã bị xoá.', 404);
+    }
+
+    $isLiq = ($sh['scope'] === 'liq');
+    if ($isLiq && empty($q['has_liquidation'])) q_fail('Biên bản nghiệm thu chưa được bật.', 404);
+
+    return array($sh, $q, loadItems($pdo, (int) $sh['quotation_id']), $isLiq);
+}
+
+function qs_body()
+{
+    $b = json_decode((string) file_get_contents('php://input'), true);
+    return is_array($b) ? $b : array();
+}
 $B      = body_json();
 
 qc_boot($pdo);
 qc_gate($pdo, $action, $B);
 
 switch ($action) {
+
+/* ── Cong khai: xem ban bao gia / nghiem thu qua token ── */
+case 'share-view': {
+    list($sh, $q, $items, $isLiq) = qs_load($pdo, isset($_GET['t']) ? $_GET['t'] : '');
+    $tot = $isLiq ? calcLiqTotals($q, $items) : calcTotals($q, $items);
+
+    $rows = array();
+    foreach ($items as $it) {
+        $kind = ((isset($it['kind']) ? $it['kind'] : 'item') === 'section') ? 'section' : 'item';
+        $row  = array(
+            'kind'        => $kind,
+            'name'        => (string) $it['name'],
+            'description' => (string) $it['description'],
+            'unit'        => (string) $it['unit'],
+            'remark'      => (string) $it['remark'],
+        );
+        if ($kind === 'item') {
+            if ($isLiq) {
+                $au = (string) (isset($it['act_unit']) ? $it['act_unit'] : '');
+                $row['unit']   = $au !== '' ? $au : (string) $it['unit'];
+                $row['qty']    = (float) (isset($it['act_qty']) ? $it['act_qty'] : 0);
+                $row['price']  = (float) (isset($it['act_price']) ? $it['act_price'] : 0);
+                $row['amount'] = actAmount($it);
+                $row['remark'] = (string) (isset($it['act_remark']) ? $it['act_remark'] : '');
+            } else {
+                $row['qty']    = (float) $it['qty'];
+                $row['price']  = (float) $it['unit_price'];
+                $row['amount'] = round(((float) $it['qty']) * ((float) $it['unit_price']), 2);
+            }
+        }
+        $rows[] = $row;
+    }
+
+    $pdo->prepare("UPDATE `quotation_shares` SET `views` = `views` + 1, `last_view_at` = NOW() WHERE `id` = ?")
+        ->execute(array((int) $sh['id']));
+
+    header('X-Robots-Tag: noindex, nofollow', true);
+    q_ok(array(
+        'scope'  => $sh['scope'],
+        'doc'    => array(
+            'code'           => (string) $q['code'],
+            'title'          => (string) $q['title'],
+            'kind'           => (string) (isset($q['kind']) ? $q['kind'] : ''),
+            'quotation_date' => (string) $q['quotation_date'],
+            'event_date'     => (string) $q['event_date'],
+            'liq_date'       => (string) (isset($q['liq_date']) ? $q['liq_date'] : ''),
+            'currency'       => (string) $q['currency'],
+            'ma_percent'     => (float) $q['ma_percent'],
+            'vat_percent'    => (float) $q['vat_percent'],
+            'show_ma'        => (int) $q['show_ma'],
+            'show_vat'       => (int) $q['show_vat'],
+            'note'           => (string) $q['note'],
+        ),
+        'client' => array(
+            'name'    => (string) $q['client_name'],
+            'tax'     => (string) $q['client_tax'],
+            'address' => (string) $q['client_address'],
+            'email'   => (string) $q['client_email'],
+        ),
+        'items'  => $rows,
+        'totals' => $tot,
+    ));
+    break;
+}
+
+/* ── Cong khai: tai file Excel dung ban ma khach dang xem ── */
+case 'share-xlsx': {
+    list($sh, $q, $items, $isLiq) = qs_load($pdo, isset($_GET['t']) ? $_GET['t'] : '');
+
+    $logo = base64_decode(APSA_LOGO_B64);
+    $xlsx = buildXlsx($q, $items, $logo, $isLiq);
+
+    $name  = $q['code'] ? $q['code'] : ('bao-gia-' . (int) $sh['quotation_id']);
+    $name  = trim(preg_replace('/[^A-Za-z0-9\-_]+/', '-', $name), '-');
+    $fname = ($isLiq ? 'APSA-LIQUIDATION-' : 'APSA-QUOTATION-') . $name . '-' . date('Ymd') . '.xlsx';
+
+    while (ob_get_level()) { ob_end_clean(); }
+    header('X-Robots-Tag: noindex, nofollow', true);
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . $fname . '"');
+    header('Content-Length: ' . strlen($xlsx));
+    echo $xlsx;
+    exit;
+}
+
+/* ── Noi bo: liet ke / tao / thu hoi link chia se ── */
+case 'share-list': {
+    if (!$ME) q_fail('Unauthorized', 401);
+    $id = (int) (isset($_GET['id']) ? $_GET['id'] : 0);
+    if (!$id) q_fail('id is required');
+    qs_ensure($pdo);
+    $st = $pdo->prepare("SELECT `scope`, `token`, `created_by`, `created_at`, `views`, `last_view_at`
+                           FROM `quotation_shares`
+                          WHERE `quotation_id` = ? AND `revoked_at` IS NULL
+                       ORDER BY `id` DESC");
+    $st->execute(array($id));
+    q_ok(array('shares' => $st->fetchAll()));
+    break;
+}
+
+case 'share-create': {
+    if (!$ME) q_fail('Unauthorized', 401);
+    $b     = qs_body();
+    $id    = (int) (isset($b['id']) ? $b['id'] : 0);
+    $scope = qs_scope(isset($b['scope']) ? $b['scope'] : 'quote');
+    if (!$id) q_fail('id is required');
+
+    $q = loadQuotation($pdo, $id);
+    if (!$q) q_fail('Không tìm thấy báo giá.', 404);
+    if ($scope === 'liq' && empty($q['has_liquidation'])) q_fail('Báo giá này chưa bật phần nghiệm thu.', 400);
+
+    qs_ensure($pdo);
+    $sel = $pdo->prepare("SELECT `scope`, `token`, `created_by`, `created_at`, `views`, `last_view_at`
+                            FROM `quotation_shares`
+                           WHERE `quotation_id` = ? AND `scope` = ? AND `revoked_at` IS NULL
+                        ORDER BY `id` DESC LIMIT 1");
+    $sel->execute(array($id, $scope));
+    $row = $sel->fetch();
+
+    if (!$row) {
+        $tok = bin2hex(random_bytes(20));
+        $pdo->prepare("INSERT INTO `quotation_shares` (`quotation_id`, `scope`, `token`, `created_by`) VALUES (?, ?, ?, ?)")
+            ->execute(array($id, $scope, $tok, $WHO));
+        $sel->execute(array($id, $scope));
+        $row = $sel->fetch();
+    }
+    q_ok(array('share' => $row));
+    break;
+}
+
+case 'share-revoke': {
+    if (!$ME) q_fail('Unauthorized', 401);
+    $b   = qs_body();
+    $tok = (string) (isset($b['token']) ? $b['token'] : '');
+    if (!preg_match('/^[a-f0-9]{40}$/', $tok)) q_fail('Token không hợp lệ.');
+    qs_ensure($pdo);
+    $pdo->prepare("UPDATE `quotation_shares` SET `revoked_at` = NOW() WHERE `token` = ? AND `revoked_at` IS NULL")
+        ->execute(array($tok));
+    q_ok(array('revoked' => true));
+    break;
+}
 
 case 'list': {
     $trash = !empty($_GET['trash']);

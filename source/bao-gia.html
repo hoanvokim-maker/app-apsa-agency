@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow, noarchive" />
+<title>APSA — Bản xem</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #12151a; --ink2: #4a5361; --ink3: #8a93a2;
+    --line: #dfe3ea; --line2: #eef1f5; --bg: #f4f6f9; --card: #ffffff;
+    --accent: #1d4ed8; --accent-soft: #eff4ff;
+  }
+  body { font-family: 'Oxanium', system-ui, -apple-system, 'Segoe UI', sans-serif;
+         background: var(--bg); color: var(--ink); line-height: 1.5; padding: 28px 16px 64px; }
+  .sheet { max-width: 900px; margin: 0 auto; background: var(--card); border: 1px solid var(--line);
+           border-radius: 14px; box-shadow: 0 1px 3px rgba(16,24,40,.06), 0 12px 32px rgba(16,24,40,.06); overflow: hidden; }
+  .bar { display: flex; align-items: center; gap: 10px; max-width: 900px; margin: 0 auto 14px; flex-wrap: wrap; }
+  .bar .sp { flex: 1 1 auto; }
+  .btn { display: inline-flex; align-items: center; gap: 7px; font-family: inherit; font-size: 13px; font-weight: 600;
+         padding: 9px 15px; border-radius: 9px; border: 1px solid var(--line); background: #fff; color: var(--ink);
+         cursor: pointer; text-decoration: none; transition: all .16s; }
+  .btn:hover { border-color: #c4ccd8; background: #fbfcfe; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { background: #1a43be; }
+
+  .hd { padding: 26px 30px 20px; border-bottom: 1px solid var(--line); }
+  .hd-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  .logo img { height: 34px; display: block; filter: brightness(0); }
+  .logo .fallback { font-size: 21px; font-weight: 800; letter-spacing: -.5px; }
+  .doc-meta { text-align: right; }
+  .doc-kind { font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  .doc-code { font-size: 22px; font-weight: 800; letter-spacing: -.4px; margin-top: 2px; }
+  .doc-date { font-size: 12.5px; color: var(--ink2); margin-top: 3px; }
+  .doc-title { font-size: 15px; font-weight: 600; color: var(--ink2); margin-top: 14px; }
+
+  .parties { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border-bottom: 1px solid var(--line); }
+  .party { background: #fff; padding: 18px 30px; }
+  .party h3 { font-size: 10.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--ink3); margin-bottom: 8px; }
+  .party .nm { font-size: 14.5px; font-weight: 700; }
+  .party .ln { font-size: 12.5px; color: var(--ink2); margin-top: 3px; word-break: break-word; }
+
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { text-align: left; font-size: 10.5px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase;
+             color: var(--ink3); padding: 12px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; background: #fafbfd; }
+  thead th.r { text-align: right; }
+  thead th.c { text-align: center; }
+  tbody td { padding: 11px 12px; border-bottom: 1px solid var(--line2); vertical-align: top; }
+  tbody td.r { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  tbody td.c { text-align: center; white-space: nowrap; }
+  tbody tr.sec td { background: var(--accent-soft); font-weight: 800; font-size: 12px; letter-spacing: .05em;
+                    text-transform: uppercase; color: #1e3a8a; padding: 9px 12px; }
+  td:first-child, th:first-child { padding-left: 30px; }
+  td:last-child, th:last-child { padding-right: 30px; }
+  .it-nm { font-weight: 600; }
+  .it-ds { font-size: 12px; color: var(--ink2); margin-top: 2px; white-space: pre-wrap; }
+  .it-rm { font-size: 11.5px; color: var(--ink3); margin-top: 2px; font-style: italic; }
+
+  .sum { display: flex; justify-content: flex-end; padding: 18px 30px 4px; }
+  .sum table { width: auto; min-width: 340px; font-size: 13.5px; }
+  .sum td { border: none; padding: 6px 0; }
+  .sum td.k { color: var(--ink2); padding-right: 28px; }
+  .sum td.v { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .sum tr.tot td { border-top: 2px solid var(--ink); padding-top: 11px; font-size: 17px; font-weight: 800; }
+  .words { padding: 4px 30px 22px; font-size: 13px; color: var(--ink2); text-align: right; }
+  .words b { color: var(--ink); font-weight: 600; font-style: italic; }
+
+  .note { margin: 0 30px 26px; padding: 16px 18px; background: #fafbfd; border: 1px solid var(--line);
+          border-radius: 10px; font-size: 12.5px; color: var(--ink2); white-space: pre-wrap; line-height: 1.65; }
+  .note h3 { font-size: 10.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--ink3); margin-bottom: 7px; }
+  .ft { padding: 16px 30px 24px; border-top: 1px solid var(--line); font-size: 11.5px; color: var(--ink3); text-align: center; }
+
+  .state { max-width: 900px; margin: 60px auto; text-align: center; color: var(--ink2); font-size: 14px; }
+  .state b { display: block; font-size: 19px; font-weight: 800; color: var(--ink); margin-bottom: 8px; }
+
+  @media (max-width: 720px) {
+    body { padding: 14px 8px 40px; }
+    .parties { grid-template-columns: 1fr; }
+    .hd, .party, .sum, .ft { padding-left: 18px; padding-right: 18px; }
+    td:first-child, th:first-child { padding-left: 18px; }
+    td:last-child, th:last-child { padding-right: 18px; }
+    .note { margin-left: 18px; margin-right: 18px; }
+  }
+  @media print {
+    body { background: #fff; padding: 0; }
+    .bar { display: none !important; }
+    .sheet { border: none; box-shadow: none; border-radius: 0; max-width: none; }
+    thead { display: table-header-group; }
+    tbody tr { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bar" id="bar" style="display:none">
+  <button class="btn primary" onclick="window.print()">Tải PDF / In</button>
+  <a class="btn" id="xl" href="#">Tải Excel</a>
+  <div class="sp"></div>
+  <span style="font-size:12px;color:var(--ink3)">Bản xem — chỉ đọc</span>
+</div>
+
+<div id="app"><div class="state">Đang tải…</div></div>
+
+<script>
+var API = './api/quotation-api.php';
+var TOKEN = (new URLSearchParams(location.search)).get('t') || '';
+
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function money(n) {
+  n = Math.round(Number(n) || 0);
+  return n.toLocaleString('vi-VN');
+}
+function qty(n) {
+  n = Number(n) || 0;
+  return (Math.round(n * 100) / 100).toLocaleString('vi-VN');
+}
+function dmy(s) {
+  if (!s) return '';
+  var m = String(s).slice(0, 10).split('-');
+  return m.length === 3 ? (m[2] + '/' + m[1] + '/' + m[0]) : String(s);
+}
+function pct(n) {
+  n = Number(n) || 0;
+  return (Math.round(n * 100) / 100).toLocaleString('vi-VN');
+}
+
+/* ── đọc số thành chữ (chuẩn hoá đơn Việt Nam) ── */
+var _D = ['không','một','hai','ba','bốn','năm','sáu','bảy','tám','chín'];
+function _ba(so, full) {
+  var t = Math.floor(so / 100), c = Math.floor(so / 10) % 10, dv = so % 10, s = '';
+  if (full || t > 0) s += _D[t] + ' trăm';
+  if (c === 0) {
+    if (dv > 0) s += (s ? ' linh ' : '') + _D[dv];
+  } else if (c === 1) {
+    s += (s ? ' ' : '') + 'mười';
+    if (dv === 1) s += ' một'; else if (dv === 5) s += ' lăm'; else if (dv > 0) s += ' ' + _D[dv];
+  } else {
+    s += (s ? ' ' : '') + _D[c] + ' mươi';
+    if (dv === 1) s += ' mốt'; else if (dv === 4) s += ' tư'; else if (dv === 5) s += ' lăm'; else if (dv > 0) s += ' ' + _D[dv];
+  }
+  return s;
+}
+function docSo(n) {
+  n = Math.round(Number(n) || 0);
+  if (!n) return 'Không đồng';
+  var neg = n < 0; if (neg) n = -n;
+  var g = [];
+  while (n > 0) { g.push(n % 1000); n = Math.floor(n / 1000); }
+  if (g.length > 4) return '';
+  var don = ['', ' nghìn', ' triệu', ' tỷ'], out = [];
+  for (var i = g.length - 1; i >= 0; i--) {
+    if (!g[i] && i !== 0) continue;
+    out.push(_ba(g[i], i < g.length - 1) + don[i]);
+  }
+  var s = out.join(' ').replace(/\s+/g, ' ').trim();
+  s = s.charAt(0).toUpperCase() + s.slice(1);
+  return (neg ? 'Âm ' + s.toLowerCase() : s) + ' đồng';
+}
+
+function render(d) {
+  var isLiq = d.scope === 'liq';
+  var doc = d.doc, cl = d.client, t = d.totals;
+  var kindLabel = isLiq ? 'Biên bản nghiệm thu' : 'Báo giá';
+  var dateLabel = isLiq ? (doc.liq_date || doc.quotation_date) : doc.quotation_date;
+
+  document.title = 'APSA — ' + kindLabel + (doc.code ? ' ' + doc.code : '');
+
+  var rows = '', stt = 0;
+  (d.items || []).forEach(function (it) {
+    if (it.kind === 'section') {
+      rows += '<tr class="sec"><td colspan="6">' + esc(it.name) + '</td></tr>';
+      return;
+    }
+    stt++;
+    rows += '<tr>'
+      + '<td class="c" style="color:var(--ink3)">' + stt + '</td>'
+      + '<td><div class="it-nm">' + esc(it.name) + '</div>'
+      + (it.description ? '<div class="it-ds">' + esc(it.description) + '</div>' : '')
+      + (it.remark ? '<div class="it-rm">' + esc(it.remark) + '</div>' : '')
+      + '</td>'
+      + '<td class="c">' + esc(it.unit || '') + '</td>'
+      + '<td class="r">' + qty(it.qty) + '</td>'
+      + '<td class="r">' + money(it.price) + '</td>'
+      + '<td class="r">' + money(it.amount) + '</td>'
+      + '</tr>';
+  });
+  if (!stt) rows = '<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:34px 0">Chưa có hạng mục nào.</td></tr>';
+
+  var sum = '<tr><td class="k">Cộng</td><td class="v">' + money(t.subtotal) + '</td></tr>';
+  if (Number(doc.show_ma)) sum += '<tr><td class="k">Phí quản lý (MA) ' + pct(doc.ma_percent) + '%</td><td class="v">' + money(t.ma) + '</td></tr>';
+  if (Number(doc.show_vat)) sum += '<tr><td class="k">VAT ' + pct(doc.vat_percent) + '%</td><td class="v">' + money(t.vat) + '</td></tr>';
+  sum += '<tr class="tot"><td class="k">TỔNG CỘNG</td><td class="v">' + money(t.grand_total) + ' ' + esc(doc.currency || 'VND') + '</td></tr>';
+
+  var words = docSo(t.grand_total);
+
+  document.getElementById('app').innerHTML =
+    '<div class="sheet">'
+    + '<div class="hd"><div class="hd-top">'
+    +   '<div class="logo"><img src="/Logo%20rectange.png" alt="APSA" onerror="this.outerHTML=\'<div class=&quot;fallback&quot;>APSA</div>\'" /></div>'
+    +   '<div class="doc-meta"><div class="doc-kind">' + esc(kindLabel) + '</div>'
+    +     '<div class="doc-code">' + esc(doc.code || '—') + '</div>'
+    +     '<div class="doc-date">Ngày ' + esc(dmy(dateLabel) || '—')
+    +       (doc.event_date ? ' · Thời gian thực hiện: ' + esc(doc.event_date) : '') + '</div></div>'
+    + '</div>'
+    + (doc.title ? '<div class="doc-title">' + esc(doc.title) + '</div>' : '')
+    + '</div>'
+
+    + '<div class="parties">'
+    +   '<div class="party"><h3>Bên cung cấp</h3>'
+    +     '<div class="nm">APSA AGENCY</div>'
+    +     '<div class="ln">hello@apsa.agency</div>'
+    +     '<div class="ln">app.apsa.agency</div></div>'
+    +   '<div class="party"><h3>Bên khách hàng</h3>'
+    +     '<div class="nm">' + esc(cl.name || '—') + '</div>'
+    +     (cl.tax ? '<div class="ln">MST: ' + esc(cl.tax) + '</div>' : '')
+    +     (cl.address ? '<div class="ln">' + esc(cl.address) + '</div>' : '')
+    +     (cl.email ? '<div class="ln">' + esc(cl.email) + '</div>' : '')
+    +   '</div>'
+    + '</div>'
+
+    + '<div class="tbl-wrap"><table><thead><tr>'
+    +   '<th class="c" style="width:44px">STT</th><th>Hạng mục</th>'
+    +   '<th class="c" style="width:80px">ĐVT</th><th class="r" style="width:76px">SL</th>'
+    +   '<th class="r" style="width:130px">Đơn giá</th><th class="r" style="width:140px">Thành tiền</th>'
+    + '</tr></thead><tbody>' + rows + '</tbody></table></div>'
+
+    + '<div class="sum"><table>' + sum + '</table></div>'
+    + (words ? '<div class="words">Bằng chữ: <b>' + esc(words) + '</b></div>' : '<div style="height:14px"></div>')
+    + (doc.note ? '<div class="note"><h3>Ghi chú &amp; điều khoản</h3>' + esc(doc.note) + '</div>' : '')
+    + '<div class="ft">Bản xem chỉ đọc do APSA Agency phát hành · Mọi thắc mắc xin liên hệ hello@apsa.agency</div>'
+    + '</div>';
+
+  document.getElementById('xl').href = API + '?action=share-xlsx&t=' + encodeURIComponent(TOKEN);
+  document.getElementById('bar').style.display = 'flex';
+}
+
+function fail(msg) {
+  document.getElementById('app').innerHTML =
+    '<div class="state"><b>Không mở được bản xem</b>' + esc(msg) + '</div>';
+}
+
+if (!TOKEN) {
+  fail('Thiếu mã liên kết. Hãy mở đúng đường dẫn được gửi cho bạn.');
+} else {
+  fetch(API + '?action=share-view&t=' + encodeURIComponent(TOKEN), { cache: 'no-store' })
+    .then(function (r) { return r.json().catch(function () { return { ok: false, error: 'Máy chủ trả về dữ liệu không hợp lệ.' }; }); })
+    .then(function (j) {
+      if (!j || !j.ok) throw new Error((j && j.error) || 'Có lỗi xảy ra.');
+      render(j.data);
+    })
+    .catch(function (e) { fail(e.message); });
+}
+</script>
+</body>
+</html>
