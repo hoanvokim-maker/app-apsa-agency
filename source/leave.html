@@ -632,6 +632,8 @@ function rowHtml(r, showWho) {
   if (r.status === 'approved' && IS_ADMIN)   acts.push('<button class="btn sm danger" onclick="cancelReq(' + r.id + ')">Huỷ đơn</button>');
   if (r.status === 'approved' && IS_ADMIN && CAL.enabled && r.cal_status !== 'ok')
     acts.push('<button class="btn sm" onclick="calRetry(' + r.id + ')">Đẩy lên lịch</button>');
+  if (r.status === 'approved' && IS_ADMIN && CAL.enabled && r.cal_status === 'ok')   /* APSA1218 */
+    acts.push('<button class="btn sm" onclick="calRetry(' + r.id + ')">Đồng bộ lịch</button>');
   if ((r.status === 'canceled' || r.status === 'rejected') && (mine || IS_ADMIN))
     acts.push('<button class="btn sm danger" onclick="delReq(' + r.id + ')">Xoá</button>');
 

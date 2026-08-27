@@ -467,7 +467,7 @@ CREATE TABLE `app_users` (
 
 LOCK TABLES `app_users` WRITE;
 /*!40000 ALTER TABLE `app_users` DISABLE KEYS */;
-INSERT INTO `app_users` VALUES (1,'admin','$2y$10$tgjxDVP41TkZC7QgOnnIbuaB8HFuMpI8iZCJQTqih1BFPVh6ksnU2','Harris','admin',1,'2026-08-05 16:47:25','2026-08-26 05:31:44','2026-08-26 05:31:44','account','inhouse',1,'','','','4a984eea65a98cf7d5b8','Harris Vo','2026-08-26 11:54:06',NULL,NULL);
+INSERT INTO `app_users` VALUES (1,'admin','$2y$10$tgjxDVP41TkZC7QgOnnIbuaB8HFuMpI8iZCJQTqih1BFPVh6ksnU2','Harris','admin',1,'2026-08-05 16:47:25','2026-08-27 02:22:45','2026-08-27 02:22:45','account','inhouse',1,'','','','4a984eea65a98cf7d5b8','Harris Vo','2026-08-26 11:54:06',NULL,NULL);
 INSERT INTO `app_users` VALUES (3,'thaoly','$2y$10$apwNXhmb03WC5brdnZnV2unSiF6fKbehZHlK2/lojsPd4MtBAB3LS','Thảo Lý','member',1,'2026-08-11 04:37:01','2026-08-26 05:00:43','2026-08-26 02:58:01','account','inhouse',1,'','','','639651dd5d97b4c9ed86','Nguyên Thảo','2026-08-26 12:00:43',NULL,NULL);
 INSERT INTO `app_users` VALUES (4,'trangdo','$2y$10$1Dj1IZCt0H6BNWX/DmN0LulFIoMya7pYPc0PedQJmsleIOSfIFfni','Trang Đỗ','member',1,'2026-08-11 04:37:51','2026-08-26 05:08:03','2026-08-26 03:33:56','admin','inhouse',1,'','','','4235f4df0980e0deb991','Trang','2026-08-26 12:08:03',NULL,NULL);
 INSERT INTO `app_users` VALUES (5,'nhattan','$2y$10$W8tp/Ef.JYD/V.XURuNJseFsfThk2KGlZM71rxdupY6chvGTv9Ep.','Nhật Tân','member',1,'2026-08-11 04:38:13','2026-08-26 05:00:09','2026-08-26 02:58:12','account','inhouse',1,'','','','61f88bb9bff556ab0fe4','Nhật Tân','2026-08-26 12:00:09',NULL,NULL);
