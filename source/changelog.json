@@ -1,5 +1,5 @@
 {
-    "version": "1.2.24",
+    "version": "1.2.25",
     "updated": "2026-08-27",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-25",
             "note": "Phiên bản 1.2",
             "items": [
+                {
+                    "d": "2026-08-27",
+                    "v": "1.2.25",
+                    "t": "Brand Guidelines: kho dung chung luu trang tren SharePoint qua Microsoft Graph - xem, tai ve, tai len, doi ten, xoa, tao thu muc, tim kiem, nhat ky thao tac",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-27",
                     "v": "1.2.24",
