@@ -1,5 +1,5 @@
 {
-    "version": "1.2.26",
+    "version": "1.2.27",
     "updated": "2026-08-27",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-25",
             "note": "Phiên bản 1.2",
             "items": [
+                {
+                    "d": "2026-08-27",
+                    "v": "1.2.27",
+                    "t": "Ratecard VFR: gia ban theo so luong (<10 / 10-50 />50), nhieu nha cung cap, thong so + file san xuat tren SharePoint (chi Admin xem gia von). Brand Guidelines + logos.html: cot Ngay tai len va sap xep theo cot; logos.html chuyen sang kho SharePoint Pharmaceutical Logos",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-27",
                     "v": "1.2.26",

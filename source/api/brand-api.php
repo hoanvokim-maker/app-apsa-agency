@@ -23,22 +23,53 @@ require_once __DIR__ . '/msgraph.php';
  *  Cau hinh kho
  * ------------------------------------------------------------------ */
 
-function bg_cfg()
+function bg_roots()
 {
-    static $c = null;
-    if ($c !== null) return $c;
+    static $r = null;
+    if ($r !== null) return $r;
 
-    $c = array(
-        'drive_id' => 'b!e4unr15XWkyaVG8edY6MkfZmAYHtCUBDugOk42Ie06yPpJHpQ4j6SpiGKdrEhZ21',
-        'root_id'  => '01UTW2SKIMSRXZEURYYJGJ3AGAV7MZMTZM',
-        'root_name' => 'Brand Guidlines',
+    $D = 'b!e4unr15XWkyaVG8edY6MkfZmAYHtCUBDugOk42Ie06yPpJHpQ4j6SpiGKdrEhZ21';
+    $r = array(
+        'brand' => array('drive_id' => $D, 'root_id' => '01UTW2SKIMSRXZEURYYJGJ3AGAV7MZMTZM', 'root_name' => 'Brand Guidlines'),
+        'vfr'   => array('drive_id' => $D, 'root_id' => '01UTW2SKIJCSC6LX3ICZFYJXG7DOIH3VE5', 'root_name' => 'VFR'),
+        'logos' => array('drive_id' => $D, 'root_id' => '01UTW2SKMSHSBP7T627VGYFKQYAAVBYNIX', 'root_name' => 'Pharmaceutical Logos'),
     );
 
     $f = __DIR__ . '/brand-config.php';
     if (is_file($f)) {
         $l = @include $f;
-        if (is_array($l)) $c = array_merge($c, $l);
+        if (is_array($l)) {
+            if (isset($l['roots']) && is_array($l['roots'])) {
+                foreach ($l['roots'] as $k => $v) {
+                    if (!is_array($v)) continue;
+                    $r[$k] = isset($r[$k]) ? array_merge($r[$k], $v) : $v;
+                }
+            } else {
+                $r['brand'] = array_merge($r['brand'], $l);   // tuong thich cau hinh cu
+            }
+        }
     }
+    return $r;
+}
+
+/** Kho dang thao tac - lay tu ?root=, mac dinh la Brand Guidelines. */
+function bg_key()
+{
+    static $k = null;
+    if ($k !== null) return $k;
+    $q = isset($_GET['root']) ? strtolower(preg_replace('/[^A-Za-z0-9_-]/', '', (string) $_GET['root'])) : '';
+    $roots = bg_roots();
+    $k = ($q !== '' && isset($roots[$q])) ? $q : 'brand';
+    return $k;
+}
+
+function bg_cfg()
+{
+    static $c = null;
+    if ($c !== null) return $c;
+    $roots = bg_roots();
+    $c = $roots[bg_key()];
+    $c['key'] = bg_key();
     return $c;
 }
 
@@ -136,6 +167,10 @@ function bg_boot()
         . ' KEY k_time (created_at)'
         . ') ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
     );
+
+    try {
+        bg_pdo()->exec("ALTER TABLE brand_log ADD COLUMN root VARCHAR(20) NOT NULL DEFAULT 'brand'");
+    } catch (Exception $e) { /* da co cot */ }
 }
 
 function bg_log($act, $name, $detail = '')
@@ -144,9 +179,9 @@ function bg_log($act, $name, $detail = '')
         bg_boot();
         $me = bg_me();
         $st = bg_pdo()->prepare(
-            'INSERT INTO brand_log (user_id, user_name, act, item_name, detail, created_at) VALUES (?,?,?,?,?,?)'
+            'INSERT INTO brand_log (user_id, user_name, act, item_name, detail, root, created_at) VALUES (?,?,?,?,?,?,?)'
         );
-        $st->execute(array($me['id'], $me['name'], $act, mb_substr($name, 0, 390), mb_substr($detail, 0, 390), date('Y-m-d H:i:s')));
+        $st->execute(array($me['id'], $me['name'], $act, mb_substr($name, 0, 390), mb_substr($detail, 0, 390), bg_key(), date('Y-m-d H:i:s')));
     } catch (Exception $e) {
         // Nhat ky khong duoc lam hong thao tac chinh
     }
@@ -281,6 +316,7 @@ function bg_row($it)
         'size'     => isset($it['size']) ? (int) $it['size'] : 0,
         'count'    => isset($it['folder']['childCount']) ? (int) $it['folder']['childCount'] : 0,
         'ext'      => isset($it['folder']) ? '' : strtolower(pathinfo($it['name'], PATHINFO_EXTENSION)),
+        'created'  => isset($it['createdDateTime']) ? $it['createdDateTime'] : '',
         'modified' => isset($it['lastModifiedDateTime']) ? $it['lastModifiedDateTime'] : '',
         'by'       => isset($it['lastModifiedBy']['user']['displayName']) ? $it['lastModifiedBy']['user']['displayName'] : '',
         'web_url'  => isset($it['webUrl']) ? $it['webUrl'] : '',
@@ -523,7 +559,8 @@ case 'up-abort':
 case 'log':
     bg_boot();
     $lim = isset($_GET['limit']) ? max(1, min(300, (int) $_GET['limit'])) : 100;
-    $st  = bg_pdo()->query('SELECT * FROM brand_log ORDER BY id DESC LIMIT ' . $lim);
+    $st  = bg_pdo()->prepare('SELECT * FROM brand_log WHERE root = ? ORDER BY id DESC LIMIT ' . $lim);
+    $st->execute(array(bg_key()));
     bg_out(array('ok' => true, 'rows' => $st->fetchAll(PDO::FETCH_ASSOC)));
     break;
 
