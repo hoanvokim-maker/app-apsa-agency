@@ -363,6 +363,7 @@
     { ico: 'qr',      name: 'Quản lý Link',         url: './event-qr-generator.html', id: 1 },
     { ico: 'key',     name: 'Accounts nhân viên', url: './accounts.html', id: 90 },
     { ico: 'leave',   name: 'Xin nghỉ phép',      url: './leave.html', id: 91 },
+      { ico: 'book', name: 'Policy công ty', url: './policy.html', id: 94 },
     { ico: 'shield',  name: 'Quản lý User',      url: './users.html', id: 27 },
     { ico: 'gear',    name: 'Cài đặt hệ thống',  url: './settings.html', id: 92, admin: true },
     { ico: 'bell',    name: 'Thông báo Zalo',    url: './zalo.html', id: 93 },
