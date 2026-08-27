@@ -295,13 +295,157 @@ function lv_count_days($days)
  *  Quy phep nam
  * ------------------------------------------------------------------ */
 
+/* ------------------------------------------------------------------ *
+ * APSA1219 — Che do phep nam tich luy (nhan vien tao moi tu 08/2026)
+ *   scheme = legacy  : nguoi da co truoc khi doi logic, giu quy cu
+ *   scheme = none    : freelancer, khong co phep nam
+ *   scheme = accrual : thu viec 2 thang -> chinh thuc -> moi thang +1 ngay
+ * ------------------------------------------------------------------ */
+
+function lv_boot_hr()
+{
+    static $done = false;
+    if ($done) return;
+    $done = true;
+
+    $pdo = lv_pdo();
+    try {
+        $pdo->exec(
+            "CREATE TABLE IF NOT EXISTS hr_employment (
+                user_id          INT NOT NULL PRIMARY KEY,
+                scheme           VARCHAR(12)  NOT NULL DEFAULT 'accrual',
+                hired_at         DATE NULL,
+                official_at      DATE NULL,
+                official_by      INT NULL,
+                official_by_name VARCHAR(190) NOT NULL DEFAULT '',
+                note             VARCHAR(255) NOT NULL DEFAULT '',
+                created_at       DATETIME NOT NULL,
+                updated_at       DATETIME NOT NULL
+             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+        );
+    } catch (Exception $e) { return; }
+
+    /* Seed 1 lan duy nhat: moi nguoi dang co -> giu che do cu */
+    try {
+        $n = (int) $pdo->query('SELECT COUNT(*) FROM hr_employment')->fetchColumn();
+        if ($n === 0) {
+            $pdo->exec(
+                "INSERT IGNORE INTO hr_employment
+                        (user_id, scheme, hired_at, official_at, note, created_at, updated_at)
+                 SELECT u.id,
+                        CASE WHEN u.staff_type = 'freelancer' THEN 'none' ELSE 'legacy' END,
+                        DATE(u.created_at), DATE(u.created_at),
+                        'Nhan su co truoc khi doi cach tinh phep',
+                        NOW(), NOW()
+                   FROM app_users u"
+            );
+        }
+    } catch (Exception $e) { /* bo qua */ }
+}
+
+/** Ho so lam viec cua 1 nguoi. Tu tao dong cho user moi. */
+function lv_hr($uid, $fresh = false)
+{
+    static $memo = array();
+    $uid = (int) $uid;
+    if ($fresh) unset($memo[$uid]);
+    if (isset($memo[$uid])) return $memo[$uid];
+
+    lv_boot_hr();
+    $st = lv_pdo()->prepare('SELECT * FROM hr_employment WHERE user_id = ? LIMIT 1');
+    $st->execute(array($uid));
+    $r = $st->fetch(PDO::FETCH_ASSOC);
+
+    if (!$r) {
+        $u = false;
+        try {
+            $s2 = lv_pdo()->prepare('SELECT staff_type, created_at FROM app_users WHERE id = ? LIMIT 1');
+            $s2->execute(array($uid));
+            $u = $s2->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {}
+        $scheme = ($u && isset($u['staff_type']) && $u['staff_type'] === 'freelancer') ? 'none' : 'accrual';
+        $hired  = ($u && !empty($u['created_at'])) ? substr($u['created_at'], 0, 10) : date('Y-m-d');
+        $ts     = date('Y-m-d H:i:s');
+        try {
+            lv_pdo()->prepare(
+                'INSERT IGNORE INTO hr_employment (user_id, scheme, hired_at, created_at, updated_at)
+                 VALUES (?,?,?,?,?)'
+            )->execute(array($uid, $scheme, $hired, $ts, $ts));
+        } catch (Exception $e) {}
+        $r = array(
+            'user_id' => $uid, 'scheme' => $scheme, 'hired_at' => $hired,
+            'official_at' => null, 'official_by' => null, 'official_by_name' => '', 'note' => '',
+        );
+    }
+
+    $memo[$uid] = $r;
+    return $r;
+}
+
+/** So ngay phep cho 1 nam lam viec tron ven (mac dinh 12 = 1 ngay/thang). */
+function lv_year_days()
+{
+    $v = (float) st_get('leave.accrual_days', 12);
+    return ($v > 0) ? $v : 12.0;
+}
+
+/** Ngay phep tich luy duoc trong nam $year (chua tinh ngay ton nam truoc). */
+function lv_accrued($uid, $year)
+{
+    $hr = lv_hr($uid);
+    if ($hr['scheme'] === 'none')   return 0.0;
+    if ($hr['scheme'] === 'legacy') return (float) st_get('leave.default_quota', 14);
+
+    $off = isset($hr['official_at']) ? (string) $hr['official_at'] : '';
+    if ($off === '' || strpos($off, '0000') === 0) return 0.0;   /* con thu viec */
+
+    $year = (int) $year;
+    $y0   = (int) substr($off, 0, 4);
+    $yNow = (int) date('Y');
+    if ($year < $y0 || $year > $yNow) return 0.0;
+    if ($year > $y0) return lv_year_days();
+
+    $m0   = (int) substr($off, 5, 2);
+    $mEnd = ($year === $yNow) ? (int) date('n') : 12;
+    $n    = $mEnd - $m0 + 1;
+    if ($n < 0)  $n = 0;
+    if ($n > 12) $n = 12;
+    return (float) $n;
+}
+
+/** Ngay phep con du cua nam truoc, duoc mang sang. Ngay ton cu khong cong don tiep. */
+function lv_carry($uid, $year)
+{
+    $hr = lv_hr($uid);
+    if ($hr['scheme'] !== 'accrual') return 0.0;
+    $off = isset($hr['official_at']) ? (string) $hr['official_at'] : '';
+    if ($off === '') return 0.0;
+
+    $prev = (int) $year - 1;
+    if ($prev < (int) substr($off, 0, 4)) return 0.0;
+
+    $left = lv_accrued($uid, $prev) - lv_quota_used($uid, $prev);
+    return ($left > 0) ? round($left, 1) : 0.0;
+}
+
+function lv_carry_deadline($year)  { return ((int) $year) . '-03-31'; }
+function lv_carry_active($year)    { return date('Y-m-d') <= lv_carry_deadline($year); }
+
 function lv_quota_total($userId, $year)
 {
+    /* So admin chinh tay o tab Quy phep luon duoc uu tien (APSA1219) */
     $st = lv_pdo()->prepare('SELECT total FROM leave_quota WHERE user_id = ? AND year = ? LIMIT 1');
     $st->execute(array($userId, $year));
     $v = $st->fetchColumn();
-    if ($v === false || $v === null) return (float) st_get('leave.default_quota', 14);
-    return (float) $v;
+    if ($v !== false && $v !== null) return (float) $v;
+
+    $hr = lv_hr($userId);
+    if ($hr['scheme'] === 'none')   return 0.0;
+    if ($hr['scheme'] === 'legacy') return (float) st_get('leave.default_quota', 14);
+
+    $t = lv_accrued($userId, $year);
+    if (lv_carry_active($year)) $t += lv_carry($userId, $year);
+    return round($t, 1);
 }
 
 /** So ngay phep nam da duyet trong nam (tinh dong tu don, khong luu bien dem). */
@@ -335,15 +479,26 @@ function lv_quota_pending($userId, $year)
 
 function lv_summary($userId, $year)
 {
+    $hr    = lv_hr($userId);
     $total = lv_quota_total($userId, $year);
     $used  = lv_quota_used($userId, $year);
     $pend  = lv_quota_pending($userId, $year);
+    $acc   = ($hr['scheme'] === 'accrual');
     return array(
-        'year'      => $year,
-        'total'     => $total,
-        'used'      => $used,
-        'pending'   => $pend,
-        'remaining' => round($total - $used, 1),
+        'year'           => (int) $year,
+        'total'          => $total,
+        'used'           => $used,
+        'pending'        => $pend,
+        'remaining'      => round($total - $used, 1),
+        /* APSA1219 */
+        'scheme'         => $hr['scheme'],
+        'hired_at'       => $hr['hired_at'],
+        'official_at'    => $hr['official_at'],
+        'probation'      => ($acc && empty($hr['official_at'])),
+        'accrued'        => $acc ? round(lv_accrued($userId, $year), 1) : $total,
+        'carry'          => $acc ? lv_carry($userId, $year) : 0.0,
+        'carry_deadline' => lv_carry_deadline($year),
+        'carry_active'   => lv_carry_active($year),
     );
 }
 
@@ -838,24 +993,50 @@ case 'cal-test':
     break;
 
 /* ---------------- Quy phep: xem ---------------- */
+/* ---------------- Xac nhan nhan vien chinh thuc (APSA1219) ---------------- */
+    case 'hr-official':
+        lv_need_admin();
+        $uid  = isset($B['user_id'])     ? (int) $B['user_id'] : 0;
+        $date = isset($B['official_at']) ? trim((string) $B['official_at']) : '';
+        $note = isset($B['note'])        ? trim((string) $B['note'])        : '';
+        if ($uid <= 0) lv_fail('Thiếu nhân viên.');
+        if ($date !== '' && !preg_match('/^\\d{4}-\\d{2}-\\d{2}$/', $date)) lv_fail('Ngày chính thức không hợp lệ.');
+
+        $hr = lv_hr($uid);
+        if ($hr['scheme'] === 'legacy') lv_fail('Người này đang ở chế độ phép cũ — không dùng mốc chính thức.');
+        if ($hr['scheme'] === 'none')   lv_fail('Freelancer không có phép năm.');
+
+        $st = lv_pdo()->prepare(
+            'UPDATE hr_employment SET official_at = ?, official_by = ?, official_by_name = ?, note = ?, updated_at = ?
+              WHERE user_id = ?'
+        );
+        $st->execute(array(($date !== '' ? $date : null), $ME['id'], $ME['name'], $note, $now, $uid));
+        lv_hr($uid, true);
+
+        lv_out(array(
+            'ok'      => true,
+            'message' => ($date !== '')
+                ? 'Đã ghi nhận chính thức từ ' . $date . '.'
+                : 'Đã chuyển về trạng thái thử việc.',
+            'summary' => lv_summary($uid, (int) date('Y')),
+        ));
+        break;
+
 case 'quota-list':
     lv_need_admin();
     $year = isset($_GET['year']) ? (int) $_GET['year'] : (int) date('Y');
     $rows = array();
-    $st   = lv_pdo()->query('SELECT id, username, display_name, role, active FROM app_users ORDER BY display_name, username');
+    $st   = lv_pdo()->query('SELECT id, username, display_name, role, active, staff_type FROM app_users ORDER BY display_name, username');
     foreach ($st as $u) {
         if (isset($u['active']) && (int) $u['active'] === 0) continue;
         $uid = (int) $u['id'];
         $s   = lv_summary($uid, $year);
-        $rows[] = array(
-            'user_id'   => $uid,
-            'name'      => trim($u['display_name'] !== '' ? $u['display_name'] : $u['username']),
-            'role'      => $u['role'],
-            'total'     => $s['total'],
-            'used'      => $s['used'],
-            'pending'   => $s['pending'],
-            'remaining' => $s['remaining'],
-        );
+        $rows[] = array_merge(array(
+                'user_id'    => $uid,
+                'name'       => trim($u['display_name'] !== '' ? $u['display_name'] : $u['username']),
+                'role'       => $u['role'],
+                'staff_type' => isset($u['staff_type']) ? $u['staff_type'] : '',
+            ), $s);   /* APSA1219 */
     }
     lv_out(array('ok' => true, 'year' => $year, 'rows' => $rows));
     break;
