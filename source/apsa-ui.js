@@ -1250,6 +1250,20 @@ function pullHome() {
     return el.querySelector('button, a, input, select, textarea, [onclick], [contenteditable="true"]') !== null;
   }
 
+  /* APSA1223: lop phu chi de XEM (anh / video / nhung) thi khong khoa.
+     Nhan dien: co danh dau data-apsa-free, hoac ten lop/id la lb|lightbox|viewer,
+     hoac ben trong khong co o nhap lieu ma co mot anh/video chiem phan lon dien tich. */
+  function isViewer(el) {
+    if (el.hasAttribute && el.hasAttribute('data-apsa-free')) return true;
+    var tag = ' ' + String(el.className || '') + ' ' + String(el.id || '') + ' ';
+    if (/(^|[\s_-])(lb|lightbox|viewer)([\s_-]|$)/i.test(tag)) return true;
+    if (el.querySelector('input, select, textarea, [contenteditable="true"]')) return false;
+    var m = el.querySelector('img, video, iframe');
+    if (!m) return false;
+    var mr = m.getBoundingClientRect(), er = el.getBoundingClientRect();
+    if (!er.width || !er.height) return false;
+    return (mr.width * mr.height) >= (er.width * er.height) * 0.25;
+  }
   function isBackdrop(el) {
     if (!el || el.nodeType !== 1) return false;
     if (el === document.body || el === document.documentElement) return false;
@@ -1261,6 +1275,7 @@ function pullHome() {
     var r = el.getBoundingClientRect();
     if (r.width < window.innerWidth * 0.9 || r.height < window.innerHeight * 0.9) return false;
     if (!el.firstElementChild) return false;
+    if (isViewer(el)) return false;                 /* APSA1223: trinh xem anh -> van bam ra ngoai de dong */
     return interactive(el);
   }
 
