@@ -684,7 +684,7 @@ case 'save':
           . ' ngày (' . $tl[$type] . '): ' . lv_range_text($row);
     foreach (lv_admin_ids() as $aid) {
         if ($aid === $ME['id']) continue;
-        lv_notify($aid, 'leave_new', 'Đơn xin nghỉ mới', $body, '/leave.html?id=' . $newId);
+        lv_notify($aid, 'leave_new', 'Đơn nghỉ mới: ' . $tl[$type] . ' — ' . $ME['name'], $body, '/leave.html?id=' . $newId);
     }
 
     lv_out(array('ok' => true, 'id' => $newId, 'days' => $days, 'row' => lv_shape($row)));
@@ -715,7 +715,7 @@ case 'cancel':
     $st->execute(array($ME['id'], $ME['name'], $now, $now, $id));
 
     if ((int) $r['user_id'] !== $ME['id']) {
-        lv_notify((int) $r['user_id'], 'leave_canceled', 'Đơn nghỉ bị huỷ',
+        lv_notify((int) $r['user_id'], 'leave_canceled', 'Đã huỷ: ' . lv_type_label($r['leave_type']) . ' — ' . $r['user_name'],
             $ME['name'] . ' đã huỷ đơn nghỉ ' . lv_range_text($r) . ' của bạn.', '/leave.html?id=' . $id);
     }
 
@@ -763,7 +763,7 @@ case 'approve':
         lv_save_cal_result($id, $cal);
     }
 
-    lv_notify((int) $r['user_id'], 'leave_approved', 'Đơn nghỉ đã được duyệt',
+    lv_notify((int) $r['user_id'], 'leave_approved', 'Đã duyệt: ' . lv_type_label($r['leave_type']) . ' — ' . $r['user_name'],
         $ME['name'] . ' đã duyệt đơn nghỉ ' . lv_range_text($r) . ' của bạn.', '/leave.html?id=' . $id);
 
     lv_out(array(
@@ -798,7 +798,7 @@ case 'reject':
     );
     $st->execute(array($ME['id'], $ME['name'], $now, $note, $now, $id));
 
-    lv_notify((int) $r['user_id'], 'leave_rejected', 'Đơn nghỉ bị từ chối',
+    lv_notify((int) $r['user_id'], 'leave_rejected', 'Từ chối: ' . lv_type_label($r['leave_type']) . ' — ' . $r['user_name'],
         $ME['name'] . ' đã từ chối đơn nghỉ ' . lv_range_text($r) . '. Lý do: ' . $note, '/leave.html?id=' . $id);
 
     lv_out(array('ok' => true, 'message' => 'Đã từ chối đơn.' . $calNote, 'row' => lv_shape(lv_row($id))));
