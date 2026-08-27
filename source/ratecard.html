@@ -604,7 +604,7 @@ function syncAddBtn(){
   if (ico) ico.innerHTML = v ? '<svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-box"/></svg>' : '<svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-price"/></svg>';
   if (h) h.textContent = v ? 'Chưa có sản phẩm VFR nào' : 'Chưa có hạng mục nào';
   if (p) p.innerHTML = v
-    ? 'Bấm <b>＋ Thêm sản phẩm</b> để thêm sản phẩm VFR — tên song ngữ, giá bán, giá vốn và file .zip sản xuất.'
+    ? 'Bấm <b>＋ Thêm sản phẩm</b> để thêm sản phẩm VFR — tên song ngữ, giá bán theo số lượng, nhà cung cấp và file sản xuất trên SharePoint.'
     : 'Bấm <b>＋ Thêm hạng mục</b> để bắt đầu xây bảng giá tham khảo cho nhóm dịch vụ này.';
 }
 function setTrash(){ inTrash = true; syncAddBtn(); load(); }
@@ -1101,6 +1101,6 @@ loadLimits();
   if (k && SHEETS.some(x => x.key === k) && k !== curSheet) setSheet(k);
 })();
 </script>
-<script src="./vfr-ui.js?v=3"></script>
+<script src="./vfr-ui.js?v=5"></script>
 </body>
 </html>

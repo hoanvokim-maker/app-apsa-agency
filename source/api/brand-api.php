@@ -307,6 +307,37 @@ function bg_clean_name($n)
     return $n;
 }
 
+/** Duong dan tuong doi cua muc so voi thu muc goc (dung cho ket qua tim kiem). */
+/** webUrl cua thu muc goc, dung de suy ra duong dan khi Graph khong tra parentReference.path. */
+function bg_root_weburl()
+{
+    static $u = null;
+    if ($u !== null) return $u;
+    $c = bg_cfg();
+    $r = bg_item($c['root_id']);
+    $u = isset($r['webUrl']) ? rtrim((string) $r['webUrl'], '/') : '';
+    return $u;
+}
+
+function bg_rel_path($it)
+{
+    $pref = isset($it['parentReference']['path']) ? (string) $it['parentReference']['path'] : '';
+    if ($pref !== '') {
+        $root = bg_root_path();
+        if ($pref === $root) return '';
+        if (strpos($pref, $root . '/') === 0) return rawurldecode(substr($pref, strlen($root) + 1));
+    }
+    // Ket qua /search khong co parentReference.path -> suy ra tu webUrl
+    $w  = isset($it['webUrl']) ? (string) $it['webUrl'] : '';
+    $ru = bg_root_weburl();
+    if ($w !== '' && $ru !== '' && strpos($w, $ru . '/') === 0) {
+        $rel = rawurldecode(substr($w, strlen($ru) + 1));
+        $pos = strrpos($rel, '/');
+        return $pos === false ? '' : substr($rel, 0, $pos);
+    }
+    return '';
+}
+
 function bg_row($it)
 {
     return array(
@@ -320,6 +351,8 @@ function bg_row($it)
         'modified' => isset($it['lastModifiedDateTime']) ? $it['lastModifiedDateTime'] : '',
         'by'       => isset($it['lastModifiedBy']['user']['displayName']) ? $it['lastModifiedBy']['user']['displayName'] : '',
         'web_url'  => isset($it['webUrl']) ? $it['webUrl'] : '',
+        'parent_id'=> isset($it['parentReference']['id']) ? $it['parentReference']['id'] : '',
+        'path'     => bg_rel_path($it),
     );
 }
 

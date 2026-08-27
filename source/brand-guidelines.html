@@ -221,6 +221,53 @@
     #toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
     #toast.err { border-color: rgba(255,77,77,.5); color: #ffb3b3; }
 
+    /* ── Tim kiem nang cao ── */
+    .search input { width: 320px; padding-right: 32px; }
+    .search .clr {
+      position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+      width: 22px; height: 22px; border: none; background: transparent; color: var(--text3);
+      cursor: pointer; border-radius: 6px; display: none; font-size: 13px; line-height: 1; font-family: inherit;
+    }
+    .search .clr:hover { color: var(--text); background: var(--bg4); }
+    .search.has .clr { display: block; }
+    mark { background: rgba(223,242,13,.26); color: var(--green); border-radius: 3px; padding: 0 1px; }
+
+    .sel {
+      font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--text);
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 9px;
+      padding: 9px 11px; outline: none; cursor: pointer;
+    }
+    .sel:hover { background: var(--bg4); border-color: var(--border-h); }
+
+    /* ── Nhom ── */
+    tr.gh td { background: var(--bg3); padding: 9px 16px; cursor: pointer; user-select: none; }
+    tr.gh:hover td { background: var(--bg4); }
+    tr.gh .gt { display: flex; align-items: center; gap: 9px; font-size: 11.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--green); }
+    tr.gh .gt i { font-style: normal; font-size: 9px; color: var(--text3); width: 9px; }
+    tr.gh .gt em { font-style: normal; color: var(--text3); font-weight: 600; letter-spacing: 0; text-transform: none; font-size: 11.5px; }
+    tr.hid { display: none; }
+
+    .sechd { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 11.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); }
+    .pathtag { font-size: 11px; color: var(--text3); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 46vw; }
+    .pathtag b { color: var(--text2); font-weight: 600; }
+
+    #tip { display: none; align-items: flex-start; gap: 10px; font-size: 12.5px; color: var(--text2);
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; line-height: 1.55; }
+    #tip.on { display: flex; }
+    #tip b { color: var(--text); }
+    #tip .x { margin-left: auto; flex: 0 0 auto; }
+
+    /* ── Xem nhanh ── */
+    .viewer { background: #000; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; display: grid; place-items: center; min-height: 220px; }
+    .viewer img { max-width: 100%; max-height: 68vh; display: block; margin: 0 auto; }
+    .viewer iframe { width: 100%; height: 68vh; border: 0; background: #fff; }
+    .viewer pre { width: 100%; max-height: 68vh; overflow: auto; padding: 16px; text-align: left;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--text2); white-space: pre-wrap; word-break: break-word; }
+    .modal.vw { max-width: 1020px; }
+    .vhd { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .vhd h2 { font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+    .vhd .sp { flex: 1 1 auto; }
+
     @media (max-width: 860px) {
       header { padding: 0 16px; }
       .page-head, .wrap { padding-left: 16px; padding-right: 16px; }
@@ -256,10 +303,18 @@
   <div id="warn"></div>
 
   <div class="toolbar">
-    <div class="search">
+    <div class="search" id="sbox">
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.2-4.2"/></svg>
-      <input id="q" type="text" placeholder="Tìm file trong toàn bộ kho…" autocomplete="off" />
+      <input id="q" type="text" placeholder="Tìm nhanh — gõ vài chữ, không cần dấu…" autocomplete="off" />
+      <button class="clr" id="qClr" onclick="clearSearch()" title="Xoá tìm kiếm (Esc)">✕</button>
     </div>
+    <select class="sel" id="grp" onchange="setGroup(this.value)" title="Nhóm danh sách">
+      <option value="none">Không nhóm</option>
+      <option value="kind">Nhóm: Loại file</option>
+      <option value="pre">Nhóm: Thương hiệu</option>
+      <option value="alpha">Nhóm: Chữ cái đầu</option>
+      <option value="date">Nhóm: Ngày tải lên</option>
+    </select>
     <div class="spacer"></div>
     <button class="btn sm ghost" onclick="openLog()" id="btnLog">Nhật ký</button>
     <button class="btn sm ghost" onclick="openSP()" id="btnSP">Mở trên SharePoint</button>
@@ -268,12 +323,19 @@
     <input type="file" id="file" multiple style="display:none" />
   </div>
 
+  <div id="tip">
+    <div><b>Mẹo mở file trên máy Mac.</b> Bấm <b>Mở</b> để xem nhanh ảnh/PDF ngay tại đây, hoặc mở file Word/Excel/PowerPoint bằng ứng dụng Office trên máy.
+    Với file .ai/.psd/.indd/font, hãy đồng bộ thư viện SharePoint về Finder một lần bằng OneDrive — sau đó mở trực tiếp bằng Illustrator/Photoshop như file nội bộ.</div>
+    <button class="btn sm ghost x" onclick="hideTip()">Đã hiểu</button>
+  </div>
+
   <div class="crumbs" id="crumbs"></div>
 
   <div id="queue"></div>
 
   <div id="drop">
     <div class="card" id="view"></div>
+    <div id="gres"></div>
   </div>
 </div>
 
@@ -290,6 +352,20 @@
       <button class="btn" onclick="closeName()">Huỷ</button>
       <button class="btn primary" id="nOk" onclick="okName()">Lưu</button>
     </div>
+  </div>
+</div>
+
+<!-- ── Modal: xem nhanh ── -->
+<div class="mask" id="mView" data-apsa-free>
+  <div class="modal vw" data-apsa-free>
+    <div class="vhd">
+      <h2 id="vTitle">Xem nhanh</h2>
+      <div class="sp"></div>
+      <button class="btn sm ghost" id="vSP">SharePoint</button>
+      <button class="btn sm ghost" id="vDl">Tải về</button>
+      <button class="btn sm" onclick="closeView()">Đóng</button>
+    </div>
+    <div id="vBody"></div>
   </div>
 </div>
 
@@ -335,8 +411,14 @@ var SORT  = { k: 'name', d: 1 };
 var ME    = null, ROOT = '', CHUNK = 3932160, MAXUP = 524288000;
 var PATH  = [];          // [{id,name}] - đường dẫn hiện tại, phần tử 0 là gốc
 var ITEMS = [];
-var MODE  = 'browse';    // browse | search
+var MODE  = 'browse';    // browse | search (giu lai cho tuong thich)
 var BUSY  = false;
+var FQ    = '';          // tu khoa dang go
+var GRES  = [];          // ket qua tim toan kho (ngoai thu muc hien tai)
+var GSTAT = '';
+var GSEQ  = 0;
+var GROUP = 'none';
+var COLL  = {};          // nhom dang thu gon
 
 /* ── tiện ích ── */
 function esc(s) {
@@ -481,8 +563,8 @@ function load() {
     cur.name = j.folder.name;
     cur.web_url = j.folder.web_url;
     crumbs();
-    chips(j.folder, ITEMS.length);
     draw();
+    if (FQ) runG(FQ);
   }).catch(function (e) {
     render('<div class="empty"><b>Không tải được danh sách</b>' + esc(e.message) + '</div>');
   });
@@ -490,92 +572,360 @@ function load() {
 
 function render(html) { document.getElementById('view').innerHTML = html; }
 
+/* ══ chuẩn hoá không dấu (giữ nguyên độ dài để bôi vàng đúng vị trí) ══ */
+function nrm(x) {
+  x = String(x == null ? '' : x).toLowerCase();
+  var o = '', i, c, d;
+  for (i = 0; i < x.length; i++) {
+    c = x.charAt(i);
+    if (c === '\u0111') { o += 'd'; continue; }
+    d = c.normalize ? c.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : c;
+    o += (d.length ? d.charAt(0) : c);
+  }
+  return o;
+}
+function terms(q) {
+  var t = nrm(q).split(/[^a-z0-9]+/), o = [], i;
+  for (i = 0; i < t.length; i++) if (t[i]) o.push(t[i]);
+  return o;
+}
+function hit(name, tm) {
+  var n = nrm(name), i;
+  for (i = 0; i < tm.length; i++) if (n.indexOf(tm[i]) < 0) return false;
+  return true;
+}
+function hlt(name, tm) {
+  name = String(name == null ? '' : name);
+  if (!tm || !tm.length) return esc(name);
+  var n = nrm(name), mk = [], i, k, p, t;
+  for (i = 0; i < tm.length; i++) {
+    t = tm[i]; p = n.indexOf(t);
+    while (p >= 0) { for (k = p; k < p + t.length; k++) mk[k] = 1; p = n.indexOf(t, p + 1); }
+  }
+  var h = '', on = false;
+  for (i = 0; i < name.length; i++) {
+    if (mk[i] && !on) { h += '<mark>'; on = true; }
+    else if (!mk[i] && on) { h += '</mark>'; on = false; }
+    h += esc(name.charAt(i));
+  }
+  return h + (on ? '</mark>' : '');
+}
+
+/* ══ nhóm ══ */
+function gkind(it) {
+  if (it.is_dir) return { k: '0', t: 'Thư mục' };
+  var e = (it.ext || '').toLowerCase();
+  if (e === 'pdf') return { k: '1', t: 'PDF' };
+  if (['ai','eps','psd','indd','idml','sketch','fig','xd','afdesign','afphoto','svg','cdr'].indexOf(e) >= 0) return { k: '2', t: 'Vector & thiết kế' };
+  if (['jpg','jpeg','png','gif','webp','bmp','tif','tiff','heic','avif'].indexOf(e) >= 0) return { k: '3', t: 'Hình ảnh' };
+  if (['ppt','pptx','key'].indexOf(e) >= 0) return { k: '4', t: 'Trình chiếu' };
+  if (['doc','docx','rtf','txt','md','pages'].indexOf(e) >= 0) return { k: '5', t: 'Tài liệu' };
+  if (['xls','xlsx','csv','numbers'].indexOf(e) >= 0) return { k: '6', t: 'Bảng tính' };
+  if (['otf','ttf','woff','woff2','eot'].indexOf(e) >= 0) return { k: '7', t: 'Font chữ' };
+  if (['mp4','mov','avi','mkv','webm','m4v'].indexOf(e) >= 0) return { k: '8', t: 'Video' };
+  if (['zip','rar','7z','tar','gz'].indexOf(e) >= 0) return { k: '9', t: 'Nén' };
+  return { k: 'z', t: 'Khác' };
+}
+function gpre(it) {
+  if (it.is_dir) return { k: '0', t: 'Thư mục' };
+  var n = String(it.name || '').replace(/\.[a-z0-9]{1,6}$/i, '').trim();
+  var ps = n.split(/[\s\-_.]+/), m = ps[0] || '';
+  if (nrm(m).replace(/[^a-z0-9]/g, '').length < 2) m = ((ps[0] || '') + ' ' + (ps[1] || '')).trim();
+  if (!m) return { k: 'z', t: 'Khác' };
+  var t = m.toUpperCase();
+  return { k: '1' + nrm(t), t: t };
+}
+function galpha(it) {
+  if (it.is_dir) return { k: '0', t: 'Thư mục' };
+  var c = nrm(String(it.name || '').trim()).charAt(0);
+  if (c >= '0' && c <= '9') return { k: '1', t: '0 – 9' };
+  if (c >= 'a' && c <= 'z') return { k: '2' + c, t: c.toUpperCase() };
+  return { k: '3', t: 'Khác' };
+}
+function gdate(it) {
+  if (it.is_dir) return { k: '0', t: 'Thư mục' };
+  var t = ts(it.created || it.modified);
+  if (!t) return { k: '8', t: 'Không rõ thời điểm' };
+  var now = new Date(), d0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  if (t >= d0) return { k: '1', t: 'Hôm nay' };
+  if (t >= d0 - 6 * 86400000) return { k: '2', t: '7 ngày qua' };
+  if (t >= d0 - 29 * 86400000) return { k: '3', t: '30 ngày qua' };
+  if (t >= new Date(now.getFullYear(), 0, 1).getTime()) return { k: '4', t: 'Trong năm ' + now.getFullYear() };
+  var y = new Date(t).getFullYear();
+  return { k: '5' + (9999 - y), t: 'Năm ' + y };
+}
+function groupOf(it) {
+  if (GROUP === 'kind')  return gkind(it);
+  if (GROUP === 'pre')   return gpre(it);
+  if (GROUP === 'alpha') return galpha(it);
+  if (GROUP === 'date')  return gdate(it);
+  return null;
+}
+function setGroup(v) {
+  GROUP = v; COLL = {};
+  try { localStorage.setItem('apsa_kho_group_' + RKEY, v); } catch (e) {}
+  draw();
+}
+function toggleG(k) {
+  k = decodeURIComponent(k);
+  if (COLL[k]) delete COLL[k]; else COLL[k] = 1;
+  draw();
+}
+function hideTip() {
+  document.getElementById('tip').classList.remove('on');
+  try { localStorage.setItem('apsa_kho_tip', '1'); } catch (e) {}
+}
+
+/* ══ vẽ bảng ══ */
+function render(html) { document.getElementById('view').innerHTML = html; }
+
+function ibtn(title, path, fn, cls) {
+  return '<button class="iconbtn' + (cls ? ' ' + cls : '') + '" title="' + title + '" onclick="' + fn + '">'
+    + '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">' + path + '</svg></button>';
+}
+var IC_OPEN = '<path d="M14 3h7v7M21 3l-9 9M19 14v6a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h6"/>';
+var IC_DL   = '<path d="M12 3v12M7 11l5 5 5-5M4 21h16"/>';
+var IC_RN   = '<path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/>';
+var IC_DEL  = '<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/>';
+var IC_FLD  = '<path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>';
+
+function trHtml(it, tm, cls) {
+  var i = ITEMS.indexOf(it), k = kind(it);
+  return '<tr data-i="' + i + '"' + (it.is_dir ? ' data-fid="' + esc(it.id) + '"' : '')
+    + (cls ? ' class="' + cls + '"' : '') + '>'
+    + '<td><div class="nm"><div class="ic ' + k + '">' + esc(label(it)) + '</div><div class="tx">'
+    + '<span class="tt" onclick="open_(' + i + ')" title="' + esc(it.name) + '">' + hlt(it.name, tm) + '</span>'
+    + '<div class="sb">' + (it.is_dir ? (it.count + ' mục') : (k === 'file' ? 'Tệp' : k.toUpperCase()))
+    + (it.by ? ' · ' + esc(it.by) : '') + '</div></div></div></td>'
+    + '<td class="sz">' + (it.is_dir ? '—' : mb(it.size)) + '</td>'
+    + '<td class="dt">' + dtt(it.created) + '</td>'
+    + '<td class="dt">' + dtt(it.modified) + '</td>'
+    + '<td class="ac">'
+    + (it.is_dir ? '' : ibtn('Mở', IC_OPEN, 'openIdx(' + i + ')') + ibtn('Tải về', IC_DL, 'dl(' + i + ')'))
+    + ibtn('Đổi tên', IC_RN, 'askRename(' + i + ')')
+    + ibtn('Xoá', IC_DEL, 'askDel(' + i + ')', 'del')
+    + '</td></tr>';
+}
+
 function draw() {
-  if (!ITEMS.length) {
-    render('<div class="empty"><b>' + (MODE === 'search' ? 'Không tìm thấy file nào' : 'Thư mục trống')
-      + '</b>' + (MODE === 'search' ? 'Thử từ khoá khác.' : 'Kéo thả file vào đây hoặc bấm “Tải file lên”.') + '</div>');
+  var tm = terms(FQ);
+  var base = tm.length ? ITEMS.filter(function (it) { return hit(it.name, tm); }) : ITEMS;
+
+  if (!base.length) {
+    if (tm.length) render('<div class="empty"><b>Không có mục nào khớp trong thư mục này</b>'
+      + (GRES.length ? 'Xem kết quả ở nơi khác trong kho bên dưới.' : 'Thử bớt từ khoá — hệ thống đang tìm tiếp trong toàn kho.') + '</div>');
+    else render('<div class="empty"><b>Thư mục trống</b>Kéo thả file vào đây hoặc bấm “Tải file lên”.</div>');
+    chipsNow(0, tm);
     return;
   }
-  var rows = sortRows(ITEMS);
+
+  var rows = sortRows(base);
   var h = '<table><thead><tr>'
         + sh('name', 'Tên')
         + sh('size', 'Dung lượng', 'w-sz')
         + sh('created', 'Tải lên', 'dt w-dt')
         + sh('modified', 'Cập nhật', 'dt w-dt')
-        + '<th style="width:120px"></th>'
+        + '<th style="width:150px"></th>'
         + '</tr></thead><tbody>';
 
-  rows.forEach(function (it) {
-    var i = ITEMS.indexOf(it);
-    var k = kind(it);
-    h += '<tr data-i="' + i + '"' + (it.is_dir ? ' data-fid="' + esc(it.id) + '"' : '') + '>'
-      + '<td><div class="nm">'
-      + '<div class="ic ' + k + '">' + esc(label(it)) + '</div>'
-      + '<div class="tx">'
-      + '<span class="tt" onclick="open_(' + i + ')" title="' + esc(it.name) + '">' + esc(it.name) + '</span>'
-      + '<div class="sb">' + (it.is_dir ? (it.count + ' mục') : (k === 'file' ? 'Tệp' : k.toUpperCase()))
-      + (it.by ? ' · ' + esc(it.by) : '') + '</div>'
+  if (GROUP === 'none') {
+    rows.forEach(function (it) { h += trHtml(it, tm, ''); });
+  } else {
+    var order = [], map = {};
+    rows.forEach(function (it) {
+      var g = groupOf(it);
+      if (!map[g.k]) { map[g.k] = { t: g.t, items: [] }; order.push(g.k); }
+      map[g.k].items.push(it);
+    });
+    order.sort();
+    order.forEach(function (gk) {
+      var g = map[gk], ck = GROUP + '|' + gk, off = !!COLL[ck], sz = 0;
+      g.items.forEach(function (x) { sz += (Number(x.size) || 0); });
+      h += '<tr class="gh" onclick="toggleG(\'' + esc(encodeURIComponent(ck)) + '\')"><td colspan="5"><div class="gt">'
+        + '<i>' + (off ? '\u25B6' : '\u25BC') + '</i>' + esc(g.t)
+        + '<em>' + g.items.length + ' mục' + (sz ? ' · ' + mb(sz) : '') + '</em></div></td></tr>';
+      g.items.forEach(function (it) { h += trHtml(it, tm, off ? 'hid' : ''); });
+    });
+  }
+  render(h + '</tbody></table>');
+  chipsNow(base.length, tm);
+}
+
+function chipsNow(n, tm) {
+  var cur = PATH[PATH.length - 1] || {};
+  var h = '<span class="chip ok">SharePoint <b>' + esc(cur.name || '') + '</b></span>';
+  if (tm && tm.length) {
+    h += '<span class="chip"><b>' + n + '</b>/' + ITEMS.length + ' mục khớp ở đây</span>';
+    if (GSTAT) h += '<span class="chip">' + esc(GSTAT) + '</span>';
+  } else {
+    h += '<span class="chip"><b>' + ITEMS.length + '</b> mục</span>';
+  }
+  document.getElementById('chips').innerHTML = h;
+}
+
+/* ══ kết quả toàn kho ══ */
+function drawG() {
+  var tm = terms(FQ), box = document.getElementById('gres');
+  if (!tm.length || !GRES.length) { box.innerHTML = ''; return; }
+  var root = (PATH[0] && PATH[0].name) || 'Kho';
+  var h = '<div class="card" style="margin-top:16px">'
+        + '<div class="sechd">Ở nơi khác trong kho — ' + GRES.length + ' mục</div><table><tbody>';
+  GRES.forEach(function (it, k) {
+    var kk = kind(it);
+    h += '<tr><td><div class="nm"><div class="ic ' + kk + '">' + esc(label(it)) + '</div><div class="tx">'
+      + '<span class="tt" onclick="openRes(' + k + ')" title="' + esc(it.name) + '">' + hlt(it.name, tm) + '</span>'
+      + '<div class="pathtag">' + (it.is_dir ? 'Thư mục · ' : '') + 'trong <b>'
+      + esc(root + (it.path ? ' / ' + String(it.path).replace(/\//g, ' / ') : '')) + '</b></div>'
       + '</div></div></td>'
       + '<td class="sz">' + (it.is_dir ? '—' : mb(it.size)) + '</td>'
       + '<td class="dt">' + dtt(it.created) + '</td>'
-      + '<td class="dt">' + dtt(it.modified) + '</td>'
       + '<td class="ac">'
-      + (it.is_dir ? '' :
-          '<button class="iconbtn" title="Tải về" onclick="dl(' + i + ')">'
-          + '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg></button>')
-      + '<button class="iconbtn" title="Đổi tên" onclick="askRename(' + i + ')">'
-      + '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg></button>'
-      + '<button class="iconbtn del" title="Xoá" onclick="askDel(' + i + ')">'
-      + '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>'
+      + (it.is_dir ? '' : ibtn('Mở', IC_OPEN, 'openRes(' + k + ')') + ibtn('Tải về', IC_DL, 'dlItem(GRES[' + k + '])'))
+      + ibtn('Mở thư mục chứa', IC_FLD, 'gotoRes(' + k + ')')
       + '</td></tr>';
   });
-  render(h + '</tbody></table>');
+  box.innerHTML = h + '</tbody></table></div>';
 }
 
 /* ══ điều hướng ══ */
-function goTo(i) { if (MODE === 'search') return; PATH = PATH.slice(0, i + 1); load(); }
+function goTo(i) { PATH = PATH.slice(0, i + 1); load(); }
 function open_(i) {
   var it = ITEMS[i];
-  if (it.is_dir) {
-    if (MODE === 'search') { toast('Mở thư mục từ kết quả tìm kiếm chưa hỗ trợ — hãy về kho tài liệu.', true); return; }
-    PATH.push({ id: it.id, name: it.name });
-    load();
-  } else dl(i);
+  if (it.is_dir) { PATH.push({ id: it.id, name: it.name }); resetQ(); load(); }
+  else openFile(it);
 }
-function dl(i) {
-  var it = ITEMS[i];
+function openRes(k) {
+  var it = GRES[k];
+  if (!it) return;
+  if (it.is_dir) {
+    var nm = (it.path ? it.path + '/' : '') + it.name;
+    PATH = [PATH[0], { id: it.id, name: nm }];
+    resetQ(); load();
+  } else openFile(it);
+}
+function gotoRes(k) {
+  var it = GRES[k];
+  if (!it) return;
+  var pid = it.parent_id || '';
+  if (!pid || pid === ROOT) PATH = [PATH[0]];
+  else PATH = [PATH[0], { id: pid, name: it.path || 'Thư mục' }];
+  resetQ(); load();
+}
+function dlItem(it) {
   toast('Đang lấy đường dẫn…');
-  api('link', { qs: '&id=' + encodeURIComponent(it.id) }).then(function (j) {
+  return api('link', { qs: '&id=' + encodeURIComponent(it.id) }).then(function (j) {
     var a = document.createElement('a');
     a.href = j.url; a.download = it.name; a.rel = 'noopener';
     document.body.appendChild(a); a.click(); a.remove();
     toast('Đang tải ' + it.name);
   }).catch(function (e) { toast(e.message, true); });
 }
+function dl(i) { dlItem(ITEMS[i]); }
+function openIdx(i) { openFile(ITEMS[i]); }
 function openSP() {
   var cur = PATH[PATH.length - 1];
   if (cur && cur.web_url) window.open(cur.web_url, '_blank', 'noopener');
   else toast('Chưa có đường dẫn SharePoint.', true);
 }
 
+/* ══ mở file trên máy (macOS) ══ */
+var OFFICE = { doc: 'ms-word', docx: 'ms-word', rtf: 'ms-word', dot: 'ms-word', dotx: 'ms-word',
+               xls: 'ms-excel', xlsx: 'ms-excel', xlsm: 'ms-excel', csv: 'ms-excel',
+               ppt: 'ms-powerpoint', pptx: 'ms-powerpoint' };
+var VIEWABLE = ['pdf','jpg','jpeg','png','gif','webp','svg','bmp','txt','md','json','html','htm'];
+
+function openFile(it) {
+  if (it.is_dir) return;
+  var e = (it.ext || '').toLowerCase();
+  if (OFFICE[e] && it.web_url) {
+    var a = document.createElement('a');
+    a.href = OFFICE[e] + ':ofe|u|' + it.web_url;
+    document.body.appendChild(a); a.click(); a.remove();
+    toast('Đang mở bằng ứng dụng Office trên máy…');
+    return;
+  }
+  if (VIEWABLE.indexOf(e) >= 0) { quickView(it); return; }
+  toast('Định dạng .' + (e || '?') + ' cần ứng dụng riêng — đang tải về máy.');
+  dlItem(it);
+}
+
+var VURL = null;
+function closeView() {
+  document.getElementById('mView').classList.remove('on');
+  document.getElementById('vBody').innerHTML = '';
+  if (VURL) { try { URL.revokeObjectURL(VURL); } catch (e) {} VURL = null; }
+}
+function quickView(it) {
+  var e = (it.ext || '').toLowerCase();
+  document.getElementById('vTitle').textContent = it.name;
+  document.getElementById('vBody').innerHTML = '<div class="empty">Đang mở…</div>';
+  document.getElementById('vSP').onclick = function () {
+    if (it.web_url) window.open(it.web_url, '_blank', 'noopener'); else toast('Chưa có đường dẫn SharePoint.', true);
+  };
+  document.getElementById('vDl').onclick = function () { dlItem(it); };
+  document.getElementById('mView').classList.add('on');
+
+  api('link', { qs: '&id=' + encodeURIComponent(it.id) }).then(function (j) {
+    return fetch(j.url).then(function (r) {
+      if (!r.ok) throw new Error('Máy chủ trả về ' + r.status);
+      return r.blob();
+    });
+  }).then(function (b) {
+    if (['txt','md','json','html','htm'].indexOf(e) >= 0) {
+      return b.text().then(function (t) {
+        document.getElementById('vBody').innerHTML = '<div class="viewer"><pre>' + esc(t.slice(0, 300000)) + '</pre></div>';
+      });
+    }
+    if (VURL) { try { URL.revokeObjectURL(VURL); } catch (x) {} }
+    VURL = URL.createObjectURL(b);
+    document.getElementById('vBody').innerHTML = (e === 'pdf')
+      ? '<div class="viewer"><iframe src="' + VURL + '"></iframe></div>'
+      : '<div class="viewer"><img src="' + VURL + '" alt="" /></div>';
+  }).catch(function (err) {
+    document.getElementById('vBody').innerHTML = '<div class="empty"><b>Không xem nhanh được</b>'
+      + esc(err.message) + ' — bấm “Tải về” rồi mở bằng ứng dụng trên máy.</div>';
+  });
+}
+
 /* ══ tìm kiếm ══ */
 var qTimer = null;
-document.getElementById('q').addEventListener('input', function () {
-  var v = this.value.trim();
+function resetQ() {
+  FQ = ''; GRES = []; GSTAT = '';
   clearTimeout(qTimer);
-  if (v.length < 2) { if (MODE === 'search') clearSearch(); return; }
-  qTimer = setTimeout(function () { doSearch(v); }, 380);
-});
-function doSearch(v) {
-  render('<div class="empty">Đang tìm…</div>');
-  api('search', { qs: '&q=' + encodeURIComponent(v) }).then(function (j) {
-    MODE = 'search'; ITEMS = j.items || [];
-    crumbs(); draw();
-    document.getElementById('chips').innerHTML =
-      '<span class="chip"><b>' + ITEMS.length + '</b> kết quả cho “' + esc(v) + '”</span>';
-  }).catch(function (e) { render('<div class="empty"><b>Không tìm được</b>' + esc(e.message) + '</div>'); });
+  var q = document.getElementById('q');
+  if (q) q.value = '';
+  document.getElementById('sbox').classList.remove('has');
+  document.getElementById('gres').innerHTML = '';
 }
-function clearSearch() { document.getElementById('q').value = ''; load(); }
+function onQ() {
+  var v = document.getElementById('q').value;
+  FQ = v;
+  document.getElementById('sbox').classList[v ? 'add' : 'remove']('has');
+  clearTimeout(qTimer);
+  var tm = terms(v);
+  if (!tm.length || nrm(v).replace(/[^a-z0-9]/g, '').length < 2) {
+    GRES = []; GSTAT = ''; drawG(); draw(); return;
+  }
+  GSTAT = 'đang tìm toàn kho…';
+  draw();
+  qTimer = setTimeout(function () { runG(v); }, 320);
+}
+function runG(v) {
+  var seq = ++GSEQ, tm = terms(v);
+  api('search', { qs: '&q=' + encodeURIComponent(v) }).then(function (j) {
+    if (seq !== GSEQ) return;
+    var here = {};
+    ITEMS.forEach(function (x) { here[x.id] = 1; });
+    GRES = (j.items || []).filter(function (x) { return !here[x.id] && hit(x.name, tm); });
+    GSTAT = GRES.length ? (GRES.length + ' mục ở nơi khác') : 'không còn kết quả nào khác';
+    drawG(); draw();
+  }).catch(function (e) {
+    if (seq !== GSEQ) return;
+    GRES = []; GSTAT = 'lỗi tìm kiếm'; drawG(); draw();
+    toast(e.message, true);
+  });
+}
+function clearSearch() { resetQ(); draw(); document.getElementById('q').focus(); }
 
 /* ══ tạo thư mục / đổi tên ══ */
 var nameMode = '', nameIdx = -1;
@@ -781,7 +1131,21 @@ function openLog() {
 document.addEventListener('keydown', function (e) {
   if (e.key !== 'Escape') return;
   ['mName', 'mDel', 'mLog'].forEach(function (id) { document.getElementById(id).classList.remove('on'); });
+  if (document.getElementById('mView').classList.contains('on')) closeView();
 });
+
+(function () {
+  var q = document.getElementById('q');
+  q.addEventListener('input', onQ);
+  q.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { e.stopPropagation(); clearSearch(); }
+  });
+  try {
+    var g = localStorage.getItem('apsa_kho_group_' + RKEY);
+    if (g) { GROUP = g; document.getElementById('grp').value = g; }
+    if (!localStorage.getItem('apsa_kho_tip')) document.getElementById('tip').classList.add('on');
+  } catch (e) { document.getElementById('tip').classList.add('on'); }
+})();
 
 boot();
 </script>

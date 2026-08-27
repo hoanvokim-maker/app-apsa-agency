@@ -1,5 +1,5 @@
 {
-    "version": "1.2.27",
+    "version": "1.2.28",
     "updated": "2026-08-27",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-25",
             "note": "Phiên bản 1.2",
             "items": [
+                {
+                    "d": "2026-08-27",
+                    "v": "1.2.28",
+                    "t": "Kho SharePoint: tim kiem tuc thi + ket qua toan kho co duong dan, nhom file, nut Mo (Office/xem nhanh); VFR ratecard bo phi quan ly MA chi con VAT",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-27",
                     "v": "1.2.27",

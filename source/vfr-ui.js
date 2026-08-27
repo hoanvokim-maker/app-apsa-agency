@@ -728,15 +728,72 @@
     if (!inTrash) loadCounts();
   };
 
+  /* ── VFR: gia chi co VAT, khong co phi quan ly MA ─────────── */
+  var T = { form: null, formTxt: '', pill: null, pillHtml: '' };
+  function initTerms() {
+    if (T.form) return true;
+    T.form = document.getElementById('formulaText');
+    if (!T.form) return false;
+    T.formTxt = T.form.textContent;
+    var par = T.form.parentNode, kids = par ? par.children : [];
+    for (var i = 0; i < kids.length; i++) {
+      if (kids[i] !== T.form && /qu\u1EA3n l\u00FD/i.test(kids[i].textContent || '')) {
+        T.pill = kids[i]; T.pillHtml = kids[i].innerHTML; break;
+      }
+    }
+    return true;
+  }
+  function applyTerms() {
+    if (!initTerms()) return;
+    var v = (curSheet === VFR && !inTrash);
+    T.form.textContent = v
+      ? 'TOTAL = NET \u00D7 1.08  (ch\u1EC9 VAT 8%, kh\u00F4ng c\u00F3 ph\u00ED qu\u1EA3n l\u00FD MA)'
+      : T.formTxt;
+    if (T.pill) {
+      T.pill.innerHTML = v
+        ? T.pillHtml.replace(/ph\u00ED qu\u1EA3n l\u00FD \(MA\)\s*(?:&amp;|&|v\u00E0)\s*VAT/i, 'VAT')
+        : T.pillHtml;
+    }
+    var ma = document.getElementById('calcMa');
+    if (ma) {
+      var row = ma.closest ? ma.closest('.calc-field') : ma.parentNode;
+      if (v) {
+        if (ma.value !== '0') { ma.setAttribute('data-sv', ma.value); ma.value = '0'; }
+        if (row) row.style.display = 'none';
+      } else {
+        if (row) row.style.display = '';
+        var sv = ma.getAttribute('data-sv');
+        if (sv) { ma.value = sv; ma.removeAttribute('data-sv'); }
+      }
+      if (typeof runCalc === 'function') { try { runCalc(); } catch (e) {} }
+    }
+  }
+
+  /* Bo dong "+MA" trong ket qua tinh tong khi dang o sheet VFR */
+  var origCalc = window.runCalc;
+  window.runCalc = function () {
+    var r = origCalc ? origCalc.apply(this, arguments) : undefined;
+    if (curSheet === VFR && !inTrash) {
+      var box = document.getElementById('calcResult');
+      if (box && box.innerHTML.indexOf('+MA') >= 0) {
+        box.innerHTML = box.innerHTML.replace(/→\s*\+MA:.*?(?=→)/, '');
+      }
+    }
+    return r;
+  };
+
   var origRender = window.render;
   window.render = function () {
     if (!inTrash && items.length && items[0] && items[0].sheet_key && items[0].sheet_key !== curSheet) return;
-    return origRender.apply(this, arguments);
+    var r = origRender.apply(this, arguments);
+    applyTerms();
+    return r;
   };
 
   function guardTick(n) {
     if (n <= 0) return;
     setTimeout(function () {
+      applyTerms();
       if (!inTrash && items.length && items[0] && items[0].sheet_key !== curSheet) { load(); return; }
       guardTick(n - 1);
     }, 400);
@@ -744,8 +801,10 @@
 
   injectCss();
   buildModal();
+  applyTerms();
   ensureMeta().then(function () {
     if (curSheet === VFR && !inTrash) ensureVfrData();
+    applyTerms();
     guardTick(6);
   });
 })();
