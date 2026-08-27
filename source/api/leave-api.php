@@ -376,6 +376,27 @@ function lv_hr($uid, $fresh = false)
             'user_id' => $uid, 'scheme' => $scheme, 'hired_at' => $hired,
             'official_at' => null, 'official_by' => null, 'official_by_name' => '', 'note' => '',
         );
+    } else {
+        /* APSA1221: staff_type doi -> che do phep di theo.
+           Freelancer khong huong phep nam; chuyen thanh nhan vien chinh thuc thi vao dien thu viec. */
+        $stf = '';
+        try {
+            $s3 = lv_pdo()->prepare('SELECT staff_type FROM app_users WHERE id = ? LIMIT 1');
+            $s3->execute(array($uid));
+            $stf = (string) $s3->fetchColumn();
+        } catch (Exception $e) {}
+
+        $want = '';
+        if ($stf === 'freelancer' && $r['scheme'] !== 'none')                 $want = 'none';
+        if ($stf !== '' && $stf !== 'freelancer' && $r['scheme'] === 'none')  $want = 'accrual';
+
+        if ($want !== '') {
+            try {
+                lv_pdo()->prepare('UPDATE hr_employment SET scheme = ?, updated_at = ? WHERE user_id = ?')
+                        ->execute(array($want, date('Y-m-d H:i:s'), $uid));
+            } catch (Exception $e) {}
+            $r['scheme'] = $want;
+        }
     }
 
     $memo[$uid] = $r;
