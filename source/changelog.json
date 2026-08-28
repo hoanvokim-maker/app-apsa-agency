@@ -1,5 +1,5 @@
 {
-    "version": "1.4.6",
+    "version": "1.4.7",
     "updated": "2026-08-28",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-28",
             "note": "Phiên bản 1.4",
             "items": [
+                {
+                    "d": "2026-08-28",
+                    "v": "1.4.7",
+                    "t": "Chi phi thuc te: cot du an hien them tieu de bao gia ben canh ma",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-28",
                     "v": "1.4.6",

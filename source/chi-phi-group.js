@@ -225,7 +225,8 @@
         '<button class="chev' + (open ? ' open' : '') + '" onclick="cpToggle(\'' + esc(g.code) + '\')" title="' +
           (open ? 'Thu gọn' : 'Mở ra') + '">▸</button>' +
         '<a class="gcode" href="./quotation.html?q=' + encodeURIComponent(g.code) + '" target="_blank" rel="noopener">' + esc(g.code) + '</a>' +
-        '<span class="gname">' + esc(g.client || g.title || '') + '</span>' +
+        '<span class="gtitle">' + esc(g.title || '') + '</span>' +
+        '<span class="gname">' + esc(g.client || '') + '</span>' +
         '<span class="gdate">' + esc(dmy(g.date)) + '</span>' +
         '<span class="spacer"></span>' +
         '<span class="gn">' + g.rows.length + ' khoản</span>' +
@@ -299,7 +300,9 @@
     + '.chev:hover{color:#fff}'
     + '.gcode{font-weight:800;font-size:13px;color:var(--text);text-decoration:none;letter-spacing:.01em}'
     + '.gcode:hover{color:var(--green)}'
-    + '.gname{font-size:12px;color:var(--text2);max-width:420px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
+    + '.gtitle{font-size:12.5px;font-weight:600;color:var(--text);max-width:360px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
+    + '.gname{font-size:11.5px;color:var(--text2);max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
+    + '.gname:not(:empty)::before{content:"·";margin-right:8px;color:var(--text3)}'
     + '.gdate{font-size:11px;color:var(--text3);white-space:nowrap}'
     + '.gn{font-size:11px;color:var(--text3);white-space:nowrap}'
     + '.gdue{font-size:11.5px;font-weight:700;color:var(--gold);white-space:nowrap}'
