@@ -1,5 +1,5 @@
 {
-    "version": "1.4.1",
+    "version": "1.4.2",
     "updated": "2026-08-28",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-28",
             "note": "Phiên bản 1.4",
             "items": [
+                {
+                    "d": "2026-08-28",
+                    "v": "1.4.2",
+                    "t": "VFR ratecard: 5 moc so luong (<10, 10-50, >50-100, >100-150, >150-200); them 2 user freelancer batch + 9 TK ACB ca nhan",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-28",
                     "v": "1.4.1",

@@ -11,8 +11,8 @@
 
   var VAPI = './api/vfr-api.php';
   var BAPI = './api/brand-api.php';
-  var QL   = ['&lt; 10', '10 – 50', '&gt; 50'];
-  var QLT  = ['< 10', '10 – 50', '> 50'];
+  var QL   = ['&lt; 10', '10 – 50', '&gt; 50 – 100', '&gt; 100 – 150', '&gt; 150 – 200'];
+  var QLT  = ['< 10', '10 – 50', '> 50 – 100', '> 100 – 150', '> 150 – 200'];
 
   var IS_ADMIN = false;
   var SUP      = [];     // [{id,name,contact,note,active}]
@@ -155,7 +155,7 @@
     return inp;
   }
   function mBindAll() {
-    ['itBasic', 'itStandard', 'itPremium', 'itQ1', 'itQ2', 'itQ3'].forEach(function (id) { mBind(el(id)); });
+    ['itBasic', 'itStandard', 'itPremium', 'itQ1', 'itQ2', 'itQ3', 'itQ4', 'itQ5'].forEach(function (id) { mBind(el(id)); });
     var cn = el('calcNet');
     if (cn && !cn.getAttribute('data-mny')) {
       cn.setAttribute('data-mny', '1');
@@ -180,10 +180,11 @@
     var lbl = priceDiv.querySelector('.divider-label');
     if (lbl) lbl.textContent = 'Giá bán theo số lượng (VND, giá NET)';
 
-    priceRow.innerHTML =
-      '<div class="fg"><label>' + QL[0] + ' cái</label><input type="text" id="itQ1" inputmode="text" autocomplete="off" placeholder="VD: 210k · 1tr5" /></div>' +
-      '<div class="fg"><label>' + QL[1] + ' cái</label><input type="text" id="itQ2" inputmode="text" autocomplete="off" placeholder="VD: 195k" /></div>' +
-      '<div class="fg"><label>' + QL[2] + ' cái</label><input type="text" id="itQ3" inputmode="text" autocomplete="off" placeholder="VD: 180k" /></div>';
+    priceRow.style.gridTemplateColumns = 'repeat(auto-fit, minmax(112px, 1fr))';
+    priceRow.innerHTML = ['itQ1', 'itQ2', 'itQ3', 'itQ4', 'itQ5'].map(function (id, i) {
+      return '<div class="fg"><label>' + QL[i] + ' cái</label>'
+           + '<input type="text" id="' + id + '" inputmode="text" autocomplete="off" placeholder="VD: 210k · 1tr5" /></div>';
+    }).join('');
     mBindAll();
 
     // Thông số — đặt ngay trước khối giá
@@ -323,7 +324,8 @@
 
   window.vfrRowHtml = function (it) {
     var p1 = n0(it.basic), p2 = n0(it.standard), p3 = n0(it.premium);
-    var noPrice = !p1 && !p2 && !p3;
+    var p4 = n0(it.tier4), p5 = n0(it.tier5);
+    var noPrice = !p1 && !p2 && !p3 && !p4 && !p5;
     var bc = bestCost(it);
 
     var h = '<tr class="' + (noPrice ? 'pending' : '') + '" onclick="openEdit(' + it.id + ')">' +
@@ -335,7 +337,7 @@
         (it.desc_vn ? '<div class="vn">' + esc(it.desc_vn) + '</div>' : '') +
         (it.specs ? '<div class="specs-line"><b>Thông số:</b> ' + esc(it.specs) + '</div>' : '') + '</td>' +
       '<td class="unit-cell">' + esc([it.unit_en, it.unit_vn].filter(Boolean).join(' / ')) + '</td>' +
-      priceCell(p1) + priceCell(p2) + priceCell(p3);
+      priceCell(p1) + priceCell(p2) + priceCell(p3) + priceCell(p4) + priceCell(p5);
 
     if (IS_ADMIN) {
       h += '<td class="price-cell ' + (bc.v === null ? 'zero' : '') + '">' +
@@ -355,9 +357,10 @@
   };
 
   window.vfrTableHtml = function (rows) {
-    var s1 = 0, s2 = 0, s3 = 0, sc = 0, withFile = 0;
+    var s1 = 0, s2 = 0, s3 = 0, s4 = 0, s5 = 0, sc = 0, withFile = 0;
     rows.forEach(function (r) {
       s1 += n0(r.basic); s2 += n0(r.standard); s3 += n0(r.premium);
+      s4 += n0(r.tier4); s5 += n0(r.tier5);
       var b = bestCost(r); if (b.v) sc += b.v;
       if (r.prod_url) withFile++;
     });
@@ -366,6 +369,8 @@
       '<th style="text-align:right">' + QL[0] + '</th>' +
       '<th style="text-align:right">' + QL[1] + '</th>' +
       '<th style="text-align:right">' + QL[2] + '</th>' +
+      '<th style="text-align:right">' + QL[3] + '</th>' +
+      '<th style="text-align:right">' + QL[4] + '</th>' +
       (IS_ADMIN ? '<th style="text-align:right">Giá vốn (' + QL[0] + ')</th><th style="text-align:right">Lợi nhuận</th><th>Nhà cung cấp</th>' : '') +
       '<th>File sản xuất</th><th>Ghi chú</th><th></th>';
 
@@ -375,6 +380,8 @@
         '<td class="price-cell">' + fmtVnd(s1) + ' đ</td>' +
         '<td class="price-cell">' + fmtVnd(s2) + ' đ</td>' +
         '<td class="price-cell">' + fmtVnd(s3) + ' đ</td>' +
+        '<td class="price-cell">' + fmtVnd(s4) + ' đ</td>' +
+        '<td class="price-cell">' + fmtVnd(s5) + ' đ</td>' +
         (IS_ADMIN ? '<td class="price-cell">' + fmtVnd(sc) + ' đ</td>' + profitTd(s1, sc) + '<td></td>' : '') +
         '<td colspan="3"></td></tr></tfoot>';
     }
@@ -663,7 +670,7 @@
     ['itCatCode','itCatEn','itCatVn','itItemEn','itItemVn','itDescEn','itDescVn','itUnitEn','itUnitVn','itNotesEn','itNotesVn']
       .forEach(function (id) { el(id).value = ''; });
     ['itBasic','itStandard','itPremium'].forEach(function (id) { if (el(id)) el(id).value = ''; });
-    ['itQ1','itQ2','itQ3'].forEach(function (id) { if (el(id)) el(id).value = ''; });
+    ['itQ1','itQ2','itQ3','itQ4','itQ5'].forEach(function (id) { if (el(id)) el(id).value = ''; });
     mBindAll();
     if (el('itSpecs')) el('itSpecs').value = '';
     el('itSheet').value = inTrash ? 'event' : curSheet;
@@ -696,6 +703,8 @@
     if (el('itQ1')) el('itQ1').value = fmtM(it.basic);
     if (el('itQ2')) el('itQ2').value = fmtM(it.standard);
     if (el('itQ3')) el('itQ3').value = fmtM(it.premium);
+    if (el('itQ4')) el('itQ4').value = fmtM(it.tier4);
+    if (el('itQ5')) el('itQ5').value = fmtM(it.tier5);
     if (el('itSpecs')) el('itSpecs').value = it.specs || '';
     el('itNotesEn').value = it.notes_en || '';
     el('itNotesVn').value = it.notes_vn || '';
@@ -743,6 +752,8 @@
         basic:    pm(vfrMode ? el('itQ1').value : el('itBasic').value),
         standard: pm(vfrMode ? el('itQ2').value : el('itStandard').value),
         premium:  pm(vfrMode ? el('itQ3').value : el('itPremium').value),
+        tier4:    vfrMode && el('itQ4') ? pm(el('itQ4').value) : 0,
+        tier5:    vfrMode && el('itQ5') ? pm(el('itQ5').value) : 0,
         notes_en: el('itNotesEn').value.trim(), notes_vn: el('itNotesVn').value.trim(),
         updated_by: name
       };

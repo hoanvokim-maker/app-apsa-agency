@@ -83,6 +83,8 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS `ratecard_items` (
   `basic`       DECIMAL(14,2)  NOT NULL DEFAULT 0,
   `standard`    DECIMAL(14,2)  NOT NULL DEFAULT 0,
   `premium`     DECIMAL(14,2)  NOT NULL DEFAULT 0,
+  `tier4`       DECIMAL(14,2)  NOT NULL DEFAULT 0,
+  `tier5`       DECIMAL(14,2)  NOT NULL DEFAULT 0,
   `notes_en`    TEXT           DEFAULT NULL,
   `notes_vn`    TEXT           DEFAULT NULL,
   `sort_order`  INT            NOT NULL DEFAULT 0,
@@ -117,6 +119,15 @@ if (!rc_hasColumn($pdo, 'ratecard_items', 'cost_price')) {
 }
 
 // ── File sản xuất (.zip) cho sản phẩm VFR ────────────────────
+// Bo sung 2 moc so luong cho VFR: tier4 (>100-150), tier5 (>150-200)
+if (!rc_hasColumn($pdo, 'ratecard_items', 'tier4')) {
+    try {
+        $pdo->exec("ALTER TABLE `ratecard_items`
+            ADD COLUMN `tier4` DECIMAL(14,2) NOT NULL DEFAULT 0 AFTER `premium`,
+            ADD COLUMN `tier5` DECIMAL(14,2) NOT NULL DEFAULT 0 AFTER `tier4`");
+    } catch (PDOException $e) { /* bo qua neu da co */ }
+}
+
 define('RC_FILE_DIR', dirname(__DIR__) . '/uploads/ratecard');
 
 /** Giới hạn dung lượng thật sự của server (lấy min của upload_max_filesize / post_max_size). */
@@ -391,15 +402,15 @@ if ($action === 'create') {
     $stmt = $pdo->prepare(
         'INSERT INTO ratecard_items
             (sheet_key, cat_code, cat_en, cat_vn, no_label, item_en, item_vn, desc_en, desc_vn,
-             unit_en, unit_vn, basic, standard, premium, cost_price, notes_en, notes_vn, sort_order, updated_by)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+             unit_en, unit_vn, basic, standard, premium, tier4, tier5, cost_price, notes_en, notes_vn, sort_order, updated_by)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
     );
     $stmt->execute([
         $sheet, s($b['cat_code'] ?? '', 5), s($b['cat_en'] ?? '', 200), s($b['cat_vn'] ?? '', 200),
         s($b['no_label'] ?? '', 20), $itemEn, s($b['item_vn'] ?? '', 300),
         s($b['desc_en'] ?? '', 2000), s($b['desc_vn'] ?? '', 2000),
         s($b['unit_en'] ?? '', 50), s($b['unit_vn'] ?? '', 50),
-        num($b['basic'] ?? 0), num($b['standard'] ?? 0), num($b['premium'] ?? 0), num($b['cost_price'] ?? 0),
+        num($b['basic'] ?? 0), num($b['standard'] ?? 0), num($b['premium'] ?? 0), num($b['tier4'] ?? 0), num($b['tier5'] ?? 0), num($b['cost_price'] ?? 0),
         s($b['notes_en'] ?? '', 2000), s($b['notes_vn'] ?? '', 2000),
         $nextOrder, s($b['updated_by'] ?? '', 120),
     ]);
@@ -425,7 +436,7 @@ if ($action === 'update') {
     foreach ($map as $field => $len) {
         if (array_key_exists($field, $b)) { $sets[] = "$field = ?"; $params[] = s($b[$field], $len); }
     }
-    foreach (['basic', 'standard', 'premium', 'cost_price'] as $field) {
+    foreach (['basic', 'standard', 'premium', 'tier4', 'tier5', 'cost_price'] as $field) {
         if (array_key_exists($field, $b)) { $sets[] = "$field = ?"; $params[] = num($b[$field]); }
     }
     if (array_key_exists('sort_order', $b)) { $sets[] = 'sort_order = ?'; $params[] = (int)$b['sort_order']; }
