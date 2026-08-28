@@ -6890,6 +6890,10 @@ CREATE TABLE `ratecard_suppliers` (
   `tax_code` varchar(40) DEFAULT NULL,
   `updated_by` varchar(120) DEFAULT NULL,
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `bank_name` varchar(120) DEFAULT NULL COMMENT 'Ngan hang',
+  `bank_branch` varchar(150) DEFAULT NULL COMMENT 'Chi nhanh',
+  `bank_account` varchar(50) DEFAULT NULL COMMENT 'So tai khoan',
+  `bank_holder` varchar(200) DEFAULT NULL COMMENT 'Chu tai khoan',
   PRIMARY KEY (`id`),
   UNIQUE KEY `u_name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -6901,23 +6905,23 @@ CREATE TABLE `ratecard_suppliers` (
 
 LOCK TABLES `ratecard_suppliers` WRITE;
 /*!40000 ALTER TABLE `ratecard_suppliers` DISABLE KEYS */;
-INSERT INTO `ratecard_suppliers` VALUES (3,'Mixbook','Hùng','',1,'2026-08-27 15:45:44',NULL,NULL,NULL,NULL,NULL,NULL,'2026-08-28 04:29:17');
-INSERT INTO `ratecard_suppliers` VALUES (4,'Thanh Ngan','Phụng','',1,'2026-08-27 15:45:53',NULL,NULL,NULL,NULL,NULL,NULL,'2026-08-28 04:29:17');
-INSERT INTO `ratecard_suppliers` VALUES (5,'Song Khánh','Ngọc Ánh',NULL,1,'2026-08-28 04:29:31','p304 tòa M2 Mipec Kiến Hưng, Hà Đông, Hà Nội','0976 572 459','',NULL,NULL,'Import Excel','2026-08-28 04:29:31');
-INSERT INTO `ratecard_suppliers` VALUES (6,'Nam Khánh','Ms Vân',NULL,1,'2026-08-28 04:29:31','584/11F Lê Trọng Tấn, phường Tây Thạnh','0909 525 590','0909 794 400',NULL,NULL,'Import Excel','2026-08-28 04:29:31');
-INSERT INTO `ratecard_suppliers` VALUES (7,'Beside','Ms Trang',NULL,1,'2026-08-28 04:29:31','89 Bưng Ông Thoàn, phường Phú Hữu','0908 769 182','',NULL,NULL,'Import Excel','2026-08-28 04:29:31');
-INSERT INTO `ratecard_suppliers` VALUES (8,'Âu Lạc','Ms Khuê',NULL,1,'2026-08-28 04:29:31','220/54/123 Âu Cơ, phường Tân Hòa','0903 235 239','',NULL,NULL,'Import Excel','2026-08-28 04:29:31');
-INSERT INTO `ratecard_suppliers` VALUES (9,'Carpe Diem','Diễm My',NULL,1,'2026-08-28 04:29:31','31/19/26 Huỳnh Thiện Lộc, phường Hòa Thạnh','','',NULL,NULL,'Import Excel','2026-08-28 04:29:31');
-INSERT INTO `ratecard_suppliers` VALUES (10,'Hòa Bình','Ms Trang',NULL,1,'2026-08-28 04:29:31','29 Đoàn Thị Điểm, Quốc Tử Giám, Đống Đa, Hà Nội','0987 955 169','',NULL,NULL,'Import Excel','2026-08-28 04:29:31');
-INSERT INTO `ratecard_suppliers` VALUES (11,'Thành Đạt','Chinh Lê',NULL,1,'2026-08-28 04:29:31','Lô 16-TT3, khu nhà ở CT, VP và nhà ở TT, số 89 phố Thịnh Liệt, Phường Hoàng Mai, Hà Nội','0976 318 186','',NULL,NULL,'Import Excel','2026-08-28 04:29:31');
-INSERT INTO `ratecard_suppliers` VALUES (12,'Safe Production','Lương Lê Hằng',NULL,1,'2026-08-28 04:29:31','43 Phước Lý 16, Phường Liên Chiểu, tp Đà Nẵng','0988 073 560','',NULL,NULL,'Import Excel','2026-08-28 04:29:31');
-INSERT INTO `ratecard_suppliers` VALUES (13,'Phyto Pharma','Ms Nhung',NULL,1,'2026-08-28 04:29:31','Tháp Hawaii I số 1 đường Trần Qúy Kiên, phường Bình Trưng, thành phố Hồ Chí Minh','0982 029 776','',NULL,NULL,'Import Excel','2026-08-28 04:29:31');
-INSERT INTO `ratecard_suppliers` VALUES (14,'Proshow','Ms Phúc',NULL,1,'2026-08-28 04:29:31','54 Trường Sơn, Hòa Cẩm, Cẩm Lệ, Đà Nẵng (bên cf Mai)','0906 304 731','',NULL,NULL,'Import Excel','2026-08-28 04:29:31');
-INSERT INTO `ratecard_suppliers` VALUES (15,'Cửu Vân Long HCM','Ms Ngân',NULL,1,'2026-08-28 04:29:31','497 Hòa Hảo, phường Diên Hồng, Tp Hồ Chí Minh','0986 810 431','',NULL,NULL,'Import Excel','2026-08-28 04:29:31');
-INSERT INTO `ratecard_suppliers` VALUES (16,'AT - AS Hoàng Long','',NULL,1,'2026-08-28 04:29:31','02-04 Hàn Thuyên, phường Hòa Cường, Đà Nẵng','','',NULL,NULL,'Import Excel','2026-08-28 04:29:31');
-INSERT INTO `ratecard_suppliers` VALUES (17,'Star Martrix','Nguyễn Thành Đạt',NULL,1,'2026-08-28 04:29:31','231/79 T2, Dương Bá Trạc, Phường Chánh Hưng, TP.HCM, Việt Nam.','096 866 1417','',NULL,NULL,'Import Excel','2026-08-28 04:29:31');
-INSERT INTO `ratecard_suppliers` VALUES (18,'KYLASER','Minh Kỷ',NULL,1,'2026-08-28 04:29:31','Số 14 đường số 3, phường Tam Bình, Tp.Hồ Chí Minh','0909 956 915','',NULL,NULL,'Import Excel','2026-08-28 04:29:31');
-INSERT INTO `ratecard_suppliers` VALUES (19,'Hình ảnh Việt','Lê Thảo',NULL,1,'2026-08-28 04:29:31','Số 8A, ngõ 8 Phố Dịch Vọng, Cầu Giấy, Hà Nội','0975 251 292','',NULL,NULL,'Import Excel','2026-08-28 04:29:31');
+INSERT INTO `ratecard_suppliers` VALUES (3,'Mixbook','Hùng','',1,'2026-08-27 15:45:44',NULL,NULL,NULL,NULL,NULL,NULL,'2026-08-28 04:29:17',NULL,NULL,NULL,NULL);
+INSERT INTO `ratecard_suppliers` VALUES (4,'Thanh Ngan','Phụng','',1,'2026-08-27 15:45:53',NULL,NULL,NULL,NULL,NULL,NULL,'2026-08-28 04:29:17',NULL,NULL,NULL,NULL);
+INSERT INTO `ratecard_suppliers` VALUES (5,'Song Khánh','Ngọc Ánh',NULL,1,'2026-08-28 04:29:31','p304 tòa M2 Mipec Kiến Hưng, Hà Đông, Hà Nội','0976 572 459','',NULL,NULL,'Import Excel','2026-08-28 04:29:31',NULL,NULL,NULL,NULL);
+INSERT INTO `ratecard_suppliers` VALUES (6,'Nam Khánh','Ms Vân',NULL,1,'2026-08-28 04:29:31','584/11F Lê Trọng Tấn, phường Tây Thạnh','0909 525 590','0909 794 400',NULL,NULL,'Import Excel','2026-08-28 04:29:31',NULL,NULL,NULL,NULL);
+INSERT INTO `ratecard_suppliers` VALUES (7,'Beside','Ms Trang',NULL,1,'2026-08-28 04:29:31','89 Bưng Ông Thoàn, phường Phú Hữu','0908 769 182','',NULL,NULL,'Import Excel','2026-08-28 04:29:31',NULL,NULL,NULL,NULL);
+INSERT INTO `ratecard_suppliers` VALUES (8,'Âu Lạc','Ms Khuê','',1,'2026-08-28 04:29:31','220/54/123 Âu Cơ, phường Tân Hòa','0903 235 239','','','','Harris','2026-08-28 04:48:34','','','','');
+INSERT INTO `ratecard_suppliers` VALUES (9,'Carpe Diem','Diễm My',NULL,1,'2026-08-28 04:29:31','31/19/26 Huỳnh Thiện Lộc, phường Hòa Thạnh','','',NULL,NULL,'Import Excel','2026-08-28 04:29:31',NULL,NULL,NULL,NULL);
+INSERT INTO `ratecard_suppliers` VALUES (10,'Hòa Bình','Ms Trang',NULL,1,'2026-08-28 04:29:31','29 Đoàn Thị Điểm, Quốc Tử Giám, Đống Đa, Hà Nội','0987 955 169','',NULL,NULL,'Import Excel','2026-08-28 04:29:31',NULL,NULL,NULL,NULL);
+INSERT INTO `ratecard_suppliers` VALUES (11,'Thành Đạt','Chinh Lê',NULL,1,'2026-08-28 04:29:31','Lô 16-TT3, khu nhà ở CT, VP và nhà ở TT, số 89 phố Thịnh Liệt, Phường Hoàng Mai, Hà Nội','0976 318 186','',NULL,NULL,'Import Excel','2026-08-28 04:29:31',NULL,NULL,NULL,NULL);
+INSERT INTO `ratecard_suppliers` VALUES (12,'Safe Production','Lương Lê Hằng',NULL,1,'2026-08-28 04:29:31','43 Phước Lý 16, Phường Liên Chiểu, tp Đà Nẵng','0988 073 560','',NULL,NULL,'Import Excel','2026-08-28 04:29:31',NULL,NULL,NULL,NULL);
+INSERT INTO `ratecard_suppliers` VALUES (13,'Phyto Pharma','Ms Nhung',NULL,1,'2026-08-28 04:29:31','Tháp Hawaii I số 1 đường Trần Qúy Kiên, phường Bình Trưng, thành phố Hồ Chí Minh','0982 029 776','',NULL,NULL,'Import Excel','2026-08-28 04:29:31',NULL,NULL,NULL,NULL);
+INSERT INTO `ratecard_suppliers` VALUES (14,'Proshow','Ms Phúc',NULL,1,'2026-08-28 04:29:31','54 Trường Sơn, Hòa Cẩm, Cẩm Lệ, Đà Nẵng (bên cf Mai)','0906 304 731','',NULL,NULL,'Import Excel','2026-08-28 04:29:31',NULL,NULL,NULL,NULL);
+INSERT INTO `ratecard_suppliers` VALUES (15,'Cửu Vân Long HCM','Ms Ngân',NULL,1,'2026-08-28 04:29:31','497 Hòa Hảo, phường Diên Hồng, Tp Hồ Chí Minh','0986 810 431','',NULL,NULL,'Import Excel','2026-08-28 04:29:31',NULL,NULL,NULL,NULL);
+INSERT INTO `ratecard_suppliers` VALUES (16,'AT - AS Hoàng Long','',NULL,1,'2026-08-28 04:29:31','02-04 Hàn Thuyên, phường Hòa Cường, Đà Nẵng','','',NULL,NULL,'Import Excel','2026-08-28 04:29:31',NULL,NULL,NULL,NULL);
+INSERT INTO `ratecard_suppliers` VALUES (17,'Star Martrix','Nguyễn Thành Đạt',NULL,1,'2026-08-28 04:29:31','231/79 T2, Dương Bá Trạc, Phường Chánh Hưng, TP.HCM, Việt Nam.','096 866 1417','',NULL,NULL,'Import Excel','2026-08-28 04:29:31',NULL,NULL,NULL,NULL);
+INSERT INTO `ratecard_suppliers` VALUES (18,'KYLASER','Minh Kỷ',NULL,1,'2026-08-28 04:29:31','Số 14 đường số 3, phường Tam Bình, Tp.Hồ Chí Minh','0909 956 915','',NULL,NULL,'Import Excel','2026-08-28 04:29:31',NULL,NULL,NULL,NULL);
+INSERT INTO `ratecard_suppliers` VALUES (19,'Hình ảnh Việt','Lê Thảo',NULL,1,'2026-08-28 04:29:31','Số 8A, ngõ 8 Phố Dịch Vọng, Cầu Giấy, Hà Nội','0975 251 292','',NULL,NULL,'Import Excel','2026-08-28 04:29:31',NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `ratecard_suppliers` ENABLE KEYS */;
 UNLOCK TABLES;
 

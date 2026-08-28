@@ -75,7 +75,26 @@ function sp_ensure(PDO $pdo)
     } catch (PDOException $e) { /* da co */ }
 }
 
+function sp_bank_cols(PDO $pdo)
+{
+    try {
+        $st = $pdo->prepare("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+                              WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ratecard_suppliers'
+                                AND COLUMN_NAME = 'bank_account'");
+        $st->execute();
+        if ((int) $st->fetchColumn() > 0) return;
+    } catch (PDOException $e) { return; }
+    try {
+        $pdo->exec("ALTER TABLE `ratecard_suppliers`
+            ADD COLUMN `bank_name`    VARCHAR(120) DEFAULT NULL COMMENT 'Ngan hang',
+            ADD COLUMN `bank_branch`  VARCHAR(150) DEFAULT NULL COMMENT 'Chi nhanh',
+            ADD COLUMN `bank_account` VARCHAR(50)  DEFAULT NULL COMMENT 'So tai khoan',
+            ADD COLUMN `bank_holder`  VARCHAR(200) DEFAULT NULL COMMENT 'Chu tai khoan'");
+    } catch (PDOException $e) { /* da co */ }
+}
+
 sp_ensure($pdo);
+sp_bank_cols($pdo);
 $WHO = (string) (($ME['display_name'] ?? '') !== '' ? $ME['display_name'] : ($ME['username'] ?? ''));
 $act = isset($_GET['action']) ? (string) $_GET['action'] : '';
 
@@ -87,13 +106,13 @@ case 'me':
 
 case 'list': {
     $q  = sp_s(isset($_GET['q']) ? $_GET['q'] : '', 120);
-    $sql = "SELECT `id`,`name`,`contact`,`address`,`phone`,`phone2`,`email`,`tax_code`,`note`,`active`,`updated_by`,`updated_at`
+    $sql = "SELECT `id`,`name`,`contact`,`address`,`phone`,`phone2`,`email`,`tax_code`,`bank_name`,`bank_branch`,`bank_account`,`bank_holder`,`note`,`active`,`updated_by`,`updated_at`
               FROM `ratecard_suppliers`";
     $arg = array();
     if ($q !== '') {
-        $sql .= " WHERE `name` LIKE ? OR `contact` LIKE ? OR `phone` LIKE ? OR `phone2` LIKE ? OR `address` LIKE ?";
+        $sql .= " WHERE `name` LIKE ? OR `contact` LIKE ? OR `phone` LIKE ? OR `phone2` LIKE ? OR `address` LIKE ? OR `bank_account` LIKE ? OR `bank_name` LIKE ?";
         $like = '%' . $q . '%';
-        $arg  = array($like, $like, $like, $like, $like);
+        $arg  = array($like, $like, $like, $like, $like, $like, $like);
     }
     $sql .= " ORDER BY `active` DESC, `name` ASC";
     $st = $pdo->prepare($sql);
@@ -117,6 +136,10 @@ case 'save': {
         sp_s(isset($b['phone2'])   ? $b['phone2']   : '', 40),
         sp_s(isset($b['email'])    ? $b['email']    : '', 150),
         sp_s(isset($b['tax_code']) ? $b['tax_code'] : '', 40),
+        sp_s(isset($b['bank_name'])    ? $b['bank_name']    : '', 120),
+        sp_s(isset($b['bank_branch'])  ? $b['bank_branch']  : '', 150),
+        preg_replace('/[^0-9A-Za-z]/', '', sp_s(isset($b['bank_account']) ? $b['bank_account'] : '', 50)),
+        sp_s(isset($b['bank_holder'])  ? $b['bank_holder']  : '', 200),
         sp_s(isset($b['note'])     ? $b['note']     : '', 300),
         (int) (isset($b['active']) ? (int) $b['active'] : 1) ? 1 : 0,
         $WHO,
@@ -126,13 +149,13 @@ case 'save': {
         if ($id > 0) {
             $f[] = $id;
             $st = $pdo->prepare("UPDATE `ratecard_suppliers`
-                                    SET `name`=?,`contact`=?,`address`=?,`phone`=?,`phone2`=?,`email`=?,`tax_code`=?,`note`=?,`active`=?,`updated_by`=?
+                                    SET `name`=?,`contact`=?,`address`=?,`phone`=?,`phone2`=?,`email`=?,`tax_code`=?,`bank_name`=?,`bank_branch`=?,`bank_account`=?,`bank_holder`=?,`note`=?,`active`=?,`updated_by`=?
                                   WHERE `id`=?");
             $st->execute($f);
         } else {
             $st = $pdo->prepare("INSERT INTO `ratecard_suppliers`
-                                 (`name`,`contact`,`address`,`phone`,`phone2`,`email`,`tax_code`,`note`,`active`,`updated_by`)
-                                 VALUES (?,?,?,?,?,?,?,?,?,?)");
+                                 (`name`,`contact`,`address`,`phone`,`phone2`,`email`,`tax_code`,`bank_name`,`bank_branch`,`bank_account`,`bank_holder`,`note`,`active`,`updated_by`)
+                                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             $st->execute($f);
             $id = (int) $pdo->lastInsertId();
         }

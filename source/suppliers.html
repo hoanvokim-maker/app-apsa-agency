@@ -77,6 +77,8 @@
   mark { background: rgba(223,242,13,.26); color: var(--green); border-radius: 3px; padding: 0 1px; }
 
   .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .acc { font-variant-numeric: tabular-nums; letter-spacing:.02em; cursor:pointer; border-bottom:1px dashed rgba(255,255,255,.22); display:inline-block; }
+  .acc:hover { color: var(--accent); border-bottom-color: var(--accent); }
   table { width: 100%; border-collapse: collapse; }
   thead th { text-align: left; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
              color: var(--text3); padding: 12px 16px; border-bottom: 1px solid var(--border); white-space: nowrap; }
@@ -189,6 +191,17 @@
     <div class="fg"><label>Email</label><input type="text" id="eEmail" placeholder="VD: ketoan@songkhanh.vn" autocomplete="off" /></div>
     <div class="fg"><label>Địa chỉ</label><textarea id="eAddr" rows="2" placeholder="Số nhà, đường, phường, tỉnh/thành"></textarea></div>
     <div class="fg"><label>Ghi chú</label><textarea id="eNote" rows="2" placeholder="VD: chuyên mica, giao Hà Nội trong ngày"></textarea></div>
+    <div class="fg" style="border-top:1px solid rgba(255,255,255,.08);margin-top:16px;padding-top:14px">
+      <label style="color:var(--accent)">Tài khoản nhận tiền</label>
+    </div>
+    <div class="grid2">
+      <div class="fg"><label>Ngân hàng</label><input type="text" id="eBank" placeholder="VD: Vietcombank" autocomplete="off" /></div>
+      <div class="fg"><label>Chi nhánh</label><input type="text" id="eBranch" placeholder="VD: CN Tân Bình" autocomplete="off" /></div>
+    </div>
+    <div class="grid2">
+      <div class="fg"><label>Số tài khoản</label><input type="text" id="eAcc" placeholder="chỉ số, không dấu cách" inputmode="numeric" autocomplete="off" /></div>
+      <div class="fg"><label>Chủ tài khoản</label><input type="text" id="eHolder" placeholder="tên in trên thẻ / sổ" autocomplete="off" /></div>
+    </div>
     <div class="fg">
       <label>Trạng thái</label>
       <select id="eActive"><option value="1">Đang hợp tác</option><option value="0">Ngừng hợp tác</option></select>
@@ -301,10 +314,31 @@ function load() {
   });
 }
 
+/* ── o hien thi tai khoan ngan hang, bam de copy so TK ── */
+function bankCell(s, tm) {
+  if (!s.bank_name && !s.bank_account) return '<span style="color:var(--text3)">—</span>';
+  var out = '';
+  if (s.bank_account) {
+    out += '<div class="acc" title="Bấm để copy số tài khoản" onclick="copyAcc(this,\'' + esc(s.bank_account) + '\')">'
+         + hlt(s.bank_account, tm) + '</div>';
+  }
+  if (s.bank_name)   out += '<div class="sub">' + hlt(s.bank_name, tm) + (s.bank_branch ? ' · ' + esc(s.bank_branch) : '') + '</div>';
+  if (s.bank_holder) out += '<div class="sub">' + hlt(s.bank_holder, tm) + '</div>';
+  return out;
+}
+function copyAcc(node, acc) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(acc).then(function () { toast('Đã copy số tài khoản ' + acc); },
+                                           function () { toast('Không copy được — anh bôi đen và copy tay nhé.', true); });
+  } else {
+    toast('Trình duyệt không cho copy tự động.', true);
+  }
+}
+
 function draw() {
   var tm = terms(FQ);
   var rows = tm.length ? ITEMS.filter(function (s) {
-    return hit([s.name, s.contact, s.phone, s.phone2, s.address, s.email, s.note].join(' '), tm);
+    return hit([s.name, s.contact, s.phone, s.phone2, s.address, s.email, s.note, s.bank_name, s.bank_account, s.bank_holder].join(' '), tm);
   }) : ITEMS;
 
   el('chips').innerHTML = '<span class="chip"><b>' + ITEMS.length + '</b> nhà cung cấp</span>'
@@ -318,7 +352,7 @@ function draw() {
 
   var h = '<table><thead><tr>'
     + '<th>Công ty</th><th style="width:170px">Người liên hệ</th><th style="width:150px">Điện thoại</th>'
-    + '<th class="addr">Địa chỉ</th><th style="width:100px"></th>'
+    + '<th style="width:210px">Tài khoản</th><th class="addr">Địa chỉ</th><th style="width:100px"></th>'
     + '</tr></thead><tbody>';
 
   rows.forEach(function (s) {
@@ -333,6 +367,7 @@ function draw() {
       + '<td>' + (s.contact ? hlt(s.contact, tm) : '<span style="color:var(--text3)">—</span>') + '</td>'
       + '<td class="tel">' + (s.phone ? telLink(s.phone, tm) : '<span style="color:var(--text3)">—</span>')
       + (s.phone2 ? '<div class="sub tel">' + telLink(s.phone2, tm) + '</div>' : '') + '</td>'
+      + '<td>' + bankCell(s, tm) + '</td>'
       + '<td class="addr">' + (s.address ? hlt(s.address, tm) : '<span style="color:var(--text3)">—</span>') + '</td>'
       + '<td class="ac">'
       + (IS_ADMIN
@@ -364,6 +399,10 @@ function fill(s) {
   el('eEmail').value   = s ? (s.email || '') : '';
   el('eAddr').value    = s ? (s.address || '') : '';
   el('eNote').value    = s ? (s.note || '') : '';
+  el('eBank').value    = s ? (s.bank_name || '') : '';
+  el('eBranch').value  = s ? (s.bank_branch || '') : '';
+  el('eAcc').value     = s ? (s.bank_account || '') : '';
+  el('eHolder').value  = s ? (s.bank_holder || '') : '';
   el('eActive').value  = s ? String(Number(s.active) ? 1 : 0) : '1';
 }
 function openAdd() {
@@ -394,6 +433,10 @@ function saveIt() {
     email: el('eEmail').value.trim(),
     address: el('eAddr').value.trim(),
     note: el('eNote').value.trim(),
+    bank_name: el('eBank').value.trim(),
+    bank_branch: el('eBranch').value.trim(),
+    bank_account: el('eAcc').value.trim(),
+    bank_holder: el('eHolder').value.trim(),
     active: Number(el('eActive').value)
   };
   var btn = el('eOk');
