@@ -1796,6 +1796,7 @@ case 'exp-row-save': {
             $sets[] = '`bank_account` = ?'; $par[] = q_payeeF($pdo, $B, 'bank_account');
             $sets[] = '`bank_holder` = ?';  $par[] = q_payeeF($pdo, $B, 'bank_holder');
         }
+            if (isset($B['payee_type']) && q_payeeT($B) === 'user') { $sets[] = '`vat_percent` = ?'; $par[] = 0; }
         if (!$sets) q_fail('Khong co gi de cap nhat');
         $par[] = $id;
         $pdo->prepare('UPDATE `quotation_expenses` SET ' . implode(', ', $sets) . ' WHERE id = ?')->execute($par);
@@ -1876,7 +1877,7 @@ case 'expenses-save': {
                 num($r['qty'] ?? 0),
                 mb_substr((string)($r['unit'] ?? ''), 0, 60),
                 num($r['price'] ?? 0),
-                num($r['vat_percent'] ?? 0),
+                q_vatOf($r),
                 $i++,
                 mb_substr((string)($r['src_id'] ?? ''), 0, 80) ?: null,
                 (int) !!($r['paid'] ?? 0),
@@ -2378,7 +2379,7 @@ case 'manage-import': {
                 foreach ($expRows as $r) {
                     $ie->execute([$qid, $r['kind'], $r['category'], $r['name'],
                         (string)($r['description'] ?? ''), num($r['qty'] ?? 0), s($r['unit'] ?? '', 50),
-                        num($r['price'] ?? 0), num($r['vat_percent'] ?? 0), $k++]);
+                        num($r['price'] ?? 0), q_vatOf($r), $k++]);
                 }
             }
             $pdo->commit();
@@ -3282,3 +3283,6 @@ function q_payeeList(PDO $pdo) {
 function q_needAdmin(PDO $pdo) {
     if (!q_seePersonalBank($pdo)) q_fail('Trang nay chi danh cho Admin.', 403);
 }
+
+/** Ca nhan (freelancer) khong tinh VAT; cong ty giu nguyen VAT nhap vao. */
+function q_vatOf($r) { return q_payeeT($r) === 'user' ? 0 : num($r['vat_percent'] ?? 0); }

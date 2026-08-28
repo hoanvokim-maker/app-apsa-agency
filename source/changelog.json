@@ -1,7 +1,20 @@
 {
-    "version": "1.4.8",
+    "version": "1.5.0",
     "updated": "2026-08-28",
     "releases": [
+        {
+            "v": "1.5",
+            "date": "2026-08-28",
+            "note": "Phiên bản 1.5",
+            "items": [
+                {
+                    "d": "2026-08-28",
+                    "v": "1.5.0",
+                    "t": "Module Duyet video: chon video SharePoint, tao link bi mat cho khach dung dung giay va gop y bang chu / hinh / ve truc tiep len khung hinh. Freelancer khong tinh VAT (0%).",
+                    "by": "mee53661"
+                }
+            ]
+        },
         {
             "v": "1.4",
             "date": "2026-08-28",

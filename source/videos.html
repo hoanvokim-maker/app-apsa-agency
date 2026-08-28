@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script>
+  document.documentElement.style.visibility = 'hidden';
+  fetch('./api/auth-api.php?action=me', { credentials: 'same-origin' })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(res => {
+      if (!res.ok) throw new Error();
+      window.__APSA_USER = res.data;
+      document.documentElement.style.visibility = 'visible';
+    })
+    .catch(() => {
+      location.replace('./login.html?next=' + encodeURIComponent(location.pathname + location.search));
+    });
+</script>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=1">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#dff20d">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>APSA — Duyệt video</title>
+  <script src="/apsa-ui.js?v=26"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/theme.css?v=22" />
+<style>
+  :root {
+    --bg: #000; --bg2: #0b0b0b; --bg3: #141414; --bg4: #1c1c1c;
+    --border: rgba(255,255,255,.08); --border-h: rgba(255,255,255,.16);
+    --text: #fff; --text2: #9a9a9a; --text3: #5e5e5e;
+    --green: #dff20d; --pink: #c9dd00; --red: #ff4d4d; --sky: #56ccf2;
+    --ok: #22c55e; --gold: #facc15; --blue: #3894ff;
+  }
+  body { font-family: 'Oxanium', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  header { position: sticky; top: 0; z-index: 100; background: rgba(0,0,0,.9); backdrop-filter: blur(16px);
+           border-bottom: 1px solid var(--border); height: 60px; padding: 0 28px;
+           display: flex; align-items: center; justify-content: space-between; }
+  .logo img { height: 26px; filter: brightness(0) invert(1); opacity: .9; display: block; }
+  .back-btn { display: flex; align-items: center; gap: 6px; color: var(--text2); text-decoration: none;
+              font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); }
+  .back-btn:hover { color: var(--text); border-color: var(--border-h); }
+  .page-head { padding: 30px 28px 14px; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+  .page-head h1 { font-size: 26px; font-weight: 800; letter-spacing: -.5px; }
+  .page-head p { font-size: 13px; color: var(--text2); margin-top: 4px; max-width: 900px; }
+  .stats { display: flex; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--text2); }
+  .stats b { color: var(--green); font-weight: 800; }
+  .spacer { flex: 1 1 auto; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  .wrap { max-width: 1500px; margin: 0 auto; padding: 0 22px 70px; }
+  .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+  .spacer { flex: 1; }
+  .vb { font: inherit; font-size: 13px; padding: 8px 13px; border-radius: 10px; cursor: pointer; white-space: nowrap;
+         border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.05); color: #e9eaec; transition: .15s; }
+  .vb:hover { background: rgba(255,255,255,.1); }
+  .vb.pri { background: #dff20d; color: #101010; border-color: #dff20d; font-weight: 700; }
+  .vb.pri:hover { filter: brightness(1.08); }
+  .vb.sm { font-size: 11.5px; padding: 5px 9px; border-radius: 8px; }
+  input[type="text"], textarea { font: inherit; font-size: 13.5px; color: #e9eaec; background: rgba(0,0,0,.35);
+    border: 1px solid rgba(255,255,255,.14); border-radius: 10px; padding: 9px 12px; width: 100%; outline: none; }
+  input[type="text"]:focus, textarea:focus { border-color: #dff20d; }
+  .search { position: relative; width: 320px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { text-align: left; font-size: 11px; letter-spacing: .7px; text-transform: uppercase; color: #9aa0a6;
+             padding: 9px 10px; border-bottom: 1px solid rgba(255,255,255,.12); white-space: nowrap; }
+  tbody td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,.07); vertical-align: middle; }
+  tbody tr:hover { background: rgba(255,255,255,.03); }
+  .ttl { font-weight: 600; }
+  .fn { font-size: 11.5px; color: #7d838a; margin-top: 2px; word-break: break-all; }
+  .pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; }
+  .pill.on { background: rgba(74,222,128,.16); color: #4ade80; }
+  .pill.off { background: rgba(255,255,255,.08); color: #9aa0a6; }
+  .pill.n { background: rgba(223,242,13,.16); color: #dff20d; }
+  .acts { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+  .empty { text-align: center; color: #7d838a; font-size: 13px; padding: 34px 0; }
+
+  .ov { position: fixed; inset: 0; background: rgba(0,0,0,.72); display: none; align-items: center; justify-content: center; z-index: 80; padding: 22px; }
+  .ov.open { display: flex; }
+  .dlg { width: 100%; max-width: 720px; max-height: 88vh; overflow: auto; background: #131313;
+         border: 1px solid rgba(255,255,255,.13); border-radius: 16px; padding: 18px; }
+  .dlg h2 { font-size: 17px; margin-bottom: 4px; }
+  .dlg .sub { font-size: 12.5px; color: #9aa0a6; margin-bottom: 14px; }
+  .fld { margin-bottom: 11px; }
+  .fld label { display: block; font-size: 11.5px; text-transform: uppercase; letter-spacing: .6px; color: #9aa0a6; margin-bottom: 5px; }
+  .crumb { font-size: 12.5px; color: #9aa0a6; margin-bottom: 8px; word-break: break-all; }
+  .crumb a { color: #dff20d; cursor: pointer; text-decoration: none; }
+  .brw { border: 1px solid rgba(255,255,255,.12); border-radius: 11px; max-height: 300px; overflow: auto; }
+  .it { display: flex; align-items: center; gap: 9px; padding: 9px 11px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .it:last-child { border-bottom: 0; }
+  .it:hover { background: rgba(255,255,255,.05); }
+  .it.sel { background: rgba(223,242,13,.13); }
+  .it .ic { width: 18px; text-align: center; }
+  .it .nm { flex: 1; font-size: 13px; word-break: break-all; }
+  .it .sz { font-size: 11.5px; color: #7d838a; }
+  .row { display: flex; gap: 8px; align-items: center; margin-top: 14px; }
+  .toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); background: #dff20d; color: #101010;
+           font-weight: 700; font-size: 13px; padding: 9px 16px; border-radius: 10px; opacity: 0; pointer-events: none; transition: .2s; z-index: 99; }
+  .toast.on { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><img src="/Logo%20rectange.png" alt="APSA" /></div>
+  <a class="back-btn" href="./index.html">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Trang chủ
+  </a>
+</header>
+
+<div class="page-head">
+  <div>
+    <h1>Duyệt video</h1>
+    <p>Chọn video trên SharePoint, tạo link bí mật gửi khách. Khách dừng đúng giây và góp ý bằng chữ, hình hoặc vẽ trực tiếp lên khung hình.</p>
+  </div>
+  <div class="stats" id="stats"></div>
+</div>
+
+<div class="wrap">
+  <div class="toolbar">
+    <button class="vb pri" onclick="openNew()">＋ Tạo link duyệt</button>
+    <div class="search"><input type="text" id="q" placeholder="Tìm tiêu đề, tên file…" autocomplete="off" oninput="render()" /></div>
+    <span class="spacer"></span>
+    <button class="vb" onclick="load()">↻ Tải lại</button>
+  </div>
+  <table>
+    <thead><tr>
+      <th>Video</th><th>Người tạo</th><th>Ngày tạo</th><th>Góp ý</th><th>Trạng thái</th><th style="text-align:right">Thao tác</th>
+    </tr></thead>
+    <tbody id="tb"></tbody>
+  </table>
+  <div class="empty" id="emp" style="display:none">Chưa có link duyệt nào.</div>
+</div>
+
+<div class="ov" id="ovNew">
+  <div class="dlg">
+    <h2>Tạo link duyệt video</h2>
+    <div class="sub">Chọn file video trong SharePoint. Chỉ hiện thư mục và file mp4 · mov · m4v · webm.</div>
+    <div class="crumb" id="crumb"></div>
+    <div class="brw" id="brw"><div class="empty">Đang tải…</div></div>
+    <div class="fld" style="margin-top:14px"><label>Tiêu đề gửi khách</label><input type="text" id="nTitle" placeholder="Để trống sẽ lấy tên file" /></div>
+    <div class="fld"><label>Ghi chú cho khách (tuỳ chọn)</label><input type="text" id="nNote" placeholder="VD: Bản dựng lần 2, xin góp ý trước 17h thứ 6" /></div>
+    <div class="row"><span class="spacer"></span>
+      <button class="vb" onclick="closeNew()">Hủy</button>
+      <button class="vb pri" id="bMk" onclick="mk()">Tạo link</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var API = './api/review-api.php';
+var ROWS = [], STACK = [], PICK = null;
+
+function el(i) { return document.getElementById(i); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+  return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function toast(m) { var t = el('toast'); t.textContent = m; t.classList.add('on'); setTimeout(function () { t.classList.remove('on'); }, 2100); }
+function mb(n) { n = Number(n) || 0; return n >= 1073741824 ? (n / 1073741824).toFixed(2) + ' GB' : (n / 1048576).toFixed(1) + ' MB'; }
+function dmy(s) { s = String(s || ''); return s.length >= 10 ? s.slice(8, 10) + '/' + s.slice(5, 7) + '/' + s.slice(0, 4) : ''; }
+function lnk(tk) { return location.origin + '/review.html?t=' + tk; }
+
+function api(action, body, qs) {
+  var o = { credentials: 'same-origin' };
+  if (body) { o.method = 'POST'; o.headers = { 'Content-Type': 'application/json' }; o.body = JSON.stringify(body); }
+  return fetch(API + '?action=' + action + (qs || ''), o).then(function (r) { return r.json(); })
+    .then(function (j) { if (!j.ok) throw new Error(j.error || 'Lỗi'); return j.data; });
+}
+
+function load() {
+  api('list').then(function (d) { ROWS = d.rows || []; render(); })
+    .catch(function (e) { toast(e.message); el('emp').style.display = ''; el('emp').textContent = e.message; });
+}
+
+function render() {
+  var q = (el('q').value || '').trim().toLowerCase();
+  var V = ROWS.filter(function (r) {
+    return !q || ((r.title || '') + ' ' + (r.file_name || '')).toLowerCase().indexOf(q) >= 0;
+  });
+  var nOpen = 0; ROWS.forEach(function (r) { nOpen += Number(r.n_open) || 0; });
+  el('stats').innerHTML = '<b>' + ROWS.length + '</b> link · <b>' + nOpen + '</b> góp ý chưa xử lý';
+  el('emp').style.display = V.length ? 'none' : '';
+  el('tb').innerHTML = V.map(function (r) {
+    var n = Number(r.n_cmt) || 0, o = Number(r.n_open) || 0;
+    return '<tr>' +
+      '<td><div class="ttl">' + esc(r.title) + '</div><div class="fn">' + esc(r.file_name) +
+        (Number(r.file_size) ? ' · ' + mb(r.file_size) : '') + '</div>' +
+        (r.note ? '<div class="fn">' + esc(r.note) + '</div>' : '') + '</td>' +
+      '<td>' + esc(r.created_by) + '</td>' +
+      '<td>' + dmy(r.created_at) + '</td>' +
+      '<td>' + (n ? (o ? '<span class="pill n">' + o + ' / ' + n + '</span>' : '<span class="pill on">' + n + '</span>') : '—') + '</td>' +
+      '<td>' + (Number(r.active) ? '<span class="pill on">Đang mở</span>' : '<span class="pill off">Đã tắt</span>') + '</td>' +
+      '<td><div class="acts">' +
+        '<button class="vb sm" onclick="cp(\'' + r.token + '\', this)">📋 Copy link</button>' +
+        '<a class="vb sm" href="./review.html?t=' + r.token + '" target="_blank" rel="noopener">↗ Mở</a>' +
+        '<button class="vb sm" onclick="tg(' + r.id + ',' + (Number(r.active) ? 0 : 1) + ')">' + (Number(r.active) ? 'Tắt' : 'Bật') + '</button>' +
+        '<button class="vb sm" onclick="del(' + r.id + ')">Xóa</button>' +
+      '</div></td></tr>';
+  }).join('');
+}
+
+function cp(tk, b) {
+  var u = lnk(tk), old = b.textContent;
+  function done() { b.textContent = '✓ Đã copy'; setTimeout(function () { b.textContent = old; }, 1500); }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(u).then(done).catch(function () { fb(); });
+  } else fb();
+  function fb() {
+    var t = document.createElement('textarea'); t.value = u; document.body.appendChild(t); t.select();
+    try { document.execCommand('copy'); done(); } catch (e) { prompt('Copy link:', u); }
+    document.body.removeChild(t);
+  }
+}
+function tg(id, a) { api('toggle', { id: id, active: a }).then(load).catch(function (e) { toast(e.message); }); }
+function del(id) {
+  if (!confirm('Xóa link này và toàn bộ góp ý của khách? Không khôi phục được.')) return;
+  api('del', { id: id }).then(function () { toast('Đã xóa'); load(); }).catch(function (e) { toast(e.message); });
+}
+
+/* ── trình duyệt SharePoint ───────────────────────────── */
+function openNew() {
+  PICK = null; STACK = [];
+  el('nTitle').value = ''; el('nNote').value = '';
+  el('ovNew').classList.add('open');
+  browse('', '');
+}
+function closeNew() { el('ovNew').classList.remove('open'); }
+function crumb() {
+  var h = '<a onclick="jump(-1)">🏠 Gốc</a>';
+  STACK.forEach(function (s, i) { h += ' / <a onclick="jump(' + i + ')">' + esc(s.name) + '</a>'; });
+  el('crumb').innerHTML = h;
+}
+function jump(i) {
+  STACK = i < 0 ? [] : STACK.slice(0, i + 1);
+  browse(i < 0 ? '' : STACK[i].id, null);
+}
+function browse(id, name) {
+  if (name !== null && name !== '') STACK.push({ id: id, name: name });
+  PICK = null; crumb();
+  el('brw').innerHTML = '<div class="empty">Đang tải…</div>';
+  api('browse', null, id ? '&id=' + encodeURIComponent(id) : '').then(function (d) {
+    var it = d.items || [];
+    if (!it.length) { el('brw').innerHTML = '<div class="empty">Thư mục trống (không có video).</div>'; return; }
+    el('brw').innerHTML = it.map(function (x, i) {
+      return '<div class="it" id="it' + i + '" onclick="hit(' + i + ')">' +
+        '<span class="ic">' + (x.dir ? '📁' : '🎬') + '</span>' +
+        '<span class="nm">' + esc(x.name) + '</span>' +
+        '<span class="sz">' + (x.dir ? '' : mb(x.size)) + '</span></div>';
+    }).join('');
+    window.__ITEMS = it;
+  }).catch(function (e) { el('brw').innerHTML = '<div class="empty">' + esc(e.message) + '</div>'; });
+}
+function hit(i) {
+  var x = (window.__ITEMS || [])[i]; if (!x) return;
+  if (x.dir) { browse(x.id, x.name); return; }
+  PICK = x;
+  Array.prototype.slice.call(document.querySelectorAll('.brw .it')).forEach(function (n) { n.classList.remove('sel'); });
+  el('it' + i).classList.add('sel');
+  if (!el('nTitle').value) el('nTitle').value = x.name.replace(/\.[^.]+$/, '');
+}
+function mk() {
+  if (!PICK) { toast('Chọn một file video trước.'); return; }
+  var b = el('bMk'); b.disabled = true; b.textContent = 'Đang tạo…';
+  api('create', { item_id: PICK.id, name: PICK.name, size: PICK.size, title: el('nTitle').value, note: el('nNote').value })
+    .then(function (d) {
+      b.disabled = false; b.textContent = 'Tạo link';
+      closeNew(); load();
+      var u = lnk(d.token);
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).catch(function () {});
+      toast('Đã tạo link và copy vào clipboard');
+    })
+    .catch(function (e) { b.disabled = false; b.textContent = 'Tạo link'; toast(e.message); });
+}
+
+document.addEventListener('DOMContentLoaded', load);
+</script>
+</body>
+</html>
