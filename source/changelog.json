@@ -1,5 +1,5 @@
 {
-    "version": "1.5.2",
+    "version": "1.5.3",
     "updated": "2026-08-28",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-28",
             "note": "Phiên bản 1.5",
             "items": [
+                {
+                    "d": "2026-08-28",
+                    "v": "1.5.3",
+                    "t": "Chi phi thuc te: nut thao tac tren tung dong to hon (27px -> 36px). Trang chu: ve 5 icon module rieng (Nha cung cap, Tu hop dong, Chi phi thuc te, Duyet video, Xin nghi phep) cung phong cach voi bo icon san co.",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-28",
                     "v": "1.5.2",

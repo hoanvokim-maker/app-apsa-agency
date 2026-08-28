@@ -118,8 +118,10 @@
   .pbtn { font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer; padding: 3px 10px;
           border-radius: 20px; border: 1px solid var(--border-h); background: transparent; color: var(--text2); white-space: nowrap; }
   .pbtn.on { color: var(--ok); border-color: rgba(34,197,94,.55); background: rgba(34,197,94,.13); }
-  .ib { width: 27px; height: 27px; border-radius: 7px; border: 1px solid transparent; background: transparent;
-        color: var(--text3); cursor: pointer; display: inline-grid; place-items: center; font-family: inherit; font-size: 13px; }
+  .ib { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg3);
+        color: var(--text2); cursor: pointer; display: inline-grid; place-items: center; font-family: inherit; font-size: 17px;
+        transition: background .15s, color .15s, border-color .15s; }
+  .ib + .ib { margin-left: 6px; }
   .ib:hover { color: var(--text); background: var(--bg4); border-color: var(--border); }
   .ib.del:hover { color: #ffb3b3; border-color: rgba(255,77,77,.35); }
   .ib.off { opacity: .3; cursor: not-allowed; }
