@@ -94,7 +94,23 @@ function sp_bank_cols(PDO $pdo)
 }
 
 sp_ensure($pdo);
+function sp_region_col(PDO $pdo)
+{
+    try {
+        $st = $pdo->prepare("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+                              WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ratecard_suppliers'
+                                AND COLUMN_NAME = 'region'");
+        $st->execute();
+        if ((int) $st->fetchColumn() > 0) return;
+    } catch (PDOException $e) { return; }
+    try {
+        $pdo->exec("ALTER TABLE `ratecard_suppliers`
+            ADD COLUMN `region` VARCHAR(10) DEFAULT NULL COMMENT 'bac|trung|nam|tay'");
+    } catch (PDOException $e) { /* da co */ }
+}
+
 sp_bank_cols($pdo);
+sp_region_col($pdo);
 $WHO = (string) (($ME['display_name'] ?? '') !== '' ? $ME['display_name'] : ($ME['username'] ?? ''));
 $act = isset($_GET['action']) ? (string) $_GET['action'] : '';
 
@@ -106,7 +122,7 @@ case 'me':
 
 case 'list': {
     $q  = sp_s(isset($_GET['q']) ? $_GET['q'] : '', 120);
-    $sql = "SELECT `id`,`name`,`contact`,`address`,`phone`,`phone2`,`email`,`tax_code`,`bank_name`,`bank_branch`,`bank_account`,`bank_holder`,`note`,`active`,`updated_by`,`updated_at`
+    $sql = "SELECT `id`,`name`,`contact`,`address`,`phone`,`phone2`,`email`,`tax_code`,`region`,`bank_name`,`bank_branch`,`bank_account`,`bank_holder`,`note`,`active`,`updated_by`,`updated_at`
               FROM `ratecard_suppliers`";
     $arg = array();
     if ($q !== '') {
@@ -136,6 +152,7 @@ case 'save': {
         sp_s(isset($b['phone2'])   ? $b['phone2']   : '', 40),
         sp_s(isset($b['email'])    ? $b['email']    : '', 150),
         sp_s(isset($b['tax_code']) ? $b['tax_code'] : '', 40),
+        sp_region(isset($b['region']) ? $b['region'] : ''),
         sp_s(isset($b['bank_name'])    ? $b['bank_name']    : '', 120),
         sp_s(isset($b['bank_branch'])  ? $b['bank_branch']  : '', 150),
         preg_replace('/[^0-9A-Za-z]/', '', sp_s(isset($b['bank_account']) ? $b['bank_account'] : '', 50)),
@@ -149,13 +166,13 @@ case 'save': {
         if ($id > 0) {
             $f[] = $id;
             $st = $pdo->prepare("UPDATE `ratecard_suppliers`
-                                    SET `name`=?,`contact`=?,`address`=?,`phone`=?,`phone2`=?,`email`=?,`tax_code`=?,`bank_name`=?,`bank_branch`=?,`bank_account`=?,`bank_holder`=?,`note`=?,`active`=?,`updated_by`=?
+                                    SET `name`=?,`contact`=?,`address`=?,`phone`=?,`phone2`=?,`email`=?,`tax_code`=?,`region`=?,`bank_name`=?,`bank_branch`=?,`bank_account`=?,`bank_holder`=?,`note`=?,`active`=?,`updated_by`=?
                                   WHERE `id`=?");
             $st->execute($f);
         } else {
             $st = $pdo->prepare("INSERT INTO `ratecard_suppliers`
-                                 (`name`,`contact`,`address`,`phone`,`phone2`,`email`,`tax_code`,`bank_name`,`bank_branch`,`bank_account`,`bank_holder`,`note`,`active`,`updated_by`)
-                                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                                 (`name`,`contact`,`address`,`phone`,`phone2`,`email`,`tax_code`,`region`,`bank_name`,`bank_branch`,`bank_account`,`bank_holder`,`note`,`active`,`updated_by`)
+                                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             $st->execute($f);
             $id = (int) $pdo->lastInsertId();
         }
@@ -204,4 +221,12 @@ function sp_currentUser(PDO $pdo)
         $st->execute([$_SESSION['user_id']]);
         return $st->fetch() ?: null;
     } catch (PDOException $e) { return null; }
+}
+
+
+/* Chi nhan 4 khu vuc; gia tri la nguon khac thi coi nhu de trong. */
+function sp_region($v)
+{
+    $v = strtolower(trim((string) $v));
+    return in_array($v, array('bac', 'trung', 'nam', 'tay'), true) ? $v : '';
 }

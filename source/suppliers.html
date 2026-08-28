@@ -77,6 +77,18 @@
   mark { background: rgba(223,242,13,.26); color: var(--green); border-radius: 3px; padding: 0 1px; }
 
   .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .rg { display:inline-block; font-size:11px; font-weight:700; letter-spacing:.02em; padding:3px 9px; border-radius:999px;
+        border:1px solid transparent; white-space:nowrap; }
+  .rg-bac   { color:#8ab4ff; background:rgba(138,180,255,.10); border-color:rgba(138,180,255,.28); }
+  .rg-trung { color:#ffc46b; background:rgba(255,196,107,.10); border-color:rgba(255,196,107,.28); }
+  .rg-nam   { color:#7ee0a8; background:rgba(126,224,168,.10); border-color:rgba(126,224,168,.28); }
+  .rg-tay   { color:#e3a0ff; background:rgba(227,160,255,.10); border-color:rgba(227,160,255,.28); }
+  .rf { font-size:12px; font-weight:600; color:var(--text2); background:transparent; cursor:pointer;
+        border:1px solid rgba(255,255,255,.12); border-radius:999px; padding:6px 13px; margin-right:7px; transition:all .15s; }
+  .rf:hover { color:var(--text); border-color:rgba(255,255,255,.28); }
+  .rf.on { color:#0d0d0d; background:var(--accent); border-color:var(--accent); }
+  .rf b { margin-left:6px; font-weight:700; opacity:.75; }
+  .rf-note { font-size:11.5px; color:var(--text3); margin-left:4px; }
   .acc { font-variant-numeric: tabular-nums; letter-spacing:.02em; cursor:pointer; border-bottom:1px dashed rgba(255,255,255,.22); display:inline-block; }
   .acc:hover { color: var(--accent); border-bottom-color: var(--accent); }
   table { width: 100%; border-collapse: collapse; }
@@ -154,6 +166,7 @@
     <p>Danh bạ nhà cung cấp dùng chung với bảng giá VFR — sửa ở đây là rate card cập nhật theo.</p>
   </div>
   <div id="chips"></div>
+  <div id="rfilter" style="margin-top:10px"></div>
 </div>
 
 <div class="wrap">
@@ -201,6 +214,16 @@
     <div class="grid2">
       <div class="fg"><label>Số tài khoản</label><input type="text" id="eAcc" placeholder="chỉ số, không dấu cách" inputmode="numeric" autocomplete="off" /></div>
       <div class="fg"><label>Chủ tài khoản</label><input type="text" id="eHolder" placeholder="tên in trên thẻ / sổ" autocomplete="off" /></div>
+    </div>
+    <div class="fg">
+      <label>Khu vực</label>
+      <select id="eRegion">
+        <option value="">— chưa xác định —</option>
+        <option value="bac">Miền Bắc</option>
+        <option value="trung">Miền Trung</option>
+        <option value="nam">Miền Nam</option>
+        <option value="tay">Miền Tây</option>
+      </select>
     </div>
     <div class="fg">
       <label>Trạng thái</label>
@@ -335,15 +358,40 @@ function copyAcc(node, acc) {
   }
 }
 
+/* ── khu vuc ── */
+var REGIONS = [['bac','Miền Bắc'],['trung','Miền Trung'],['nam','Miền Nam'],['tay','Miền Tây']];
+var FR = "";   /* khu vuc dang loc, "" = tat ca */
+function regionLabel(v) {
+  for (var i = 0; i < REGIONS.length; i++) if (REGIONS[i][0] === v) return REGIONS[i][1];
+  return '';
+}
+function setRegion(v) { FR = (FR === v) ? "" : v; draw(); }
+function drawRegionBar() {
+  var h = '<button class="rf' + (FR ? '' : ' on') + '" onclick="setRegion(\'\')">Tất cả</button>';
+  REGIONS.forEach(function (r) {
+    var n = 0;
+    for (var i = 0; i < ITEMS.length; i++) if ((ITEMS[i].region || '') === r[0]) n++;
+    h += '<button class="rf' + (FR === r[0] ? ' on' : '') + '" onclick="setRegion(\'' + r[0] + '\')">'
+       + r[1] + '<b>' + n + '</b></button>';
+  });
+  var un = 0;
+  for (var j = 0; j < ITEMS.length; j++) if (!ITEMS[j].region) un++;
+  if (un) h += '<span class="rf-note">' + un + ' chưa xác định</span>';
+  el('rfilter').innerHTML = h;
+}
+
 function draw() {
   var tm = terms(FQ);
-  var rows = tm.length ? ITEMS.filter(function (s) {
+  var base = ITEMS;
+  if (FR) base = ITEMS.filter(function (s) { return (s.region || '') === FR; });
+  var rows = tm.length ? base.filter(function (s) {
     return hit([s.name, s.contact, s.phone, s.phone2, s.address, s.email, s.note, s.bank_name, s.bank_account, s.bank_holder].join(' '), tm);
-  }) : ITEMS;
+  }) : base;
 
   el('chips').innerHTML = '<span class="chip"><b>' + ITEMS.length + '</b> nhà cung cấp</span>'
     + (tm.length ? '<span class="chip" style="margin-left:8px"><b>' + rows.length + '</b> khớp</span>' : '');
 
+  drawRegionBar();
   if (!rows.length) {
     el('view').innerHTML = '<div class="empty"><b>' + (tm.length ? 'Không tìm thấy nhà cung cấp nào' : 'Chưa có nhà cung cấp')
       + '</b>' + (tm.length ? 'Thử từ khoá khác.' : 'Bấm “+ Nhà cung cấp” để thêm.') + '</div>';
@@ -351,7 +399,7 @@ function draw() {
   }
 
   var h = '<table><thead><tr>'
-    + '<th>Công ty</th><th style="width:170px">Người liên hệ</th><th style="width:150px">Điện thoại</th>'
+    + '<th>Công ty</th><th style="width:120px">Khu vực</th><th style="width:170px">Người liên hệ</th><th style="width:150px">Điện thoại</th>'
     + '<th style="width:210px">Tài khoản</th><th class="addr">Địa chỉ</th><th style="width:100px"></th>'
     + '</tr></thead><tbody>';
 
@@ -364,6 +412,7 @@ function draw() {
       + (s.tax_code ? '<div class="sub">MST: ' + esc(s.tax_code) + '</div>' : '')
       + (s.note ? '<div class="sub">' + hlt(s.note, tm) + '</div>' : '')
       + '</td>'
+      + '<td>' + (s.region ? '<span class="rg rg-' + s.region + '">' + regionLabel(s.region) + '</span>' : '<span style="color:var(--text3)">—</span>') + '</td>'
       + '<td>' + (s.contact ? hlt(s.contact, tm) : '<span style="color:var(--text3)">—</span>') + '</td>'
       + '<td class="tel">' + (s.phone ? telLink(s.phone, tm) : '<span style="color:var(--text3)">—</span>')
       + (s.phone2 ? '<div class="sub tel">' + telLink(s.phone2, tm) + '</div>' : '') + '</td>'
@@ -399,6 +448,7 @@ function fill(s) {
   el('eEmail').value   = s ? (s.email || '') : '';
   el('eAddr').value    = s ? (s.address || '') : '';
   el('eNote').value    = s ? (s.note || '') : '';
+  el('eRegion').value  = s ? (s.region || '') : '';
   el('eBank').value    = s ? (s.bank_name || '') : '';
   el('eBranch').value  = s ? (s.bank_branch || '') : '';
   el('eAcc').value     = s ? (s.bank_account || '') : '';
@@ -433,6 +483,7 @@ function saveIt() {
     email: el('eEmail').value.trim(),
     address: el('eAddr').value.trim(),
     note: el('eNote').value.trim(),
+    region: el('eRegion').value,
     bank_name: el('eBank').value.trim(),
     bank_branch: el('eBranch').value.trim(),
     bank_account: el('eAcc').value.trim(),
