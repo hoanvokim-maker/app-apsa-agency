@@ -1,5 +1,5 @@
 {
-    "version": "1.5.1",
+    "version": "1.5.2",
     "updated": "2026-08-28",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-28",
             "note": "Phiên bản 1.5",
             "items": [
+                {
+                    "d": "2026-08-28",
+                    "v": "1.5.2",
+                    "t": "Chi phi thuc te: tach o trang thai thanh 3 nut roi ro - trang thai, Yeu cau TT / Gui lai, va nut Da CK de dinh kem Uy nhiem chi.",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-28",
                     "v": "1.5.1",

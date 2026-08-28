@@ -73,27 +73,26 @@
   window.payCell = function (r) {
     var p = PINFO[String(r.id)] || {};
     var paid = Number(r.paid) === 1;
-    var h = '';
+    var h = '<div class="pywrap">';
 
     if (paid) {
-      h += '<button class="pbtn on" title="' + esc((p.paid_by || '') + (p.paid_at ? ' · ' + dt(p.paid_at) : '')) +
+      h += '<button class="pbtn on" title="' + esc('Đã trả · ' + (p.paid_by || '') + (p.paid_at ? ' · ' + dt(p.paid_at) : '') + ' — bấm để bỏ đánh dấu') +
            '" onclick="payUnmark(' + r.id + ')">✓ Đã trả</button>';
-      if (Number(p.has_proof)) {
-        h += '<button class="pysm" title="Xem Ủy nhiệm chi: ' + esc(p.proof_name || '') +
-             '" onclick="payProof(' + r.id + ')">📎</button>';
-      }
-      return h;
+      h += Number(p.has_proof)
+        ? '<button class="pysm ok" title="' + esc('Xem Ủy nhiệm chi: ' + (p.proof_name || '')) + '" onclick="payProof(' + r.id + ')">📎 Xem UNC</button>'
+        : '<button class="pysm up" title="Đính kèm Ủy nhiệm chi" onclick="payMark(' + r.id + ')">📎 Thêm UNC</button>';
+      return h + '</div>';
     }
 
     if (p.pay_req_at) {
-      h += '<button class="pbtn req" title="Đã yêu cầu ' + esc(p.pay_req_by || '') + ' · ' + dt(p.pay_req_at) +
-           '" onclick="payMark(' + r.id + ')">⏳ Đã yêu cầu</button>';
-      h += '<button class="pysm" title="Gửi lại yêu cầu qua Zalo" onclick="payReq(' + r.id + ',1)">↻</button>';
+      h += '<span class="pbtn req" title="' + esc('Đã yêu cầu bởi ' + (p.pay_req_by || '') + ' · ' + dt(p.pay_req_at)) + '">⏳ Đã yêu cầu</span>';
+      h += '<button class="pysm" title="Gửi lại yêu cầu qua Zalo" onclick="payReq(' + r.id + ',1)">↻ Gửi lại</button>';
     } else {
-      h += '<button class="pbtn" onclick="payMark(' + r.id + ')">Chưa trả</button>';
+      h += '<span class="pbtn">Chưa trả</span>';
       h += '<button class="pysm go" title="Gửi yêu cầu thanh toán qua Zalo" onclick="payReq(' + r.id + ',0)">⚡ Yêu cầu TT</button>';
     }
-    return h;
+    h += '<button class="pysm up" title="Đã chuyển khoản rồi — đính kèm Ủy nhiệm chi" onclick="payMark(' + r.id + ')">📎 Đã CK</button>';
+    return h + '</div>';
   };
 
   /* ── gửi yêu cầu thanh toán ───────────────────────────── */
@@ -192,11 +191,16 @@
   function mount() {
     var css = document.createElement('style');
     css.textContent =
-      '.pysm{font:inherit;font-size:11px;font-weight:700;padding:3px 7px;margin-left:4px;border-radius:7px;cursor:pointer;' +
+      '.pywrap{display:flex;flex-direction:column;gap:3px;align-items:stretch}' +
+      'span.pbtn{display:block;text-align:center;font-size:11.5px;font-weight:700;padding:4px 8px;border-radius:8px;' +
+      'border:1px solid rgba(255,255,255,.14);color:#9aa0a6;background:rgba(255,255,255,.03)}' +
+      '.pysm{font:inherit;font-size:11px;font-weight:700;padding:3px 7px;border-radius:7px;cursor:pointer;' +
       'border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05);color:#9aa0a6;white-space:nowrap}' +
       '.pysm:hover{color:#fff;border-color:rgba(255,255,255,.4)}' +
       '.pysm.go{color:#dff20d;border-color:rgba(223,242,13,.45)}' +
       '.pysm.go:hover{background:rgba(223,242,13,.14)}' +
+      '.pysm.up,.pysm.ok{color:#4ade80;border-color:rgba(74,222,128,.42)}' +
+      '.pysm.up:hover,.pysm.ok:hover{background:rgba(74,222,128,.14);color:#4ade80}' +
       '.pbtn.req{color:#facc15;border-color:rgba(250,204,21,.45)}' +
       '.pyov{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:120;padding:22px}' +
       '.pyov.open{display:flex}' +

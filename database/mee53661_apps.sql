@@ -2818,7 +2818,7 @@ INSERT INTO `quotation_expenses` VALUES (658,148,'item','','','',1.00,'Gói',0.0
 INSERT INTO `quotation_expenses` VALUES (667,292,'item','','dsfsdfsdf','ddf dfsdf',1.00,'Gói',8000000.00,8.00,0,NULL,'2026-08-28 14:39:52','2026-08-28 14:39:52',0,'sup',20,'MISA','ACB','55556666','CONG TY CO PHAN MISA',NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `quotation_expenses` VALUES (668,292,'item','','sdfsdfsd','',1.00,'Gói',300000.00,0.00,1,NULL,'2026-08-28 14:39:52','2026-08-28 15:00:41',0,'user',17,'Huỳnh Ngọc Thơ',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `quotation_expenses` VALUES (669,293,'group','MEDIA','MEDIA','',0.00,'',0.00,0.00,0,NULL,'2026-08-28 14:59:18','2026-08-28 14:59:18',0,NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-INSERT INTO `quotation_expenses` VALUES (670,293,'item','MEDIA','Tuấn anh','Phí chụp hình video  tháng 8',1.00,'Gói',13300000.00,0.00,1,NULL,'2026-08-28 14:59:18','2026-08-28 14:59:52',0,'user',31,'NGÔ NGUYỄN TUẤN ANH','Vietcombank','0331000437834','NGÔ NGUYỄN TUẤN ANH',NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `quotation_expenses` VALUES (670,293,'item','MEDIA','Tuấn anh','Phí chụp hình video  tháng 8',1.00,'Gói',13300000.00,0.00,1,NULL,'2026-08-28 14:59:18','2026-08-28 15:48:58',0,'user',31,'NGÔ NGUYỄN TUẤN ANH','Vietcombank','0331000437834','NGÔ NGUYỄN TUẤN ANH','2026-08-28 22:48:58','Harris',NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `quotation_expenses` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -7191,7 +7191,7 @@ CREATE TABLE `video_comments` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `k_rev` (`review_id`,`t_ms`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -7200,6 +7200,8 @@ CREATE TABLE `video_comments` (
 
 LOCK TABLES `video_comments` WRITE;
 /*!40000 ALTER TABLE `video_comments` DISABLE KEYS */;
+INSERT INTO `video_comments` VALUES (2,3,12595,'Trí','Hello a Hoàn',NULL,0,'2026-08-28 15:45:21');
+INSERT INTO `video_comments` VALUES (3,3,44729,'Phúc','chị uống thấy đỡ, ngưng lại bị sai',NULL,0,'2026-08-28 15:45:34');
 /*!40000 ALTER TABLE `video_comments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -7226,7 +7228,7 @@ CREATE TABLE `video_reviews` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_token` (`token`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -7235,6 +7237,7 @@ CREATE TABLE `video_reviews` (
 
 LOCK TABLES `video_reviews` WRITE;
 /*!40000 ALTER TABLE `video_reviews` DISABLE KEYS */;
+INSERT INTO `video_reviews` VALUES (3,'764ff13fcdb6f976a64abe99366283c2','BS Luân Bài 3','','b!e4unr15XWkyaVG8edY6MkfZmAYHtCUBDugOk42Ie06yPpJHpQ4j6SpiGKdrEhZ21','01UTW2SKKZFVFBT6SE7NBZJC2H545VGDBD','BS Luân Bài 3.mp4',825123699,'https://apsaagency.sharepoint.com/_layouts/15/download.aspx?UniqueId=194a2d59-44fa-43fb-948b-47ef3b530c23&Translate=false&tempauth=v1.eyJzaXRlaWQiOiJhZmE3OGI3Yi01NzVlLTRjNWEtOWE1NC02ZjFlNzU4ZThjOTEiLCJhcHBfZGlzcGxheW5hbWUiOiJBUFNBIEludGVybmFsIEFwcCIsIm5hbWVpZCI6IjIxZWEwNWIxLTA4YTYtNDI3Yi1iMzlkLTJlYjk5OTE1ZmIzMUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvYXBzYWFnZW5jeS5zaGFyZXBvaW50LmNvbUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJleHAiOiIxNzg3OTM1NDE0In0.CkAKDGVudHJhX2NsYWltcxIwQ0lIRXh0UUdFQUFhRmtwV2JXMWxXV1JxUzBWNVNrZzJTMHN5YXpjNVFVRXFBQT09CjIKCmFjdG9yYXBwaWQSJDAwMDAwMDAzLTAwMDAtMDAwMC1jMDAwLTAwMDAwMDAwMDAwMAoKCgRzbmlkEgI2NBILCIrxivKkycI_EAUaDDQwLjEyNi4zNS44OSosMFd0eERJZ0dSVC9Qc201dGIyeklTSWdCdVZPcWV3SmhxWWMrQmZkdWFJQT0weTgBQhCiNbN0P2AAgIIPlSPp8KhpShBoYXNoZWRwcm9vZnRva2VuegExugFwc2VsZWN0ZWRzaXRlcyBhbGxzaXRlcy5yZWFkIGFsbHNpdGVzLndyaXRlIGFsbHNpdGVzLm1hbmFnZSBhbGxzaXRlcy5hcmNoaXZlIGFsbHNpdGVzLmNyZWF0ZSBhbGxzaXRlcy5mdWxsY29udHJvbMgBAQ.WTfvwPcrazeBsbgJbP3V15pZdEbY7XjgV5zzPxcTSYY&ApiVersion=2.0',1787934815,1,'Harris','2026-08-28 15:43:25');
 /*!40000 ALTER TABLE `video_reviews` ENABLE KEYS */;
 UNLOCK TABLES;
 
