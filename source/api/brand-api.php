@@ -621,5 +621,5 @@ function bg_root_gate()
     $r   = isset($me['role'])     ? (string) $me['role']     : '';
     $p   = isset($me['position']) ? (string) $me['position'] : '';
     if (strcasecmp($r, 'admin') === 0 || strcasecmp($p, 'admin') === 0) return;
-    bg_fail('Kho hợp đồng chỉ dành cho Admin.', 403);
+    bg_fail('Tủ hợp đồng chỉ dành cho Admin.', 403);
 }

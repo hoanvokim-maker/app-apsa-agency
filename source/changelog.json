@@ -1,5 +1,5 @@
 {
-    "version": "1.4.0",
+    "version": "1.4.1",
     "updated": "2026-08-28",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-28",
             "note": "Phiên bản 1.4",
             "items": [
+                {
+                    "d": "2026-08-28",
+                    "v": "1.4.1",
+                    "t": "Doi ten Kho hop dong -> Tu hop dong. Them nut Dong bo doc lai tu SharePoint va bao co gi thay doi. Them cron 00:00 quet tu hop dong, ghi nhat ky file them/sua/go.",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-28",
                     "v": "1.4.0",

@@ -5,7 +5,7 @@ return array(
         'contracts' => array(
             'drive_id'  => 'b!e4unr15XWkyaVG8edY6MkfZmAYHtCUBDugOk42Ie06yPpJHpQ4j6SpiGKdrEhZ21',
             'root_id'   => '01UTW2SKNLDUWSIBHAFVHJ43KUOFUGQ6SE',
-            'root_name' => 'Kho hợp đồng',
+            'root_name' => 'Tủ hợp đồng',
         ),
     ),
 );

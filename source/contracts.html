@@ -22,8 +22,8 @@
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#dff20d">
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>APSA — Kho hợp đồng</title>
-  <script src="/apsa-ui.js?v=23"></script>
+  <title>APSA — Tủ hợp đồng</title>
+  <script src="/apsa-ui.js?v=24"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -322,6 +322,7 @@
       <option value="date">Nhóm: Ngày tải lên</option>
     </select>
     <div class="spacer"></div>
+    <button class="btn sm ghost" onclick="syncNow()" id="btnSync" title="Đọc lại từ SharePoint">Đồng bộ</button>
     <button class="btn sm ghost" onclick="openLog()" id="btnLog">Nhật ký</button>
     <button class="btn sm ghost" onclick="openSP()" id="btnSP">Mở trên SharePoint</button>
     <button class="btn" onclick="askFolder()">+ Thư mục</button>
@@ -411,7 +412,7 @@
 var API   = './api/brand-api.php';
 var RKEY  = 'contracts';
 var LBL   = {
-contracts: { t: 'Kho hợp đồng', s: 'Hợp đồng lưu trên SharePoint — chia theo Vendor / Client / Personal. Chỉ Admin xem được.' },
+contracts: { t: 'Tủ hợp đồng', s: 'Hợp đồng lưu trên SharePoint — chia theo Vendor / Client / Personal. Chỉ Admin xem được.' },
   brand: { t: 'Brand Guidelines', s: 'Kho tài liệu thương hiệu — lưu trên SharePoint của APSA, đồng bộ tức thì hai chiều.' },
   logos: { t: 'Logo dược phẩm',   s: 'Kho logo — lưu trên SharePoint của APSA, đồng bộ tức thì hai chiều.' }
 };
@@ -579,6 +580,39 @@ function drawGBar() {
   el.innerHTML = h;
 }
 
+/* ── Doc lai tu SharePoint va bao co gi thay doi ── */
+function syncNow() {
+  var b = document.getElementById('btnSync');
+  if (b) { b.disabled = true; b.textContent = 'Đang đồng bộ…'; }
+  var before = {};
+  ITEMS.forEach(function (it) { before[it.id] = (it.modified || '') + '|' + (it.size || 0); });
+  var cur = PATH[PATH.length - 1];
+  api('list', { qs: '&id=' + encodeURIComponent(cur.id) }).then(function (j) {
+    var items = j.items || [];
+    var them = 0, doi = 0, go = 0;
+    items.forEach(function (it) {
+      var k = (it.modified || '') + '|' + (it.size || 0);
+      if (!(it.id in before)) them++;
+      else if (before[it.id] !== k) doi++;
+    });
+    Object.keys(before).forEach(function (id) {
+      if (!items.some(function (x) { return String(x.id) === String(id); })) go++;
+    });
+    ITEMS = items;
+    cur.name = j.folder.name; cur.web_url = j.folder.web_url;
+    mapGroups(); drawGBar(); crumbs(); draw();
+    var p = [];
+    if (them) p.push(them + ' mới');
+    if (doi)  p.push(doi + ' cập nhật');
+    if (go)   p.push(go + ' đã gỡ');
+    toast(p.length ? ('Đã đồng bộ — ' + p.join(', ')) : 'Đã đồng bộ — không có thay đổi');
+  }).catch(function (e) {
+    toast('Không đồng bộ được: ' + e.message, true);
+  }).then(function () {
+    if (b) { b.disabled = false; b.textContent = 'Đồng bộ'; }
+  });
+}
+
 function crumbs() {
   var el = document.getElementById('crumbs'), h = '';
   if (MODE === 'search') {
@@ -609,7 +643,7 @@ function load() {
     if (FQ) runG(FQ);
   }).catch(function (e) {
     render(/Admin/.test(e.message)
-        ? '<div class="empty"><b>Bạn không có quyền vào kho hợp đồng</b>Chỉ Admin hoặc người giữ vị trí admin mới xem được. Nhắn Harris nếu anh/chị cần cấp quyền.</div>'
+        ? '<div class="empty"><b>Bạn không có quyền vào tủ hợp đồng</b>Chỉ Admin hoặc người giữ vị trí admin mới xem được. Nhắn Harris nếu anh/chị cần cấp quyền.</div>'
         : '<div class="empty"><b>Không tải được danh sách</b>' + esc(e.message) + '</div>');
   });
 }
