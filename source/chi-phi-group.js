@@ -37,6 +37,20 @@
   }
   window.cpGroups = groups;
 
+  /* mở rộng bộ lọc: thêm loại "chưa gán người nhận" */
+  window.view = function () {
+    var q = nrm(FQ);
+    return ROWS.filter(function (r) {
+      if (FST === 'due'  && Number(r.paid) === 1) return false;
+      if (FST === 'paid' && Number(r.paid) !== 1) return false;
+      if (FTY === 'pers' && r.payee_type !== 'user') return false;
+      if (FTY === 'corp' && r.payee_type !== 'sup')  return false;
+      if (FTY === 'none' && r.payee_type)            return false;
+      if (!q) return true;
+      return nrm([r.code, r.title, r.client_name, r.name, r.description, r.payee_name].join(' ')).indexOf(q) >= 0;
+    });
+  };
+
   window.cpToggle = function (code) { if (COL[code]) delete COL[code]; else COL[code] = 1; save(); render(); };
   window.cpAll = function (open) {
     COL = {};
@@ -51,6 +65,129 @@
     render();
   };
 
+
+  /* ══ Ô "Người nhận" gõ-để-tìm ngay trong dòng ══════════════ */
+  var PBOX = null, PCUR = null, PLIST = [], PACT = -1;
+
+  function payeeItems() {
+    var out = [], i;
+    var S = (PAY && PAY.sup)  || [], U = (PAY && PAY.user) || [];
+    for (i = 0; i < S.length; i++) out.push({ t: 'sup',  o: S[i], k: nrm(S[i].name) });
+    for (i = 0; i < U.length; i++) out.push({ t: 'user', o: U[i], k: nrm(U[i].name) });
+    return out;
+  }
+  function pmatch(q) {
+    var A = payeeItems(), r = [], i, j, w, ok;
+    if (!q) return A.slice(0, 40);
+    w = q.split(' ').filter(Boolean);
+    for (i = 0; i < A.length; i++) {
+      ok = true;
+      for (j = 0; j < w.length; j++) if (A[i].k.indexOf(w[j]) < 0) { ok = false; break; }
+      if (ok) r.push(A[i]);
+      if (r.length >= 40) break;
+    }
+    return r;
+  }
+  function pbox() {
+    if (PBOX) return PBOX;
+    PBOX = document.createElement('div');
+    PBOX.className = 'pac';
+    PBOX.addEventListener('mousedown', function (e) { e.preventDefault(); });
+    document.body.appendChild(PBOX);
+    return PBOX;
+  }
+  function pplace(inp) {
+    var r = inp.getBoundingClientRect(), b = pbox();
+    b.style.left = Math.round(r.left) + 'px';
+    b.style.top = Math.round(r.bottom + 2) + 'px';
+    b.style.width = Math.max(240, Math.round(r.width)) + 'px';
+  }
+  function pdraw() {
+    var b = pbox(), h = '', i, m;
+    if (!PLIST.length) h = '<div class="pac-e">Không tìm thấy — thêm ở trang Nhà cung cấp / Quản lý user</div>';
+    for (i = 0; i < PLIST.length; i++) {
+      m = PLIST[i];
+      h += '<div class="pac-i' + (i === PACT ? ' on' : '') + '" data-k="' + i + '">' +
+             '<span class="pac-n">' + esc(m.o.name) + '</span>' +
+             '<span class="tag ' + (m.t === 'sup' ? 'sup' : 'user') + '">' + (m.t === 'sup' ? 'NCC' : 'FL') + '</span>' +
+           '</div>';
+    }
+    b.innerHTML = h; b.classList.add('open');
+    var it = b.querySelectorAll('.pac-i'), j;
+    for (j = 0; j < it.length; j++) {
+      it[j].addEventListener('click', function () { ppick(Number(this.getAttribute('data-k'))); });
+    }
+  }
+  function pclose() { if (PBOX) { PBOX.classList.remove('open'); PBOX.innerHTML = ''; } PCUR = null; PLIST = []; PACT = -1; }
+
+  function ppick(k) {
+    var m = PLIST[k], inp = PCUR;
+    if (!m || !inp) return;
+    var id = Number(inp.getAttribute('data-id'));
+    pclose();
+    setPayee(id, m.t, m.o);
+  }
+
+  function setPayee(id, t, o) {
+    var r = null, i;
+    for (i = 0; i < ROWS.length; i++) if (Number(ROWS[i].id) === id) { r = ROWS[i]; break; }
+    if (!r) return;
+    var prev = { pt: r.payee_type, pi: r.payee_id, pn: r.payee_name, bn: r.bank_name, ba: r.bank_account, bh: r.bank_holder };
+    if (o) {
+      r.payee_type = t; r.payee_id = o.id; r.payee_name = o.name;
+      r.bank_name = o.bank_name || ''; r.bank_account = o.bank_account || ''; r.bank_holder = o.bank_holder || '';
+      r.bank_masked = 0;   // trang này chỉ Admin vào được nên luôn xem được STK
+    } else {
+      r.payee_type = ''; r.payee_id = 0; r.payee_name = '';
+      r.bank_name = ''; r.bank_account = ''; r.bank_holder = ''; r.bank_masked = 0;
+    }
+    render();
+    api('exp-row-save', { id: id, payee_type: r.payee_type, payee_id: r.payee_id, payee_name: r.payee_name })
+      .then(function () { toast(o ? ('Người nhận: ' + o.name) : 'Đã bỏ người nhận'); })
+      .catch(function (e) {
+        r.payee_type = prev.pt; r.payee_id = prev.pi; r.payee_name = prev.pn;
+        r.bank_name = prev.bn; r.bank_account = prev.ba; r.bank_holder = prev.bh;
+        render(); toast(e.message, true);
+      });
+  }
+
+  window.pacOpen = function (inp) {
+    PCUR = inp; PLIST = pmatch(nrm(inp.value)); PACT = PLIST.length ? 0 : -1;
+    pplace(inp); pdraw();
+  };
+  window.pacKey = function (e, inp) {
+    if (!PBOX || !PBOX.classList.contains('open')) { if (e.key === 'ArrowDown') pacOpen(inp); return; }
+    if (e.key === 'ArrowDown') { PACT = Math.min(PACT + 1, PLIST.length - 1); pdraw(); e.preventDefault(); }
+    else if (e.key === 'ArrowUp') { PACT = Math.max(PACT - 1, 0); pdraw(); e.preventDefault(); }
+    else if (e.key === 'Enter') { if (PACT >= 0) { ppick(PACT); e.preventDefault(); } }
+    else if (e.key === 'Escape') { pclose(); inp.blur(); }
+  };
+  window.pacBlur = function (inp) {
+    var id = Number(inp.getAttribute('data-id')), v = inp.value.trim();
+    setTimeout(function () {
+      pclose();
+      var r = null, i;
+      for (i = 0; i < ROWS.length; i++) if (Number(ROWS[i].id) === id) { r = ROWS[i]; break; }
+      if (!r) return;
+      if (v === (r.payee_name || '')) return;
+      if (v === '' && r.payee_type) { setPayee(id, '', null); return; }
+      inp.value = r.payee_name || '';            // gõ tự do: trả lại như cũ
+    }, 130);
+  };
+
+  function payeeCell(r) {
+    var masked = Number(r.bank_masked) === 1;
+    var sub = r.payee_type
+      ? '<div class="psub"><span class="tag ' + (r.payee_type === 'user' ? 'user' : 'sup') + '">' +
+        (r.payee_type === 'user' ? 'FL' : 'NCC') + '</span>' +
+        (r.bank_account ? '<span>' + esc(r.bank_name || '') + ' · ' + esc(r.bank_account) + (masked ? ' (ẩn)' : '') + '</span>'
+                        : '<span class="warn">chưa có STK</span>') + '</div>'
+      : '';
+    return '<input class="pin' + (r.payee_type ? ' has' : '') + '" data-id="' + r.id + '" autocomplete="off"' +
+           ' value="' + esc(r.payee_name || '') + '" placeholder="Gõ tên để gán…"' +
+           ' onfocus="pacOpen(this)" oninput="pacOpen(this)" onkeydown="pacKey(event,this)" onblur="pacBlur(this)" />' + sub;
+  }
+
   function rowHtml(r) {
     var cls = r.payee_type === 'user' ? 'pers' : (r.payee_type === 'sup' ? 'corp' : '');
     if (SEL[r.id]) cls += ' sel';
@@ -62,10 +199,7 @@
       '<td style="color:var(--text3)">·</td>' +
       '<td><span class="nm">' + esc(r.name) + '</span>' +
         (r.description ? '<div class="sub">' + esc(r.description) + '</div>' : '') + '</td>' +
-      '<td>' + (r.payee_name ? esc(r.payee_name) + ' <span class="tag ' + (r.payee_type || 'sup') + '">' +
-        (r.payee_type === 'user' ? 'FL' : 'NCC') + '</span>' +
-        (r.bank_account ? '<div class="sub">' + esc(r.bank_name || '') + ' · ' + esc(r.bank_account) + '</div>' : '')
-        : '<span style="color:var(--text3)">—</span>') + '</td>' +
+      '<td class="pcell">' + payeeCell(r) + '</td>' +
       '<td class="num">' + fmt(r.qty) + '</td>' +
       '<td style="color:var(--text2)">' + esc(r.unit || '') + '</td>' +
       '<td class="num">' + fmt(r.price) + '</td>' +
@@ -95,7 +229,7 @@
         '<span class="gdate">' + esc(dmy(g.date)) + '</span>' +
         '<span class="spacer"></span>' +
         '<span class="gn">' + g.rows.length + ' khoản</span>' +
-        (due > 0 ? '<span class="gdue">Chưa trả ' + fmt(due) + ' đ</span>' : (g.tot > 0 ? '<span class="gok">✓ Đã trả đủ</span>' : '')) +
+        (due > 0 ? '<span class="gdue">Chưa trả ' + fmt(due) + ' đ</span>' : '<span class="gok">✓ Đã trả đủ</span>') +
         '<span class="gtot">' + fmt(g.tot) + ' đ</span>' +
       '</div></td></tr>';
   }
@@ -116,7 +250,8 @@
     el('fTy').innerHTML =
       '<button class="pill' + (FTY === 'all' ? ' on' : '') + '" onclick="setTy(\'all\')">Mọi loại</button>' +
       '<button class="pill pers' + (FTY === 'pers' ? ' on' : '') + '" onclick="setTy(\'pers\')">Cá nhân</button>' +
-      '<button class="pill corp' + (FTY === 'corp' ? ' on' : '') + '" onclick="setTy(\'corp\')">Công ty</button>';
+      '<button class="pill corp' + (FTY === 'corp' ? ' on' : '') + '" onclick="setTy(\'corp\')">Công ty</button>' +
+      '<button class="pill' + (FTY === 'none' ? ' on' : '') + '" onclick="setTy(\'none\')">Chưa gán</button>';
 
     if (!G.length) {
       el('view').innerHTML = '<div class="empty"><b>Không có khoản chi nào</b>Đổi bộ lọc hoặc bấm “+ Khoản chi”.</div>';
@@ -169,8 +304,27 @@
     + '.gn{font-size:11px;color:var(--text3);white-space:nowrap}'
     + '.gdue{font-size:11.5px;font-weight:700;color:var(--gold);white-space:nowrap}'
     + '.gok{font-size:11.5px;font-weight:700;color:var(--ok);white-space:nowrap}'
-    + '.gtot{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;min-width:120px;text-align:right}';
+    + '.gtot{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;min-width:120px;text-align:right}'
+    + 'td.pcell{min-width:200px}'
+    + '.pin{width:100%;background:transparent;border:1px solid var(--border);border-radius:7px;color:inherit;'
+    +   'font:inherit;font-size:12px;padding:4px 7px}'
+    + '.pin::placeholder{color:var(--text3)}'
+    + '.pin.has{font-weight:700;border-color:rgba(255,255,255,.22)}'
+    + '.pin:focus{outline:none;border-color:var(--green);background:rgba(255,255,255,.04)}'
+    + '.psub{display:flex;align-items:center;gap:6px;margin-top:3px;font-size:10.5px;color:var(--text3)}'
+    + '.psub .warn{color:var(--gold)}'
+    + '.pac{position:fixed;z-index:10000;display:none;max-height:300px;overflow:auto;background:#14161a;'
+    +   'border:1px solid #33363d;border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.6);padding:4px}'
+    + '.pac.open{display:block}'
+    + '.pac-i{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 9px;'
+    +   'border-radius:7px;cursor:pointer;font-size:12.5px;color:#e8e8e8}'
+    + '.pac-i:hover,.pac-i.on{background:rgba(255,255,255,.09)}'
+    + '.pac-n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
+    + '.pac-e{padding:10px;font-size:11.5px;color:#8b8f98;line-height:1.5}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+
+  window.addEventListener('scroll', function () { if (PCUR) pclose(); }, true);
+  window.addEventListener('resize', function () { if (PCUR) pclose(); });
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(mountBtns, 300); });
   else setTimeout(mountBtns, 300);
