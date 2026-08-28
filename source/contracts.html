@@ -22,7 +22,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#dff20d">
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>APSA — Brand Guidelines</title>
+  <title>APSA — Kho hợp đồng</title>
   <script src="/apsa-ui.js?v=23"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -57,6 +57,12 @@
     .back-btn:hover { color: var(--text); border-color: var(--border-h); }
 
     .page-head { padding: 32px 28px 18px; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+    .gbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 12px; }
+    .gtab { font-size: 12.5px; font-weight: 700; letter-spacing: .01em; color: var(--text2);
+            background: transparent; border: 1px solid rgba(255,255,255,.12); border-radius: 999px;
+            padding: 7px 16px; cursor: pointer; transition: all .15s; }
+    .gtab:hover { color: var(--text); border-color: rgba(255,255,255,.3); }
+    .gtab.on { color: #0d0d0d; background: var(--accent); border-color: var(--accent); }
     .page-head h1 { font-size: 26px; font-weight: 800; letter-spacing: -.5px; }
     .page-head p  { font-size: 13px; color: var(--text2); margin-top: 4px; }
     .head-chips { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -329,6 +335,7 @@
     <button class="btn sm ghost x" onclick="hideTip()">Đã hiểu</button>
   </div>
 
+  <div class="gbar" id="gbar"></div>
   <div class="crumbs" id="crumbs"></div>
 
   <div id="queue"></div>
@@ -402,8 +409,9 @@
 <script>
 /* ══════════════════════════════════════════════════════════════════ */
 var API   = './api/brand-api.php';
-var RKEY  = /logo/i.test(location.pathname) ? 'logos' : 'brand';
+var RKEY  = 'contracts';
 var LBL   = {
+contracts: { t: 'Kho hợp đồng', s: 'Hợp đồng lưu trên SharePoint — chia theo Vendor / Client / Personal. Chỉ Admin xem được.' },
   brand: { t: 'Brand Guidelines', s: 'Kho tài liệu thương hiệu — lưu trên SharePoint của APSA, đồng bộ tức thì hai chiều.' },
   logos: { t: 'Logo dược phẩm',   s: 'Kho logo — lưu trên SharePoint của APSA, đồng bộ tức thì hai chiều.' }
 };
@@ -539,6 +547,38 @@ function chips(folder, n) {
   document.getElementById('chips').innerHTML = h;
 }
 
+/* ── nhom hop dong: Vendor / Client / Personal ── */
+var GNAMES = ['Vendor', 'Client', 'Personal'];
+var GID    = {};
+function mapGroups() {
+  if (PATH.length !== 1) return;          /* chi doc khi dang o thu muc goc */
+  for (var i = 0; i < ITEMS.length; i++) {
+    var it = ITEMS[i];
+    if (it.is_dir && GNAMES.indexOf(it.name) >= 0) GID[it.name] = it.id;
+  }
+}
+function curGroup() {
+  return (PATH.length > 1 && GNAMES.indexOf(PATH[1].name) >= 0) ? PATH[1].name : '';
+}
+function goGroup(n) {
+  resetQ();
+  if (!n)          { PATH = [PATH[0]]; load(); return; }
+  if (GID[n])      { PATH = [PATH[0], { id: GID[n], name: n }]; load(); return; }
+  /* chua biet id — ve goc doc lai roi vao nhom */
+  PATH = [PATH[0]];
+  load();
+  setTimeout(function () { if (GID[n]) { PATH = [PATH[0], { id: GID[n], name: n }]; load(); } }, 700);
+}
+function drawGBar() {
+  var el = document.getElementById('gbar'); if (!el) return;
+  var c  = curGroup();
+  var h  = '<button class="gtab' + (c ? '' : ' on') + '" onclick="goGroup(\'\')">Tất cả</button>';
+  GNAMES.forEach(function (n) {
+    h += '<button class="gtab' + (c === n ? ' on' : '') + '" onclick="goGroup(\'' + n + '\')">' + n + '</button>';
+  });
+  el.innerHTML = h;
+}
+
 function crumbs() {
   var el = document.getElementById('crumbs'), h = '';
   if (MODE === 'search') {
@@ -562,11 +602,15 @@ function load() {
     ITEMS = j.items || [];
     cur.name = j.folder.name;
     cur.web_url = j.folder.web_url;
+    mapGroups();
+    drawGBar();
     crumbs();
     draw();
     if (FQ) runG(FQ);
   }).catch(function (e) {
-    render('<div class="empty"><b>Không tải được danh sách</b>' + esc(e.message) + '</div>');
+    render(/Admin/.test(e.message)
+        ? '<div class="empty"><b>Bạn không có quyền vào kho hợp đồng</b>Chỉ Admin hoặc người giữ vị trí admin mới xem được. Nhắn Harris nếu anh/chị cần cấp quyền.</div>'
+        : '<div class="empty"><b>Không tải được danh sách</b>' + esc(e.message) + '</div>');
   });
 }
 

@@ -1,7 +1,20 @@
 {
-    "version": "1.3.4",
+    "version": "1.4.0",
     "updated": "2026-08-28",
     "releases": [
+        {
+            "v": "1.4",
+            "date": "2026-08-28",
+            "note": "Phiên bản 1.4",
+            "items": [
+                {
+                    "d": "2026-08-28",
+                    "v": "1.4.0",
+                    "t": "Module Kho hop dong: dong bo SharePoint storage-admin, nhom Vendor/Client/Personal, chi Admin (role) hoac vi tri admin moi vao duoc.",
+                    "by": "mee53661"
+                }
+            ]
+        },
         {
             "v": "1.3",
             "date": "2026-08-27",

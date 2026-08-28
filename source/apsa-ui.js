@@ -353,6 +353,7 @@
     { ico: 'people',  name: 'Quản lý Khách hàng', url: './customers.html', id: 29 },
     { ico: 'debt',    name: 'Quản lý Công nợ',   url: './debts.html', id: 30 },
     { ico: 'company', name: 'Nhà cung cấp',      url: './suppliers.html', id: 95 },
+    { ico: 'doc',     name: 'Kho hợp đồng',     url: './contracts.html', id: 96 },
     { grp: 'Nội dung' },
     { ico: 'logo',    name: 'Kho Logos',         url: './logos.html', id: 17 },
     { ico: 'book',    name: 'Brand Guidelines',  url: './brand-guidelines.html', id: 18 },

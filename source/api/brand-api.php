@@ -135,6 +135,7 @@ function bg_me()
         'name'  => trim((string) (!empty($row['display_name']) ? $row['display_name'] : $row['username'])),
         'email' => isset($row['email']) ? (string) $row['email'] : '',
         'role'  => isset($row['role']) ? (string) $row['role'] : '',
+        'position' => isset($row['position']) ? (string) $row['position'] : '',
     );
     return $me;
 }
@@ -363,6 +364,7 @@ function bg_row($it)
 $ACT = isset($_GET['action']) ? (string) $_GET['action'] : '';
 $ME  = bg_me();
 $CFG = bg_cfg();
+bg_root_gate();
 
 switch ($ACT) {
 
@@ -607,4 +609,17 @@ case 'test':
 
 default:
     bg_fail('Thao tac khong hop le.', 404);
+}
+
+
+/* Kho hop dong: chi Admin (role) HOAC nguoi giu vi tri admin moi vao duoc.
+   Cac kho khac (brand / vfr / logos) khong bi anh huong. */
+function bg_root_gate()
+{
+    if (bg_key() !== 'contracts') return;
+    $me  = bg_me();
+    $r   = isset($me['role'])     ? (string) $me['role']     : '';
+    $p   = isset($me['position']) ? (string) $me['position'] : '';
+    if (strcasecmp($r, 'admin') === 0 || strcasecmp($p, 'admin') === 0) return;
+    bg_fail('Kho hợp đồng chỉ dành cho Admin.', 403);
 }
