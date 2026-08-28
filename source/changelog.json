@@ -1,5 +1,5 @@
 {
-    "version": "1.4.3",
+    "version": "1.4.4",
     "updated": "2026-08-28",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-28",
             "note": "Phiên bản 1.4",
             "items": [
+                {
+                    "d": "2026-08-28",
+                    "v": "1.4.4",
+                    "t": "Trang Chi phi thuc te toan cong ty (Admin): loc/sap xep/sua nhanh/QR; nguoi nhan chi con freelancer + o go-de-tim; nut Copy ma-tieu de; icon lich sang mau",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-28",
                     "v": "1.4.3",

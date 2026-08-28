@@ -1757,6 +1757,80 @@ case 'assign-status': {
 // Bảng tổng: toàn bộ phân công kèm thông tin dự án — cho trang Giao việc
 // ── Chi phí thực tế ─────────────────────────────────────────
 // Danh sach nguoi nhan tien: nha cung cap (cong ty) + nhan su/freelancer (ca nhan)
+// ===== Trang Chi phi thuc te toan cong ty (chi Admin) =====
+case 'exp-all': {
+    q_needAdmin($pdo);
+    $st = $pdo->query("SELECT e.*, q.code, q.title, q.client_name, q.quotation_date, q.status
+        FROM `quotation_expenses` e
+        JOIN `quotations` q ON q.id = e.quotation_id
+        WHERE e.kind = 'item' AND q.deleted_at IS NULL
+        ORDER BY q.quotation_date DESC, q.id DESC, e.sort_order ASC
+        LIMIT 3000");
+    q_ok(array('rows' => $st->fetchAll()));
+}
+
+case 'quo-lite': {
+    q_needAdmin($pdo);
+    $st = $pdo->query("SELECT id, code, title, client_name FROM `quotations`
+        WHERE deleted_at IS NULL ORDER BY id DESC LIMIT 800");
+    q_ok(array('rows' => $st->fetchAll()));
+}
+
+case 'exp-row-save': {
+    q_needAdmin($pdo);
+    $id = (int) ($B['id'] ?? 0);
+    if ($id > 0) {
+        $sets = array(); $par = array();
+        if (array_key_exists('name', $B))        { $sets[] = '`name` = ?';        $par[] = s($B['name'], 300); }
+        if (array_key_exists('description', $B)) { $sets[] = '`description` = ?'; $par[] = s($B['description'], 5000); }
+        if (array_key_exists('qty', $B))         { $sets[] = '`qty` = ?';         $par[] = num($B['qty']); }
+        if (array_key_exists('unit', $B))        { $sets[] = '`unit` = ?';        $par[] = s($B['unit'], 60); }
+        if (array_key_exists('price', $B))       { $sets[] = '`price` = ?';       $par[] = num($B['price']); }
+        if (array_key_exists('vat_percent', $B)) { $sets[] = '`vat_percent` = ?'; $par[] = num($B['vat_percent']); }
+        if (array_key_exists('paid', $B))        { $sets[] = '`paid` = ?';        $par[] = (int) !!$B['paid']; }
+        if (array_key_exists('payee_type', $B) || array_key_exists('payee_id', $B)) {
+            $sets[] = '`payee_type` = ?';   $par[] = q_payeeT($B) ?: null;
+            $sets[] = '`payee_id` = ?';     $par[] = (int) ($B['payee_id'] ?? 0);
+            $sets[] = '`payee_name` = ?';   $par[] = q_payeeF($pdo, $B, 'name');
+            $sets[] = '`bank_name` = ?';    $par[] = q_payeeF($pdo, $B, 'bank_name');
+            $sets[] = '`bank_account` = ?'; $par[] = q_payeeF($pdo, $B, 'bank_account');
+            $sets[] = '`bank_holder` = ?';  $par[] = q_payeeF($pdo, $B, 'bank_holder');
+        }
+        if (!$sets) q_fail('Khong co gi de cap nhat');
+        $par[] = $id;
+        $pdo->prepare('UPDATE `quotation_expenses` SET ' . implode(', ', $sets) . ' WHERE id = ?')->execute($par);
+        q_ok(array('id' => $id));
+    }
+    $qid = (int) ($B['quotation_id'] ?? 0);
+    if ($qid <= 0) q_fail('Thieu du an');
+    $chk = $pdo->prepare("SELECT id FROM `quotations` WHERE id = ? AND deleted_at IS NULL");
+    $chk->execute([$qid]);
+    if (!$chk->fetchColumn()) q_fail('Khong tim thay bao gia');
+    $so = $pdo->prepare("SELECT COALESCE(MAX(sort_order),0)+1 FROM `quotation_expenses` WHERE quotation_id = ?");
+    $so->execute([$qid]);
+    $ins = $pdo->prepare("INSERT INTO `quotation_expenses`
+        (quotation_id, kind, category, name, description, qty, unit, price, vat_percent, sort_order,
+         paid, payee_type, payee_id, payee_name, bank_name, bank_account, bank_holder)
+        VALUES (?,'item','',?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+    $ins->execute([
+        $qid, s($B['name'] ?? '', 300), s($B['description'] ?? '', 5000),
+        num($B['qty'] ?? 1), s($B['unit'] ?? '', 60), num($B['price'] ?? 0), num($B['vat_percent'] ?? 0),
+        (int) $so->fetchColumn(),
+        (int) !!($B['paid'] ?? 0), q_payeeT($B) ?: null, (int) ($B['payee_id'] ?? 0),
+        q_payeeF($pdo, $B, 'name'), q_payeeF($pdo, $B, 'bank_name'),
+        q_payeeF($pdo, $B, 'bank_account'), q_payeeF($pdo, $B, 'bank_holder'),
+    ]);
+    q_ok(array('id' => (int) $pdo->lastInsertId()));
+}
+
+case 'exp-row-del': {
+    q_needAdmin($pdo);
+    $id = (int) ($B['id'] ?? 0);
+    if ($id <= 0) q_fail('Thieu id');
+    $pdo->prepare("DELETE FROM `quotation_expenses` WHERE id = ?")->execute([$id]);
+    q_ok(array('id' => $id));
+}
+
 case 'payees': {
     q_ok(q_payeeList($pdo));
 }
@@ -3191,7 +3265,7 @@ function q_payeeList(PDO $pdo) {
         }
     } catch (PDOException $e) { /* bang chua co */ }
     try {
-        $st = $pdo->query("SELECT id, display_name, staff_type, bank_name, bank_account, bank_holder FROM `app_users` WHERE active = 1 ORDER BY display_name ASC");
+        $st = $pdo->query("SELECT id, display_name, staff_type, bank_name, bank_account, bank_holder FROM `app_users` WHERE active = 1 AND staff_type = 'freelancer' ORDER BY display_name ASC");
         foreach ($st->fetchAll() as $r) {
             $out['user'][] = array(
                 'id' => (int) $r['id'], 'name' => $r['display_name'],
@@ -3203,4 +3277,8 @@ function q_payeeList(PDO $pdo) {
         }
     } catch (PDOException $e) { /* bang chua co */ }
     return $out;
+}
+
+function q_needAdmin(PDO $pdo) {
+    if (!q_seePersonalBank($pdo)) q_fail('Trang nay chi danh cho Admin.', 403);
 }

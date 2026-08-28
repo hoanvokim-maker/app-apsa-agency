@@ -86,6 +86,7 @@
     return '';
   }
   window.expFindBin = findBin;
+  window.EXP_BANKS  = BANKS;
 
   /* ── Danh sách người nhận ─────────────────────────────────── */
   window.EXP_PAYEES = { sup: [], user: [], loaded: false, seeBank: 1 };
