@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script>
+  document.documentElement.style.visibility = 'hidden';
+  fetch('./api/auth-api.php?action=me', { credentials: 'same-origin' })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(res => {
+      if (!res.ok) throw new Error();
+      window.__APSA_USER = res.data;
+      document.documentElement.style.visibility = 'visible';
+    })
+    .catch(() => {
+      location.replace('./login.html?next=' + encodeURIComponent(location.pathname + location.search));
+    });
+</script>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=1">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#dff20d">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>APSA — Nhà cung cấp</title>
+  <script src="/apsa-ui.js?v=21"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/theme.css?v=20" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #000; --bg2: #0b0b0b; --bg3: #141414; --bg4: #1c1c1c;
+    --border: rgba(255,255,255,.08); --border-h: rgba(255,255,255,.16);
+    --text: #fff; --text2: #9a9a9a; --text3: #5e5e5e;
+    --green: #dff20d; --pink: #c9dd00; --red: #ff4d4d; --sky: #56ccf2;
+  }
+  body { font-family: 'Oxanium', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  header { position: sticky; top: 0; z-index: 100; background: rgba(0,0,0,.9); backdrop-filter: blur(16px);
+           border-bottom: 1px solid var(--border); height: 60px; padding: 0 28px;
+           display: flex; align-items: center; justify-content: space-between; }
+  .logo img { height: 26px; filter: brightness(0) invert(1); opacity: .9; display: block; }
+  .back-btn { display: flex; align-items: center; gap: 6px; color: var(--text2); text-decoration: none;
+              font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); transition: all .2s; }
+  .back-btn:hover { color: var(--text); border-color: var(--border-h); }
+
+  .page-head { padding: 32px 28px 18px; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+  .page-head h1 { font-size: 26px; font-weight: 800; letter-spacing: -.5px; }
+  .page-head p { font-size: 13px; color: var(--text2); margin-top: 4px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;
+          padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); color: var(--text2); background: var(--bg2); }
+  .chip b { color: var(--text); font-weight: 700; }
+
+  .wrap { padding: 0 28px 70px; max-width: 1320px; }
+  .toolbar { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 16px; }
+  .toolbar .spacer { flex: 1 1 auto; }
+  .btn { display: inline-flex; align-items: center; gap: 7px; justify-content: center; font-family: inherit;
+         font-size: 13px; font-weight: 600; cursor: pointer; padding: 9px 16px; border-radius: 9px;
+         border: 1px solid var(--border-h); background: var(--bg3); color: var(--text); transition: all .18s; white-space: nowrap; }
+  .btn:hover { background: var(--bg4); border-color: rgba(255,255,255,.28); }
+  .btn.primary { background: var(--green); color: #000; border-color: var(--green); }
+  .btn.primary:hover { background: var(--pink); border-color: var(--pink); }
+  .btn.danger { color: #ffb3b3; border-color: rgba(255,77,77,.35); }
+  .btn.danger:hover { background: rgba(255,77,77,.12); }
+  .btn.sm { padding: 6px 11px; font-size: 12px; }
+  .btn[disabled] { opacity: .45; pointer-events: none; }
+
+  .search { position: relative; }
+  .search input { font-family: inherit; font-size: 13px; color: var(--text); background: var(--bg3);
+                  border: 1px solid var(--border); border-radius: 9px; padding: 9px 32px 9px 34px; width: 320px; outline: none; transition: all .18s; }
+  .search input:focus { border-color: var(--border-h); background: var(--bg4); }
+  .search svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text3); }
+  .search .clr { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 22px; height: 22px;
+                 border: none; background: transparent; color: var(--text3); cursor: pointer; border-radius: 6px; display: none; font-size: 13px; font-family: inherit; }
+  .search.has .clr { display: block; }
+  .search .clr:hover { color: var(--text); background: var(--bg4); }
+  mark { background: rgba(223,242,13,.26); color: var(--green); border-radius: 3px; padding: 0 1px; }
+
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { text-align: left; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+             color: var(--text3); padding: 12px 16px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr { transition: background .14s; }
+  tbody tr:hover { background: var(--bg3); }
+  tbody tr.off { opacity: .5; }
+  .nm { font-weight: 700; }
+  .sub { font-size: 11.5px; color: var(--text3); margin-top: 3px; }
+  td.ac { text-align: right; white-space: nowrap; }
+  .tel { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tel a { color: var(--text); text-decoration: none; }
+  .tel a:hover { color: var(--green); }
+  .addr { color: var(--text2); font-size: 12.5px; line-height: 1.5; max-width: 420px; }
+  .badge { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+           padding: 2px 8px; border-radius: 20px; border: 1px solid rgba(255,77,77,.35); color: #ffb3b3; margin-left: 8px; }
+  .iconbtn { width: 30px; height: 30px; border-radius: 8px; border: 1px solid transparent; background: transparent;
+             color: var(--text3); cursor: pointer; display: inline-grid; place-items: center; transition: all .16s; }
+  .iconbtn:hover { color: var(--text); background: var(--bg4); border-color: var(--border); }
+  .iconbtn.del:hover { color: #ffb3b3; border-color: rgba(255,77,77,.35); }
+  .empty { padding: 54px 20px; text-align: center; color: var(--text3); font-size: 13px; }
+  .empty b { display: block; color: var(--text2); font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+
+  .mask { position: fixed; inset: 0; background: rgba(0,0,0,.72); backdrop-filter: blur(4px);
+          display: none; align-items: center; justify-content: center; padding: 20px; z-index: 400; }
+  .mask.on { display: flex; }
+  .modal { background: var(--bg2); border: 1px solid var(--border-h); border-radius: 16px; width: 100%;
+           max-width: 620px; padding: 24px; max-height: 88vh; overflow: auto; }
+  .modal h2 { font-size: 18px; font-weight: 800; margin-bottom: 5px; }
+  .mh-sub { font-size: 12.5px; color: var(--text2); margin-bottom: 18px; line-height: 1.5; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .fg { margin-bottom: 14px; }
+  .fg label { display: block; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; }
+  .fg input[type=text], .fg textarea, .fg select {
+    width: 100%; font-family: inherit; font-size: 14px; color: var(--text); background: var(--bg3);
+    border: 1px solid var(--border); border-radius: 9px; padding: 10px 13px; outline: none; }
+  .fg textarea { resize: vertical; min-height: 62px; }
+  .fg input:focus, .fg textarea:focus, .fg select:focus { border-color: var(--border-h); background: var(--bg4); }
+  .modal-acts { display: flex; gap: 9px; justify-content: flex-end; margin-top: 22px; }
+  .warnbox { background: rgba(255,77,77,.08); border: 1px solid rgba(255,77,77,.3); color: #ffb3b3;
+             border-radius: 10px; padding: 11px 14px; font-size: 12.5px; line-height: 1.55; margin-bottom: 16px; }
+  #toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px);
+           background: var(--bg4); border: 1px solid var(--border-h); color: var(--text); padding: 12px 20px;
+           border-radius: 24px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none;
+           transition: all .25s; z-index: 500; max-width: 88vw; text-align: center; }
+  #toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast.err { border-color: rgba(255,77,77,.5); color: #ffb3b3; }
+
+  @media (max-width: 860px) {
+    header { padding: 0 16px; }
+    .page-head, .wrap { padding-left: 16px; padding-right: 16px; }
+    .search input { width: 100%; }
+    .search { flex: 1 1 100%; }
+    .grid2 { grid-template-columns: 1fr; }
+    td.addr, th.addr { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><img src="/Logo%20rectange.png" alt="APSA" /></div>
+  <a class="back-btn" href="./index.html">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Trang chủ
+  </a>
+</header>
+
+<div class="page-head">
+  <div>
+    <h1>Nhà cung cấp</h1>
+    <p>Danh bạ nhà cung cấp dùng chung với bảng giá VFR — sửa ở đây là rate card cập nhật theo.</p>
+  </div>
+  <div id="chips"></div>
+</div>
+
+<div class="wrap">
+  <div id="warn"></div>
+
+  <div class="toolbar">
+    <div class="search" id="sbox">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.2-4.2"/></svg>
+      <input id="q" type="text" placeholder="Tìm công ty, người liên hệ, số điện thoại…" autocomplete="off" />
+      <button class="clr" onclick="clearSearch()" title="Xoá (Esc)">✕</button>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="btnAdd" onclick="openAdd()" style="display:none">+ Nhà cung cấp</button>
+  </div>
+
+  <div class="card" id="view"></div>
+</div>
+
+<div class="mask" id="mEdit">
+  <div class="modal">
+    <h2 id="eTitle">Nhà cung cấp mới</h2>
+    <div class="mh-sub">Thông tin dùng cho báo giá và đối chiếu công nợ sản xuất.</div>
+    <div class="fg">
+      <label>Công ty *</label>
+      <input type="text" id="eName" placeholder="VD: Song Khánh" autocomplete="off" />
+    </div>
+    <div class="grid2">
+      <div class="fg"><label>Người liên hệ</label><input type="text" id="eContact" placeholder="VD: Ngọc Ánh" autocomplete="off" /></div>
+      <div class="fg"><label>Mã số thuế</label><input type="text" id="eTax" placeholder="VD: 0311234567" autocomplete="off" /></div>
+    </div>
+    <div class="grid2">
+      <div class="fg"><label>Điện thoại</label><input type="text" id="ePhone" placeholder="VD: 0976 572 459" autocomplete="off" /></div>
+      <div class="fg"><label>Điện thoại 2</label><input type="text" id="ePhone2" placeholder="tuỳ chọn" autocomplete="off" /></div>
+    </div>
+    <div class="fg"><label>Email</label><input type="text" id="eEmail" placeholder="VD: ketoan@songkhanh.vn" autocomplete="off" /></div>
+    <div class="fg"><label>Địa chỉ</label><textarea id="eAddr" rows="2" placeholder="Số nhà, đường, phường, tỉnh/thành"></textarea></div>
+    <div class="fg"><label>Ghi chú</label><textarea id="eNote" rows="2" placeholder="VD: chuyên mica, giao Hà Nội trong ngày"></textarea></div>
+    <div class="fg">
+      <label>Trạng thái</label>
+      <select id="eActive"><option value="1">Đang hợp tác</option><option value="0">Ngừng hợp tác</option></select>
+    </div>
+    <div class="modal-acts">
+      <button class="btn" onclick="closeEdit()">Huỷ</button>
+      <button class="btn primary" id="eOk" onclick="saveIt()">Lưu</button>
+    </div>
+  </div>
+</div>
+
+<div class="mask" id="mDel">
+  <div class="modal" style="max-width:440px">
+    <h2>Xoá nhà cung cấp</h2>
+    <div class="mh-sub" id="dSub"></div>
+    <div class="modal-acts">
+      <button class="btn" onclick="closeDel()">Huỷ</button>
+      <button class="btn danger" id="dOk" onclick="okDel()">Xoá</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var API = './api/supplier-api.php';
+var ITEMS = [], IS_ADMIN = false, FQ = '', editing = null, delIdx = -1, qTimer = null;
+
+function el(id) { return document.getElementById(id); }
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function toast(msg, err) {
+  var t = el('toast');
+  t.textContent = msg;
+  t.className = 'on' + (err ? ' err' : '');
+  clearTimeout(t._h);
+  t._h = setTimeout(function () { t.className = ''; }, err ? 5200 : 2800);
+}
+function nrm(x) {
+  x = String(x == null ? '' : x).toLowerCase();
+  var o = '', i, c, d;
+  for (i = 0; i < x.length; i++) {
+    c = x.charAt(i);
+    if (c === 'đ') { o += 'd'; continue; }
+    d = c.normalize ? c.normalize('NFD').replace(/[̀-ͯ]/g, '') : c;
+    o += (d.length ? d.charAt(0) : c);
+  }
+  return o;
+}
+function terms(q) {
+  var t = nrm(q).split(/[^a-z0-9]+/), o = [], i;
+  for (i = 0; i < t.length; i++) if (t[i]) o.push(t[i]);
+  return o;
+}
+function hit(s, tm) {
+  var n = nrm(s), i;
+  for (i = 0; i < tm.length; i++) if (n.indexOf(tm[i]) < 0) return false;
+  return true;
+}
+function hlt(s, tm) {
+  s = String(s == null ? '' : s);
+  if (!tm || !tm.length) return esc(s);
+  var n = nrm(s), mk = [], i, k, p, t;
+  for (i = 0; i < tm.length; i++) {
+    t = tm[i]; p = n.indexOf(t);
+    while (p >= 0) { for (k = p; k < p + t.length; k++) mk[k] = 1; p = n.indexOf(t, p + 1); }
+  }
+  var h = '', on = false;
+  for (i = 0; i < s.length; i++) {
+    if (mk[i] && !on) { h += '<mark>'; on = true; }
+    else if (!mk[i] && on) { h += '</mark>'; on = false; }
+    h += esc(s.charAt(i));
+  }
+  return h + (on ? '</mark>' : '');
+}
+function telLink(v, tm) {
+  if (!v) return '';
+  var raw = String(v).replace(/[^0-9+]/g, '');
+  return '<a href="tel:' + esc(raw) + '">' + hlt(v, tm) + '</a>';
+}
+
+function api(action, opt) {
+  opt = opt || {};
+  var cfg = { credentials: 'same-origin', cache: 'no-store', method: opt.body ? 'POST' : 'GET' };
+  if (opt.body) { cfg.headers = { 'Content-Type': 'application/json' }; cfg.body = JSON.stringify(opt.body); }
+  return fetch(API + '?action=' + action + (opt.qs || ''), cfg).then(function (r) {
+    if (r.status === 401) { location.replace('./login.html'); throw new Error('401'); }
+    return r.json().catch(function () { return { ok: false, error: 'Máy chủ trả về dữ liệu không hợp lệ.' }; });
+  }).then(function (j) {
+    if (!j || !j.ok) throw new Error((j && j.error) || 'Có lỗi xảy ra.');
+    return j.data;
+  });
+}
+
+function load() {
+  el('view').innerHTML = '<div class="empty">Đang tải…</div>';
+  api('list').then(function (d) {
+    ITEMS = d.items || [];
+    IS_ADMIN = !!Number(d.is_admin);
+    el('btnAdd').style.display = IS_ADMIN ? '' : 'none';
+    if (!IS_ADMIN) {
+      el('warn').innerHTML = '<div class="warnbox" style="margin-bottom:16px">Bạn đang xem ở chế độ chỉ đọc — chỉ Admin mới thêm/sửa được nhà cung cấp.</div>';
+    }
+    draw();
+  }).catch(function (e) {
+    el('view').innerHTML = '<div class="empty"><b>Không tải được danh sách</b>' + esc(e.message) + '</div>';
+  });
+}
+
+function draw() {
+  var tm = terms(FQ);
+  var rows = tm.length ? ITEMS.filter(function (s) {
+    return hit([s.name, s.contact, s.phone, s.phone2, s.address, s.email, s.note].join(' '), tm);
+  }) : ITEMS;
+
+  el('chips').innerHTML = '<span class="chip"><b>' + ITEMS.length + '</b> nhà cung cấp</span>'
+    + (tm.length ? '<span class="chip" style="margin-left:8px"><b>' + rows.length + '</b> khớp</span>' : '');
+
+  if (!rows.length) {
+    el('view').innerHTML = '<div class="empty"><b>' + (tm.length ? 'Không tìm thấy nhà cung cấp nào' : 'Chưa có nhà cung cấp')
+      + '</b>' + (tm.length ? 'Thử từ khoá khác.' : 'Bấm “+ Nhà cung cấp” để thêm.') + '</div>';
+    return;
+  }
+
+  var h = '<table><thead><tr>'
+    + '<th>Công ty</th><th style="width:170px">Người liên hệ</th><th style="width:150px">Điện thoại</th>'
+    + '<th class="addr">Địa chỉ</th><th style="width:100px"></th>'
+    + '</tr></thead><tbody>';
+
+  rows.forEach(function (s) {
+    var i = ITEMS.indexOf(s);
+    var off = !Number(s.active);
+    h += '<tr' + (off ? ' class="off"' : '') + '>'
+      + '<td><div class="nm">' + hlt(s.name, tm) + (off ? '<span class="badge">ngừng</span>' : '') + '</div>'
+      + (s.email ? '<div class="sub">' + hlt(s.email, tm) + '</div>' : '')
+      + (s.tax_code ? '<div class="sub">MST: ' + esc(s.tax_code) + '</div>' : '')
+      + (s.note ? '<div class="sub">' + hlt(s.note, tm) + '</div>' : '')
+      + '</td>'
+      + '<td>' + (s.contact ? hlt(s.contact, tm) : '<span style="color:var(--text3)">—</span>') + '</td>'
+      + '<td class="tel">' + (s.phone ? telLink(s.phone, tm) : '<span style="color:var(--text3)">—</span>')
+      + (s.phone2 ? '<div class="sub tel">' + telLink(s.phone2, tm) + '</div>' : '') + '</td>'
+      + '<td class="addr">' + (s.address ? hlt(s.address, tm) : '<span style="color:var(--text3)">—</span>') + '</td>'
+      + '<td class="ac">'
+      + (IS_ADMIN
+          ? '<button class="iconbtn" title="Sửa" onclick="openEdit(' + i + ')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg></button>'
+          + '<button class="iconbtn del" title="Xoá" onclick="askDel(' + i + ')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>'
+          : '')
+      + '</td></tr>';
+  });
+  el('view').innerHTML = h + '</tbody></table>';
+}
+
+/* ── tìm kiếm ── */
+el('q').addEventListener('input', function () {
+  FQ = this.value;
+  el('sbox').classList[FQ ? 'add' : 'remove']('has');
+  clearTimeout(qTimer);
+  qTimer = setTimeout(draw, 80);
+});
+el('q').addEventListener('keydown', function (e) { if (e.key === 'Escape') { e.stopPropagation(); clearSearch(); } });
+function clearSearch() { el('q').value = ''; FQ = ''; el('sbox').classList.remove('has'); draw(); el('q').focus(); }
+
+/* ── thêm / sửa ── */
+function fill(s) {
+  el('eName').value    = s ? (s.name || '') : '';
+  el('eContact').value = s ? (s.contact || '') : '';
+  el('eTax').value     = s ? (s.tax_code || '') : '';
+  el('ePhone').value   = s ? (s.phone || '') : '';
+  el('ePhone2').value  = s ? (s.phone2 || '') : '';
+  el('eEmail').value   = s ? (s.email || '') : '';
+  el('eAddr').value    = s ? (s.address || '') : '';
+  el('eNote').value    = s ? (s.note || '') : '';
+  el('eActive').value  = s ? String(Number(s.active) ? 1 : 0) : '1';
+}
+function openAdd() {
+  editing = null;
+  el('eTitle').textContent = 'Nhà cung cấp mới';
+  fill(null);
+  el('mEdit').classList.add('on');
+  setTimeout(function () { el('eName').focus(); }, 60);
+}
+function openEdit(i) {
+  editing = ITEMS[i];
+  el('eTitle').textContent = 'Sửa nhà cung cấp';
+  fill(editing);
+  el('mEdit').classList.add('on');
+}
+function closeEdit() { el('mEdit').classList.remove('on'); }
+
+function saveIt() {
+  var name = el('eName').value.trim();
+  if (!name) { toast('Tên công ty là bắt buộc.', true); el('eName').focus(); return; }
+  var b = {
+    id: editing ? Number(editing.id) : 0,
+    name: name,
+    contact: el('eContact').value.trim(),
+    tax_code: el('eTax').value.trim(),
+    phone: el('ePhone').value.trim(),
+    phone2: el('ePhone2').value.trim(),
+    email: el('eEmail').value.trim(),
+    address: el('eAddr').value.trim(),
+    note: el('eNote').value.trim(),
+    active: Number(el('eActive').value)
+  };
+  var btn = el('eOk');
+  btn.disabled = true; btn.textContent = 'Đang lưu…';
+  api('save', { body: b }).then(function () {
+    closeEdit(); toast('Đã lưu ' + name); load();
+  }).catch(function (e) { toast(e.message, true); })
+    .then(function () { btn.disabled = false; btn.textContent = 'Lưu'; });
+}
+
+/* ── xoá ── */
+function askDel(i) {
+  delIdx = i;
+  el('dSub').textContent = 'Xoá “' + ITEMS[i].name + '” khỏi danh bạ? Nếu đang gắn với sản phẩm trong rate card thì hệ thống chỉ chuyển sang trạng thái Ngừng hợp tác.';
+  el('mDel').classList.add('on');
+}
+function closeDel() { el('mDel').classList.remove('on'); delIdx = -1; }
+function okDel() {
+  if (delIdx < 0) return;
+  var s = ITEMS[delIdx];
+  var btn = el('dOk');
+  btn.disabled = true; btn.textContent = 'Đang xoá…';
+  api('delete', { body: { id: Number(s.id) } }).then(function (d) {
+    closeDel();
+    toast(d.deactivated ? ('Đang dùng ở ' + d.used + ' sản phẩm — đã chuyển sang Ngừng hợp tác.') : ('Đã xoá ' + s.name));
+    load();
+  }).catch(function (e) { toast(e.message, true); })
+    .then(function () { btn.disabled = false; btn.textContent = 'Xoá'; });
+}
+
+document.addEventListener('keydown', function (e) {
+  if (e.key !== 'Escape') return;
+  closeEdit(); closeDel();
+});
+
+load();
+</script>
+</body>
+</html>

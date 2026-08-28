@@ -462,6 +462,7 @@ function setPosValue(v) {
     try {
       if (id) {
         payload.id = Number(id);
+        window.__xid = Number(id);
         delete payload.staff_type;                 // không đổi loại khi sửa
         await api('update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       } else {
@@ -472,7 +473,9 @@ function setPosValue(v) {
         }
         const d = await api('create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         if (d && d.message) toast(d.message, 'ok');
+        window.__xid = (d && d.id) ? Number(d.id) : 0;
       }
+      await saveExtra(window.__xid || 0);
       closeModal();
       await loadUsers();
     } catch (err) {
@@ -516,5 +519,6 @@ function setPosValue(v) {
 
   init();
 </script>
+<script src="./users-extra.js?v=2"></script>
 </body>
 </html>

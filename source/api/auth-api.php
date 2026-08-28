@@ -339,6 +339,51 @@ switch ($action) {
         }
         break;
 
+    case 'staff-extra': {
+        $me = currentUser($pdo);
+        if (!$me) fail('Unauthorized', 401);
+        ax_ensure($pdo);
+        $isAdmin = (strcasecmp((string) ($me['role'] ?? ''), 'admin') === 0);
+        $rows = $pdo->query("SELECT `id`,`full_name`,`bank_name`,`bank_account`,`bank_holder`,`bank_branch` FROM `app_users`")->fetchAll();
+        $out = array();
+        foreach ($rows as $r) {
+            $see = $isAdmin || ((int) $r['id'] === (int) $me['id']);
+            $out[(string) $r['id']] = array(
+                'full_name'    => (string) $r['full_name'],
+                'can_see_bank' => $see ? 1 : 0,
+                'bank_name'    => $see ? (string) $r['bank_name']    : '',
+                'bank_account' => $see ? (string) $r['bank_account'] : '',
+                'bank_holder'  => $see ? (string) $r['bank_holder']  : '',
+                'bank_branch'  => $see ? (string) $r['bank_branch']  : '',
+            );
+        }
+        ok(array('extra' => $out, 'is_admin' => $isAdmin ? 1 : 0, 'me' => (int) $me['id']));
+        break;
+    }
+
+    case 'staff-extra-save': {
+        $me = currentUser($pdo);
+        if (!$me) fail('Unauthorized', 401);
+        ax_ensure($pdo);
+        $isAdmin = (strcasecmp((string) ($me['role'] ?? ''), 'admin') === 0);
+        $uid = (int) ($body['id'] ?? 0);
+        if (!$uid) fail('id is required');
+        if (!$isAdmin && $uid !== (int) $me['id']) fail('Chỉ Admin mới sửa được thông tin của người khác.', 403);
+        $acc = preg_replace('/[^0-9A-Za-z]/', '', (string) ($body['bank_account'] ?? ''));
+        $st = $pdo->prepare("UPDATE `app_users`
+                                SET `full_name`=?,`bank_name`=?,`bank_account`=?,`bank_holder`=?,`bank_branch`=?
+                              WHERE `id`=?");
+        $st->execute(array(
+            ax_s($body['full_name']   ?? '', 150),
+            ax_s($body['bank_name']   ?? '', 120),
+            mb_substr($acc, 0, 50),
+            ax_s($body['bank_holder'] ?? '', 150),
+            ax_s($body['bank_branch'] ?? '', 150),
+            $uid,
+        ));
+        ok(array('saved' => true));
+        break;
+    }
     case 'update':
         $me = requireAdmin($pdo);
         $id = (int)($body['id'] ?? 0);
@@ -420,3 +465,27 @@ switch ($action) {
     default:
         fail('Unknown action', 404);
 }
+
+
+/* ── Ho ten day du + tai khoan ngan hang (helper, hoisted) ──── */
+function ax_ensure(PDO $pdo)
+{
+    static $done = false;
+    if ($done) return;
+    $done = true;
+    try {
+        $st = $pdo->prepare("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+                              WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'app_users' AND COLUMN_NAME = 'full_name'");
+        $st->execute();
+        if ((int) $st->fetchColumn() > 0) return;
+    } catch (PDOException $e) { return; }
+    try {
+        $pdo->exec("ALTER TABLE `app_users`
+            ADD COLUMN `full_name`    VARCHAR(150) DEFAULT NULL COMMENT 'Ho ten day du theo giay to',
+            ADD COLUMN `bank_name`    VARCHAR(120) DEFAULT NULL,
+            ADD COLUMN `bank_account` VARCHAR(50)  DEFAULT NULL,
+            ADD COLUMN `bank_holder`  VARCHAR(150) DEFAULT NULL,
+            ADD COLUMN `bank_branch`  VARCHAR(150) DEFAULT NULL");
+    } catch (PDOException $e) { /* da co */ }
+}
+function ax_s($v, $len) { return mb_substr(trim(preg_replace('/[\r\n\t]+/u', ' ', (string) ($v === null ? '' : $v))), 0, $len); }
