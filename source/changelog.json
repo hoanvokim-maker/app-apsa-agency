@@ -1,5 +1,5 @@
 {
-    "version": "1.5.0",
+    "version": "1.5.1",
     "updated": "2026-08-28",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-28",
             "note": "Phiên bản 1.5",
             "items": [
+                {
+                    "d": "2026-08-28",
+                    "v": "1.5.1",
+                    "t": "Chi phi thuc te: nut Yeu cau thanh toan gui Zalo kem ma QR + trang thai Da yeu cau; danh dau Da tra bat buoc dinh kem Uy nhiem chi (anh/PDF).",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-28",
                     "v": "1.5.0",

@@ -207,8 +207,7 @@
       '<td class="num">' + fmt(r.price) + '</td>' +
       '<td class="num" style="color:var(--text2)">' + (Number(r.vat_percent) || 0) + '</td>' +
       '<td class="num"><b>' + fmt(amt(r)) + '</b></td>' +
-      '<td><button class="pbtn' + (Number(r.paid) === 1 ? ' on' : '') + '" onclick="togglePaid(' + r.id + ')">' +
-        (Number(r.paid) === 1 ? '✓ Đã trả' : 'Chưa trả') + '</button></td>' +
+      '<td>' + (window.payCell ? window.payCell(r) : '') + '</td>' +
       '<td style="white-space:nowrap;text-align:right">' +
         '<button class="ib' + (canQr ? '' : ' off') + '" title="' + (canQr ? 'Mã QR chuyển khoản' : (masked ? 'Không có quyền xem STK' : 'Chưa có số tài khoản')) + '" onclick="openQr(' + r.id + ')">▦</button>' +
         '<button class="ib" title="Sửa" onclick="openEdit(' + r.id + ')">✎</button>' +
