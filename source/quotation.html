@@ -658,6 +658,7 @@ table.q tbody tr.dragblock td{ background:rgba(223,242,13,.05); }
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/theme.css?v=20" />
 <script src="/apsa-ui.js?v=24"></script>
+<script src="/exp-qr.js?v=3"></script>
 <style id="apsa-qclose-css">
 /* ══ Trạng thái dự án ở trang chi tiết: pill màu như trang danh sách ══ */
 select#fStatus{
@@ -1754,7 +1755,7 @@ async function openQuote(id, opts){
     renderAsg();
     EXP = (d.expenses || []).map(r => ({ kind:r.kind || 'item', name:r.name || '', description:r.description || '',
                                          qty:Number(r.qty)||0, unit:r.unit || '',
-                                         price:Number(r.price)||0, vat_percent:Number(r.vat_percent)||0 }));
+                                         price:Number(r.price)||0, vat_percent:Number(r.vat_percent)||0, paid:Number(r.paid)||0, payee_type:r.payee_type||'', payee_id:Number(r.payee_id)||0, payee_name:r.payee_name||'', bank_name:r.bank_name||'', bank_account:r.bank_account||'', bank_holder:r.bank_holder||'', bank_masked:Number(r.bank_masked)||0 }));
     renderExp();
     if (EXP.length) toggleExp(true);
     bindAutoSave(); asReset();
@@ -1842,7 +1843,7 @@ function asgDel(i){ ASG.splice(i, 1); renderAsg(); markDirty(); }
 let EXP = [];                       // [{kind:'group'|'item', name, description, qty, unit, price, vat_percent}]
 let EXP_OPEN = false;
 
-function expBlank(){ return { kind:'item', name:'', description:'', qty:1, unit:'Gói', price:0, vat_percent:8 }; }
+function expBlank(){ return { kind:'item', name:'', description:'', qty:1, unit:'Gói', price:0, vat_percent:8, paid:0, payee_type:'', payee_id:0, payee_name:'', bank_name:'', bank_account:'', bank_holder:'' }; }
 
 function toggleExp(force){
   EXP_OPEN = (force === undefined) ? !EXP_OPEN : !!force;
@@ -1887,13 +1888,13 @@ function renderExp(){
   }
   const rows = EXP.map((r, i) => {
     if (r.kind === 'group'){
-      return '<tr class="gr"><td colspan="6">' +
+      return '<tr class="gr"><td colspan="9">' +
         '<input value="' + esc(r.name) + '" placeholder="Tên nhóm (VD: In ấn, Nhân sự, Teabreak…)" ' +
         'oninput="expSet(' + i + ',\'name\',this.value)" /></td>' +
         '<td style="text-align:right"><button class="exp-x" onclick="expDel(' + i + ')" title="Xoá nhóm">✕</button></td></tr>';
     }
     const amt = (Number(r.qty)||0) * (Number(r.price)||0);
-    return '<tr>' +
+    return '<tr class="' + expRowCls(r) + '">' +
       '<td><input value="' + esc(r.name) + '" placeholder="Hạng mục" oninput="expSet(' + i + ',\'name\',this.value)" /></td>' +
       '<td><input value="' + esc(r.description) + '" placeholder="Mô tả / nhà cung cấp" oninput="expSet(' + i + ',\'description\',this.value)" /></td>' +
       '<td><input class="num" value="' + (Number(r.qty)||0) + '" oninput="expSet(' + i + ',\'qty\',this.value)" /></td>' +
@@ -1901,17 +1902,20 @@ function renderExp(){
       '<td><input class="num" value="' + fmt(Math.round(Number(r.price)||0)) + '" ' +
         'oninput="expSet(' + i + ',\'price\',this.value)" onblur="renderExp()" /></td>' +
       '<td><input class="num" value="' + (Number(r.vat_percent)||0) + '" oninput="expSet(' + i + ',\'vat_percent\',this.value)" /></td>' +
-      '<td class="exp-amt">' + fmt(Math.round(amt)) +
-        ' <button class="exp-x" onclick="expDel(' + i + ')" title="Xoá dòng">✕</button></td>' +
+      '<td class="exp-amt">' + fmt(Math.round(amt)) + '</td>' +
+      '<td class="exp-payee">' + expPayeeCell(r, i) + '</td>' +
+      '<td class="exp-paidc">' + expPaidCell(r, i) + '</td>' +
+      '<td class="exp-actc">' + expQrCell(r, i) + '</td>' +
     '</tr>';
   }).join('');
   box.innerHTML =
     '<table class="exptbl">' +
     '<colgroup><col style="width:22%"><col><col style="width:66px"><col style="width:78px">' +
-    '<col style="width:120px"><col style="width:62px"><col style="width:132px"></colgroup>' +
+    '<col style="width:120px"><col style="width:62px"><col style="width:126px">' +
+    '<col style="width:150px"><col style="width:96px"><col style="width:64px"></colgroup>' +
     '<thead><tr><th>Hạng mục</th><th>Mô tả</th><th>SL</th><th>ĐVT</th>' +
     '<th style="text-align:right">Đơn giá</th><th style="text-align:right">VAT %</th>' +
-    '<th style="text-align:right">Thành tiền</th></tr></thead>' +
+    '<th style="text-align:right">Thành tiền</th><th>Người nhận</th><th>Trạng thái</th><th></th></tr></thead>' +
     '<tbody>' + rows + '</tbody></table>';
   renderExpTotals();
 }
@@ -1956,7 +1960,7 @@ async function saveExp(qid, quiet){
     const d = await api(API, 'expenses-save', { body: { quotation_id: qid, list } });
     EXP = (d.rows || []).map(r => ({ kind:r.kind, name:r.name||'', description:r.description||'',
                                      qty:Number(r.qty)||0, unit:r.unit||'',
-                                     price:Number(r.price)||0, vat_percent:Number(r.vat_percent)||0 }));
+                                     price:Number(r.price)||0, vat_percent:Number(r.vat_percent)||0, paid:Number(r.paid)||0, payee_type:r.payee_type||'', payee_id:Number(r.payee_id)||0, payee_name:r.payee_name||'', bank_name:r.bank_name||'', bank_account:r.bank_account||'', bank_holder:r.bank_holder||'', bank_masked:Number(r.bank_masked)||0 }));
     if (!quiet) renderExp();
   } catch(e){ toast('Không lưu được chi phí: ' + e.message, 'err'); }
 }

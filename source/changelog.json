@@ -1,5 +1,5 @@
 {
-    "version": "1.4.2",
+    "version": "1.4.3",
     "updated": "2026-08-28",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-28",
             "note": "Phiên bản 1.4",
             "items": [
+                {
+                    "d": "2026-08-28",
+                    "v": "1.4.3",
+                    "t": "Chi phi thuc te: chon nguoi nhan (NCC/nhan su), toggle Chua tra-Da tra, QR VietQR, mau nen theo loai chi",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-28",
                     "v": "1.4.2",

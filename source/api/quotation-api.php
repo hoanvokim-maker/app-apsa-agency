@@ -158,6 +158,7 @@ function loadExpenses(PDO $pdo, $qid) {
     $st = $pdo->prepare("SELECT * FROM `quotation_expenses` WHERE quotation_id = ? ORDER BY sort_order ASC, id ASC");
     $st->execute([(int)$qid]);
     $rows = $st->fetchAll();
+    $rows = q_maskBank($pdo, $rows);
     $out = [];
     foreach ($rows as $r) {
         $out[] = [
@@ -171,6 +172,14 @@ function loadExpenses(PDO $pdo, $qid) {
             'price'       => (float)$r['price'],
             'vat_percent' => (float)$r['vat_percent'],
             'sort_order'  => (int)$r['sort_order'],
+            'paid' => (int) (isset($r['paid']) ? $r['paid'] : 0),
+            'payee_type' => (string) (isset($r['payee_type']) ? $r['payee_type'] : ''),
+            'payee_id' => (int) (isset($r['payee_id']) ? $r['payee_id'] : 0),
+            'payee_name' => (string) (isset($r['payee_name']) ? $r['payee_name'] : ''),
+            'bank_name' => (string) (isset($r['bank_name']) ? $r['bank_name'] : ''),
+            'bank_account' => (string) (isset($r['bank_account']) ? $r['bank_account'] : ''),
+            'bank_holder' => (string) (isset($r['bank_holder']) ? $r['bank_holder'] : ''),
+            'bank_masked' => (int) (isset($r['bank_masked']) ? $r['bank_masked'] : 0),
         ];
     }
     return $out;
@@ -382,6 +391,18 @@ if (!q_hasColumn($pdo, 'quotation_items', 'act_qty')) {
         ADD COLUMN `act_price`  DECIMAL(16,2) NOT NULL DEFAULT 0 COMMENT 'Đơn giá thực tế',
         ADD COLUMN `act_amount` DECIMAL(16,2) NOT NULL DEFAULT 0 COMMENT 'Thành tiền thực tế nhập tay (0 = tự tính)',
         ADD COLUMN `act_remark` VARCHAR(300)  DEFAULT NULL        COMMENT 'Chứng từ / ghi chú nghiệm thu'");
+}
+
+/* --- Chi phi thuc te: nguoi nhan + trang thai tra tien --- */
+if (!q_hasColumn($pdo, 'quotation_expenses', 'paid')) {
+    q_mig($pdo, "ALTER TABLE `quotation_expenses`
+        ADD COLUMN `paid`         TINYINT(1)   NOT NULL DEFAULT 0  COMMENT '1 = da tra',
+        ADD COLUMN `payee_type`   VARCHAR(8)   DEFAULT NULL        COMMENT 'sup = cong ty | user = ca nhan',
+        ADD COLUMN `payee_id`     INT          NOT NULL DEFAULT 0,
+        ADD COLUMN `payee_name`   VARCHAR(200) DEFAULT NULL,
+        ADD COLUMN `bank_name`    VARCHAR(120) DEFAULT NULL,
+        ADD COLUMN `bank_account` VARCHAR(50)  DEFAULT NULL,
+        ADD COLUMN `bank_holder`  VARCHAR(120) DEFAULT NULL");
 }
 
 function q_kind($v) {
@@ -1735,6 +1756,11 @@ case 'assign-status': {
 
 // Bảng tổng: toàn bộ phân công kèm thông tin dự án — cho trang Giao việc
 // ── Chi phí thực tế ─────────────────────────────────────────
+// Danh sach nguoi nhan tien: nha cung cap (cong ty) + nhan su/freelancer (ca nhan)
+case 'payees': {
+    q_ok(q_payeeList($pdo));
+}
+
 case 'expenses': {
     $id = (int)($_GET['id'] ?? 0);
     if (!$id) q_fail('id is required');
@@ -1756,8 +1782,8 @@ case 'expenses-save': {
         $pdo->prepare("DELETE FROM `quotation_expenses` WHERE quotation_id = ?")->execute([$qid]);
         $ins = $pdo->prepare(
             "INSERT INTO `quotation_expenses`
-               (quotation_id, kind, category, name, description, qty, unit, price, vat_percent, sort_order, src_id)
-             VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+               (quotation_id, kind, category, name, description, qty, unit, price, vat_percent, sort_order, src_id, paid, payee_type, payee_id, payee_name, bank_name, bank_account, bank_holder)
+             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         $i = 0; $cat = '';
         foreach ($list as $r) {
             $kind = (($r['kind'] ?? 'item') === 'group') ? 'group' : 'item';
@@ -1779,6 +1805,10 @@ case 'expenses-save': {
                 num($r['vat_percent'] ?? 0),
                 $i++,
                 mb_substr((string)($r['src_id'] ?? ''), 0, 80) ?: null,
+                (int) !!($r['paid'] ?? 0),
+                q_payeeT($r) ?: null, (int)($r['payee_id'] ?? 0),
+                q_payeeF($pdo, $r, 'name'), q_payeeF($pdo, $r, 'bank_name'),
+                q_payeeF($pdo, $r, 'bank_account'), q_payeeF($pdo, $r, 'bank_holder'),
             ]);
         }
         $pdo->commit();
@@ -3078,4 +3108,99 @@ function qc_pending(PDO $pdo, $id) {
     $rows = $st->fetchAll();
     foreach ($rows as &$r) { $r['id'] = (int)$r['id']; $r['mine'] = (int)$r['mine'] === 1; }
     return $rows;
+}
+
+
+/* ===== Chi phi thuc te — nguoi nhan & ngan hang ===== */
+function q_payeeT($r) {
+    $t = isset($r['payee_type']) ? (string) $r['payee_type'] : '';
+    return ($t === 'sup' || $t === 'user') ? $t : '';
+}
+function q_payeeRow(PDO $pdo, $t, $id) {
+    static $cache = array();
+    $id = (int) $id;
+    if ($t !== 'sup' && $t !== 'user') return null;
+    if ($id <= 0) return null;
+    $k = $t . ':' . $id;
+    if (array_key_exists($k, $cache)) return $cache[$k];
+    try {
+        if ($t === 'sup') {
+            $st = $pdo->prepare("SELECT name, bank_name, bank_account, bank_holder FROM `ratecard_suppliers` WHERE id = ?");
+        } else {
+            $st = $pdo->prepare("SELECT display_name AS name, bank_name, bank_account, bank_holder FROM `app_users` WHERE id = ?");
+        }
+        $st->execute([$id]);
+        $cache[$k] = $st->fetch() ?: null;
+    } catch (PDOException $e) { $cache[$k] = null; }
+    return $cache[$k];
+}
+function q_payeeF(PDO $pdo, $r, $field) {
+    $row = q_payeeRow($pdo, q_payeeT($r), isset($r['payee_id']) ? $r['payee_id'] : 0);
+    if (!$row) {
+        if ($field === 'name') { $n = isset($r['payee_name']) ? (string) $r['payee_name'] : ''; return $n !== '' ? mb_substr($n, 0, 200) : null; }
+        return null;
+    }
+    $v = isset($row[$field]) ? (string) $row[$field] : '';
+    return $v !== '' ? mb_substr($v, 0, 200) : null;
+}
+/* Admin (role) hoac vi tri admin moi duoc xem STK ca nhan */
+function q_seePersonalBank(PDO $pdo) {
+    static $ok = null;
+    if ($ok !== null) return $ok;
+    global $ME;
+    $ok = false;
+    if (!$ME) return $ok;
+    if (isset($ME['role']) && strcasecmp((string) $ME['role'], 'admin') === 0) { $ok = true; return $ok; }
+    try {
+        $st = $pdo->prepare("SELECT position FROM `app_users` WHERE id = ?");
+        $st->execute([(int) $ME['id']]);
+        $p = (string) $st->fetchColumn();
+        $ok = (strcasecmp($p, 'admin') === 0);
+    } catch (PDOException $e) { $ok = false; }
+    return $ok;
+}
+function q_maskAcc($acc) {
+    $acc = (string) $acc;
+    $n = strlen($acc);
+    if ($n <= 4) return $acc === '' ? '' : str_repeat('*', $n);
+    return str_repeat('*', $n - 4) . substr($acc, -4);
+}
+function q_maskBank(PDO $pdo, $rows) {
+    if (!is_array($rows)) return $rows;
+    if (q_seePersonalBank($pdo)) return $rows;
+    foreach ($rows as &$r) {
+        if (isset($r['payee_type']) && $r['payee_type'] === 'user') {
+            $r['bank_account'] = q_maskAcc(isset($r['bank_account']) ? $r['bank_account'] : '');
+            $r['bank_masked']  = 1;
+        }
+    }
+    unset($r);
+    return $rows;
+}
+function q_payeeList(PDO $pdo) {
+    $see = q_seePersonalBank($pdo);
+    $out = array('sup' => array(), 'user' => array(), 'see_personal_bank' => $see ? 1 : 0);
+    try {
+        $st = $pdo->query("SELECT id, name, bank_name, bank_account, bank_holder FROM `ratecard_suppliers` WHERE active = 1 ORDER BY name ASC");
+        foreach ($st->fetchAll() as $r) {
+            $out['sup'][] = array(
+                'id' => (int) $r['id'], 'name' => $r['name'],
+                'bank_name' => $r['bank_name'], 'bank_account' => $r['bank_account'],
+                'bank_holder' => $r['bank_holder'],
+            );
+        }
+    } catch (PDOException $e) { /* bang chua co */ }
+    try {
+        $st = $pdo->query("SELECT id, display_name, staff_type, bank_name, bank_account, bank_holder FROM `app_users` WHERE active = 1 ORDER BY display_name ASC");
+        foreach ($st->fetchAll() as $r) {
+            $out['user'][] = array(
+                'id' => (int) $r['id'], 'name' => $r['display_name'],
+                'staff_type' => $r['staff_type'],
+                'bank_name'   => $see ? $r['bank_name']   : ($r['bank_name'] ? $r['bank_name'] : ''),
+                'bank_account'=> $see ? $r['bank_account'] : q_maskAcc($r['bank_account']),
+                'bank_holder' => $see ? $r['bank_holder']  : '',
+            );
+        }
+    } catch (PDOException $e) { /* bang chua co */ }
+    return $out;
 }
