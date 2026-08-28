@@ -418,7 +418,7 @@ CREATE TABLE `app_user_prefs` (
 LOCK TABLES `app_user_prefs` WRITE;
 /*!40000 ALTER TABLE `app_user_prefs` DISABLE KEYS */;
 INSERT INTO `app_user_prefs` VALUES (1,'home','{\"order\":[32,33,30,29,26,31,90,17,18,1,23,25,28,24,35,34,27],\"hidden\":[28],\"custom\":[],\"pinned\":[32,30,29,26,31,97]}','2026-08-28 11:06:03');
-INSERT INTO `app_user_prefs` VALUES (1,'quo_recent','[{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787910353274},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787910070056},{\"id\":291,\"code\":\"26082026-154\",\"title\":\"TSS-Media-Go-Supermarket\",\"client\":\"CÔNG TY CỔ PHẦN TONA SYNTEGRA SOLAR\",\"date\":\"2026-08-26\",\"at\":1787909933958},{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1787909466447},{\"id\":37,\"code\":\"09072026-113\",\"title\":\"AZ-CVRM-Registration\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-09\",\"at\":1787885783331},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787756785549},{\"id\":140,\"code\":\"16012026-9\",\"title\":\"AZ-VDO Hope Nexium\",\"client\":\"AstraZeneca\",\"date\":\"2026-01-16\",\"at\":1787756107312},{\"id\":41,\"code\":\"07072026-109\",\"title\":\"OGN-MMA-VDO\",\"client\":\"Organon\",\"date\":\"2026-07-07\",\"at\":1787731705785},{\"id\":5,\"code\":\"17082026-145\",\"title\":\"AZ-R&I-NEXIUM-BOOTH\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-17\",\"at\":1787725116650},{\"id\":264,\"code\":\"30072025-153\",\"title\":\"Media Danone MKT DN\",\"client\":\"Gia Linh Danone\",\"date\":\"2025-07-30\",\"at\":1787667429995}]','2026-08-28 09:45:54');
+INSERT INTO `app_user_prefs` VALUES (1,'quo_recent','[{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1787927069598},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787910353274},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787910070056},{\"id\":291,\"code\":\"26082026-154\",\"title\":\"TSS-Media-Go-Supermarket\",\"client\":\"CÔNG TY CỔ PHẦN TONA SYNTEGRA SOLAR\",\"date\":\"2026-08-26\",\"at\":1787909933958},{\"id\":37,\"code\":\"09072026-113\",\"title\":\"AZ-CVRM-Registration\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-09\",\"at\":1787885783331},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787756785549},{\"id\":140,\"code\":\"16012026-9\",\"title\":\"AZ-VDO Hope Nexium\",\"client\":\"AstraZeneca\",\"date\":\"2026-01-16\",\"at\":1787756107312},{\"id\":41,\"code\":\"07072026-109\",\"title\":\"OGN-MMA-VDO\",\"client\":\"Organon\",\"date\":\"2026-07-07\",\"at\":1787731705785},{\"id\":5,\"code\":\"17082026-145\",\"title\":\"AZ-R&I-NEXIUM-BOOTH\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-17\",\"at\":1787725116650},{\"id\":264,\"code\":\"30072025-153\",\"title\":\"Media Danone MKT DN\",\"client\":\"Gia Linh Danone\",\"date\":\"2025-07-30\",\"at\":1787667429995}]','2026-08-28 14:24:30');
 INSERT INTO `app_user_prefs` VALUES (1,'ui','{\"font_size\":\"md\"}','2026-08-26 07:23:53');
 INSERT INTO `app_user_prefs` VALUES (3,'home','{\"order\":[32,26,30,1,17,18,90,23,24,25,27,28,29,35,34,31],\"hidden\":[28],\"custom\":[]}','2026-08-24 02:48:51');
 INSERT INTO `app_user_prefs` VALUES (3,'quo_recent','[{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1787914239122},{\"id\":106,\"code\":\"26032026-44\",\"title\":\"OGN-HoiDuocHoc-NhaTrang\",\"client\":\"Organon\",\"date\":\"2026-03-26\",\"at\":1787812919618},{\"id\":8,\"code\":\"12082026-142\",\"title\":\"AZ-ONCO-PEAKSharing-VietDuc-25Aug\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-12\",\"at\":1787802284452},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787799999075},{\"id\":44,\"code\":\"02072026-106\",\"title\":\"AZ-MSD-ONCO-ImAE-ExpertMeeting\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-02\",\"at\":1787713497617},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787565621783},{\"id\":30,\"code\":\"19072026-120\",\"title\":\"AZ-ONCO-PEAKSharing-175\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-19\",\"at\":1787540605254},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787539299199}]','2026-08-28 10:50:39');
@@ -2258,7 +2258,7 @@ CREATE TABLE `quotation_expenses` (
   PRIMARY KEY (`id`),
   KEY `idx_quo` (`quotation_id`),
   KEY `idx_sort` (`quotation_id`,`sort_order`)
-) ENGINE=InnoDB AUTO_INCREMENT=661 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=667 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2804,8 +2804,10 @@ INSERT INTO `quotation_expenses` VALUES (648,71,'item','In ấn','Handout','80 c
 INSERT INTO `quotation_expenses` VALUES (649,71,'group','Nhân sự','Nhân sự','',0.00,'',0.00,0.00,2,NULL,'2026-08-27 10:50:56','2026-08-27 10:50:56',0,NULL,0,NULL,NULL,NULL,NULL);
 INSERT INTO `quotation_expenses` VALUES (650,71,'item','Nhân sự','Vé máy bay','',1.00,'Gói',0.00,8.00,3,NULL,'2026-08-27 10:50:56','2026-08-27 10:50:56',0,NULL,0,NULL,NULL,NULL,NULL);
 INSERT INTO `quotation_expenses` VALUES (651,3,'item','','','',1.00,'Gói',0.00,8.00,0,NULL,'2026-08-28 03:31:02','2026-08-28 03:31:02',0,NULL,0,NULL,NULL,NULL,NULL);
-INSERT INTO `quotation_expenses` VALUES (657,148,'item','','','',1.00,'Gói',0.00,8.00,0,NULL,'2026-08-28 09:12:36','2026-08-28 09:12:36',0,'sup',28,'Giải pháp Sự kiện Trường Thành','ACB','2473658668','CONG TY TNHH GIAI PHAP SU KIEN TRUONG THANH');
+INSERT INTO `quotation_expenses` VALUES (657,148,'item','','','',1.00,'Gói',0.00,8.00,0,NULL,'2026-08-28 09:12:36','2026-08-28 14:04:27',0,NULL,0,NULL,NULL,NULL,NULL);
 INSERT INTO `quotation_expenses` VALUES (658,148,'item','','','',1.00,'Gói',0.00,8.00,1,NULL,'2026-08-28 09:12:36','2026-08-28 09:12:36',0,NULL,0,NULL,NULL,NULL,NULL);
+INSERT INTO `quotation_expenses` VALUES (663,292,'item','','dsfsdfsdf','ddf dfsdf',1.00,'Gói',8000000.00,8.00,0,NULL,'2026-08-28 14:24:29','2026-08-28 14:24:29',0,'sup',20,'MISA','ACB','55556666','CONG TY CO PHAN MISA');
+INSERT INTO `quotation_expenses` VALUES (664,292,'item','','sdfsdfsd','',1.00,'Gói',300000.00,8.00,1,NULL,'2026-08-28 14:24:29','2026-08-28 14:24:29',0,'user',17,'Huỳnh Ngọc Thơ',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `quotation_expenses` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2836,7 +2838,7 @@ CREATE TABLE `quotation_items` (
   `act_file_name` varchar(200) DEFAULT NULL COMMENT 'Tên file gốc',
   PRIMARY KEY (`id`),
   KEY `idx_quotation` (`quotation_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7466 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7486 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -6159,16 +6161,16 @@ INSERT INTO `quotation_items` VALUES (7425,148,'item','Editor','',1.00,'',100000
 INSERT INTO `quotation_items` VALUES (7434,291,'section','Media','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (7435,291,'item','Quay phim','',1.00,'Gói',5000000.00,'',1,1.00,'Gói',5000000.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (7436,291,'item','Flycam','',1.00,'Gói',3000000.00,'',2,1.00,'Gói',3000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (7456,292,'section','Creative','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (7457,292,'item','KV','',1.00,'',0.00,'',1,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (7458,292,'item','Design 2D','',1.00,'',0.00,'',2,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (7459,292,'item','Video','',1.00,'',0.00,'',3,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (7460,292,'section','Logistic','',0.00,'',0.00,'',4,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (7461,292,'item','Teabreak','HN: 100\nHCM: 70',170.00,'',150000.00,'',5,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (7462,292,'item','Box teabreak','',1.00,'',150000.00,'',6,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (7463,292,'item','Gift set','',1.00,'',0.00,'',7,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (7464,292,'section','Production','',0.00,'',0.00,'',8,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (7465,292,'item','Photobooth','',1.00,'',0.00,'',9,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7476,292,'section','Creative','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7477,292,'item','KV','',1.00,'',0.00,'',1,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7478,292,'item','Design 2D','',1.00,'',0.00,'',2,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7479,292,'item','Video','',1.00,'',0.00,'',3,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7480,292,'section','Logistic','',0.00,'',0.00,'',4,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7481,292,'item','Teabreak','HN: 100\nHCM: 70',170.00,'',150000.00,'',5,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7482,292,'item','Box teabreak','',1.00,'',150000.00,'',6,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7483,292,'item','Gift set','',1.00,'',0.00,'',7,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7484,292,'section','Production','',0.00,'',0.00,'',8,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7485,292,'item','Photobooth','',1.00,'',0.00,'',9,0.00,'',0.00,0.00,'',NULL,NULL);
 /*!40000 ALTER TABLE `quotation_items` ENABLE KEYS */;
 UNLOCK TABLES;
 

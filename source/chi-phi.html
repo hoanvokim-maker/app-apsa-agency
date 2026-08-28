@@ -23,7 +23,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>APSA — Chi phí thực tế</title>
   <script src="/apsa-ui.js?v=25"></script>
-  <script src="/exp-qr.js?v=4"></script>
+  <script src="/exp-qr.js?v=5"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -583,7 +583,8 @@ function openForm(r) {
     var L = [];
     PAY.sup.forEach(function (p)  { L.push({ k: nrm(p.name), label: p.name, tag: 'NCC', tagc: 'sup',  t: 'sup',  id: p.id }); });
     PAY.user.forEach(function (p) { L.push({ k: nrm(p.name), label: p.name, tag: 'FL',  tagc: 'user', t: 'user', id: p.id }); });
-    acBind('ePayee', 'acPayee', L, function (it) { pickPayee = { t: it.t, id: it.id }; });
+    acBind('ePayee', 'acPayee', L, function (it) { pickPayee = { t: it.t, id: it.id };
+      if (el('eVat')) el('eVat').value = (it.t === 'sup' ? 8 : 0); });
   }
   el('mEdit').classList.add('on');
   setTimeout(function () { (r ? el('eName') : el('eQuo')).focus(); }, 60);
@@ -689,6 +690,6 @@ el('mDel').addEventListener('click', function (e) { if (e.target === this) this.
 
 load();
 </script>
-<script src="/chi-phi-group.js?v=4"></script>
+<script src="/chi-phi-group.js?v=5"></script>
 </body>
 </html>

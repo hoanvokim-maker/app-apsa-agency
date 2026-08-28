@@ -137,12 +137,14 @@
       r.payee_type = t; r.payee_id = o.id; r.payee_name = o.name;
       r.bank_name = o.bank_name || ''; r.bank_account = o.bank_account || ''; r.bank_holder = o.bank_holder || '';
       r.bank_masked = 0;   // trang này chỉ Admin vào được nên luôn xem được STK
+      r.vat_percent = (t === 'sup') ? 8 : 0;   // công ty 8% VAT · cá nhân không VAT
     } else {
       r.payee_type = ''; r.payee_id = 0; r.payee_name = '';
       r.bank_name = ''; r.bank_account = ''; r.bank_holder = ''; r.bank_masked = 0;
     }
     render();
-    api('exp-row-save', { id: id, payee_type: r.payee_type, payee_id: r.payee_id, payee_name: r.payee_name })
+    api('exp-row-save', { id: id, payee_type: r.payee_type, payee_id: r.payee_id, payee_name: r.payee_name,
+                          vat_percent: Number(r.vat_percent) || 0 })
       .then(function () { toast(o ? ('Người nhận: ' + o.name) : 'Đã bỏ người nhận'); })
       .catch(function (e) {
         r.payee_type = prev.pt; r.payee_id = prev.pi; r.payee_name = prev.pn;
