@@ -504,7 +504,7 @@ function pushBanks(all) {
 /* ── xuất file ACB ────────────────────────────────────── */
 function expAcb() {
   if (!RUN || !ITEMS.length) { toast('Chưa có bảng lương để xuất.'); return; }
-  var aoa = [['TIÊU ĐỀ'], [], ['STT', 'Tên đơn vị thụ hưởng', 'Mã ngân hàng', 'Số tài khoản nhận', 'Số thẻ (ACB)', 'Số tiền', 'Nội dung']];
+  var aoa = [['TIÊU ĐỀ'], ['STT', 'Tên đơn vị thụ hưởng', 'Mã ngân hàng', 'Số tài khoản nhận', 'Số thẻ (ACB)', 'Số tiền', 'Nội dung']];
   ITEMS.forEach(function (r) {
     aoa.push([r.stt, r.name, r.bank_code, r.account, r.card_no || '', Number(r.amount) || 0, r.content || RUN.content]);
   });

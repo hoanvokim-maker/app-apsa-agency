@@ -161,6 +161,35 @@ case 'banks-import': {
     pr_ok(array('n' => $n, 'total' => (int) $pdo->query("SELECT COUNT(*) FROM `bank_codes`")->fetchColumn()));
 }
 
+/* ---- Tra ma ngan hang ACB cho danh sach ten ngan hang ngan gon ---- */
+case 'acb-map': {
+    $names = (isset($B['names']) && is_array($B['names'])) ? $B['names'] : array();
+    $idx = array();
+    foreach ($pdo->query("SELECT code, name, province FROM `bank_codes`") as $r) {
+        $sh = pr_short((string) $r['name']);
+        if ($sh === '') continue;
+        $k = mb_strtolower($sh, 'UTF-8');
+        $up = strtoupper(pr_nrm((string) $r['name']));
+        $pv = strtoupper(pr_nrm((string) $r['province']));
+        $sc = 0;
+        if (strpos($up, 'CN HCM') !== false || strpos($up, 'CN 1 HCM') !== false) $sc += 6;
+        if (strpos($up, 'HCM') !== false || strpos($up, 'TPHCM') !== false) $sc += 3;
+        if (strpos($pv, 'HO CHI MINH') !== false) $sc += 2;
+        if (strpos($up, 'HOI SO') !== false || strpos($up, 'VIET NAM') !== false) $sc += 1;
+        if (!isset($idx[$k]) || $sc > $idx[$k]['sc']) {
+            $idx[$k] = array('sc' => $sc, 'code' => (string) $r['code'], 'name' => (string) $r['name']);
+        }
+    }
+    $map = array();
+    foreach ($names as $nm) {
+        $k = mb_strtolower(trim((string) $nm), 'UTF-8');
+        $map[(string) $nm] = isset($idx[$k])
+            ? array('code' => $idx[$k]['code'], 'branch' => $idx[$k]['name'])
+            : null;
+    }
+    pr_ok(array('map' => $map, 'total' => count($idx)));
+}
+
 case 'banks-find': {
     $q = pr_s($_GET['q'] ?? '', 60);
     if ($q === '') pr_ok(array('rows' => array()));
