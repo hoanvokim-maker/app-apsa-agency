@@ -58,6 +58,10 @@ function au_hasColumn(PDO $pdo, $table, $col) {
         return (int)$st->fetchColumn() > 0;
     } catch (PDOException $e) { return true; }
 }
+if (!au_hasColumn($pdo, 'app_users', 'id_card')) {
+    try { au_mig($pdo, "ALTER TABLE `app_users` ADD COLUMN `id_card` VARCHAR(20) DEFAULT NULL"); }
+    catch (PDOException $e) { /* da co */ }
+}
 if (!au_hasColumn($pdo, 'app_users', 'position')) {
     try {
         au_mig($pdo, "ALTER TABLE `app_users`
@@ -248,7 +252,7 @@ switch ($action) {
     case 'list':
         requireAdmin($pdo);
         $rows = $pdo->query("SELECT id, username, display_name, role, active, position, staff_type, can_login,
-                                    phone, email, note, created_at, last_login_at
+                                    phone, id_card, email, note, created_at, last_login_at
                                FROM `app_users` ORDER BY (staff_type='freelancer') ASC, display_name ASC, id ASC")->fetchAll();
         ok($rows);
         break;
@@ -324,10 +328,11 @@ switch ($action) {
         $hash = password_hash($password, PASSWORD_DEFAULT);
         try {
             $st = $pdo->prepare("INSERT INTO `app_users`
-                (`username`,`password_hash`,`display_name`,`role`,`position`,`staff_type`,`can_login`,`phone`,`email`,`note`)
-                VALUES (?,?,?,?,?,?,?,?,?,?)");
+                (`username`,`password_hash`,`display_name`,`role`,`position`,`staff_type`,`can_login`,`phone`,`id_card`,`email`,`note`)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?)");
             $st->execute([$username, $hash, $display, $role, $pos, $staff, $canLogin,
                           mb_substr(trim((string)($body['phone'] ?? '')), 0, 40),
+                        mb_substr(trim((string)($body['id_card'] ?? '')), 0, 20),
                           mb_substr(trim((string)($body['email'] ?? '')), 0, 150),
                           mb_substr(trim((string)($body['note']  ?? '')), 0, 300)]);
             $id = (int)$pdo->lastInsertId();
@@ -405,7 +410,7 @@ switch ($action) {
             if ($id === $me['id'] && !$body['can_login']) fail('Không thể tự tắt quyền đăng nhập của chính mình');
             $fields[] = '`can_login`=?'; $params[] = (int)!!$body['can_login'];
         }
-        foreach (['phone' => 40, 'email' => 150, 'note' => 300] as $f => $len) {
+        foreach (['phone' => 40, 'id_card' => 20, 'email' => 150, 'note' => 300] as $f => $len) {
             if (array_key_exists($f, $body)) { $fields[] = "`$f`=?"; $params[] = mb_substr(trim((string)$body[$f]), 0, $len); }
         }
         if (!empty($body['password'])) {

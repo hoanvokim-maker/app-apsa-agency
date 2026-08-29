@@ -1,5 +1,5 @@
 {
-    "version": "1.6.1",
+    "version": "1.6.2",
     "updated": "2026-08-29",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-29",
             "note": "Phiên bản 1.6",
             "items": [
+                {
+                    "d": "2026-08-29",
+                    "v": "1.6.2",
+                    "t": "users: them cot so CCCD; chi-phi: to mau dong theo ngay den han thanh toan (do = den han/tre, cam = con <=7 ngay)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-29",
                     "v": "1.6.1",

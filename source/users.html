@@ -187,6 +187,7 @@
         <th style="min-width:230px">Nhân sự</th>
         <th>Vị trí</th>
         <th>Điện thoại</th>
+        <th>CCCD</th>
         <th>Loại</th>
         <th>Quyền</th>
         <th>Trạng thái</th>
@@ -223,6 +224,8 @@
         <div>
           <label for="f_phone">Số điện thoại</label>
           <input type="text" id="f_phone" placeholder="vd: 0901234567" />
+          <label for="f_id_card">Số CCCD</label>
+          <input type="text" id="f_id_card" placeholder="vd: 079xxxxxxxxx" />
         </div>
         <div>
           <label for="f_email">Email</label>
@@ -370,6 +373,7 @@ function setPosValue(v) {
         </td>
         <td><span class="pos-pill ${pos ? 'pos-' + pos : 'pos-none'}">${pos ? (POS_LABEL[pos] || pos) : '— chưa đặt —'}</span></td>
         <td style="white-space:nowrap;color:var(--text2);font-size:12.5px">${u.phone ? esc(u.phone) : '<span class="nologin">—</span>'}</td>
+        <td style="white-space:nowrap;color:var(--text2);font-size:12.5px">${u.id_card ? esc(u.id_card) : ''}</td>
             <td><span class="type-pill type-${type}">${type === 'freelancer' ? 'Freelancer' : 'Nhân viên'}</span></td>
         <td>${Number(u.can_login) ? `<span class="role-pill role-${u.role}">${u.role === 'admin' ? 'Admin' : 'Member'}</span>` : '<span class="nologin">—</span>'}</td>
         <td><span class="status-pill ${u.active == 1 ? 'status-active' : 'status-inactive'}">${u.active == 1 ? 'Đang cộng tác' : 'Ngưng'}</span></td>
@@ -384,7 +388,7 @@ function setPosValue(v) {
       </tr>`;
     }).join('');
     document.getElementById('userRows').innerHTML = rows ||
-      '<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:30px;">Không có nhân sự nào ở mục này.</td></tr>';
+      '<tr><td colspan="9" style="text-align:center;color:var(--text3);padding:30px;">Không có nhân sự nào ở mục này.</td></tr>';
   }
 
   const $u = id => document.getElementById(id);
@@ -399,7 +403,7 @@ function setPosValue(v) {
   function openCreateModal(type) {
     $u('modalTitle').textContent = type === 'freelancer' ? 'Thêm Freelancer' : 'Thêm nhân viên';
     $u('editId').value = '';
-    ['f_username','f_display','f_password','f_phone','f_email','f_note'].forEach(id => $u(id).value = '');
+    ['f_username','f_display','f_password','f_phone','f_id_card','f_email','f_note'].forEach(id => $u(id).value = '');
     $u('f_username').disabled = false;
     $u('pwHint').textContent = '';
     $u('f_role').value = 'member';
@@ -428,6 +432,7 @@ function setPosValue(v) {
     $u('f_type').value = u.staff_type || 'inhouse';
     setPosValue(u.position || '');
     $u('f_phone').value = u.phone || '';
+    $u('f_id_card').value = u.id_card || '';
     $u('f_email').value = u.email || '';
     $u('f_note').value = u.note || '';
     // Không đổi loại sau khi tạo (tránh phải sinh/xoá tài khoản đăng nhập)
@@ -450,6 +455,7 @@ function setPosValue(v) {
       position: $u('f_position').value,
       staff_type: $u('f_type').value,
       phone: $u('f_phone').value.trim(),
+      id_card: $u('f_id_card').value.trim(),
       email: $u('f_email').value.trim(),
       note:  $u('f_note').value.trim(),
       active: Number($u('f_active').value),
