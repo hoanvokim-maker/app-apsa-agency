@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script>
+  document.documentElement.style.visibility = 'hidden';
+  fetch('./api/auth-api.php?action=me', { credentials: 'same-origin' })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(res => {
+      if (!res.ok) throw new Error();
+      window.__APSA_USER = res.data;
+      document.documentElement.style.visibility = 'visible';
+    })
+    .catch(() => {
+      location.replace('./login.html?next=' + encodeURIComponent(location.pathname + location.search));
+    });
+</script>
+<meta charset="UTF-8" />
+<link rel="icon" href="/favicon.ico" sizes="any">
+<meta name="theme-color" content="#dff20d">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Frame Avatar — APSA</title>
+<meta name="description" content="Tao khung avatar theo su kien, khach tu ghep anh va tai ve." />
+<link rel="stylesheet" href="/theme.css?v=22" />
+<style>
+  .fa-wrap { max-width: 1180px; margin: 0 auto; padding: 18px 20px 60px; }
+  .fa-hint { display: flex; gap: 10px; align-items: flex-start; background: var(--card, #141414);
+    border: 1px solid var(--line, #262626); border-radius: 12px; padding: 12px 14px; margin-bottom: 18px;
+    font-size: 13px; color: var(--text2, #9a9a9a); line-height: 1.6; }
+  .fa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 14px; }
+  .fa-card { background: var(--card, #141414); border: 1px solid var(--line, #262626);
+    border-radius: 14px; padding: 15px 16px 13px; }
+  .fa-card.off { opacity: .55; }
+  .fa-top { display: flex; align-items: flex-start; gap: 10px; }
+  .fa-name { font-weight: 700; font-size: 15px; line-height: 1.35; flex: 1; }
+  .fa-badge { font-size: 10.5px; letter-spacing: .04em; text-transform: uppercase; font-weight: 700;
+    padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
+  .b-live { background: #dff20d; color: #101010; }
+  .b-soon { background: #2a3a52; color: #9ec7ff; }
+  .b-end  { background: #3a2a2a; color: #ff9e9e; }
+  .b-off  { background: #2a2a2a; color: #999; }
+  .fa-slug { font-size: 12px; color: var(--text2, #9a9a9a); margin-top: 5px; word-break: break-all; }
+  .fa-meta { font-size: 12px; color: var(--text2, #9a9a9a); margin-top: 9px; line-height: 1.7; }
+  .fa-stat { display: flex; gap: 16px; margin-top: 11px; padding-top: 11px; border-top: 1px solid var(--line, #262626); }
+  .fa-st b { display: block; font-size: 17px; font-weight: 700; }
+  .fa-st span { font-size: 11px; color: var(--text2, #9a9a9a); }
+  .fa-acts { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+  .fbtn { font-size: 12px; padding: 6px 11px; border-radius: 9px; border: 1px solid var(--line, #333);
+    background: transparent; color: var(--text, #e8e8e8); cursor: pointer; }
+  .fbtn:hover { border-color: #555; }
+  .fbtn.pri { background: #dff20d; color: #101010; border-color: #dff20d; font-weight: 600; }
+  .fbtn.dgr { color: #ff8b8b; }
+  .fa-ov { position: fixed; inset: 0; background: rgba(0,0,0,.72); display: none;
+    align-items: flex-start; justify-content: center; padding: 26px 14px; overflow: auto; z-index: 900; }
+  .fa-ov.open { display: flex; }
+  .fa-modal { background: var(--card, #161616); border: 1px solid var(--line, #2a2a2a); border-radius: 16px;
+    width: 100%; max-width: 620px; padding: 22px 22px 24px; position: relative; }
+  .fa-modal.wide { max-width: 900px; }
+  .fa-modal h2 { font-size: 18px; margin: 0 0 4px; }
+  .fa-sub { font-size: 12.5px; color: var(--text2, #9a9a9a); margin-bottom: 16px; }
+  .fa-x { position: absolute; top: 14px; right: 14px; background: none; border: 0; color: #888;
+    font-size: 20px; cursor: pointer; line-height: 1; }
+  .fg { margin-bottom: 13px; }
+  .fg label { display: block; font-size: 11px; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--text2, #9a9a9a); margin-bottom: 5px; }
+  .fg input[type=text], .fg input[type=date], .fg textarea, .fg select {
+    width: 100%; background: #0f0f0f; border: 1px solid var(--line, #2e2e2e); border-radius: 9px;
+    padding: 9px 11px; color: var(--text, #e8e8e8); font: inherit; font-size: 13.5px; }
+  .fg textarea { min-height: 62px; resize: vertical; }
+  .frow2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .fchk { display: flex; align-items: center; gap: 8px; font-size: 13.5px; margin: 4px 0 16px; }
+  .fa-save { width: 100%; background: #dff20d; color: #101010; border: 0; border-radius: 10px;
+    padding: 11px; font: inherit; font-weight: 700; cursor: pointer; }
+  .fa-del { width: 100%; background: transparent; color: #ff8b8b; border: 1px solid #442; border-radius: 10px;
+    padding: 9px; font: inherit; cursor: pointer; margin-top: 9px; }
+  .fdrop { border: 1.5px dashed #3a3a3a; border-radius: 12px; padding: 20px; text-align: center;
+    font-size: 13px; color: var(--text2, #9a9a9a); cursor: pointer; margin-bottom: 16px; }
+  .fdrop:hover, .fdrop.on { border-color: #dff20d; color: #dff20d; }
+  .fitems { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+  .fitem { border: 1px solid var(--line, #262626); border-radius: 12px; padding: 10px; }
+  .fthumb { background-image: linear-gradient(45deg,#333 25%,transparent 25%),linear-gradient(-45deg,#333 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#333 75%),linear-gradient(-45deg,transparent 75%,#333 75%);
+    background-size: 14px 14px; background-position: 0 0,0 7px,7px -7px,-7px 0px; background-color: #1e1e1e;
+    border-radius: 8px; display: flex; align-items: center; justify-content: center; height: 128px; overflow: hidden; }
+  .fthumb img { max-width: 100%; max-height: 100%; }
+  .fitem input.fname { width: 100%; margin-top: 8px; background: #0f0f0f; border: 1px solid #2a2a2a;
+    border-radius: 7px; padding: 5px 8px; color: inherit; font: inherit; font-size: 12px; }
+  .fbar { display: flex; align-items: center; gap: 6px; margin-top: 7px; }
+  .fbar select { flex: 1; background: #0f0f0f; border: 1px solid #2a2a2a; border-radius: 7px;
+    padding: 4px 6px; color: inherit; font: inherit; font-size: 11.5px; }
+  .fdim { font-size: 10.5px; color: #777; margin-top: 5px; }
+  .fempty { text-align: center; color: var(--text2, #9a9a9a); font-size: 13px; padding: 34px 10px; }
+  .ftoast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); background: #1d1d1d;
+    border: 1px solid #333; color: #e8e8e8; padding: 10px 16px; border-radius: 10px; font-size: 13px;
+    z-index: 1200; opacity: 0; pointer-events: none; transition: opacity .18s; }
+  .ftoast.on { opacity: 1; }
+  @media (max-width: 560px) { .frow2 { grid-template-columns: 1fr; } }
+  body { margin: 0; }
+  header { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 14px;
+    padding: 12px 20px; backdrop-filter: blur(10px); }
+  header .back { font-size: 13px; color: var(--text2, #9a9a9a); text-decoration: none;
+    display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+  header .back:hover { color: var(--text, #e8e8e8); }
+  header .page-title { font-size: 16px; font-weight: 700; color: var(--text, #e8e8e8); display: flex; align-items: center;
+    gap: 8px; flex: 1; white-space: nowrap; }
+  header .page-title .count { font-size: 11px; font-weight: 700; background: #dff20d; color: #101010;
+    border-radius: 20px; padding: 2px 8px; }
+  header .btn-add { background: #dff20d; color: #101010; border: 0; border-radius: 9px;
+    padding: 8px 14px; font: inherit; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }
+  @media (max-width: 640px) { header { padding: 10px 12px; gap: 9px; } header .page-title { font-size: 14px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="back" href="./index.html">← Công cụ</a>
+  <div class="page-title">Frame Avatar <span class="count" id="cnt">0</span></div>
+  <button class="btn-add" id="addBtn" type="button">+ Tạo sự kiện</button>
+</header>
+
+<div class="fa-wrap">
+  <div class="fa-hint">
+    <span>💡</span>
+    <div>Mỗi sự kiện có 1 đường link công khai riêng — khách mở link, chọn khung, tải ảnh của họ lên và lưu ảnh đã ghép về máy. Khung nên là file <b>PNG nền trong suốt</b> theo đúng tỉ lệ 1:1, 16:9 hoặc 9:16. Ảnh xuất ra đúng bằng kích thước file khung, nên khung càng lớn ảnh càng nét.</div>
+  </div>
+  <div id="list"></div>
+</div>
+
+<!-- modal su kien -->
+<div class="fa-ov" id="evOv">
+  <div class="fa-modal">
+    <button class="fa-x" type="button" onclick="closeEv()">×</button>
+    <h2 id="evTitle">Tạo sự kiện</h2>
+    <div class="fa-sub">Khách chỉ dùng được khung trong khoảng thời gian bên dưới.</div>
+    <div class="fg"><label>Tên sự kiện *</label><input type="text" id="evName" placeholder="VD: Kỷ niệm 10 năm APSA" /></div>
+    <div class="fg"><label>Đường dẫn công khai</label><input type="text" id="evSlug" placeholder="tu-dong-tao-tu-ten" /></div>
+    <div class="frow2">
+      <div class="fg"><label>Ngày bắt đầu</label><input type="date" id="evStart" /></div>
+      <div class="fg"><label>Ngày hết hạn</label><input type="date" id="evEnd" /></div>
+    </div>
+    <div class="fg"><label>Ghi chú hiển thị cho khách</label><textarea id="evNote" placeholder="VD: Chọn khung yêu thích và tải ảnh của bạn lên nhé!"></textarea></div>
+    <label class="fchk"><input type="checkbox" id="evActive" checked /> Đang bật (khách vào được)</label>
+    <button class="fa-save" type="button" onclick="saveEv()">✓ Lưu sự kiện</button>
+    <button class="fa-del" type="button" id="evDel" onclick="delEv()">🗑 Xoá sự kiện này</button>
+  </div>
+</div>
+
+<!-- modal frame -->
+<div class="fa-ov" id="frOv">
+  <div class="fa-modal wide">
+    <button class="fa-x" type="button" onclick="closeFr()">×</button>
+    <h2 id="frTitle">Khung của sự kiện</h2>
+    <div class="fa-sub" id="frSub"></div>
+    <div class="fdrop" id="drop">
+      📤 Bấm để chọn file khung PNG (chọn được nhiều file cùng lúc)
+      <input type="file" id="file" accept="image/png" multiple hidden />
+    </div>
+    <div id="frList"></div>
+  </div>
+</div>
+
+<div class="ftoast" id="toast"></div>
+
+<script>
+var API = './api/frame-api.php';
+var Q = String.fromCharCode(63);
+var EVENTS = [], CUR = null, editing = null;
+
+function el(i) { return document.getElementById(i); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+  return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function toast(m) { var t = el('toast'); t.textContent = m; t.classList.add('on');
+  clearTimeout(t._t); t._t = setTimeout(function () { t.classList.remove('on'); }, 2600); }
+
+async function api(qs, opts) {
+  var o = opts || {};
+  o.credentials = 'same-origin';
+  var r = await fetch(API + Q + qs, o);
+  var j = null;
+  try { j = await r.json(); } catch (e) { j = null; }
+  if (!r.ok || !j || j.ok === false) throw new Error(j && j.error ? j.error : 'Lỗi ' + r.status);
+  return j;
+}
+function post(qs, body) {
+  return api(qs, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+}
+
+function dmy(s) { if (!s) return ''; var p = String(s).slice(0, 10).split('-'); return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : s; }
+function stateOf(e) {
+  var t = new Date().toISOString().slice(0, 10);
+  if (Number(e.active) !== 1) return ['b-off', 'Đã tắt', 'off'];
+  if (e.start_at && t < e.start_at) return ['b-soon', 'Chưa bắt đầu', ''];
+  if (e.end_at && t > e.end_at) return ['b-end', 'Hết hạn', 'off'];
+  return ['b-live', 'Đang chạy', ''];
+}
+function pubUrl(slug) { return location.origin + '/f.html' + Q + 'e=' + encodeURIComponent(slug); }
+
+async function load() {
+  try {
+    var j = await api('action=events');
+    EVENTS = j.rows || [];
+  } catch (e) { el('list').innerHTML = '<div class="fempty">' + esc(e.message) + '</div>'; return; }
+  el('cnt').textContent = EVENTS.length;
+  if (!EVENTS.length) {
+    el('list').innerHTML = '<div class="fempty">Chưa có sự kiện nào. Bấm <b>+ Tạo sự kiện</b> để bắt đầu.</div>';
+    return;
+  }
+  el('list').innerHTML = '<div class="fa-grid">' + EVENTS.map(cardHtml).join('') + '</div>';
+}
+
+function cardHtml(e) {
+  var s = stateOf(e);
+  var dates = (e.start_at || e.end_at)
+    ? (dmy(e.start_at) || '…') + ' → ' + (dmy(e.end_at) || 'không giới hạn')
+    : 'Không giới hạn thời gian';
+  return '<div class="fa-card ' + s[2] + '">' +
+    '<div class="fa-top"><div class="fa-name">' + esc(e.name) + '</div>' +
+      '<span class="fa-badge ' + s[0] + '">' + s[1] + '</span></div>' +
+    '<div class="fa-slug">' + esc(pubUrl(e.slug)) + '</div>' +
+    '<div class="fa-meta">📅 ' + esc(dates) + '<br>🖼 ' + (e.n_frames || 0) + ' khung</div>' +
+    '<div class="fa-stat">' +
+      '<div class="fa-st"><b>' + (e.views || 0) + '</b><span>lượt mở trang</span></div>' +
+      '<div class="fa-st"><b>' + (e.uses || 0) + '</b><span>lượt tải ảnh</span></div>' +
+    '</div>' +
+    '<div class="fa-acts">' +
+      '<button class="fbtn pri" onclick="openFr(' + e.id + ')">🖼 Quản lý khung</button>' +
+      '<button class="fbtn" onclick="copyLink(' + e.id + ')">🔗 Chép link</button>' +
+      '<a class="fbtn" href="' + esc(pubUrl(e.slug)) + '" target="_blank" rel="noopener">↗ Mở thử</a>' +
+      '<button class="fbtn" onclick="openEv(' + e.id + ')">✎ Sửa</button>' +
+    '</div></div>';
+}
+
+function copyLink(id) {
+  var e = EVENTS.filter(function (x) { return Number(x.id) === id; })[0];
+  if (!e) return;
+  var u = pubUrl(e.slug);
+  if (navigator.clipboard) navigator.clipboard.writeText(u).then(function () { toast('Đã chép link ✓'); });
+  else { prompt('Sao chép link:', u); }
+}
+
+/* ---- su kien ---- */
+function openEv(id) {
+  editing = id ? EVENTS.filter(function (x) { return Number(x.id) === id; })[0] : null;
+  el('evTitle').textContent = editing ? 'Sửa sự kiện' : 'Tạo sự kiện';
+  el('evName').value = editing ? editing.name : '';
+  el('evSlug').value = editing ? editing.slug : '';
+  el('evStart').value = editing && editing.start_at ? editing.start_at : '';
+  el('evEnd').value = editing && editing.end_at ? editing.end_at : '';
+  el('evNote').value = editing && editing.note ? editing.note : '';
+  el('evActive').checked = editing ? Number(editing.active) === 1 : true;
+  el('evDel').style.display = editing ? 'block' : 'none';
+  el('evOv').classList.add('open');
+}
+function closeEv() { el('evOv').classList.remove('open'); editing = null; }
+
+async function saveEv() {
+  var b = {
+    id: editing ? Number(editing.id) : 0,
+    name: el('evName').value.trim(),
+    slug: el('evSlug').value.trim(),
+    start_at: el('evStart').value,
+    end_at: el('evEnd').value,
+    note: el('evNote').value.trim(),
+    active: el('evActive').checked ? 1 : 0
+  };
+  if (!b.name) { toast('Chưa nhập tên sự kiện'); return; }
+  try { await post('action=event-save', b); } catch (e) { toast(e.message); return; }
+  closeEv(); toast('Đã lưu ✓'); load();
+}
+
+async function delEv() {
+  if (!editing) return;
+  if (!confirm('Xoá sự kiện "' + editing.name + '" và toàn bộ khung của nó? Không khôi phục được.')) return;
+  try { await post('action=event-del', { id: Number(editing.id) }); } catch (e) { toast(e.message); return; }
+  closeEv(); toast('Đã xoá'); load();
+}
+
+/* ---- khung ---- */
+async function openFr(id) {
+  CUR = EVENTS.filter(function (x) { return Number(x.id) === id; })[0];
+  if (!CUR) return;
+  el('frTitle').textContent = 'Khung — ' + CUR.name;
+  el('frSub').textContent = 'Chỉ nhận file PNG. Tỉ lệ được nhận diện tự động, có thể sửa lại bên dưới mỗi khung.';
+  el('frOv').classList.add('open');
+  await loadFr();
+}
+function closeFr() { el('frOv').classList.remove('open'); CUR = null; load(); }
+
+async function loadFr() {
+  var box = el('frList');
+  box.innerHTML = '<div class="fempty">Đang tải…</div>';
+  var rows = [];
+  try { rows = (await api('action=frames&event=' + CUR.id)).rows || []; }
+  catch (e) { box.innerHTML = '<div class="fempty">' + esc(e.message) + '</div>'; return; }
+  if (!rows.length) { box.innerHTML = '<div class="fempty">Chưa có khung nào. Tải file PNG lên ở ô phía trên.</div>'; return; }
+  box.innerHTML = '<div class="fitems">' + rows.map(function (f) {
+    return '<div class="fitem">' +
+      '<div class="fthumb"><img src="/' + esc(f.file) + '" alt=""></div>' +
+      '<input class="fname" value="' + esc(f.name || '') + '" placeholder="tên khung" ' +
+        'onchange="setFr(' + f.id + ', {name: this.value})">' +
+      '<div class="fbar">' +
+        '<select onchange="setFr(' + f.id + ', {ratio: this.value})">' +
+          ['1:1', '16:9', '9:16'].map(function (r) {
+            return '<option value="' + r + '"' + (f.ratio === r ? ' selected' : '') + '>' + r + '</option>';
+          }).join('') +
+        '</select>' +
+        '<button class="fbtn dgr" onclick="delFr(' + f.id + ')">🗑</button>' +
+      '</div>' +
+      '<div class="fdim">' + f.w + '×' + f.h + ' px · ' + (f.uses || 0) + ' lượt dùng</div>' +
+    '</div>';
+  }).join('') + '</div>';
+}
+
+async function setFr(id, patch) {
+  patch.id = id;
+  try { await post('action=frame-set', patch); toast('Đã lưu ✓'); } catch (e) { toast(e.message); }
+}
+async function delFr(id) {
+  if (!confirm('Xoá khung này?')) return;
+  try { await post('action=frame-del', { id: id }); } catch (e) { toast(e.message); return; }
+  toast('Đã xoá'); loadFr();
+}
+
+el('drop').addEventListener('click', function () { el('file').click(); });
+el('drop').addEventListener('dragover', function (e) { e.preventDefault(); this.classList.add('on'); });
+el('drop').addEventListener('dragleave', function () { this.classList.remove('on'); });
+el('drop').addEventListener('drop', function (e) {
+  e.preventDefault(); this.classList.remove('on');
+  if (e.dataTransfer && e.dataTransfer.files.length) upload(e.dataTransfer.files);
+});
+el('file').addEventListener('change', function () { if (this.files.length) upload(this.files); this.value = ''; });
+
+async function upload(files) {
+  if (!CUR) return;
+  var fd = new FormData();
+  fd.append('event', CUR.id);
+  for (var i = 0; i < files.length; i++) fd.append('f[]', files[i]);
+  el('drop').textContent = '⏳ Đang tải lên…';
+  try {
+    var j = await api('action=frame-up', { method: 'POST', body: fd });
+    toast('Đã thêm ' + j.added + ' khung' + (j.skipped && j.skipped.length ? ' · bỏ qua: ' + j.skipped.join(', ') : ''));
+  } catch (e) { toast(e.message); }
+  el('drop').innerHTML = '📤 Bấm để chọn file khung PNG (chọn được nhiều file cùng lúc)<input type="file" id="file" accept="image/png" multiple hidden />';
+  el('file').addEventListener('change', function () { if (this.files.length) upload(this.files); this.value = ''; });
+  loadFr();
+}
+
+el('addBtn').addEventListener('click', function () { openEv(0); });
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeEv(); closeFr(); } });
+el('evOv').addEventListener('click', function (e) { if (e.target === this) closeEv(); });
+el('frOv').addEventListener('click', function (e) { if (e.target === this) closeFr(); });
+
+load();
+</script>
+<script src="/apsa-ui.js?v=28"></script>
+<script src="/perm-guard.js?v=2"></script>
+</body>
+</html>

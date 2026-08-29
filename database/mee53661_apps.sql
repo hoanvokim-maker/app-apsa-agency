@@ -1256,6 +1256,71 @@ LOCK TABLES `crm_payments` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `frame_events`
+--
+
+DROP TABLE IF EXISTS `frame_events`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `frame_events` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `slug` varchar(80) NOT NULL,
+  `name` varchar(200) NOT NULL,
+  `note` varchar(400) DEFAULT NULL,
+  `start_at` date DEFAULT NULL,
+  `end_at` date DEFAULT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `views` int(10) unsigned NOT NULL DEFAULT 0,
+  `uses` int(10) unsigned NOT NULL DEFAULT 0,
+  `created_by` varchar(120) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `u_slug` (`slug`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `frame_events`
+--
+
+LOCK TABLES `frame_events` WRITE;
+/*!40000 ALTER TABLE `frame_events` DISABLE KEYS */;
+/*!40000 ALTER TABLE `frame_events` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `frame_items`
+--
+
+DROP TABLE IF EXISTS `frame_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `frame_items` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `event_id` int(10) unsigned NOT NULL,
+  `name` varchar(200) DEFAULT NULL,
+  `ratio` varchar(8) NOT NULL DEFAULT '1:1',
+  `file` varchar(300) NOT NULL,
+  `w` int(10) unsigned NOT NULL DEFAULT 0,
+  `h` int(10) unsigned NOT NULL DEFAULT 0,
+  `sort_order` int(11) NOT NULL DEFAULT 0,
+  `uses` int(10) unsigned NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `k_ev` (`event_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `frame_items`
+--
+
+LOCK TABLES `frame_items` WRITE;
+/*!40000 ALTER TABLE `frame_items` DISABLE KEYS */;
+/*!40000 ALTER TABLE `frame_items` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `holidays`
 --
 

@@ -363,6 +363,7 @@
     { ico: 'album',   name: 'Album gửi khách',   url: './albums.html', id: 34 },
     { ico: 'bulb',    name: 'Inspiration',       url: './inspiration.html', id: 25 },
     { ico: 'image',   name: 'Thư viện ảnh',      url: 'https://imglib.apsa.agency', id: 23 },
+    { ico: 'image',   name: 'Frame Avatar',      url: './frame.html', id: 100 },
     { ico: 'ai',      name: 'AI Studio',         url: 'https://ai.apsa.agency', id: 24 },
     { grp: 'Tiện ích' },
     { ico: 'qr',      name: 'Quản lý Link',         url: './event-qr-generator.html', id: 1 },

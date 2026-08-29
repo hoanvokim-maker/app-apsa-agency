@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#0d0d0d" />
+<link rel="icon" href="/favicon.ico" sizes="any">
+<title>Khung ảnh sự kiện</title>
+<meta name="robots" content="noindex" />
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; background: #0d0d0d; color: #ececec; font-size: 15px; line-height: 1.5;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 20px 16px calc(34px + env(safe-area-inset-bottom)); }
+  h1 { font-size: 20px; margin: 0 0 6px; line-height: 1.3; }
+  .note { font-size: 13.5px; color: #9d9d9d; margin: 0 0 18px; }
+  .deadline { display: inline-block; font-size: 11.5px; color: #c8d900; border: 1px solid #38400a;
+    background: #1a1c07; border-radius: 20px; padding: 3px 10px; margin-bottom: 14px; }
+  .tabs { display: flex; gap: 7px; margin-bottom: 14px; flex-wrap: wrap; }
+  .tab { font-size: 12.5px; padding: 6px 13px; border-radius: 20px; border: 1px solid #2c2c2c;
+    background: transparent; color: #bdbdbd; cursor: pointer; }
+  .tab.on { background: #dff20d; border-color: #dff20d; color: #101010; font-weight: 700; }
+  .frames { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 11px; align-items: start; }
+  .fr { border: 2px solid #232323; border-radius: 13px; padding: 8px; cursor: pointer; background: #131313; }
+  .fr.on { border-color: #dff20d; }
+  .fr .ph { border-radius: 8px; overflow: hidden; background: #202020; display: flex;
+    align-items: center; justify-content: center; }
+  .fr img { width: 100%; display: block; }
+  .fr .nm { font-size: 11.5px; color: #a5a5a5; margin-top: 6px; text-align: center;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .stage { margin: 16px 0 12px; border-radius: 14px; overflow: hidden; background: #000;
+    position: relative; touch-action: none; }
+  .stage canvas { display: block; width: 100%; height: auto; }
+  .stage .drop { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 6px;
+    align-items: center; justify-content: center; background: rgba(0,0,0,.55); color: #dff20d;
+    font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; padding: 20px; }
+  .stage .drop small { color: #9d9d9d; font-weight: 400; font-size: 12px; }
+  .ctl { display: flex; align-items: center; gap: 11px; margin: 10px 0; }
+  .ctl span { font-size: 11px; color: #8d8d8d; width: 42px; flex: none; }
+  .ctl input[type=range] { flex: 1; accent-color: #dff20d; }
+  .row { display: flex; gap: 9px; margin-top: 14px; }
+  .btn { flex: 1; border: 0; border-radius: 12px; padding: 14px; font: inherit; font-weight: 700;
+    font-size: 15px; cursor: pointer; background: #dff20d; color: #101010; }
+  .btn.ghost { background: transparent; color: #d4d4d4; border: 1px solid #2f2f2f; font-weight: 500; }
+  .btn:disabled { opacity: .45; }
+  .msg { text-align: center; padding: 70px 20px; color: #9d9d9d; }
+  .msg h2 { color: #ececec; font-size: 19px; margin: 0 0 8px; }
+  .hint { font-size: 12px; color: #7d7d7d; text-align: center; margin-top: 12px; line-height: 1.6; }
+  .done { position: fixed; inset: 0; background: #0d0d0d; z-index: 60; overflow: auto;
+    padding: 22px 16px calc(30px + env(safe-area-inset-bottom)); display: none; }
+  .done.on { display: block; }
+  .done .inner { max-width: 560px; margin: 0 auto; }
+  .done img { width: 100%; border-radius: 14px; display: block; }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #1e1e1e;
+    border: 1px solid #333; padding: 10px 16px; border-radius: 10px; font-size: 13px; z-index: 90;
+    opacity: 0; transition: opacity .2s; pointer-events: none; }
+  .toast.on { opacity: 1; }
+  .brand { text-align: center; font-size: 11px; color: #5d5d5d; margin-top: 26px; letter-spacing: .04em; }
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app"><div class="msg">Đang tải…</div></div>
+
+<div class="done" id="done">
+  <div class="inner">
+    <h1 style="font-size:18px;margin:0 0 12px">Ảnh của bạn đã sẵn sàng 🎉</h1>
+    <img id="doneImg" alt="Ảnh đã ghép khung" />
+    <div class="row">
+      <button class="btn" id="saveBtn" type="button">⬇ Lưu ảnh</button>
+      <button class="btn ghost" id="backBtn" type="button">Sửa lại</button>
+    </div>
+    <div class="hint" id="saveHint">Trên điện thoại, bấm <b>Lưu ảnh</b> rồi chọn <b>Lưu vào Ảnh / Save Image</b>. Nếu không thấy, hãy nhấn giữ vào ảnh phía trên và chọn <b>Thêm vào ảnh</b>.</div>
+  </div>
+</div>
+
+<input type="file" id="pick" accept="image/*" hidden />
+<div class="toast" id="toast"></div>
+
+<script>
+var Q = String.fromCharCode(63);
+var API = './api/frame-api.php';
+var SLUG = new URLSearchParams(location.search).get('e') || '';
+var EV = null, FRAMES = [], filter = 'all';
+var curFrame = null, frameImg = null, photo = null;
+var tx = 0, ty = 0, sc = 1, rot = 0;
+var cvs = null, ctx = null, blobOut = null;
+
+function el(i) { return document.getElementById(i); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+  return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function toast(m) { var t = el('toast'); t.textContent = m; t.classList.add('on');
+  clearTimeout(t._t); t._t = setTimeout(function () { t.classList.remove('on'); }, 2800); }
+function dmy(s) { if (!s) return ''; var p = String(s).slice(0, 10).split('-'); return p[2] + '/' + p[1] + '/' + p[0]; }
+
+function screen(title, body) {
+  el('app').innerHTML = '<div class="msg"><h2>' + esc(title) + '</h2><div>' + body + '</div></div>';
+}
+
+async function boot() {
+  if (!SLUG) { screen('Thiếu mã sự kiện', 'Đường dẫn không hợp lệ.'); return; }
+  var j = null;
+  try {
+    var r = await fetch(API + Q + 'action=p-event&slug=' + encodeURIComponent(SLUG));
+    j = await r.json();
+  } catch (e) { j = null; }
+  if (!j || !j.ok) { screen('Không tìm thấy sự kiện', 'Đường dẫn có thể đã bị đổi hoặc sự kiện đã bị gỡ.'); return; }
+  EV = j.event; FRAMES = j.frames || [];
+  document.title = EV.name;
+  if (j.state === 'off') { screen(EV.name, 'Sự kiện này hiện đang tạm dừng.'); return; }
+  if (j.state === 'early') { screen(EV.name, 'Sự kiện bắt đầu từ ngày <b>' + dmy(EV.start_at) + '</b>. Hẹn gặp lại bạn!'); return; }
+  if (j.state === 'ended') { screen(EV.name, 'Sự kiện đã kết thúc ngày <b>' + dmy(EV.end_at) + '</b>. Cảm ơn bạn đã tham gia!'); return; }
+  if (!FRAMES.length) { screen(EV.name, 'Sự kiện chưa có khung nào. Vui lòng quay lại sau nhé!'); return; }
+  fetch(API + Q + 'action=p-hit&slug=' + encodeURIComponent(SLUG)).catch(function () {});
+  render();
+}
+
+function ratios() {
+  var seen = {}, out = [];
+  FRAMES.forEach(function (f) { if (!seen[f.ratio]) { seen[f.ratio] = 1; out.push(f.ratio); } });
+  return out;
+}
+var RNAME = { '1:1': '1:1 Vuông', '16:9': '16:9 Ngang', '9:16': '9:16 Dọc' };
+
+function render() {
+  var rs = ratios();
+  var tabs = rs.length > 1
+    ? '<div class="tabs"><button class="tab' + (filter === 'all' ? ' on' : '') + '" onclick="setFilter(\'all\')">Tất cả</button>' +
+      rs.map(function (r) { return '<button class="tab' + (filter === r ? ' on' : '') + '" onclick="setFilter(\'' + r + '\')">' + (RNAME[r] || r) + '</button>'; }).join('') + '</div>'
+    : '';
+  var list = FRAMES.filter(function (f) { return filter === 'all' || f.ratio === filter; });
+  el('app').innerHTML =
+    '<h1>' + esc(EV.name) + '</h1>' +
+    (EV.note ? '<p class="note">' + esc(EV.note) + '</p>' : '<p class="note">Chọn khung, tải ảnh của bạn lên rồi lưu về máy nhé!</p>') +
+    (EV.end_at ? '<div class="deadline">⏳ Đến hết ngày ' + dmy(EV.end_at) + '</div>' : '') +
+    tabs +
+    '<div class="frames" id="frames">' + list.map(frHtml).join('') + '</div>' +
+    '<div id="editor"></div>' +
+    '<div class="brand">APSA · Frame Avatar</div>';
+  if (curFrame) mountEditor();
+}
+
+function frHtml(f) {
+  var pad = f.ratio === '16:9' ? 56.25 : (f.ratio === '9:16' ? 177.7 : 100);
+  return '<div class="fr' + (curFrame && curFrame.id === f.id ? ' on' : '') + '" onclick="pickFrame(' + f.id + ')">' +
+    '<div class="ph" style="padding-top:' + pad + '%;position:relative">' +
+      '<img src="/' + esc(f.file) + '" alt="" style="position:absolute;inset:0;height:100%;object-fit:contain">' +
+    '</div>' +
+    '<div class="nm">' + esc(f.name || RNAME[f.ratio] || f.ratio) + '</div></div>';
+}
+
+function setFilter(r) { filter = r; render(); }
+
+function pickFrame(id) {
+  var f = FRAMES.filter(function (x) { return Number(x.id) === id; })[0];
+  if (!f) return;
+  curFrame = f;
+  frameImg = new Image();
+  frameImg.onload = function () { render(); setTimeout(function () {
+    var e = el('editor'); if (e) e.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60); };
+  frameImg.src = '/' + f.file;
+}
+
+function mountEditor() {
+  el('editor').innerHTML =
+    '<div class="stage" id="stage"><canvas id="cv"></canvas>' +
+      (photo ? '' : '<div class="drop" id="drop">📷 Bấm để chọn ảnh của bạn<small>ảnh sẽ được ghép vào khung ngay</small></div>') +
+    '</div>' +
+    (photo ? '<div class="ctl"><span>Phóng to</span><input type="range" id="zoom" min="50" max="400" value="' + Math.round(sc * 100) + '"></div>' +
+      '<div class="ctl"><span>Xoay</span><input type="range" id="rotr" min="-180" max="180" value="' + Math.round(rot * 180 / Math.PI) + '"></div>' : '') +
+    '<div class="row">' +
+      '<button class="btn ghost" type="button" onclick="el(\'pick\').click()">' + (photo ? '🔄 Đổi ảnh' : '📷 Chọn ảnh') + '</button>' +
+      '<button class="btn" type="button" id="mk"' + (photo ? '' : ' disabled') + ' onclick="makeIt()">✨ Ghép ảnh</button>' +
+    '</div>' +
+    (photo ? '<div class="hint">Kéo để di chuyển ảnh · chụm 2 ngón để phóng to/xoay</div>' : '');
+  cvs = el('cv');
+  cvs.width = Math.min(Number(curFrame.w) || 1000, 900);
+  cvs.height = Math.round(cvs.width * (Number(curFrame.h) / Number(curFrame.w)));
+  ctx = cvs.getContext('2d');
+  draw();
+  if (el('drop')) el('drop').onclick = function () { el('pick').click(); };
+  if (el('zoom')) el('zoom').oninput = function () { sc = Number(this.value) / 100; draw(); };
+  if (el('rotr')) el('rotr').oninput = function () { rot = Number(this.value) * Math.PI / 180; draw(); };
+  bindDrag();
+}
+
+function paint(c, cw, ch) {
+  c.clearRect(0, 0, cw, ch);
+  c.fillStyle = '#ffffff';
+  c.fillRect(0, 0, cw, ch);
+  if (photo) {
+    var base = Math.max(cw / photo.width, ch / photo.height);
+    var s = base * sc;
+    c.save();
+    c.translate(cw / 2 + tx * cw, ch / 2 + ty * cw);
+    c.rotate(rot);
+    c.scale(s, s);
+    c.drawImage(photo, -photo.width / 2, -photo.height / 2);
+    c.restore();
+  }
+  if (frameImg) c.drawImage(frameImg, 0, 0, cw, ch);
+}
+function draw() { if (ctx) paint(ctx, cvs.width, cvs.height); }
+
+function bindDrag() {
+  var st = el('stage'); if (!st) return;
+  var pts = {}, last = null, lastDist = 0, lastAng = 0;
+  function pos(e) { var r = st.getBoundingClientRect(); return { x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.width }; }
+  st.addEventListener('pointerdown', function (e) {
+    if (!photo) return;
+    st.setPointerCapture(e.pointerId);
+    pts[e.pointerId] = pos(e);
+    var k = Object.keys(pts);
+    if (k.length === 1) last = pts[k[0]];
+    else if (k.length === 2) {
+      var a = pts[k[0]], b = pts[k[1]];
+      lastDist = Math.hypot(a.x - b.x, a.y - b.y);
+      lastAng = Math.atan2(b.y - a.y, b.x - a.x);
+    }
+  });
+  st.addEventListener('pointermove', function (e) {
+    if (!photo || !(e.pointerId in pts)) return;
+    e.preventDefault();
+    pts[e.pointerId] = pos(e);
+    var k = Object.keys(pts);
+    if (k.length === 1) {
+      var p = pts[k[0]];
+      if (last) { tx += p.x - last.x; ty += p.y - last.y; }
+      last = p; draw();
+    } else if (k.length === 2) {
+      var a = pts[k[0]], b = pts[k[1]];
+      var d = Math.hypot(a.x - b.x, a.y - b.y);
+      var g = Math.atan2(b.y - a.y, b.x - a.x);
+      if (lastDist > 0) sc = Math.max(0.3, Math.min(6, sc * (d / lastDist)));
+      rot += g - lastAng;
+      lastDist = d; lastAng = g;
+      if (el('zoom')) el('zoom').value = Math.round(sc * 100);
+      if (el('rotr')) el('rotr').value = Math.round(((rot * 180 / Math.PI) % 360 + 540) % 360 - 180);
+      draw();
+    }
+  });
+  function up(e) { delete pts[e.pointerId]; last = null; lastDist = 0; }
+  st.addEventListener('pointerup', up);
+  st.addEventListener('pointercancel', up);
+}
+
+el('pick').addEventListener('change', async function () {
+  var f = this.files && this.files[0];
+  this.value = '';
+  if (!f) return;
+  try {
+    if (window.createImageBitmap) photo = await createImageBitmap(f, { imageOrientation: 'from-image' });
+    else photo = await new Promise(function (res, rej) {
+      var i = new Image(); i.onload = function () { res(i); }; i.onerror = rej; i.src = URL.createObjectURL(f);
+    });
+  } catch (e) {
+    try {
+      photo = await new Promise(function (res, rej) {
+        var i = new Image(); i.onload = function () { res(i); }; i.onerror = rej; i.src = URL.createObjectURL(f);
+      });
+    } catch (e2) { toast('Không đọc được ảnh này'); return; }
+  }
+  tx = 0; ty = 0; sc = 1; rot = 0;
+  mountEditor();
+});
+
+function makeIt() {
+  if (!photo || !curFrame) return;
+  var W = Number(curFrame.w) || 1000, H = Number(curFrame.h) || 1000;
+  var c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  paint(c.getContext('2d'), W, H);
+  c.toBlob(function (b) {
+    blobOut = b;
+    el('doneImg').src = URL.createObjectURL(b);
+    el('done').classList.add('on');
+    window.scrollTo(0, 0);
+  }, 'image/png');
+}
+
+function fileName() {
+  var base = (EV && EV.slug ? EV.slug : 'frame');
+  return base + '-' + Date.now() + '.png';
+}
+
+el('saveBtn').addEventListener('click', async function () {
+  if (!blobOut) return;
+  var name = fileName();
+  var file = null;
+  try { file = new File([blobOut], name, { type: 'image/png' }); } catch (e) { file = null; }
+  if (file && navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
+    try {
+      await navigator.share({ files: [file], title: EV.name });
+      countUse();
+      return;
+    } catch (e) {
+      if (e && e.name === 'AbortError') return;
+    }
+  }
+  var url = URL.createObjectURL(blobOut);
+  var a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+  countUse();
+  toast('Đã tải ảnh về máy ✓');
+});
+
+function countUse() {
+  fetch(API + Q + 'action=p-use&frame=' + curFrame.id).catch(function () {});
+}
+
+el('backBtn').addEventListener('click', function () {
+  el('done').classList.remove('on');
+});
+
+boot();
+</script>
+</body>
+</html>
