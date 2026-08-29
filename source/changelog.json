@@ -1,7 +1,20 @@
 {
-    "version": "1.5.4",
+    "version": "1.6.0",
     "updated": "2026-08-29",
     "releases": [
+        {
+            "v": "1.6",
+            "date": "2026-08-29",
+            "note": "Phiên bản 1.6",
+            "items": [
+                {
+                    "d": "2026-08-29",
+                    "v": "1.6.0",
+                    "t": "Module Bang luong (chi Admin): nhap file luong ACB, tu tra ma ngan hang tu danh muc ACB, tu ghep voi ho so nhan vien, ban Zalo kem QR tung nguoi, dinh Uy nhiem chi, xuat lai file dung dinh dang ACB. Da dien so tai khoan + ngan hang cho 9 nhan vien tu file luong thang 8.",
+                    "by": "mee53661"
+                }
+            ]
+        },
         {
             "v": "1.5",
             "date": "2026-08-28",

@@ -356,6 +356,7 @@
     { ico: 'doc',     name: 'Tủ hợp đồng',     url: './contracts.html', id: 96 },
     { ico: 'doc', name: 'Chi phí thực tế', url: './chi-phi.html', id: 97 },
   { ico: 'doc', name: 'Duyệt video', url: './videos.html', id: 98 },
+  { ico: 'doc', name: 'Bảng lương', url: './luong.html', id: 99 },
     { grp: 'Nội dung' },
     { ico: 'logo',    name: 'Kho Logos',         url: './logos.html', id: 17 },
     { ico: 'book',    name: 'Brand Guidelines',  url: './brand-guidelines.html', id: 18 },

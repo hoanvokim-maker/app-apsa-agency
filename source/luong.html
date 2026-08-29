@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script>
+  document.documentElement.style.visibility = 'hidden';
+  fetch('./api/auth-api.php?action=me', { credentials: 'same-origin' })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(res => {
+      if (!res.ok) throw new Error();
+      window.__APSA_USER = res.data;
+      document.documentElement.style.visibility = 'visible';
+    })
+    .catch(() => {
+      location.replace('./login.html?next=' + encodeURIComponent(location.pathname + location.search));
+    });
+</script>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=1">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#dff20d">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>APSA — Bảng lương</title>
+  <script src="/apsa-ui.js?v=27"></script>
+  <script src="/exp-qr.js?v=5"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/theme.css?v=22" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #000; --bg2: #0b0b0b; --bg3: #141414; --bg4: #1c1c1c;
+    --border: rgba(255,255,255,.08); --border-h: rgba(255,255,255,.16);
+    --text: #fff; --text2: #9a9a9a; --text3: #5e5e5e;
+    --green: #dff20d; --pink: #c9dd00; --red: #ff4d4d; --ok: #22c55e; --gold: #facc15;
+  }
+  body { font-family: 'Oxanium', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  header { position: sticky; top: 0; z-index: 100; background: rgba(0,0,0,.9); backdrop-filter: blur(16px);
+           border-bottom: 1px solid var(--border); height: 60px; padding: 0 28px;
+           display: flex; align-items: center; justify-content: space-between; }
+  .logo img { height: 26px; filter: brightness(0) invert(1); opacity: .9; display: block; }
+  .back-btn { display: flex; align-items: center; gap: 6px; color: var(--text2); text-decoration: none;
+              font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); }
+  .back-btn:hover { color: var(--text); border-color: var(--border-h); }
+  .page-head { padding: 30px 28px 14px; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+  .page-head h1 { font-size: 26px; font-weight: 800; letter-spacing: -.5px; }
+  .page-head p { font-size: 13px; color: var(--text2); margin-top: 4px; max-width: 880px; }
+  .stats { display: flex; gap: 10px; flex-wrap: wrap; }
+  .stat { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 16px; min-width: 130px; }
+  .stat .k { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text3); }
+  .stat .v { font-size: 17px; font-weight: 800; margin-top: 3px; font-variant-numeric: tabular-nums; }
+  .stat.due .v { color: var(--gold); } .stat.paid .v { color: var(--ok); }
+
+  .wrap { padding: 0 28px 80px; max-width: 1680px; }
+  .toolbar { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 14px; }
+  .spacer { flex: 1 1 auto; }
+  .vb { display: inline-flex; align-items: center; gap: 7px; justify-content: center; font-family: inherit;
+        font-size: 13px; font-weight: 600; cursor: pointer; padding: 9px 15px; border-radius: 9px;
+        border: 1px solid var(--border-h); background: var(--bg3); color: var(--text); white-space: nowrap; }
+  .vb:hover { background: var(--bg4); }
+  .vb.p { background: var(--green); color: #000; border-color: var(--green); }
+  .vb.p:hover { background: var(--pink); }
+  .vb.sm { padding: 6px 11px; font-size: 12px; }
+  .vb:disabled { opacity: .45; cursor: default; }
+  select, input[type="text"], input[type="number"], textarea {
+    font: inherit; font-size: 13.5px; color: var(--text); background: rgba(0,0,0,.35);
+    border: 1px solid var(--border-h); border-radius: 9px; padding: 8px 11px; outline: none; }
+  select:focus, input:focus, textarea:focus { border-color: var(--green); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { text-align: left; font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--text3);
+             padding: 9px 10px; border-bottom: 1px solid var(--border-h); white-space: nowrap; }
+  tbody td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tbody tr:hover { background: rgba(255,255,255,.03); }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .nm { font-weight: 600; }
+  .sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .sub.ok { color: var(--ok); }
+  .sub.warn { color: var(--gold); }
+  .pywrap { display: flex; flex-direction: column; gap: 3px; align-items: stretch; }
+  span.pb, button.pb { display: block; text-align: center; font-size: 11.5px; font-weight: 700; padding: 4px 8px;
+    border-radius: 8px; border: 1px solid var(--border-h); color: var(--text2); background: rgba(255,255,255,.03);
+    font-family: inherit; cursor: default; }
+  button.pb { cursor: pointer; }
+  button.pb.on { color: var(--ok); border-color: rgba(34,197,94,.55); background: rgba(34,197,94,.13); }
+  span.pb.req { color: var(--gold); border-color: rgba(250,204,21,.45); }
+  .pysm { font: inherit; font-size: 11px; font-weight: 700; padding: 3px 7px; border-radius: 7px; cursor: pointer;
+          border: 1px solid var(--border-h); background: rgba(255,255,255,.05); color: var(--text2); white-space: nowrap; }
+  .pysm:hover { color: #fff; border-color: rgba(255,255,255,.4); }
+  .pysm.go { color: var(--green); border-color: rgba(223,242,13,.45); }
+  .pysm.up, .pysm.okc { color: #4ade80; border-color: rgba(74,222,128,.42); }
+  .ib { width: 32px; height: 32px; border-radius: 9px; border: 1px solid var(--border); background: var(--bg3);
+        color: var(--text2); cursor: pointer; display: inline-grid; place-items: center; font-family: inherit; font-size: 15px; }
+  .ib + .ib { margin-left: 5px; }
+  .ib:hover { background: var(--bg4); color: var(--text); }
+  .empty { text-align: center; color: var(--text3); font-size: 13px; padding: 48px 20px; line-height: 1.7; }
+
+  .ov { position: fixed; inset: 0; background: rgba(0,0,0,.75); display: none; align-items: center; justify-content: center; z-index: 120; padding: 22px; }
+  .ov.open { display: flex; }
+  .dlg { width: 100%; max-width: 900px; max-height: 88vh; overflow: auto; background: #131313;
+         border: 1px solid rgba(255,255,255,.13); border-radius: 16px; padding: 18px; }
+  .dlg.sm { max-width: 520px; }
+  .dlg h2 { font-size: 17px; margin-bottom: 4px; }
+  .dlg .s { font-size: 12.5px; color: var(--text2); margin-bottom: 14px; line-height: 1.6; }
+  .fld { margin-bottom: 11px; } .fld label { display: block; font-size: 11.5px; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--text3); margin-bottom: 5px; } .fld input, .fld select { width: 100%; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+  .drop { border: 1.5px dashed rgba(255,255,255,.22); border-radius: 12px; padding: 24px 14px; text-align: center;
+          font-size: 13px; color: var(--text2); cursor: pointer; transition: .15s; }
+  .drop:hover, .drop.hot { border-color: var(--green); color: var(--green); background: rgba(223,242,13,.06); }
+  #pvBox { max-height: 320px; overflow: auto; margin-top: 12px; border: 1px solid var(--border); border-radius: 10px; }
+  #pvBox table { font-size: 12px; } #pvBox thead th { position: sticky; top: 0; background: #131313; }
+  .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; align-items: center; }
+  #prPrev img { max-width: 100%; margin-top: 12px; border-radius: 10px; display: block; }
+  .pfile { margin-top: 8px; font-size: 12.5px; color: var(--green); word-break: break-all; }
+  .toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); background: var(--green); color: #000;
+           font-weight: 700; font-size: 13px; padding: 9px 16px; border-radius: 10px; opacity: 0; pointer-events: none;
+           transition: .2s; z-index: 200; max-width: 80vw; text-align: center; }
+  .toast.on { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><img src="/Logo%20rectange.png" alt="APSA" /></div>
+  <a class="back-btn" href="./index.html">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Trang chủ
+  </a>
+</header>
+
+<div class="page-head">
+  <div>
+    <h1>Bảng lương</h1>
+    <p>Nhập file lương ACB, tự tra mã ngân hàng và ghép với hồ sơ nhân viên. Bắn Zalo kèm QR từng người, đính Ủy nhiệm chi, xuất lại file đúng định dạng ACB. Chỉ Admin xem được.</p>
+  </div>
+  <div class="stats" id="stats"></div>
+</div>
+
+<div class="wrap">
+  <div class="toolbar">
+    <select id="runSel" onchange="openRun(this.value)"></select>
+    <button class="vb p" onclick="openImport()">＋ Nhập bảng lương</button>
+    <button class="vb" onclick="expAcb()">⬇ Xuất file ACB</button>
+    <span class="spacer"></span>
+    <button class="vb" onclick="openBanks()">🏦 Danh mục ngân hàng</button>
+    <button class="vb" onclick="delRun()">🗑 Xoá bảng</button>
+    <button class="vb" onclick="load()">↻ Tải lại</button>
+  </div>
+  <table>
+    <thead><tr>
+      <th style="width:44px">STT</th><th>Người nhận</th><th>Ngân hàng</th><th>Số tài khoản</th>
+      <th class="num">Số tiền</th><th style="width:150px">Trạng thái</th><th style="width:86px"></th>
+    </tr></thead>
+    <tbody id="tb"></tbody>
+  </table>
+  <div class="empty" id="emp" style="display:none"></div>
+</div>
+
+<!-- nhập bảng lương -->
+<div class="ov" id="ovImp">
+  <div class="dlg">
+    <h2>Nhập bảng lương từ file ACB</h2>
+    <div class="s">Chọn file Excel theo mẫu chi lương của ACB (cột: STT · Tên đơn vị thụ hưởng · Mã ngân hàng · Số tài khoản nhận · Số thẻ · Số tiền · Nội dung).</div>
+    <div class="drop" id="impDrop">📄 Bấm để chọn file .xlsx / .xls — hoặc kéo thả vào đây</div>
+    <div id="pvBox" style="display:none"><table><thead><tr>
+      <th>STT</th><th>Tên</th><th>Mã NH</th><th>Ngân hàng</th><th>Số TK</th><th class="num">Số tiền</th>
+    </tr></thead><tbody id="pvTb"></tbody></table></div>
+    <div class="grid2" style="margin-top:14px">
+      <div class="fld"><label>Kỳ lương</label><input type="text" id="iPeriod" placeholder="2026-08" /></div>
+      <div class="fld"><label>Tiêu đề</label><input type="text" id="iTitle" placeholder="Lương tháng 8/2026" /></div>
+    </div>
+    <div class="fld"><label>Nội dung chuyển khoản mặc định</label><input type="text" id="iContent" /></div>
+    <div class="row"><span id="impSum" class="s" style="margin:0;flex:1"></span>
+      <button class="vb" onclick="closeImp()">Hủy</button>
+      <button class="vb p" id="impGo" onclick="saveImport()" disabled>Lưu bảng lương</button>
+    </div>
+  </div>
+</div>
+
+<!-- danh mục ngân hàng -->
+<div class="ov" id="ovBank">
+  <div class="dlg sm">
+    <h2>Danh mục mã ngân hàng ACB</h2>
+    <div class="s" id="bkInfo">Đang kiểm tra…</div>
+    <div class="drop" id="bkDrop">🏦 Chọn file <b>DanhSachNganHangTrongACB.xls</b> và <b>DanhSachNganHangNgoaiACB.xls</b><br />
+      <span style="font-size:11.5px">Chọn được nhiều file cùng lúc · nhập lại sẽ ghi đè mã trùng</span></div>
+    <div id="bkLog" class="s" style="margin-top:12px"></div>
+    <div class="row"><button class="vb" onclick="el('ovBank').classList.remove('open')">Đóng</button></div>
+  </div>
+</div>
+
+<!-- ủy nhiệm chi -->
+<div class="ov" id="ovPaid">
+  <div class="dlg sm">
+    <h2>Xác nhận đã thanh toán</h2>
+    <div class="s" id="prSub"></div>
+    <div class="drop" id="prDrop">📎 Bấm để chọn — hoặc kéo thả / dán ảnh<br />
+      <span style="font-size:11.5px">Ủy nhiệm chi: ảnh PNG · JPG · WEBP hoặc PDF (tối đa 12MB)</span></div>
+    <div id="prPrev"></div>
+    <div class="row"><button class="vb" onclick="prClose()">Hủy</button>
+      <button class="vb p" id="prGo" onclick="prSend()" disabled>✓ Xác nhận đã trả</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var API = './api/payroll-api.php';
+var RUNS = [], RUN = null, ITEMS = [], PEND = [], PFILE = null, IMP = [];
+
+function el(i) { return document.getElementById(i); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+  return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function toast(m) { var t = el('toast'); t.textContent = m; t.classList.add('on'); setTimeout(function () { t.classList.remove('on'); }, 2400); }
+function money(n) { return (Math.round(Number(n) || 0)).toLocaleString('vi-VN') + ' đ'; }
+function dt(s) { s = String(s || ''); return s.length >= 16 ? s.slice(8, 10) + '/' + s.slice(5, 7) + ' ' + s.slice(11, 16) : ''; }
+
+function api(action, body, qs) {
+  var o = { credentials: 'same-origin' };
+  if (body) { o.method = 'POST'; o.headers = { 'Content-Type': 'application/json' }; o.body = JSON.stringify(body); }
+  return fetch(API + '?action=' + action + (qs || ''), o).then(function (r) { return r.json(); })
+    .then(function (j) { if (!j.ok) throw new Error(j.error || 'Lỗi'); return j.data; });
+}
+
+/* ── mã QR ────────────────────────────────────────────── */
+function nrm(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  .replace(/đ/g, 'd').replace(/[^a-z0-9]/g, ''); }
+function noDia(s) { return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  .replace(/đ/g, 'd').replace(/Đ/g, 'D').replace(/[^0-9A-Za-z ]/g, ' ').replace(/\s+/g, ' ').trim(); }
+function pyBin(name) {
+  var B = window.EXP_BANKS || [], n = nrm(name), i, j;
+  if (!n) return '';
+  for (i = 0; i < B.length; i++) { if (nrm(B[i].name) === n) return B[i].bin;
+    for (j = 0; j < (B[i].al || []).length; j++) if (B[i].al[j] === n) return B[i].bin; }
+  for (i = 0; i < B.length; i++) for (j = 0; j < (B[i].al || []).length; j++)
+    if (B[i].al[j].length >= 5 && n.indexOf(B[i].al[j]) >= 0) return B[i].bin;
+  return '';
+}
+function qrUrl(r) {
+  var bin = pyBin(r.bank_short || r.bank_name), acc = String(r.account || '').replace(/[^0-9A-Za-z]/g, '');
+  if (!bin || !acc) return '';
+  return 'https://img.vietqr.io/image/' + bin + '-' + acc + '-compact2.png?amount=' + (Number(r.amount) || 0)
+    + '&addInfo=' + encodeURIComponent(noDia(r.content).slice(0, 50))
+    + '&accountName=' + encodeURIComponent(noDia(r.name).slice(0, 50));
+}
+
+/* ── nạp dữ liệu ──────────────────────────────────────── */
+function load() {
+  api('runs').then(function (d) {
+    RUNS = d.rows || [];
+    el('runSel').innerHTML = RUNS.length
+      ? RUNS.map(function (r) { return '<option value="' + r.id + '">' + esc(r.period + ' · ' + r.title) + '</option>'; }).join('')
+      : '<option value="">— chưa có bảng lương —</option>';
+    if (RUNS.length) openRun(RUN ? RUN.id : RUNS[0].id);
+    else { RUN = null; ITEMS = []; render(); }
+  }).catch(function (e) { toast(e.message); el('emp').style.display = ''; el('emp').textContent = e.message; });
+}
+function openRun(id) {
+  if (!id) return;
+  api('run', null, '&id=' + id).then(function (d) {
+    RUN = d.run; ITEMS = d.items || []; el('runSel').value = RUN.id; render();
+  }).catch(function (e) { toast(e.message); });
+}
+
+function render() {
+  var tot = 0, paid = 0;
+  ITEMS.forEach(function (r) { tot += Number(r.amount) || 0; if (Number(r.paid) === 1) paid += Number(r.amount) || 0; });
+  el('stats').innerHTML =
+    '<div class="stat"><div class="k">Tổng chi</div><div class="v">' + money(tot) + '</div></div>' +
+    '<div class="stat due"><div class="k">Chưa trả</div><div class="v">' + money(tot - paid) + '</div></div>' +
+    '<div class="stat paid"><div class="k">Đã trả</div><div class="v">' + money(paid) + '</div></div>' +
+    '<div class="stat"><div class="k">Số người</div><div class="v">' + ITEMS.length + '</div></div>';
+
+  el('emp').style.display = ITEMS.length ? 'none' : '';
+  if (!ITEMS.length) el('emp').innerHTML = 'Chưa có bảng lương nào.<br />Bấm <b>＋ Nhập bảng lương</b> và chọn file Excel mẫu ACB.';
+
+  el('tb').innerHTML = ITEMS.map(function (r) {
+    var u = r.user_id > 0
+      ? '<div class="sub ok">↳ ' + esc(r.user_name || ('user #' + r.user_id)) + '</div>'
+      : '<div class="sub warn">↳ chưa ghép được với user nào</div>';
+    var bank = r.bank_name
+      ? esc(r.bank_name) + '<div class="sub">mã ' + esc(r.bank_code) + (r.bank_short ? ' · ' + esc(r.bank_short) : '') + '</div>'
+      : '<span class="sub warn">mã ' + esc(r.bank_code) + ' — chưa có trong danh mục</span>';
+    return '<tr>' +
+      '<td>' + esc(r.stt) + '</td>' +
+      '<td><div class="nm">' + esc(r.name) + '</div>' + u + '</td>' +
+      '<td>' + bank + '</td>' +
+      '<td style="font-variant-numeric:tabular-nums">' + esc(r.account) + '</td>' +
+      '<td class="num"><b>' + money(r.amount) + '</b></td>' +
+      '<td>' + payCell(r) + '</td>' +
+      '<td style="text-align:right"><button class="ib" title="Xoá dòng" onclick="delItem(' + r.id + ')">🗑</button></td>' +
+    '</tr>';
+  }).join('');
+}
+
+function payCell(r) {
+  var h = '<div class="pywrap">';
+  if (Number(r.paid) === 1) {
+    h += '<button class="pb on" title="' + esc('Đã trả · ' + (r.paid_by || '') + ' · ' + dt(r.paid_at) + ' — bấm để bỏ đánh dấu') +
+         '" onclick="unmark(' + r.id + ')">✓ Đã trả</button>';
+    h += Number(r.has_proof)
+      ? '<button class="pysm okc" onclick="proof(' + r.id + ')">📎 Xem UNC</button>'
+      : '<button class="pysm up" onclick="askPaid([' + r.id + '])">📎 Thêm UNC</button>';
+    return h + '</div>';
+  }
+  if (r.pay_req_at) {
+    h += '<span class="pb req" title="' + esc('Đã yêu cầu ' + (r.pay_req_by || '') + ' · ' + dt(r.pay_req_at)) + '">⏳ Đã yêu cầu</span>';
+    h += '<button class="pysm" onclick="payReq(' + r.id + ',1)">↻ Gửi lại</button>';
+  } else {
+    h += '<span class="pb">Chưa trả</span>';
+    h += '<button class="pysm go" onclick="payReq(' + r.id + ',0)">⚡ Yêu cầu TT</button>';
+  }
+  h += '<button class="pysm up" onclick="askPaid([' + r.id + '])">📎 Đã CK</button>';
+  return h + '</div>';
+}
+
+function byId(id) { for (var i = 0; i < ITEMS.length; i++) if (String(ITEMS[i].id) === String(id)) return ITEMS[i]; return null; }
+
+window.payReq = function (id, again) {
+  var r = byId(id); if (!r) return;
+  if (!confirm((again ? 'Gửi LẠI' : 'Gửi') + ' yêu cầu thanh toán qua Zalo?\n\n' + r.name + '\n' + money(r.amount) +
+      '\n' + (r.bank_name || '') + ' ' + r.account)) return;
+  api('pay-req', { id: id, qr_url: qrUrl(r) }).then(function (d) {
+    r.pay_req_at = d.pay_req_at; r.pay_req_by = d.pay_req_by;
+    toast('Đã gửi Zalo cho ' + (d.sent || []).join(', ')); render();
+  }).catch(function (e) { toast(e.message); });
+};
+window.unmark = function (id) {
+  if (!confirm('Bỏ đánh dấu "Đã trả" cho dòng này?')) return;
+  api('unpaid', { id: id }).then(function () { var r = byId(id); if (r) { r.paid = 0; r.paid_at = null; } render(); })
+    .catch(function (e) { toast(e.message); });
+};
+window.proof = function (id) { window.open(API + '?action=proof&id=' + id, '_blank', 'noopener'); };
+window.delItem = function (id) {
+  var r = byId(id); if (!r) return;
+  if (!confirm('Xoá dòng lương của ' + r.name + '?')) return;
+  api('item-del', { id: id }).then(function () { openRun(RUN.id); }).catch(function (e) { toast(e.message); });
+};
+window.delRun = function () {
+  if (!RUN) return;
+  if (!confirm('Xoá toàn bộ bảng lương "' + RUN.period + ' · ' + RUN.title + '" và mọi chứng từ đính kèm?')) return;
+  api('run-del', { id: RUN.id }).then(function () { RUN = null; toast('Đã xoá'); load(); }).catch(function (e) { toast(e.message); });
+};
+
+/* ── ủy nhiệm chi ─────────────────────────────────────── */
+window.askPaid = function (ids) {
+  PEND = ids; PFILE = null;
+  var r = byId(ids[0]);
+  el('prSub').textContent = r ? (r.name + ' · ' + money(r.amount) + ' · ' + (r.bank_name || '')) : '';
+  el('prPrev').innerHTML = ''; el('prGo').disabled = true;
+  el('ovPaid').classList.add('open');
+};
+window.prClose = function () { el('ovPaid').classList.remove('open'); PEND = []; PFILE = null; };
+function takeProof(f) {
+  if (!f) return;
+  if (!/^image\/(png|jpe?g|webp)$/i.test(f.type) && f.type !== 'application/pdf') { toast('Chỉ nhận ảnh PNG/JPG/WEBP hoặc PDF.'); return; }
+  if (f.size > 12 * 1024 * 1024) { toast('File quá lớn (tối đa 12MB).'); return; }
+  var rd = new FileReader();
+  rd.onload = function () {
+    PFILE = { name: f.name, mime: f.type, data: rd.result };
+    el('prPrev').innerHTML = f.type === 'application/pdf'
+      ? '<div class="pfile">📄 ' + esc(f.name) + ' · ' + Math.round(f.size / 1024) + ' KB</div>'
+      : '<img src="' + rd.result + '" alt="" /><div class="pfile">' + esc(f.name) + '</div>';
+    el('prGo').disabled = false;
+  };
+  rd.readAsDataURL(f);
+}
+window.prSend = function () {
+  if (!PFILE) { toast('Chọn file Ủy nhiệm chi trước.'); return; }
+  var b = el('prGo'); b.disabled = true; b.textContent = 'Đang lưu…';
+  api('paid', { ids: PEND, file: PFILE }).then(function () {
+    b.disabled = false; b.textContent = '✓ Xác nhận đã trả';
+    prClose(); toast('Đã ghi nhận thanh toán'); openRun(RUN.id);
+  }).catch(function (e) { b.disabled = false; b.textContent = '✓ Xác nhận đã trả'; toast(e.message); });
+};
+
+/* ── nhập bảng lương ──────────────────────────────────── */
+function openImport() {
+  IMP = []; el('pvBox').style.display = 'none'; el('pvTb').innerHTML = '';
+  el('impGo').disabled = true; el('impSum').textContent = '';
+  var d = new Date();
+  el('iPeriod').value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  el('iTitle').value = 'Lương tháng ' + (d.getMonth() + 1) + '/' + d.getFullYear();
+  el('iContent').value = 'APSA TT LUONG THANG ' + (d.getMonth() + 1) + '_' + d.getFullYear();
+  el('ovImp').classList.add('open');
+}
+window.closeImp = function () { el('ovImp').classList.remove('open'); };
+
+function readSalary(f) {
+  var rd = new FileReader();
+  rd.onload = function () {
+    var wb, aoa;
+    try {
+      wb = XLSX.read(new Uint8Array(rd.result), { type: 'array' });
+      aoa = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: true, defval: '' });
+    } catch (e) { toast('Không đọc được file Excel.'); return; }
+    var hdr = -1, i;
+    for (i = 0; i < Math.min(aoa.length, 20); i++) {
+      var line = (aoa[i] || []).map(function (c) { return nrm(c); }).join('|');
+      if (line.indexOf('stt') >= 0 && line.indexOf('manganhang') >= 0) { hdr = i; break; }
+    }
+    if (hdr < 0) { toast('Không tìm thấy dòng tiêu đề (STT · Mã ngân hàng).'); return; }
+    IMP = [];
+    for (i = hdr + 1; i < aoa.length; i++) {
+      var r = aoa[i] || [];
+      var stt = String(r[0] == null ? '' : r[0]).trim();
+      if (!/^\d+$/.test(stt)) continue;
+      var name = String(r[1] == null ? '' : r[1]).replace(/\s+/g, ' ').trim();
+      if (!name) continue;
+      IMP.push({ stt: parseInt(stt, 10), name: name,
+        bank_code: String(r[2] == null ? '' : r[2]).replace(/[^0-9]/g, ''),
+        account: String(r[3] == null ? '' : r[3]).replace(/[^0-9A-Za-z]/g, ''),
+        card_no: String(r[4] == null ? '' : r[4]).replace(/[^0-9A-Za-z]/g, ''),
+        amount: Math.round(Number(String(r[5] == null ? 0 : r[5]).replace(/[^0-9.-]/g, '')) || 0),
+        content: String(r[6] == null ? '' : r[6]).replace(/\s+/g, ' ').trim() });
+    }
+    if (!IMP.length) { toast('Không có dòng dữ liệu nào.'); return; }
+    var codes = IMP.map(function (x) { return x.bank_code; }).filter(Boolean);
+    Promise.all(codes.filter(function (v, k, a) { return a.indexOf(v) === k; })
+      .map(function (c) { return api('banks-find', null, '&q=' + encodeURIComponent(c))
+        .then(function (d) { var hit = (d.rows || []).filter(function (x) { return x.code === c; })[0];
+          return [c, hit ? hit.name : '']; }).catch(function () { return [c, '']; }); }))
+      .then(function (pairs) {
+        var map = {}; pairs.forEach(function (p) { map[p[0]] = p[1]; });
+        var tot = 0, miss = 0;
+        el('pvTb').innerHTML = IMP.map(function (x) {
+          tot += x.amount; var bn = map[x.bank_code] || ''; if (!bn) miss++;
+          return '<tr><td>' + x.stt + '</td><td>' + esc(x.name) + '</td><td>' + esc(x.bank_code) + '</td>' +
+            '<td>' + (bn ? esc(bn) : '<span class="sub warn">chưa có trong danh mục</span>') + '</td>' +
+            '<td>' + esc(x.account) + '</td><td class="num">' + money(x.amount) + '</td></tr>';
+        }).join('');
+        el('pvBox').style.display = '';
+        el('impSum').textContent = IMP.length + ' người · ' + money(tot) + (miss ? ' · ' + miss + ' mã NH chưa tra được' : '');
+        el('impGo').disabled = false;
+        if (IMP[0] && IMP[0].content) el('iContent').value = IMP[0].content;
+      });
+  };
+  rd.readAsArrayBuffer(f);
+}
+
+window.saveImport = function () {
+  if (!IMP.length) return;
+  var b = el('impGo'); b.disabled = true; b.textContent = 'Đang lưu…';
+  api('run-create', { period: el('iPeriod').value.trim(), title: el('iTitle').value.trim(),
+    content: el('iContent').value.trim(), items: IMP })
+    .then(function (d) {
+      b.disabled = false; b.textContent = 'Lưu bảng lương';
+      closeImp(); toast('Đã lưu ' + d.n + ' dòng · ' + money(d.total));
+      RUN = { id: d.id }; load();
+    })
+    .catch(function (e) { b.disabled = false; b.textContent = 'Lưu bảng lương'; toast(e.message); });
+};
+
+/* ── danh mục ngân hàng ───────────────────────────────── */
+function openBanks() {
+  el('bkLog').textContent = '';
+  el('ovBank').classList.add('open');
+  api('banks-count').then(function (d) {
+    el('bkInfo').textContent = d.n ? ('Đang có ' + d.n.toLocaleString('vi-VN') + ' mã ngân hàng' +
+      (d.updated_at ? ' · cập nhật ' + d.updated_at.slice(0, 16) : '')) : 'Chưa có mã nào — hãy nhập 2 file danh sách của ACB.';
+  }).catch(function (e) { el('bkInfo').textContent = e.message; });
+}
+function readBanks(files) {
+  var all = [], done = 0;
+  el('bkLog').textContent = 'Đang đọc file…';
+  Array.prototype.forEach.call(files, function (f) {
+    var rd = new FileReader();
+    rd.onload = function () {
+      try {
+        var wb = XLSX.read(new Uint8Array(rd.result), { type: 'array' });
+        var aoa = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: true, defval: '' });
+        var src = /trong/i.test(f.name) ? 'acb' : 'ngoai';
+        aoa.forEach(function (r) {
+          var c = String(r[0] == null ? '' : r[0]).replace(/[^0-9]/g, '');
+          var n = String(r[1] == null ? '' : r[1]).trim();
+          if (c && n) all.push({ code: c, name: n, province: String(r[2] == null ? '' : r[2]).trim(), src: src });
+        });
+      } catch (e) { toast('Không đọc được ' + f.name); }
+      if (++done === files.length) pushBanks(all);
+    };
+    rd.readAsArrayBuffer(f);
+  });
+}
+function pushBanks(all) {
+  if (!all.length) { el('bkLog').textContent = 'Không có mã nào trong file.'; return; }
+  var i = 0, sent = 0;
+  function step() {
+    if (i >= all.length) {
+      el('bkLog').textContent = '✓ Đã nhập ' + sent.toLocaleString('vi-VN') + ' mã.';
+      openBanks(); return;
+    }
+    var chunk = all.slice(i, i + 400); i += 400;
+    el('bkLog').textContent = 'Đang gửi ' + i.toLocaleString('vi-VN') + ' / ' + all.length.toLocaleString('vi-VN') + '…';
+    api('banks-import', { rows: chunk }).then(function (d) { sent += d.n; step(); })
+      .catch(function (e) { el('bkLog').textContent = 'Lỗi: ' + e.message; });
+  }
+  step();
+}
+
+/* ── xuất file ACB ────────────────────────────────────── */
+function expAcb() {
+  if (!RUN || !ITEMS.length) { toast('Chưa có bảng lương để xuất.'); return; }
+  var aoa = [['TIÊU ĐỀ'], [], ['STT', 'Tên đơn vị thụ hưởng', 'Mã ngân hàng', 'Số tài khoản nhận', 'Số thẻ (ACB)', 'Số tiền', 'Nội dung']];
+  ITEMS.forEach(function (r) {
+    aoa.push([r.stt, r.name, r.bank_code, r.account, r.card_no || '', Number(r.amount) || 0, r.content || RUN.content]);
+  });
+  aoa.push([]);
+  aoa.push(['Lưu ý:  Quý khách vui lòng nhập thông tin không dùng dấu tiếng Việt, không thay đổi định dạng file.']);
+  var ws = XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols'] = [{ wch: 5 }, { wch: 30 }, { wch: 12 }, { wch: 20 }, { wch: 16 }, { wch: 14 }, { wch: 32 }];
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Chi Lo');
+  XLSX.writeFile(wb, 'LUONG_' + RUN.period.replace('-', '') + '.xlsx');
+  toast('Đã xuất file ACB');
+}
+
+/* ── khởi động ────────────────────────────────────────── */
+function bindDrop(dropId, accept, multi, cb) {
+  var inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = accept; if (multi) inp.multiple = true; inp.style.display = 'none';
+  document.body.appendChild(inp);
+  inp.addEventListener('change', function () { if (inp.files.length) cb(multi ? inp.files : inp.files[0]); inp.value = ''; });
+  var d = el(dropId);
+  d.addEventListener('click', function () { inp.click(); });
+  ['dragenter', 'dragover'].forEach(function (e) { d.addEventListener(e, function (ev) { ev.preventDefault(); d.classList.add('hot'); }); });
+  ['dragleave', 'drop'].forEach(function (e) {
+    d.addEventListener(e, function (ev) { ev.preventDefault(); d.classList.remove('hot');
+      if (e === 'drop' && ev.dataTransfer && ev.dataTransfer.files.length) cb(multi ? ev.dataTransfer.files : ev.dataTransfer.files[0]); });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  bindDrop('impDrop', '.xlsx,.xls', false, readSalary);
+  bindDrop('bkDrop', '.xls,.xlsx', true, readBanks);
+  bindDrop('prDrop', 'image/png,image/jpeg,image/webp,application/pdf', false, takeProof);
+  document.addEventListener('paste', function (ev) {
+    if (!el('ovPaid').classList.contains('open')) return;
+    var it = ev.clipboardData && ev.clipboardData.items; if (!it) return;
+    for (var i = 0; i < it.length; i++) if (it[i].type.indexOf('image/') === 0) { takeProof(it[i].getAsFile()); ev.preventDefault(); }
+  });
+  ['ovImp', 'ovBank', 'ovPaid'].forEach(function (id) {
+    el(id).addEventListener('click', function (ev) { if (ev.target === el(id)) el(id).classList.remove('open'); });
+  });
+  load();
+});
+</script>
+</body>
+</html>
