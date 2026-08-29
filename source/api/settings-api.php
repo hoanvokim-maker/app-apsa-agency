@@ -469,6 +469,93 @@ $now    = date('Y-m-d H:i:s');
 
 switch ($action) {
 
+/* ---- Phan quyen: bang quyen cua chinh minh (moi user dang nhap) ---- */
+case 'perm-me': {
+    s_me();
+    require_once __DIR__ . '/perm.php';
+    $pg = array();
+    foreach (pm_groups() as $g) {
+        $pg[] = array('key' => $g['key'], 'name' => $g['name'],
+            'mods' => $g['mods'], 'pages' => $g['pages']);
+    }
+    s_out(array('ok' => true, 'admin' => pm_is_admin(),
+        'perm' => pm_my_map(), 'groups' => $pg));
+    break;
+}
+
+/* ---- Phan quyen: doc toan bo ma tran (Admin) ---- */
+case 'perm-get': {
+    s_admin();
+    require_once __DIR__ . '/perm.php';
+    pm_init();
+    st_pos_boot();
+    $pos = array();
+    foreach (st_pdo()->query("SELECT pkey, label FROM `staff_positions` WHERE active = 1 ORDER BY sort, id") as $r) {
+        $pos[] = array('key' => (string) $r['pkey'], 'label' => (string) $r['label']);
+    }
+    $pos[] = array('key' => '-', 'label' => 'Chưa gán vị trí');
+    $users = array();
+    foreach (st_pdo()->query("SELECT id, display_name, username, role, position FROM `app_users` WHERE active = 1 ORDER BY display_name") as $r) {
+        $users[] = array(
+            'id' => (int) $r['id'],
+            'name' => (string) $r['display_name'],
+            'username' => (string) $r['username'],
+            'admin' => strtolower((string) $r['role']) === 'admin',
+            'pos' => strtolower(trim((string) $r['position'])),
+        );
+    }
+    s_out(array('ok' => true, 'groups' => pm_groups(), 'positions' => $pos,
+        'users' => $users, 'rules' => pm_rules()));
+    break;
+}
+
+/* ---- Phan quyen: luu cho 1 vi tri hoac 1 user (Admin) ---- */
+case 'perm-save': {
+    s_admin();
+    require_once __DIR__ . '/perm.php';
+    pm_init();
+    $scope = (isset($B['scope']) && $B['scope'] === 'user') ? 'user' : 'pos';
+    $key   = trim((string) (isset($B['key']) ? $B['key'] : ''));
+    $vals  = (isset($B['vals']) && is_array($B['vals'])) ? $B['vals'] : array();
+    if ($key === '') s_fail('Thiếu đối tượng phân quyền');
+    $ok = array();
+    foreach (pm_groups() as $g) $ok[$g['key']] = 1;
+    $pdo = pm_pdo();
+    $pdo->beginTransaction();
+    try {
+        $del = $pdo->prepare("DELETE FROM `perm_rules` WHERE scope = ? AND scope_key = ?");
+        $del->execute(array($scope, $key));
+        $ins = $pdo->prepare("INSERT INTO `perm_rules` (scope, scope_key, grp, lvl) VALUES (?,?,?,?)");
+        foreach ($vals as $gk => $lv) {
+            if (!isset($ok[$gk])) continue;
+            $lv = (int) $lv;
+            if ($lv < 0) $lv = 0;
+            if ($lv > 2) $lv = 2;
+            $ins->execute(array($scope, $key, $gk, $lv));
+        }
+        $pdo->commit();
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        s_fail('Không lưu được phân quyền: ' . $e->getMessage(), 500);
+    }
+    s_out(array('ok' => true, 'message' => 'Đã lưu phân quyền'));
+    break;
+}
+
+/* ---- Phan quyen: xoa luat rieng, tra ve mac dinh (Admin) ---- */
+case 'perm-reset': {
+    s_admin();
+    require_once __DIR__ . '/perm.php';
+    pm_init();
+    $scope = (isset($B['scope']) && $B['scope'] === 'user') ? 'user' : 'pos';
+    $key   = trim((string) (isset($B['key']) ? $B['key'] : ''));
+    if ($key === '') s_fail('Thiếu đối tượng');
+    $st = pm_pdo()->prepare("DELETE FROM `perm_rules` WHERE scope = ? AND scope_key = ?");
+    $st->execute(array($scope, $key));
+    s_out(array('ok' => true, 'message' => 'Đã trả về mặc định'));
+    break;
+}
+
 /* ---- Doc: cho MOI nguoi dung dang nhap (quotation.html can) ---- */
 case 'public':
     s_me();   // phai dang nhap
