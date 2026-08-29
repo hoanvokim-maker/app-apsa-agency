@@ -1,5 +1,5 @@
 {
-    "version": "1.6.2",
+    "version": "1.6.3",
     "updated": "2026-08-29",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-29",
             "note": "Phiên bản 1.6",
             "items": [
+                {
+                    "d": "2026-08-29",
+                    "v": "1.6.3",
+                    "t": "chi-phi: bo loc 'Den han' + the 'Can chuan bi 7 ngay' tren thanh so lieu",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-29",
                     "v": "1.6.2",
