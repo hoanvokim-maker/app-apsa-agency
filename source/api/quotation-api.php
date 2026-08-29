@@ -180,6 +180,7 @@ function loadExpenses(PDO $pdo, $qid) {
             'bank_account' => (string) (isset($r['bank_account']) ? $r['bank_account'] : ''),
             'bank_holder' => (string) (isset($r['bank_holder']) ? $r['bank_holder'] : ''),
             'bank_masked' => (int) (isset($r['bank_masked']) ? $r['bank_masked'] : 0),
+            'pay_date'    => (string) (isset($r['pay_date']) ? $r['pay_date'] : ''),
         ];
     }
     return $out;
@@ -394,6 +395,9 @@ if (!q_hasColumn($pdo, 'quotation_items', 'act_qty')) {
 }
 
 /* --- Chi phi thuc te: nguoi nhan + trang thai tra tien --- */
+if (!q_hasColumn($pdo, 'quotation_expenses', 'pay_date')) {
+    q_mig($pdo, "ALTER TABLE `quotation_expenses` ADD COLUMN `pay_date` DATE NULL DEFAULT NULL");
+}
 if (!q_hasColumn($pdo, 'quotation_expenses', 'paid')) {
     q_mig($pdo, "ALTER TABLE `quotation_expenses`
         ADD COLUMN `paid`         TINYINT(1)   NOT NULL DEFAULT 0  COMMENT '1 = da tra',
@@ -1796,6 +1800,7 @@ case 'exp-row-save': {
             $sets[] = '`bank_account` = ?'; $par[] = q_payeeF($pdo, $B, 'bank_account');
             $sets[] = '`bank_holder` = ?';  $par[] = q_payeeF($pdo, $B, 'bank_holder');
         }
+            if (array_key_exists('pay_date', $B)) { $sets[] = '`pay_date` = ?'; $par[] = q_dateOf($B); }
             if (isset($B['payee_type']) && q_payeeT($B) === 'user') { $sets[] = '`vat_percent` = ?'; $par[] = 0; }
         if (!$sets) q_fail('Khong co gi de cap nhat');
         $par[] = $id;
@@ -1811,8 +1816,8 @@ case 'exp-row-save': {
     $so->execute([$qid]);
     $ins = $pdo->prepare("INSERT INTO `quotation_expenses`
         (quotation_id, kind, category, name, description, qty, unit, price, vat_percent, sort_order,
-         paid, payee_type, payee_id, payee_name, bank_name, bank_account, bank_holder)
-        VALUES (?,'item','',?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+         paid, payee_type, payee_id, payee_name, bank_name, bank_account, bank_holder, pay_date)
+        VALUES (?,'item','',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
     $ins->execute([
         $qid, s($B['name'] ?? '', 300), s($B['description'] ?? '', 5000),
         num($B['qty'] ?? 1), s($B['unit'] ?? '', 60), num($B['price'] ?? 0), num($B['vat_percent'] ?? 0),
@@ -1820,6 +1825,7 @@ case 'exp-row-save': {
         (int) !!($B['paid'] ?? 0), q_payeeT($B) ?: null, (int) ($B['payee_id'] ?? 0),
         q_payeeF($pdo, $B, 'name'), q_payeeF($pdo, $B, 'bank_name'),
         q_payeeF($pdo, $B, 'bank_account'), q_payeeF($pdo, $B, 'bank_holder'),
+        q_dateOf($B),
     ]);
     q_ok(array('id' => (int) $pdo->lastInsertId()));
 }
@@ -1830,6 +1836,31 @@ case 'exp-row-del': {
     if ($id <= 0) q_fail('Thieu id');
     $pdo->prepare("DELETE FROM `quotation_expenses` WHERE id = ?")->execute([$id]);
     q_ok(array('id' => $id));
+}
+
+case 'qr-png': {
+    $bin = preg_replace('/[^0-9]/', '', (string) ($_GET['bin'] ?? ''));
+    $acc = preg_replace('/[^0-9A-Za-z]/', '', (string) ($_GET['acc'] ?? ''));
+    if (strlen($bin) !== 6 || $acc === '') q_fail('Thieu thong tin tao QR');
+    $url = 'https://img.vietqr.io/image/' . $bin . '-' . $acc . '-compact2.png'
+        . '?amount=' . rawurlencode(preg_replace('/[^0-9]/', '', (string) ($_GET['amount'] ?? '')))
+        . '&addInfo=' . rawurlencode(mb_substr((string) ($_GET['info'] ?? ''), 0, 80))
+        . '&accountName=' . rawurlencode(mb_substr((string) ($_GET['name'] ?? ''), 0, 80));
+    $ch = curl_init($url);
+    curl_setopt_array($ch, array(CURLOPT_RETURNTRANSFER => true, CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_TIMEOUT => 20, CURLOPT_CONNECTTIMEOUT => 8));
+    $img = curl_exec($ch);
+    $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    if ($img === false || $code !== 200 || strlen($img) < 200) q_fail('Khong tai duoc anh QR (HTTP ' . $code . ')', 502);
+    if (session_status() === PHP_SESSION_ACTIVE) @session_write_close();
+    @header_remove('Pragma'); @header_remove('Expires');
+    $fn = preg_replace('/[^0-9A-Za-z._-]/', '', 'QR-' . $acc . '.png');
+    header('Content-Type: image/png');
+    header('Content-Length: ' . strlen($img));
+    header('Content-Disposition: attachment; filename="' . $fn . '"');
+    echo $img;
+    exit;
 }
 
 case 'payees': {
@@ -1857,8 +1888,8 @@ case 'expenses-save': {
         $pdo->prepare("DELETE FROM `quotation_expenses` WHERE quotation_id = ?")->execute([$qid]);
         $ins = $pdo->prepare(
             "INSERT INTO `quotation_expenses`
-               (quotation_id, kind, category, name, description, qty, unit, price, vat_percent, sort_order, src_id, paid, payee_type, payee_id, payee_name, bank_name, bank_account, bank_holder)
-             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+               (quotation_id, kind, category, name, description, qty, unit, price, vat_percent, sort_order, src_id, paid, payee_type, payee_id, payee_name, bank_name, bank_account, bank_holder, pay_date)
+             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         $i = 0; $cat = '';
         foreach ($list as $r) {
             $kind = (($r['kind'] ?? 'item') === 'group') ? 'group' : 'item';
@@ -1884,6 +1915,7 @@ case 'expenses-save': {
                 q_payeeT($r) ?: null, (int)($r['payee_id'] ?? 0),
                 q_payeeF($pdo, $r, 'name'), q_payeeF($pdo, $r, 'bank_name'),
                 q_payeeF($pdo, $r, 'bank_account'), q_payeeF($pdo, $r, 'bank_holder'),
+                q_dateOf($r),
             ]);
         }
         $pdo->commit();
@@ -3286,3 +3318,9 @@ function q_needAdmin(PDO $pdo) {
 
 /** Ca nhan (freelancer) khong tinh VAT; cong ty giu nguyen VAT nhap vao. */
 function q_vatOf($r) { return q_payeeT($r) === 'user' ? 0 : num($r['vat_percent'] ?? 0); }
+
+/** Ngay se thanh toan: chi nhan dinh dang YYYY-MM-DD, con lai tra NULL. */
+function q_dateOf($r) {
+    $d = trim((string) ($r['pay_date'] ?? ''));
+    return preg_match('/^\d{4}-\d{2}-\d{2}$/', $d) ? $d : null;
+}

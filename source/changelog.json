@@ -1,5 +1,5 @@
 {
-    "version": "1.6.0",
+    "version": "1.6.1",
     "updated": "2026-08-29",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-29",
             "note": "Phiên bản 1.6",
             "items": [
+                {
+                    "d": "2026-08-29",
+                    "v": "1.6.1",
+                    "t": "quotation: cot Ngay TT cho chi phi thuc te; dialog chuyen khoan: so tien khoa + dinh dang dau cham, them ngay se thanh toan, tai anh QR PNG",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-29",
                     "v": "1.6.0",
