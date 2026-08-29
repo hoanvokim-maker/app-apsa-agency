@@ -273,7 +273,7 @@
 
   function loadSupply() {
     if (!IS_ADMIN) { SUPPLY = {}; return Promise.resolve(); }
-    return vapi('?action=supply&sheet=vfr').then(function (j) { SUPPLY = j.map || {}; }).catch(function () { SUPPLY = {}; });
+    return vapi('?action=supply&sheet=' + encodeURIComponent(curSheet)).then(function (j) { SUPPLY = j.map || {}; }).catch(function () { SUPPLY = {}; });
   }
 
   function ensureVfrData() {
@@ -306,7 +306,7 @@
     var rows = SUPPLY[String(it.id)] || [];
     if (!rows.length) return '<td class="sup-cell"><span class="none">— chưa có —</span></td>';
     var h = rows.slice(0, 3).map(function (r) {
-      var ps = [r.p1, r.p2, r.p3].map(function (x) { return pm(x) ? fmtVnd(pm(x)) : '—'; }).join(' / ');
+      var ps = (curSheet === VFR ? [r.p1, r.p2, r.p3] : [r.p1]).map(function (x) { return pm(x) ? fmtVnd(pm(x)) : '—'; }).join(' / ');
       return '<span class="s"><b>' + esc(r.supplier_name || '?') + '</b> · ' + ps + '</span>';
     }).join('');
     if (rows.length > 3) h += '<span class="s">+' + (rows.length - 3) + ' NCC khác</span>';
@@ -415,8 +415,10 @@
     mBindAll();
     el('vfrZipRow').style.display   = v ? 'block' : 'none';
     if (el('vfrSpecRow')) el('vfrSpecRow').style.display = v ? 'block' : 'none';
-    if (el('vfrSupDiv')) el('vfrSupDiv').style.display = (v && IS_ADMIN) ? 'flex' : 'none';
-    if (el('vfrSupBox')) el('vfrSupBox').style.display = (v && IS_ADMIN) ? 'block' : 'none';
+    if (el('vfrSupDiv')) el('vfrSupDiv').style.display = IS_ADMIN ? 'flex' : 'none';
+    if (el('vfrSupBox')) el('vfrSupBox').style.display = IS_ADMIN ? 'block' : 'none';
+    if (IS_ADMIN) { try { renderSupBox(); } catch (e) {} }
+    if (el('vfrSupDiv')) { var sdl = el('vfrSupDiv').querySelector('.divider-label'); if (sdl) sdl.textContent = v ? 'Nhà cung cấp & đơn giá theo số lượng' : 'Nhà cung cấp & đơn giá'; }
 
     el('itemDivLabel').textContent = v ? 'Sản phẩm' : 'Hạng mục';
     el('lbItemEn').textContent = v ? 'Tên sản phẩm (EN) *' : 'Tên hạng mục (EN) *';
@@ -461,7 +463,7 @@
 
     box.innerHTML =
       (editRows.length
-        ? '<table class="supt"><thead><tr><th style="width:26%">Nhà cung cấp</th><th>' + QL[0] + '</th><th>' + QL[1] + '</th><th>' + QL[2] + '</th><th style="width:22%">Ghi chú</th><th style="width:28px"></th></tr></thead><tbody>' + body + '</tbody></table>'
+        ? '<table class="supt' + (el('itSheet').value === VFR ? '' : ' sup1') + '"><thead><tr><th style="width:26%">Nhà cung cấp</th><th>' + (el('itSheet').value === VFR ? QL[0] : 'Đơn giá') + '</th><th>' + QL[1] + '</th><th>' + QL[2] + '</th><th style="width:22%">Ghi chú</th><th style="width:28px"></th></tr></thead><tbody>' + body + '</tbody></table>'
         : '<div class="sup-empty">Chưa gắn nhà cung cấp nào cho sản phẩm này.</div>') +
       '<div class="sup-acts">' +
         '<button class="zipbtn" onclick="vfrSupAddRow()">＋ Thêm nhà cung cấp</button>' +
@@ -773,17 +775,17 @@
       }
 
       return p.then(function (id) {
-        if (!vfrMode) return null;
-        var jobs = [vpost('?action=extra-save', {
+        var jobs = [];
+        if (vfrMode) jobs.push(vpost('?action=extra-save', {
           item_id: id,
           specs: el('itSpecs') ? el('itSpecs').value.trim() : '',
           prod_url: pendProd ? pendProd.url : '',
           prod_name: pendProd ? pendProd.name : '',
           prod_id: pendProd ? pendProd.id : '',
           prod_dir: pendProd ? (pendProd.dir ? 1 : 0) : 0
-        })];
+        }));
         if (IS_ADMIN) jobs.push(vpost('?action=supply-save', { item_id: id, rows: rows }));
-        return Promise.all(jobs);
+        return jobs.length ? Promise.all(jobs) : null;
       }).then(function () {
         toast('Đã lưu ✓', 'ok');
         closeIt();
@@ -811,7 +813,7 @@
       var d = await api('?' + q.toString());
       if (my !== loadSeq) return;
       items = d.items || [];
-      if (curSheet === VFR && !inTrash) await ensureVfrData(); else render();
+      if (!inTrash) await ensureVfrData(); else render();
       el('cnt').textContent = items.length;
     } catch (e) {
       if (my !== loadSeq) return;
@@ -897,6 +899,56 @@
     }, 400);
   }
 
+
+  /* ---- gia von / loi nhuan / nha cung cap cho cac tab thuong ---- */
+  (function () {
+    var st = document.createElement('style');
+    st.textContent =
+      '.supt.sup1 th:nth-child(3),.supt.sup1 th:nth-child(4),' +
+      '.supt.sup1 td:nth-child(3),.supt.sup1 td:nth-child(4){display:none}';
+    document.head.appendChild(st);
+  })();
+
+  function rcExtraOn() { return curSheet !== VFR && !inTrash && IS_ADMIN; }
+
+  var rcOrigRow = window.rowHtml;
+  window.rowHtml = function (it) {
+    var h = rcOrigRow.apply(this, arguments);
+    if (!rcExtraOn()) return h;
+    var k = h.indexOf('<td class="notes-cell"');
+    if (k < 0) return h;
+    var c = n0(it.cost_price);
+    var td = '<td class="price-cell' + (c ? '' : ' zero') + '">' + (c ? fmtVnd(c) + ' đ' : '—') + '</td>';
+    return h.slice(0, k) + td + profitTd(n0(it.basic), c) + supTd(it) + h.slice(k);
+  };
+
+  function rcTh(t, r) {
+    var th = document.createElement('th');
+    if (r) th.style.textAlign = 'right';
+    th.textContent = t;
+    return th;
+  }
+  function rcHeads() {
+    if (!rcExtraOn()) return;
+    var tb = document.querySelectorAll('table.rc');
+    for (var i = 0; i < tb.length; i++) {
+      var tr = tb[i].querySelector('thead tr');
+      if (!tr || tr.children.length !== 9) continue;
+      if (tr.getAttribute('data-rcsup') === '1') continue;
+      var a = tr.children[7];
+      tr.insertBefore(rcTh('Giá vốn', 1), a);
+      tr.insertBefore(rcTh('Lợi nhuận', 1), a);
+      tr.insertBefore(rcTh('Nhà cung cấp', 0), a);
+      tr.setAttribute('data-rcsup', '1');
+    }
+  }
+  var rcOrigRender = window.render;
+  window.render = function () {
+    var r = rcOrigRender.apply(this, arguments);
+    try { rcHeads(); } catch (e) {}
+    return r;
+  };
+
   injectCss();
   buildModal();
   var origPH = window.updProfitHint;
@@ -908,7 +960,7 @@
   mBindAll();
   applyTerms();
   ensureMeta().then(function () {
-    if (curSheet === VFR && !inTrash) ensureVfrData();
+    if (!inTrash) ensureVfrData();
     applyTerms();
     guardTick(6);
   });

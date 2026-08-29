@@ -6849,7 +6849,7 @@ CREATE TABLE `ratecard_item_supply` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `u_pair` (`item_id`,`supplier_id`),
   KEY `k_item` (`item_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -6910,7 +6910,7 @@ CREATE TABLE `ratecard_items` (
   KEY `idx_sheet` (`sheet_key`),
   KEY `idx_cat` (`sheet_key`,`cat_code`),
   KEY `idx_deleted` (`deleted_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=177 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=178 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
