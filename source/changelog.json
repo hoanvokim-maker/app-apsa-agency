@@ -1,5 +1,5 @@
 {
-    "version": "1.6.3",
+    "version": "1.6.4",
     "updated": "2026-08-29",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-29",
             "note": "Phiên bản 1.6",
             "items": [
+                {
+                    "d": "2026-08-29",
+                    "v": "1.6.4",
+                    "t": "dialog chuyen khoan: thong tin dang text canh trai + nut Sua + tai anh QR PNG (bao gia, nghiem thu, chi phi thuc te, bang luong)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-29",
                     "v": "1.6.3",

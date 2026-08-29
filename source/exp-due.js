@@ -181,3 +181,99 @@
     '#pillDue.on{background:rgba(249,115,22,.9);color:#1a1a1a;border-color:transparent}';
   (document.head || document.documentElement).appendChild(css);
 })();
+
+/* ---- dialog "Chuyen khoan" cua chi-phi.html: hien dang text, canh trai ---- */
+(function () {
+  'use strict';
+  var IDS = ['qAcc', 'qName', 'qAmt', 'qInfo'];
+
+  function box() {
+    var a = document.getElementById('qAcc');
+    return (a && a.parentNode) ? a.parentNode.parentNode : null;
+  }
+  function lock(on) {
+    for (var i = 0; i < IDS.length; i++) {
+      var e = document.getElementById(IDS[i]);
+      if (e) e.readOnly = !!on;
+    }
+  }
+  function qrPng() {
+    var wrap = document.getElementById('qImg');
+    if (!wrap || document.getElementById('qDl')) return;
+    var img = wrap.querySelector('img');
+    if (!img) return;
+    var src = img.getAttribute('src') || '';
+    var m = src.match(/\/image\/(\d{6})-([0-9A-Za-z]+)-compact2\.png/);
+    if (!m) return;
+    var q = src.indexOf(String.fromCharCode(63));
+    var pr = new URLSearchParams(q >= 0 ? src.slice(q + 1) : '');
+    var a = document.createElement('a');
+    a.id = 'qDl';
+    a.className = 'qrdl';
+    a.href = 'api/quotation-api.php' + String.fromCharCode(63) + 'action=qr-png' +
+      '&bin=' + encodeURIComponent(m[1]) + '&acc=' + encodeURIComponent(m[2]) +
+      '&amount=' + encodeURIComponent(pr.get('amount') || '') +
+      '&info=' + encodeURIComponent(pr.get('addInfo') || '') +
+      '&name=' + encodeURIComponent(pr.get('accountName') || '');
+    a.setAttribute('download', 'QR-' + m[2] + '.png');
+    a.textContent = '⬇ Tải ảnh PNG';
+    wrap.appendChild(a);
+  }
+  function qrRo() {
+    var b = box();
+    if (!b) return;
+    b.classList.add('qro');
+    lock(true);
+    var a = document.getElementById('qAmt');
+    if (a) a.value = String(a.value).replace(/[^0-9]/g, '')
+      .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    if (!document.getElementById('qEdit')) {
+      var btn = document.createElement('button');
+      btn.id = 'qEdit';
+      btn.type = 'button';
+      btn.className = 'qredit';
+      btn.textContent = '✎ Sửa thông tin';
+      btn.onclick = function () {
+        b.classList.remove('qro');
+        lock(false);
+        btn.style.display = 'none';
+      };
+      b.appendChild(btn);
+    } else {
+      document.getElementById('qEdit').style.display = '';
+    }
+    qrPng();
+  }
+
+  var _open = window.openQr;
+  if (typeof _open === 'function') {
+    window.openQr = function () {
+      var out = _open.apply(this, arguments);
+      setTimeout(qrRo, 0);
+      return out;
+    };
+  }
+  var _draw = window.qrDraw;
+  if (typeof _draw === 'function') {
+    window.qrDraw = function () {
+      var out = _draw.apply(this, arguments);
+      setTimeout(qrPng, 0);
+      return out;
+    };
+  }
+
+  var css = document.createElement('style');
+  css.textContent =
+    '.qro .fg input,.qro .fg select{border-color:transparent!important;' +
+    'background:transparent!important;background-image:none!important;' +
+    'padding-left:0!important;text-align:left!important;' +
+    '-webkit-appearance:none;appearance:none}' +
+    '.qro .fg select{pointer-events:none;cursor:default}' +
+    '.qredit{margin-top:12px;font-size:11px;color:var(--text3,#888);cursor:pointer;' +
+    'border:1px solid var(--line,#333);border-radius:8px;padding:5px 11px;' +
+    'background:transparent;font-family:inherit}' +
+    '.qredit:hover{color:inherit}' +
+    '#qImg{text-align:center}' +
+    '.qrdl{display:inline-block;margin-top:8px;font-size:11px;color:var(--text3,#888)}';
+  (document.head || document.documentElement).appendChild(css);
+})();

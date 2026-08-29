@@ -233,26 +233,40 @@
           '<button type="button" class="expqr-x" onclick="expQrClose()">✕</button>' +
         '</div>' +
         '<div class="expqr-bd">' +
-          '<div class="expqr-l">' +
+          '<div class="expqr-l ro" id="expQrL">' +
             '<label>Ngân hàng</label>' +
             '<select id="expQrBank" onchange="expQrDraw(' + i + ')">' +
               '<option value=""' + (bin ? '' : ' selected') + '>— chọn ngân hàng —</option>' + opts +
             '</select>' +
             '<label>Số tài khoản</label>' +
-            '<input id="expQrAcc" value="' + esc(r.bank_account) + '" oninput="expQrDraw(' + i + ')" />' +
+            '<input id="expQrAcc" readonly value="' + esc(r.bank_account) + '" oninput="expQrDraw(' + i + ')" />' +
             '<label>Chủ tài khoản</label>' +
-            '<input id="expQrName" value="' + esc(r.bank_holder || r.payee_name || '') + '" oninput="expQrDraw(' + i + ')" />' +
+            '<input id="expQrName" readonly value="' + esc(r.bank_holder || r.payee_name || '') + '" oninput="expQrDraw(' + i + ')" />' +
             '<label>Số tiền (VND)</label>' +
-            '<input id="expQrAmt" value="' + amtOf(r) + '" oninput="expQrDraw(' + i + ')" />' +
+            '<input id="expQrAmt" readonly value="' + String(Math.round(amtOf(r))).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '" oninput="expQrDraw(' + i + ')" />' +
             '<label>Nội dung chuyển khoản</label>' +
-            '<input id="expQrInfo" value="' + esc(noDia(expQuoCode() + ' ' + (r.name || '')).trim()) + '" oninput="expQrDraw(' + i + ')" />' +
-            '<div class="expqr-note">Quét bằng app ngân hàng. Nếu dò sai ngân hàng, chọn lại ở trên.</div>' +
+            '<input id="expQrInfo" readonly value="' + esc(noDia(expQuoCode() + ' ' + (r.name || '')).trim()) + '" oninput="expQrDraw(' + i + ')" />' +
+            '<div class="expqr-note">Quét bằng app ngân hàng. Bấm “Sửa” nếu cần đổi ngân hàng hoặc thông tin.</div>' +
+            '<button type="button" class="expqr-edit" onclick="expQrEdit()">✎ Sửa thông tin</button>' +
           '</div>' +
           '<div class="expqr-r"><div id="expQrImgWrap"></div></div>' +
         '</div>' +
       '</div>';
     ov.classList.add('open');
     window.expQrDraw(i);
+  };
+
+  window.expQrEdit = function () {
+    var l = document.getElementById('expQrL');
+    if (l) l.classList.remove('ro');
+    var ids = ['expQrAcc', 'expQrName', 'expQrInfo'];
+    for (var i = 0; i < ids.length; i++) {
+      var e = document.getElementById(ids[i]);
+      if (e) e.readOnly = false;
+    }
+    var b = document.querySelector('.expqr-edit');
+    if (b) b.style.display = 'none';
+    if (typeof window.expQrDraw === 'function') window.expQrDraw();
   };
 
   window.expQrClose = function () {
@@ -277,7 +291,12 @@
               '&accountName=' + encodeURIComponent(nm);
     wrap.innerHTML = '<img src="' + url + '" alt="QR chuyển khoản" class="expqr-img" ' +
                      'onerror="this.parentNode.innerHTML=\'<div class=&quot;expqr-empty&quot;>Không tạo được mã QR — kiểm tra lại ngân hàng / số tài khoản.</div>\'" />' +
-                     '<a class="expqr-open" href="' + url + '" target="_blank" rel="noopener">Mở ảnh QR</a>';
+                     '<a class="expqr-open" href="' + url + '" target="_blank" rel="noopener">Mở ảnh QR</a>' +
+                     '<a class="expqr-open" id="expQrDl" download="QR-' + acc + '.png" ' +
+                     'href="api/quotation-api.php' + String.fromCharCode(63) + 'action=qr-png' +
+                     '&bin=' + bin + '&acc=' + acc + '&amount=' + encodeURIComponent(amt) +
+                     '&info=' + encodeURIComponent(info) + '&name=' + encodeURIComponent(nm) +
+                     '">⬇ Tải ảnh PNG</a>';
   };
 
   /* ── CSS ──────────────────────────────────────────────────── */
@@ -314,7 +333,17 @@
     + '.expqr-r{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}'
     + '.expqr-img{width:240px;height:auto;background:#fff;border-radius:10px;padding:6px}'
     + '.expqr-open{font-size:11px;color:var(--text3,#888)}'
-    + '.expqr-empty{font-size:12px;color:var(--text3,#888);text-align:center;padding:24px 8px;line-height:1.6}';
+    + '.expqr-empty{font-size:12px;color:var(--text3,#888);text-align:center;padding:24px 8px;line-height:1.6}' +
+      '.expqr-l.ro #expQrBank,.expqr-l.ro #expQrAcc,.expqr-l.ro #expQrName,'
+    + '.expqr-l.ro #expQrAmt,.expqr-l.ro #expQrInfo{border-color:transparent;'
+    + 'background:transparent;padding:3px 0;text-align:left;font-size:14px;'
+    + 'color:inherit;-webkit-appearance:none;appearance:none}'
+    + '.expqr-l.ro #expQrBank{pointer-events:none;cursor:default;border-color:transparent!important;background:transparent!important;background-image:none!important;padding-left:0!important}'
+    + '.expqr-l.ro label{margin:12px 0 2px}#expQrImgWrap{text-align:center}.expqr-open{display:inline-block;margin:6px 7px 0}'
+    + '.expqr-edit{margin-top:14px;font-size:11px;color:var(--text3,#888);cursor:pointer;'
+    + 'border:1px solid var(--line,#333);border-radius:8px;padding:5px 11px;'
+    + 'background:transparent;font-family:inherit}'
+    + '.expqr-edit:hover{color:inherit;border-color:var(--text3,#888)}';
   var st = document.createElement('style');
   st.textContent = css;
   document.head.appendChild(st);

@@ -1,13 +1,10 @@
-/* exp-day.js — ngay chi tra cho chi phi thuc te + tinh chinh dialog chuyen khoan
- * Nap SAU exp-qr.js trong quotation.html. v1
+/* exp-day.js — cot "Ngay TT" cho bang chi phi thuc te trong quotation.html
+ * va truong "Ngay se thanh toan" trong dialog Chuyen khoan.
+ * Nap SAU exp-qr.js.  v3
  */
 (function () {
   'use strict';
 
-  function dot(v) {
-    var s = String(v == null ? '' : v).replace(/[^0-9]/g, '');
-    return s ? s.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '';
-  }
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -31,7 +28,7 @@
     if (dlg && dlg.value !== v) dlg.value = v;
   }
 
-  /* ---------- 1. o "Ngay TT" trong bang chi phi thuc te ---------- */
+  /* ---------- o "Ngay TT" trong bang ---------- */
   window.expDayCell = function (r, i) {
     return '<input type="date" class="expday" id="expday-' + i + '" value="' +
       esc(ymd(r && r.pay_date)) + '" title="Ngày sẽ thanh toán" ' +
@@ -39,22 +36,8 @@
   };
   window.expDaySet = function (i, v) { setDate(i, v); };
 
-  /* ---------- 2. dialog chuyen khoan ---------- */
+  /* ---------- truong ngay trong dialog ---------- */
   var _open = window.expQrOpen;
-  var _draw = window.expQrDraw;
-
-  function fixAmount() {
-    var a = document.getElementById('expQrAmt');
-    if (!a || a.getAttribute('data-ro') === '1') return;
-    a.setAttribute('data-ro', '1');
-    a.readOnly = true;
-    a.value = dot(a.value);
-    a.style.textAlign = 'right';
-    a.style.opacity = '.75';
-    a.style.cursor = 'not-allowed';
-    a.title = 'Số tiền lấy từ dòng chi phí';
-    a.addEventListener('keydown', function (e) { if (e.key !== 'Tab') e.preventDefault(); });
-  }
 
   function addDate(i) {
     if (document.getElementById('expQrDay')) return;
@@ -73,38 +56,11 @@
 
   window.expQrOpen = function (i) {
     var out = _open ? _open.apply(this, arguments) : undefined;
-    fixAmount(); addDate(i);
+    addDate(i);
     return out;
   };
 
-  window.expQrDraw = function () {
-    var out = _draw ? _draw.apply(this, arguments) : undefined;
-    fixAmount();
-    var img = document.querySelector('.expqr-img');
-    var lnk = document.querySelector('.expqr-open');
-    if (!img || !lnk || document.getElementById('expQrDl')) return out;
-    var src = img.getAttribute('src') || '';
-    var m = src.match(/\/image\/(\d{6})-([0-9A-Za-z]+)-compact2\.png/);
-    if (!m) return out;
-    var q = src.indexOf(String.fromCharCode(63));
-    var pr = new URLSearchParams(q >= 0 ? src.slice(q + 1) : '');
-    var a = document.createElement('a');
-    a.id = 'expQrDl';
-    a.className = lnk.className;
-    a.href = 'api/quotation-api.php' + String.fromCharCode(63) + 'action=qr-png' +
-      '&bin=' + encodeURIComponent(m[1]) +
-      '&acc=' + encodeURIComponent(m[2]) +
-      '&amount=' + encodeURIComponent(pr.get('amount') || '') +
-      '&info=' + encodeURIComponent(pr.get('addInfo') || '') +
-      '&name=' + encodeURIComponent(pr.get('accountName') || '');
-    a.setAttribute('download', 'QR-' + m[2] + '.png');
-    a.textContent = '⬇ Tải ảnh PNG';
-    a.style.marginLeft = '12px';
-    lnk.parentNode.insertBefore(a, lnk.nextSibling);
-    return out;
-  };
-
-  /* ---------- 3. CSS ---------- */
+  /* ---------- CSS ---------- */
   var st = document.createElement('style');
   st.textContent =
     '.exp-dayc{text-align:center;white-space:nowrap}' +
@@ -112,7 +68,6 @@
     'border:1px solid var(--line,#333);background:transparent;color:inherit;' +
     'font-family:inherit;font-size:12px}' +
     'input.expday::-webkit-calendar-picker-indicator,' +
-    '#expQrDay::-webkit-calendar-picker-indicator{filter:invert(.7);cursor:pointer}' +
-    '#expQrDl{cursor:pointer}';
+    '#expQrDay::-webkit-calendar-picker-indicator{filter:invert(.7);cursor:pointer}';
   (document.head || document.documentElement).appendChild(st);
 })();
