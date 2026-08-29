@@ -277,3 +277,51 @@
     '.qrdl{display:inline-block;margin-top:8px;font-size:11px;color:var(--text3,#888)}';
   (document.head || document.documentElement).appendChild(css);
 })();
+
+/* ---- khoa dong chi phi da tra (chi-phi.html) ---- */
+(function () {
+  'use strict';
+  var MSG = 'Khoản chi này đã trả — không sửa được. Bỏ đánh dấu “Đã trả” trước nếu cần sửa.';
+  function isPaid(id) {
+    var all = window.ROWS || [];
+    for (var i = 0; i < all.length; i++) {
+      if (String(all[i].id) === String(id)) return Number(all[i].paid) === 1;
+    }
+    return false;
+  }
+  function deny() {
+    if (typeof window.toast === 'function') window.toast(MSG, 'err');
+    return false;
+  }
+  var _oe = window.openEdit;
+  if (typeof _oe === 'function') {
+    window.openEdit = function (id) { if (isPaid(id)) return deny(); return _oe.apply(this, arguments); };
+  }
+  var _ad = window.askDel;
+  if (typeof _ad === 'function') {
+    window.askDel = function (id) { if (isPaid(id)) return deny(); return _ad.apply(this, arguments); };
+  }
+  function lockRows() {
+    var on = document.querySelectorAll('.pbtn.on');
+    for (var i = 0; i < on.length; i++) {
+      var tr = on[i].closest('tr');
+      if (!tr) continue;
+      tr.classList.add('rowlock');
+      var pin = tr.querySelector('input.pin');
+      if (pin) { pin.readOnly = true; pin.title = 'Đã trả — không sửa được'; }
+    }
+  }
+  var _r = window.render;
+  window.render = function () {
+    var out = _r ? _r.apply(this, arguments) : undefined;
+    setTimeout(lockRows, 0);
+    return out;
+  };
+  var css = document.createElement('style');
+  css.textContent =
+    'tr.rowlock input.pin{cursor:not-allowed;opacity:.7}' +
+    'tr.rowlock button.ib[onclick^="openEdit"],' +
+    'tr.rowlock button.ib[onclick^="askDel"]{display:none}';
+  (document.head || document.documentElement).appendChild(css);
+  if (document.readyState !== 'loading') setTimeout(lockRows, 1000);
+})();

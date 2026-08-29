@@ -71,3 +71,47 @@
     '#expQrDay::-webkit-calendar-picker-indicator{filter:invert(.7);cursor:pointer}';
   (document.head || document.documentElement).appendChild(st);
 })();
+
+/* ---- khoa dong chi phi da tra (quotation.html) ---- */
+(function () {
+  'use strict';
+  var SEL = 'td:not(.exp-paidc):not(.exp-actc) input, td:not(.exp-paidc):not(.exp-actc) select';
+  function lockRows() {
+    var box = document.getElementById('expWrap');
+    if (!box) return;
+    var trs = box.querySelectorAll('tbody tr');
+    for (var i = 0; i < trs.length; i++) {
+      var r = null;
+      try { if (typeof EXP !== 'undefined' && EXP[i]) r = EXP[i]; } catch (e) {}
+      if (!r) continue;
+      var paid = Number(r.paid) === 1;
+      if (paid) trs[i].classList.add('exp-locked');
+      else trs[i].classList.remove('exp-locked');
+      var f = trs[i].querySelectorAll(SEL);
+      for (var j = 0; j < f.length; j++) {
+        if (f[j].tagName === 'SELECT' || f[j].type === 'date' || f[j].type === 'checkbox') f[j].disabled = paid;
+        else f[j].readOnly = paid;
+        if (paid) f[j].title = 'Đã trả — không sửa được';
+      }
+    }
+  }
+  var timer = null;
+  function schedule() { clearTimeout(timer); timer = setTimeout(lockRows, 30); }
+  function start() {
+    var box = document.getElementById('expWrap');
+    if (!box) { setTimeout(start, 400); return; }
+    if (window.MutationObserver) {
+      new MutationObserver(schedule).observe(box, { childList: true, subtree: true });
+    }
+    schedule();
+  }
+  if (document.readyState !== 'loading') setTimeout(start, 500);
+  else document.addEventListener('DOMContentLoaded', function () { setTimeout(start, 500); });
+
+  var st = document.createElement('style');
+  st.textContent =
+    'tr.exp-locked > td{background:rgba(255,255,255,.035)}' +
+    'tr.exp-locked input,tr.exp-locked select{cursor:not-allowed;opacity:.72}' +
+    'tr.exp-locked button[onclick*="expDel"]{display:none}';
+  (document.head || document.documentElement).appendChild(st);
+})();

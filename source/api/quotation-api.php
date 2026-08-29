@@ -1784,6 +1784,16 @@ case 'exp-row-save': {
     q_needAdmin($pdo);
     $id = (int) ($B['id'] ?? 0);
     if ($id > 0) {
+            $q_ph = $pdo->prepare("SELECT paid FROM `quotation_expenses` WHERE id = ?");
+            $q_ph->execute(array($id));
+            if ((int) $q_ph->fetchColumn() === 1) {
+                $q_lock = array('name', 'description', 'qty', 'unit', 'price', 'vat_percent',
+                    'category', 'kind', 'payee_type', 'payee_id', 'payee_name',
+                    'bank_name', 'bank_account', 'bank_holder', 'pay_date');
+                foreach ($q_lock as $q_k) {
+                    if (array_key_exists($q_k, $B)) q_fail('Khoản chi này đã trả — không sửa được. Bỏ đánh dấu “Đã trả” trước nếu cần sửa.', 409);
+                }
+            }
         $sets = array(); $par = array();
         if (array_key_exists('name', $B))        { $sets[] = '`name` = ?';        $par[] = s($B['name'], 300); }
         if (array_key_exists('description', $B)) { $sets[] = '`description` = ?'; $par[] = s($B['description'], 5000); }
