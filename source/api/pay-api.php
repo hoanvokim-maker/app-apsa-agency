@@ -110,7 +110,9 @@ case 'req': {
     }
 
     $amount = py_amount($r);
+    $isCty = ((string) $r['payee_type'] === 'sup');
     $lines = array(
+        $isCty ? '🔴 THANH TOÁN DẠNG DOANH NGHIỆP' : '🔴 THANH TOÁN CHO CÁ NHÂN',
         '💸 YÊU CẦU THANH TOÁN',
         '',
         'Dự án: ' . $r['q_code'] . ($r['q_title'] ? ' — ' . $r['q_title'] : ''),
@@ -118,7 +120,7 @@ case 'req': {
     if ($r['q_client']) $lines[] = 'Khách: ' . $r['q_client'];
     $lines[] = 'Hạng mục: ' . $r['name'];
     $lines[] = '';
-    $lines[] = 'Người nhận: ' . $r['payee_name'] . ((string) $r['payee_type'] === 'sup' ? ' (công ty)' : ' (cá nhân)');
+    $lines[] = 'Người nhận: ' . $r['payee_name'] . ($isCty ? ' (công ty)' : ' (freelancer)');
     if ($r['bank_name'])    $lines[] = 'Ngân hàng: ' . $r['bank_name'];
     if ($r['bank_account']) $lines[] = 'Số TK: ' . $r['bank_account'];
     if ($r['bank_holder'])  $lines[] = 'Chủ TK: ' . $r['bank_holder'];

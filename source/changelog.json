@@ -1,12 +1,18 @@
 {
-    "version": "1.5.3",
-    "updated": "2026-08-28",
+    "version": "1.5.4",
+    "updated": "2026-08-29",
     "releases": [
         {
             "v": "1.5",
             "date": "2026-08-28",
             "note": "Phiên bản 1.5",
             "items": [
+                {
+                    "d": "2026-08-29",
+                    "v": "1.5.4",
+                    "t": "Zalo yeu cau thanh toan: them dong dau phan loai - THANH TOAN CHO CA NHAN (freelancer) hoac THANH TOAN DANG DOANH NGHIEP (nha cung cap), danh dau bang cham do.",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-28",
                     "v": "1.5.3",
