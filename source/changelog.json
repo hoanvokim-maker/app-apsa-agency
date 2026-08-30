@@ -1,12 +1,18 @@
 {
-    "version": "1.6.11",
-    "updated": "2026-08-29",
+    "version": "1.6.12",
+    "updated": "2026-08-30",
     "releases": [
         {
             "v": "1.6",
             "date": "2026-08-29",
             "note": "Phiên bản 1.6",
             "items": [
+                {
+                    "d": "2026-08-30",
+                    "v": "1.6.12",
+                    "t": "Chung tu UNC trong bang chi phi cua bao gia + sua loi mat du lieu khi luu (upsert theo id); dropdown Du an trong Chi phi thuc te hien ma bao gia + ten du an",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-29",
                     "v": "1.6.11",

@@ -181,6 +181,10 @@ function loadExpenses(PDO $pdo, $qid) {
             'bank_holder' => (string) (isset($r['bank_holder']) ? $r['bank_holder'] : ''),
             'bank_masked' => (int) (isset($r['bank_masked']) ? $r['bank_masked'] : 0),
             'pay_date'    => (string) (isset($r['pay_date']) ? $r['pay_date'] : ''),
+            'pay_req_at'   => (string) (isset($r['pay_req_at']) ? $r['pay_req_at'] : ''),
+            'paid_at'      => (string) (isset($r['paid_at']) ? $r['paid_at'] : ''),
+            'has_proof'    => (int) (!empty($r['proof_file']) ? 1 : 0),
+            'proof_name'   => (string) (isset($r['proof_name']) ? $r['proof_name'] : ''),
         ];
     }
     return $out;
@@ -1895,23 +1899,35 @@ case 'expenses-save': {
 
     $pdo->beginTransaction();
     try {
-        $pdo->prepare("DELETE FROM `quotation_expenses` WHERE quotation_id = ?")->execute([$qid]);
+        /* Upsert theo id - giu nguyen chung tu, ngay tra, yeu cau thanh toan */
+        $old = array();
+        $qOld = $pdo->prepare("SELECT id FROM `quotation_expenses` WHERE quotation_id = ?");
+        $qOld->execute([$qid]);
+        foreach ($qOld->fetchAll(PDO::FETCH_COLUMN) as $oid) $old[(int) $oid] = true;
+
         $ins = $pdo->prepare(
             "INSERT INTO `quotation_expenses`
                (quotation_id, kind, category, name, description, qty, unit, price, vat_percent, sort_order, src_id, paid, payee_type, payee_id, payee_name, bank_name, bank_account, bank_holder, pay_date)
              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-        $i = 0; $cat = '';
+        $upd = $pdo->prepare(
+            "UPDATE `quotation_expenses` SET
+               kind = ?, category = ?, name = ?, description = ?, qty = ?, unit = ?, price = ?, vat_percent = ?,
+               sort_order = ?, src_id = ?, paid = ?, payee_type = ?, payee_id = ?, payee_name = ?,
+               bank_name = ?, bank_account = ?, bank_holder = ?, pay_date = ?
+             WHERE id = ? AND quotation_id = ?");
+
+        $i = 0; $cat = ''; $keep = array();
         foreach ($list as $r) {
-            $kind = (($r['kind'] ?? 'item') === 'group') ? 'group' : 'item';
+            $kind = ((($r['kind'] ?? 'item') === 'group') ? 'group' : 'item');
             $name = mb_substr(trim((string)($r['name'] ?? '')), 0, 300);
             if ($kind === 'group') {
                 if ($name === '') continue;
                 $cat = $name;
             } elseif ($name === '' && (float)($r['price'] ?? 0) == 0 && (float)($r['qty'] ?? 0) == 0) {
-                continue;                                   // bỏ dòng rỗng
+                continue;
             }
-            $ins->execute([
-                $qid, $kind,
+            $v = array(
+                $kind,
                 mb_substr((string)($r['category'] ?? $cat), 0, 200),
                 $name,
                 mb_substr((string)($r['description'] ?? ''), 0, 5000),
@@ -1926,7 +1942,22 @@ case 'expenses-save': {
                 q_payeeF($pdo, $r, 'name'), q_payeeF($pdo, $r, 'bank_name'),
                 q_payeeF($pdo, $r, 'bank_account'), q_payeeF($pdo, $r, 'bank_holder'),
                 q_dateOf($r),
-            ]);
+            );
+            $rid = (int)($r['id'] ?? 0);
+            if ($rid > 0 && isset($old[$rid])) {
+                $u = $v; $u[] = $rid; $u[] = $qid;
+                $upd->execute($u);
+                $keep[$rid] = true;
+            } else {
+                $n = $v; array_unshift($n, $qid);
+                $ins->execute($n);
+                $keep[(int) $pdo->lastInsertId()] = true;
+            }
+        }
+        $gone = array_diff(array_keys($old), array_keys($keep));
+        if ($gone) {
+            $pdo->prepare("DELETE FROM `quotation_expenses` WHERE quotation_id = ? AND id IN ("
+                . implode(',', array_map('intval', $gone)) . ")")->execute([$qid]);
         }
         $pdo->commit();
     } catch (Throwable $e) {

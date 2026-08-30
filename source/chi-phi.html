@@ -578,7 +578,7 @@ function openForm(r) {
   if (!el('eQuo')._b) {
     el('eQuo')._b = 1;
     acBind('eQuo', 'acQuo', QUOS.map(function (q) {
-      return { k: nrm([q.code, q.title, q.client_name].join(' ')), label: q.code + ' — ' + (q.client_name || q.title || ''), id: q.id };
+      return { k: nrm([q.code, q.title, q.client_name].join(' ')), label: q.code + ' — ' + (q.title || q.client_name || ''), id: q.id };
     }), function (it) { pickQuo = it.id; el('eQuoHint').textContent = 'Đã chọn dự án #' + it.id; });
   }
   if (!el('ePayee')._b) {
