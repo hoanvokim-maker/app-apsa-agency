@@ -4,3 +4,4 @@ source/api/mail-config.php
 .DS_Store
 source/api/msgraph-config.php
 source/api/zalo-config.php
+source/api/ai-config.php

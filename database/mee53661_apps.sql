@@ -55,6 +55,146 @@ INSERT INTO `accounts` VALUES (6,'Chatgpt','ChatGPT','khanhsdoanf58+1@googlemail
 UNLOCK TABLES;
 
 --
+-- Table structure for table `ai_event_prompts`
+--
+
+DROP TABLE IF EXISTS `ai_event_prompts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ai_event_prompts` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `event_id` int(10) unsigned NOT NULL,
+  `prompt_id` int(10) unsigned NOT NULL,
+  `sort_order` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_ep` (`event_id`,`prompt_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ai_event_prompts`
+--
+
+LOCK TABLES `ai_event_prompts` WRITE;
+/*!40000 ALTER TABLE `ai_event_prompts` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ai_event_prompts` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `ai_events`
+--
+
+DROP TABLE IF EXISTS `ai_events`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ai_events` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `slug` varchar(64) NOT NULL,
+  `name` varchar(160) NOT NULL,
+  `note` varchar(500) DEFAULT NULL,
+  `start_at` datetime DEFAULT NULL,
+  `end_at` datetime DEFAULT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `cover_file` varchar(200) DEFAULT NULL,
+  `wm_file` varchar(200) DEFAULT NULL,
+  `wm_pos` varchar(16) NOT NULL DEFAULT 'br',
+  `wm_scale` int(11) NOT NULL DEFAULT 22,
+  `out_w` int(11) NOT NULL DEFAULT 1024,
+  `out_h` int(11) NOT NULL DEFAULT 1024,
+  `max_images` int(11) NOT NULL DEFAULT 0,
+  `views` int(11) NOT NULL DEFAULT 0,
+  `uses` int(11) NOT NULL DEFAULT 0,
+  `created_by` varchar(120) DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_slug` (`slug`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ai_events`
+--
+
+LOCK TABLES `ai_events` WRITE;
+/*!40000 ALTER TABLE `ai_events` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ai_events` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `ai_jobs`
+--
+
+DROP TABLE IF EXISTS `ai_jobs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ai_jobs` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `token` varchar(24) NOT NULL,
+  `event_id` int(10) unsigned NOT NULL,
+  `prompt_id` int(10) unsigned NOT NULL,
+  `state` varchar(12) NOT NULL DEFAULT 'queued',
+  `provider` varchar(16) DEFAULT NULL,
+  `src_file` varchar(200) DEFAULT NULL,
+  `out_file` varchar(200) DEFAULT NULL,
+  `err` varchar(400) DEFAULT NULL,
+  `attempts` int(11) NOT NULL DEFAULT 0,
+  `ms` int(11) NOT NULL DEFAULT 0,
+  `device_key` varchar(40) DEFAULT NULL,
+  `ip` varchar(45) DEFAULT NULL,
+  `sp_state` varchar(12) NOT NULL DEFAULT 'no',
+  `sp_url` varchar(500) DEFAULT NULL,
+  `started_at` datetime DEFAULT NULL,
+  `finished_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_token` (`token`),
+  KEY `k_state` (`state`,`id`),
+  KEY `k_event` (`event_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ai_jobs`
+--
+
+LOCK TABLES `ai_jobs` WRITE;
+/*!40000 ALTER TABLE `ai_jobs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ai_jobs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `ai_prompts`
+--
+
+DROP TABLE IF EXISTS `ai_prompts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ai_prompts` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(160) NOT NULL,
+  `body` text NOT NULL,
+  `tag` varchar(60) DEFAULT NULL,
+  `thumb_file` varchar(200) DEFAULT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `sort_order` int(11) NOT NULL DEFAULT 0,
+  `uses` int(11) NOT NULL DEFAULT 0,
+  `created_by` varchar(120) DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `k_tag` (`tag`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ai_prompts`
+--
+
+LOCK TABLES `ai_prompts` WRITE;
+/*!40000 ALTER TABLE `ai_prompts` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ai_prompts` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `album_albums`
 --
 
