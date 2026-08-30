@@ -145,11 +145,21 @@ case 'req': {
     $sent = array(); $errs = array();
     foreach ($targets as $t) {
         $res = null;
+        $btnPay = '';
+        if (function_exists('za_block')) {
+            try {
+                $btnPay = za_block($pdo, (int) $t['id'], array(
+                    array('kind' => 'exp_paid', 'id' => (int) $r['id'], 'label' => 'Đã thanh toán'),
+                    array('kind' => 'open', 'label' => 'Mở trong app', 'url' => './chi-phi.html'),
+                ));
+            } catch (Exception $e) { $btnPay = ''; }
+        }
+        $text2 = $text . ($btnPay !== '' ? "\n\n" . $btnPay : '');
         if ($qr !== '') {
-            $res = zb_api('sendPhoto', array('chat_id' => $t['zalo_chat_id'], 'photo' => $qr, 'caption' => $text));
+            $res = zb_api('sendPhoto', array('chat_id' => $t['zalo_chat_id'], 'photo' => $qr, 'caption' => $text2));
         }
         if ($qr === '' || empty($res['ok'])) {
-            $body = $text . ($qr !== '' ? "\n\nMã QR: " . $qr : '');
+            $body = $text2 . ($qr !== '' ? "\n\nMã QR: " . $qr : '');
             $res = zb_send($t['zalo_chat_id'], $body);
         }
         if (!empty($res['ok'])) $sent[] = $t['display_name'] ?: $t['username'];

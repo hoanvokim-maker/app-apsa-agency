@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script>
+  document.documentElement.style.visibility = 'hidden';
+  fetch('./api/auth-api.php?action=me', { credentials: 'same-origin' })
+    .then(r => r.zok ? r.json() : Promise.reject())
+    .then(res => {
+      if (!res.zok) throw new Error();
+      window.__APSA_USER = res.data;
+      document.documentElement.style.visibility = 'visible';
+    })
+    .catch(() => {
+      location.replace('./login.html?next=' + encodeURIComponent(location.pathname + location.search));
+    });
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Xác nhận - APSA</title>
+  <link rel="icon" href="/favicon.zico" sizes="any">
+  <meta name="theme-color" content="#dff20d">
+  <link rel="stylesheet" href="/theme.css?v=22">
+<style>
+  :root { --bg:#0d0d0d; --card:#161616; --line:#2b2b2b; --text:#e8e8e8; --dim:#9a9a9a; --acc:#dff20d; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text);
+         font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+         min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
+  .zw { width:100%; max-width:440px; }
+  .zcard { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:24px; }
+  .zlogo { text-align:center; font-weight:800; letter-spacing:3px; font-size:13px;
+          color:var(--acc); margin-bottom:20px; }
+  .zico { font-size:40px; text-align:center; line-height:1; margin-bottom:12px; }
+  h1 { text-transform:none; font-size:19px; margin:0 0 4px; text-align:center; line-height:1.35; }
+  .zsub { text-align:center; color:var(--dim); font-size:13px; margin:0 0 18px; }
+  .zmeta { background:#101010; border:1px solid var(--line); border-radius:10px;
+          padding:12px 14px; margin:0 0 18px; }
+  .zmeta div { font-size:13px; color:var(--dim); padding:3px 0; word-break:break-word; }
+  .zbtn { display:block; width:100%; border:0; border-radius:12px; padding:15px 16px;
+         font-size:15px; font-weight:700; cursor:pointer; text-align:center;
+         text-decoration:none; margin-top:10px; font-family:inherit; }
+  .zbtn.pri { background:var(--acc); color:#141414; }
+  .zbtn.pri:disabled { opacity:.5; cursor:default; }
+  .zbtn.sec { background:#242424; color:var(--text); border:1px solid #3a3a3a; font-weight:600; }
+  .znote { text-align:center; color:var(--dim); font-size:12px; margin-top:16px; line-height:1.5; }
+  .zerr { color:#ff9a9a; }
+  .zok  { color:#8ee49a; }
+  .zhide { display:none !important; }
+  .zspin { width:26px; height:26px; border:3px solid #333; border-top-color:var(--acc);
+          border-radius:50%; animation:sp .8s linear infinite; margin:30px auto; }
+  @keyframes sp { to { transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="zw">
+  <div class="zcard">
+    <div class="zlogo">APSA</div>
+
+    <div id="load"><div class="zspin"></div></div>
+
+    <div id="ask" class="zhide">
+      <div class="zico" id="askIco">&#10003;</div>
+      <h1 id="askTitle"></h1>
+      <p class="zsub" id="askSub"></p>
+      <div class="zmeta" id="askMeta"></div>
+      <button type="button" class="zbtn pri" id="go"></button>
+      <a class="zbtn sec" id="askOpen" href="#">Mở trong app</a>
+      <p class="znote">Bấm xong hệ thống ghi nhận ngay, không cần mở app.</p>
+    </div>
+
+    <div id="msg" class="zhide">
+      <div class="zico" id="msgIco"></div>
+      <h1 id="msgTitle"></h1>
+      <p class="zsub" id="msgSub"></p>
+      <a class="zbtn pri" id="msgGo" href="#">Mở trong app</a>
+      <a class="zbtn sec" href="./index.html">Về trang chủ</a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var API = './api/zact-api.php';
+  var $ = function (id) { return document.getElementById(id); };
+  var TOK = (new URLSearchParams(location.search)).get('t') || '';
+  var HOME = './index.html';
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function show(id) {
+    ['load', 'ask', 'msg'].forEach(function (k) { $(k).classList.toggle('zhide', k !== id); });
+  }
+  function done(ico, title, sub, cls, url) {
+    $('msgIco').innerHTML = ico;
+    $('msgTitle').textContent = title;
+    $('msgSub').textContent = sub || '';
+    $('msgSub').className = 'zsub ' + (cls || '');
+    $('msgGo').setAttribute('href', url || HOME);
+    show('msg');
+  }
+
+  var ICON = {
+    task_done: '&#9989;',
+    exp_paid:  '&#128176;',
+    snooze:    '&#9200;'
+  };
+
+  async function call(action, opts) {
+    var u = API + '?action=' + action + (action === 'info' ? '&t=' + encodeURIComponent(TOK) : '');
+    var r = await fetch(u, Object.assign({ credentials: 'same-origin' }, opts || {}));
+    var d = await r.json().catch(function () { return null; });
+    if (!d) throw new Error('Không đọc được phản hồi từ máy chủ.');
+    if (!d.zok) throw new Error(d.error || 'Có lỗi xảy ra.');
+    return d.data || {};
+  }
+
+  async function boot() {
+    if (!TOK) return done('&#9888;', 'Thiếu mã hành động', 'Link không đầy đủ.', 'err', HOME);
+    var d;
+    try { d = await call('info'); }
+    catch (e) { return done('&#9888;', 'Không mở được', e.message, 'err', HOME); }
+
+    if (d.state === 'used')
+      return done('&#8505;', 'Đã xử lý rồi', d.message, '', d.url || HOME);
+    if (d.state === 'expired')
+      return done('&#9200;', 'Link đã hết hạn', d.message, '', d.url || HOME);
+    if (d.state === 'denied')
+      return done('&#128274;', 'Không có quyền', d.message, 'err', d.url || HOME);
+    if (d.state === 'done')
+      return done('&#8505;', 'Không cần làm gì thêm', d.done_msg || '', '', d.url || HOME);
+
+    $('askIco').innerHTML = ICON[d.kind] || '&#10003;';
+    $('askTitle').textContent = d.title || d.label || 'Xác nhận';
+    $('askSub').textContent = d.label || '';
+    $('askMeta').innerHTML = (d.lines || []).map(function (l) {
+      return '<div>' + esc(l) + '</div>';
+    }).join('') || '<div>Không có thông tin thêm.</div>';
+    $('go').textContent = d.confirm || 'Xác nhận';
+    $('askOpen').setAttribute('href', d.url || HOME);
+    show('ask');
+
+    $('go').onclick = async function () {
+      $('go').disabled = true;
+      $('go').textContent = 'Đang ghi nhận...';
+      try {
+        var r = await call('run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ t: TOK })
+        });
+        done('&#127881;', 'Xong!', r.message, 'ok', r.next || HOME);
+        if (r.upload) {
+          $('msgGo').textContent = 'Tải chứng từ UNC lên';
+        }
+      } catch (e) {
+        $('go').disabled = false;
+        $('go').textContent = d.confirm || 'Xác nhận';
+        done('&#9888;', 'Chưa ghi nhận được', e.message, 'err', d.url || HOME);
+      }
+    };
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+</script>
+</body>
+</html>

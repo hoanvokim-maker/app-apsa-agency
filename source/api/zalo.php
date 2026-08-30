@@ -15,6 +15,8 @@
 if (defined('APSA_ZALO_LOADED')) return;
 define('APSA_ZALO_LOADED', 1);
 
+require_once __DIR__ . '/zact.php';
+
 define('ZB_API', 'https://bot-api.zaloplatforms.com/bot');
 
 /* ------------------------------------------------------------------ */
@@ -209,7 +211,7 @@ function zb_abs($url)
  * Đẩy 1 thông báo sang Zalo cho 1 nhân viên.
  * Gọi được từ bất kỳ đâu; tự bỏ qua nếu tắt / chưa kết nối / loại tin không nằm trong danh sách.
  */
-function zb_push(PDO $pdo, $userId, $kind, $title, $body, $url = '')
+function zb_push(PDO $pdo, $userId, $kind, $title, $body, $url = '', $acts = null)
 {
     try {
         if (!zb_enabled()) return false;
@@ -221,8 +223,16 @@ function zb_push(PDO $pdo, $userId, $kind, $title, $body, $url = '')
         $text = zb_icon($kind) . ' ' . trim((string) $title);
         $b    = trim((string) $body);
         if ($b !== '') $text .= "\n" . $b;
-        $abs = zb_abs($url);
-        if ($abs !== '') $text .= "\n\n" . $abs;
+        $blk = '';
+        if (is_array($acts) && $acts && function_exists('za_block')) {
+            try { $blk = za_block($pdo, $userId, $acts); } catch (Exception $e) { $blk = ''; }
+        }
+        if ($blk !== '') {
+            $text .= "\n\n" . $blk;
+        } else {
+            $abs = zb_abs($url);
+            if ($abs !== '') $text .= "\n\n" . $abs;
+        }
 
         $r = zb_send($chat, $text);
         return !empty($r['ok']);

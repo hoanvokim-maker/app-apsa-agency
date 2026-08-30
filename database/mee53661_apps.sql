@@ -2383,12 +2383,13 @@ CREATE TABLE `quotation_assignees` (
   `assigned_by` varchar(120) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `snooze_until` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_quo` (`quotation_id`),
   KEY `idx_user` (`user_id`),
   KEY `idx_stat` (`status`),
   KEY `idx_due` (`due_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2397,14 +2398,14 @@ CREATE TABLE `quotation_assignees` (
 
 LOCK TABLES `quotation_assignees` WRITE;
 /*!40000 ALTER TABLE `quotation_assignees` DISABLE KEYS */;
-INSERT INTO `quotation_assignees` VALUES (27,140,12,'editor','Video 1 - BS Luận','2026-08-26','doing',0,'Harris','2026-08-26 14:55:07','2026-08-26 14:55:07');
-INSERT INTO `quotation_assignees` VALUES (28,140,11,'editor','Video 2 - BS Luận','2026-08-26','doing',1,'Harris','2026-08-26 14:55:07','2026-08-26 14:55:07');
-INSERT INTO `quotation_assignees` VALUES (29,140,9,'designer','BS Luận - VDO 1 - 2','2026-08-25','done',2,'Harris','2026-08-26 14:55:07','2026-08-26 14:55:07');
-INSERT INTO `quotation_assignees` VALUES (31,284,4,'admin','Liên hệ với chị Nga và làm việc menu','2026-08-25','done',0,'Nhật Tân','2026-08-27 03:07:31','2026-08-27 03:07:31');
-INSERT INTO `quotation_assignees` VALUES (32,284,9,'designer','G',NULL,'todo',1,'Nhật Tân','2026-08-27 03:07:31','2026-08-27 03:07:31');
-INSERT INTO `quotation_assignees` VALUES (41,37,1,'account','Làm hết',NULL,'done',0,'Harris','2026-08-28 02:56:23','2026-08-28 02:56:23');
-INSERT INTO `quotation_assignees` VALUES (47,291,1,'account','','2026-08-28','review',0,'Harris','2026-08-29 06:14:19','2026-08-29 06:14:19');
-INSERT INTO `quotation_assignees` VALUES (48,3,7,'account','Quản lý chính','2026-08-24','doing',0,'Harris','2026-08-29 09:30:03','2026-08-29 09:30:03');
+INSERT INTO `quotation_assignees` VALUES (27,140,12,'editor','Video 1 - BS Luận','2026-08-26','doing',0,'Harris','2026-08-26 14:55:07','2026-08-26 14:55:07',NULL);
+INSERT INTO `quotation_assignees` VALUES (28,140,11,'editor','Video 2 - BS Luận','2026-08-26','doing',1,'Harris','2026-08-26 14:55:07','2026-08-26 14:55:07',NULL);
+INSERT INTO `quotation_assignees` VALUES (29,140,9,'designer','BS Luận - VDO 1 - 2','2026-08-25','done',2,'Harris','2026-08-26 14:55:07','2026-08-26 14:55:07',NULL);
+INSERT INTO `quotation_assignees` VALUES (31,284,4,'admin','Liên hệ với chị Nga và làm việc menu','2026-08-25','done',0,'Nhật Tân','2026-08-27 03:07:31','2026-08-27 03:07:31',NULL);
+INSERT INTO `quotation_assignees` VALUES (32,284,9,'designer','G',NULL,'todo',1,'Nhật Tân','2026-08-27 03:07:31','2026-08-27 03:07:31',NULL);
+INSERT INTO `quotation_assignees` VALUES (41,37,1,'account','Làm hết',NULL,'done',0,'Harris','2026-08-28 02:56:23','2026-08-28 02:56:23',NULL);
+INSERT INTO `quotation_assignees` VALUES (47,291,1,'account','','2026-08-28','review',0,'Harris','2026-08-29 06:14:19','2026-08-29 06:14:19',NULL);
+INSERT INTO `quotation_assignees` VALUES (48,3,7,'account','Quản lý chính','2026-08-24','doing',0,'Harris','2026-08-29 09:30:03','2026-08-29 09:30:03',NULL);
 /*!40000 ALTER TABLE `quotation_assignees` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -7509,6 +7510,43 @@ LOCK TABLES `video_reviews` WRITE;
 /*!40000 ALTER TABLE `video_reviews` DISABLE KEYS */;
 INSERT INTO `video_reviews` VALUES (3,'764ff13fcdb6f976a64abe99366283c2','BS Luân Bài 3','','b!e4unr15XWkyaVG8edY6MkfZmAYHtCUBDugOk42Ie06yPpJHpQ4j6SpiGKdrEhZ21','01UTW2SKKZFVFBT6SE7NBZJC2H545VGDBD','BS Luân Bài 3.mp4',825123699,'https://apsaagency.sharepoint.com/_layouts/15/download.aspx?UniqueId=194a2d59-44fa-43fb-948b-47ef3b530c23&Translate=false&tempauth=v1.eyJzaXRlaWQiOiJhZmE3OGI3Yi01NzVlLTRjNWEtOWE1NC02ZjFlNzU4ZThjOTEiLCJhcHBfZGlzcGxheW5hbWUiOiJBUFNBIEludGVybmFsIEFwcCIsIm5hbWVpZCI6IjIxZWEwNWIxLTA4YTYtNDI3Yi1iMzlkLTJlYjk5OTE1ZmIzMUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvYXBzYWFnZW5jeS5zaGFyZXBvaW50LmNvbUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJleHAiOiIxNzg3OTkzNTg3In0.CkAKDGVudHJhX2NsYWltcxIwQ0xhZHl0UUdFQUFhRm5ablkwRjZXblkxYTFWbGQxODJZelZwY25kUFFVRXFBQT09CjIKCmFjdG9yYXBwaWQSJDAwMDAwMDAzLTAwMDAtMDAwMC1jMDAwLTAwMDAwMDAwMDAwMAoKCgRzbmlkEgI2NBILCKjNz4eT68I_EAUaDTIwLjE5MC4xNjMuOTYqLDBXdHhESWdHUlQvUHNtNXRiMnpJU0lnQnVWT3Fld0pocVljK0JmZHVhSUE9MHk4AUIQojXq7nDgAICCD5Pt0-0XIkoQaGFzaGVkcHJvb2Z0b2tlbnoBMboBcHNlbGVjdGVkc2l0ZXMgYWxsc2l0ZXMucmVhZCBhbGxzaXRlcy53cml0ZSBhbGxzaXRlcy5tYW5hZ2UgYWxsc2l0ZXMuYXJjaGl2ZSBhbGxzaXRlcy5jcmVhdGUgYWxsc2l0ZXMuZnVsbGNvbnRyb2zIAQE.UJ5VpmfXeOe3vDr8fg4fUu-nvPZhkwjjOggewzWHOAs&ApiVersion=2.0',1787992987,1,'Harris','2026-08-28 15:43:25');
 /*!40000 ALTER TABLE `video_reviews` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `zalo_actions`
+--
+
+DROP TABLE IF EXISTS `zalo_actions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `zalo_actions` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `token` varchar(24) NOT NULL,
+  `kind` varchar(24) NOT NULL,
+  `target_id` bigint(20) NOT NULL DEFAULT 0,
+  `label` varchar(120) NOT NULL DEFAULT '',
+  `user_id` int(11) NOT NULL DEFAULT 0,
+  `extra` varchar(255) DEFAULT NULL,
+  `url` varchar(255) NOT NULL DEFAULT '',
+  `expires_at` datetime DEFAULT NULL,
+  `used_at` datetime DEFAULT NULL,
+  `used_by` varchar(120) DEFAULT NULL,
+  `used_ip` varchar(45) DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_token` (`token`),
+  KEY `k_user` (`user_id`),
+  KEY `k_target` (`kind`,`target_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `zalo_actions`
+--
+
+LOCK TABLES `zalo_actions` WRITE;
+/*!40000 ALTER TABLE `zalo_actions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `zalo_actions` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

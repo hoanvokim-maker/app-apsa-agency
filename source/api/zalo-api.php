@@ -56,16 +56,17 @@ if ($ACTION === 'cron-due') {
 
     try {
         $rows = $pdo->query(
-            "SELECT a.user_id, a.task, a.due_date, q.code, q.title
+            "SELECT a.id, a.user_id, a.task, a.due_date, q.code, q.title
                FROM `quotation_assignees` a
                JOIN `quotations` q ON q.id = a.quotation_id
-               JOIN `app_users`  u ON u.id = a.user_id
+               JOIN `app_users`   u ON u.id = a.user_id
               WHERE a.status <> 'done'
                 AND q.deleted_at IS NULL
                 AND q.closed_at IS NULL
                 AND a.due_date IS NOT NULL
                 AND a.due_date <> '0000-00-00'
                 AND a.due_date <= '" . $today . "'
+                AND (a.snooze_until IS NULL OR a.snooze_until <= NOW())
                 AND u.active = 1
                 AND u.zalo_chat_id IS NOT NULL
               ORDER BY a.user_id, a.due_date")->fetchAll();
@@ -75,19 +76,32 @@ if ($ACTION === 'cron-due') {
     foreach ($rows as $r) $byUser[(int) $r['user_id']][] = $r;
 
     foreach ($byUser as $uid => $list) {
-        $late = 0;
-        $lines = array();
+        $late = 0; $lines = array(); $acts = array(); $nb = 0;
         foreach ($list as $r) {
-            $d = (string) $r['due_date'];
-            $tag = ($d < $today) ? 'QUÁ HẠN' : 'hôm nay';
+            $d    = (string) $r['due_date'];
+            $tag  = ($d < $today) ? 'QUÁ HẠN' : 'hôm nay';
             if ($d < $today) $late++;
-            $p = explode('-', $d);
-            $lines[] = '• ' . trim((string) $r['task'] !== '' ? $r['task'] : 'Việc được giao')
-                     . ' — ' . $r['code'] . ' (' . $tag . ' ' . $p[2] . '/' . $p[1] . ')';
+            $p    = explode('-', $d);
+            $name = trim((string) $r['task']) !== '' ? (string) $r['task'] : 'Việc được giao';
+            $lines[] = '- ' . $name . ' | ' . $r['code'] . ' (' . $tag . ' ' . $p[2] . '/' . $p[1] . ')';
+            if ($nb < 6) {
+                $acts[] = array(
+                    'kind'  => 'task_done',
+                    'id'    => (int) $r['id'],
+                    'label' => 'Xong: ' . mb_substr($name, 0, 40, 'UTF-8'),
+                );
+                $nb++;
+            }
         }
+        if (count($list) === 1 && isset($list[0]['id'])) {
+            $acts[] = array('kind' => 'snooze', 'id' => (int) $list[0]['id'],
+                            'extra' => '1', 'label' => 'Nhắc lại ngày mai');
+        }
+        $acts[] = array('kind' => 'open', 'label' => 'Mở danh sách việc', 'url' => './index.html');
+
         $title = 'Bạn có ' . count($list) . ' việc cần xử lý'
                . ($late > 0 ? ' (' . $late . ' việc đã quá hạn)' : '');
-        if (zb_push($pdo, $uid, 'task_due', $title, implode("\n", $lines), './index.html')) $sent++;
+        if (zb_push($pdo, $uid, 'task_due', $title, implode("\n", $lines), './index.html', $acts)) $sent++;
         else $skipped++;
     }
 

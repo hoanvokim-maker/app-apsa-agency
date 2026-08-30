@@ -561,7 +561,7 @@ function qr_canDecide(PDO $pdo, $qid, $scope, $ME) {
 
 /** Ghi thông báo trong app, đồng thời gửi mail nếu đã cấu hình SMTP */
 require_once __DIR__ . '/zalo.php';   /* APSA127-ZALO */
-function qr_notify(PDO $pdo, $userId, $kind, $title, $body, $url, $actor) {
+function qr_notify(PDO $pdo, $userId, $kind, $title, $body, $url, $actor, $acts = null) {
     if (function_exists('zb_push')) zb_push($pdo, $userId, $kind, $title, $body, $url);
     $userId = (int)$userId;
     if ($userId <= 0) return;
@@ -1742,8 +1742,12 @@ case 'assignees-save': {
                     if ($uidAsg <= 0 || $uidAsg === $meAsg) continue;
                     $taskAsg = (string)($rowAsg['task'] ?? '');
                     if (array_key_exists($uidAsg, $qOldAsg) && $qOldAsg[$uidAsg] === $taskAsg) continue;
+                    $actsAsg = array(
+                        array('kind' => 'task_done', 'id' => (int) $rowAsg['id'], 'label' => 'Đã hoàn thành'),
+                        array('kind' => 'open', 'label' => 'Mở trong app', 'url' => $lnkAsg),
+                    );
                     qr_notify($pdo, $uidAsg, 'assign', $WHO . ' giao việc cho bạn',
-                        (trim($taskAsg) !== '' ? trim($taskAsg) . ' — ' : '') . $lblAsg, $lnkAsg, $WHO);
+                        (trim($taskAsg) !== '' ? trim($taskAsg) . ' — ' : '') . $lblAsg, $lnkAsg, $WHO, $actsAsg);
                 }
             } catch (Exception $eNotiAsg) { /* thong bao hong thi thoi */ }
 
