@@ -1,5 +1,5 @@
 {
-    "version": "1.6.16",
+    "version": "1.6.17",
     "updated": "2026-08-31",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-29",
             "note": "Phiên bản 1.6",
             "items": [
+                {
+                    "d": "2026-08-31",
+                    "v": "1.6.17",
+                    "t": "Duyet video: nho ten nguoi gop y 30 ngay + tieu de trang chia se la ten video (review.php render title/OG)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-31",
                     "v": "1.6.16",

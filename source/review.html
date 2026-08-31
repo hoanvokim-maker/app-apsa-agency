@@ -209,6 +209,38 @@ function toast(m) { var t = el('toast'); t.textContent = m; t.classList.add('on'
 function fmt(ms) { var s = ms / 1000, m = Math.floor(s / 60), r = s - m * 60;
   return (m < 10 ? '0' : '') + m + ':' + (r < 10 ? '0' : '') + r.toFixed(1); }
 
+/* --- ghi nho ten nguoi gop y trong 30 ngay ------------------------- */
+var WHO_KEY = 'rv_who', WHO_TTL = 30 * 864e5;
+function whoSave(n) {
+  n = String(n || '').trim().slice(0, 120);
+  if (!n) return;
+  try {
+    localStorage.setItem(WHO_KEY, JSON.stringify({ n: n, e: Date.now() + WHO_TTL }));
+    localStorage.setItem('rv_name', n);
+  } catch (e) {}
+  try {
+    document.cookie = WHO_KEY + '=' + encodeURIComponent(n) +
+      ';path=/;max-age=' + Math.round(WHO_TTL / 1000) + ';SameSite=Lax';
+  } catch (e) {}
+}
+function whoLoad() {
+  try {
+    var raw = localStorage.getItem(WHO_KEY);
+    if (raw) {
+      var o = JSON.parse(raw);
+      if (o && o.n) {
+        if (o.e > Date.now()) return o.n;
+        localStorage.removeItem(WHO_KEY); localStorage.removeItem('rv_name');
+        return '';
+      }
+    }
+    var lg = localStorage.getItem('rv_name');
+    if (lg) return lg;
+  } catch (e) {}
+  var m = document.cookie.match(/(?:^|;\s*)rv_who=([^;]*)/);
+  try { return m ? decodeURIComponent(m[1]) : ''; } catch (e) { return ''; }
+}
+
 function api(action, body) {
   var u = API + '?action=' + action + '&t=' + encodeURIComponent(T);
   var o = { credentials: 'same-origin' };
@@ -227,7 +259,7 @@ function boot() {
     el('ttl').textContent = d.title || d.file_name;
     el('note').textContent = d.note || '';
     el('who').textContent = d.file_name;
-    document.title = 'Duyệt video — ' + (d.title || d.file_name);
+    document.title = (d.title || d.file_name) || 'Duyệt video';
     v.src = API + '?action=stream&t=' + encodeURIComponent(T);
     loadCm();
   }).catch(function (e) { fail(e.message); });
@@ -245,7 +277,9 @@ function boot() {
     v.pause(); v.currentTime = Math.max(0, Math.min(v.duration, (e.clientX - r.left) / r.width * v.duration));
   });
 
-  var n = localStorage.getItem('rv_name'); if (n) el('au').value = n;
+  var n = whoLoad(); if (n) { el('au').value = n; whoSave(n); }
+
+  el('au').addEventListener('input', function () { whoSave(this.value); });
 
   fi.addEventListener('change', function () {
     for (var i = 0; i < fi.files.length; i++) addFile(fi.files[i]);
@@ -389,7 +423,7 @@ function send() {
   var au = el('au').value.trim(), bd = el('bd').value.trim();
   if (!au) { toast('Nhập tên của bạn.'); el('au').focus(); return; }
   if (!bd && !IMGS.length) { toast('Nhập nội dung hoặc đính hình.'); return; }
-  localStorage.setItem('rv_name', au);
+  whoSave(au);
   var ms = Math.round((v.currentTime || 0) * 1000);
   var b = el('bSend'); b.disabled = true; b.textContent = 'Đang gửi…';
   var list = IMGS.length ? IMGS.slice() : [''];

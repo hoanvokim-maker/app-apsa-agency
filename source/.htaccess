@@ -2,4 +2,6 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteRule ^u/([A-Za-z0-9_-]{3,32})/?$ /u.php?c=$1 [L,QSA]
+    # Trang duyet video: render <title> + og:* phia server
+    RewriteRule ^review\.html$ /review.php [L,QSA]
 </IfModule>
