@@ -1,12 +1,18 @@
 {
-    "version": "1.6.14",
-    "updated": "2026-08-30",
+    "version": "1.6.15",
+    "updated": "2026-08-31",
     "releases": [
         {
             "v": "1.6",
             "date": "2026-08-29",
             "note": "Phiên bản 1.6",
             "items": [
+                {
+                    "d": "2026-08-31",
+                    "v": "1.6.15",
+                    "t": "Sua doc phan hoi Gemini: lay anh o steps[].content[] thay vi vo nham steps[].signature; them kiem tra chu ky file anh",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-30",
                     "v": "1.6.14",

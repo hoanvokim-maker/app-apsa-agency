@@ -212,12 +212,10 @@ function ap_gen_gemini($imgBytes, $mime, $prompt, $w, $h, &$err)
         return false;
     }
     $j = json_decode($res, true);
-    $b64 = ap_dig($j, array('output_image', 'data'));
-    if ($b64 === null) $b64 = ap_dig($j, array('interaction', 'output_image', 'data'));
-    if ($b64 === null) $b64 = ap_find_b64($j);
+    $b64 = ap_pick_image($j);
     if ($b64 === null) { $err = 'Gemini khong tra ve anh'; return false; }
     $bin = base64_decode($b64, true);
-    if ($bin === false || strlen($bin) < 512) { $err = 'Anh Gemini tra ve hong'; return false; }
+    if (!ap_is_img($bin)) { $err = 'Du lieu anh Gemini tra ve khong doc duoc'; return false; }
     return $bin;
 }
 
@@ -280,7 +278,7 @@ function ap_gen_fal($imgBytes, $mime, $prompt, $w, $h, &$err)
         $bin = ap_http('GET', $url, array(), null, $ic, 60);
         if ($ic !== 200) $bin = false;
     }
-    if ($bin === false || strlen($bin) < 512) { $err = 'Khong tai duoc anh tu fal'; return false; }
+    if (!ap_is_img($bin)) { $err = 'Khong tai duoc anh tu fal'; return false; }
     return $bin;
 }
 
@@ -303,6 +301,44 @@ function ap_generate($imgBytes, $mime, $prompt, $w, $h, &$provider, &$err)
     return false;
 }
 
+/** Tim chuoi base64 cua anh trong phan hoi Gemini. */
+function ap_pick_image($j)
+{
+    if (!is_array($j)) return null;
+
+    /* Duong chinh: steps[].content[] co type=image (bo qua steps[].signature) */
+    if (isset($j['steps']) && is_array($j['steps'])) {
+        foreach ($j['steps'] as $st) {
+            if (!is_array($st) || !isset($st['content']) || !is_array($st['content'])) continue;
+            foreach ($st['content'] as $ct) {
+                if (!is_array($ct) || !isset($ct['data']) || !is_string($ct['data'])) continue;
+                $isImg = (isset($ct['type']) && $ct['type'] === 'image')
+                      || (isset($ct['mime_type']) && strpos((string) $ct['mime_type'], 'image/') === 0);
+                if ($isImg) return $ct['data'];
+            }
+        }
+    }
+
+    /* Cac dang phan hoi khac */
+    $p = ap_dig($j, array('output_image', 'data'));
+    if ($p !== null) return $p;
+    $p = ap_dig($j, array('interaction', 'output_image', 'data'));
+    if ($p !== null) return $p;
+
+    return null;
+}
+
+/** Chuoi byte co dung la anh khong (xem chu ky dau file). */
+function ap_is_img($bin)
+{
+    if (!is_string($bin) || strlen($bin) < 128) return false;
+    if (substr($bin, 0, 3) === "\xFF\xD8\xFF") return true;                        /* JPEG */
+    if (substr($bin, 0, 8) === "\x89PNG\r\n\x1a\n") return true;                   /* PNG  */
+    if (substr($bin, 0, 4) === 'RIFF' && substr($bin, 8, 4) === 'WEBP') return true;  /* WEBP */
+    if (substr($bin, 0, 6) === 'GIF89a' || substr($bin, 0, 6) === 'GIF87a') return true;
+    return false;
+}
+
 /* Lay gia tri long trong mang lien tuc. */
 function ap_dig($a, array $path)
 {
@@ -313,21 +349,6 @@ function ap_dig($a, array $path)
     return is_string($a) ? $a : null;
 }
 
-/* Cuu canh: do tim chuoi base64 dai nhat trong phan hoi. */
-function ap_find_b64($a, $depth = 0)
-{
-    if ($depth > 6 || !is_array($a)) return null;
-    $best = null;
-    foreach ($a as $k => $v) {
-        if (is_string($v) && strlen($v) > 2000 && preg_match('#^[A-Za-z0-9+/=\r\n]+$#', $v)) {
-            if ($best === null || strlen($v) > strlen($best)) $best = $v;
-        } elseif (is_array($v)) {
-            $d = ap_find_b64($v, $depth + 1);
-            if ($d !== null && ($best === null || strlen($d) > strlen($best))) $best = $d;
-        }
-    }
-    return $best;
-}
 
 /* ------------------------------------------------------------------ */
 /*  Xu ly anh (GD)                                                     */
