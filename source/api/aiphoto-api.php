@@ -262,8 +262,8 @@ function apx_run_job(PDO $pdo, $jobId)
 {
     $t0 = microtime(true);
     $st = $pdo->prepare(
-        "SELECT j.*, p.body AS prompt_body,
-                e.out_w, e.out_h, e.wm_file, e.wm_pos, e.wm_scale, e.id AS ev_id
+        "SELECT j.*, p.body AS prompt_body, p.force_pro,
+                e.out_w, e.out_h, e.wm_file, e.wm_scale, e.wm_pos, e.model_tier, e.id AS ev_id
            FROM `ai_jobs` j
            JOIN `ai_prompts` p ON p.id = j.prompt_id
            JOIN `ai_events`  e ON e.id = j.event_id
@@ -282,9 +282,11 @@ function apx_run_job(PDO $pdo, $jobId)
     if (!is_file($src)) { $fail('Mat anh goc'); return; }
 
     $bytes = file_get_contents($src);
+    /* Muc chat luong: theo su kien, nhung prompt co force_pro thi luon dung Pro */
+    $tier = (!empty($j['force_pro']) || (string) $j['model_tier'] === 'pro') ? 'pro' : 'flash';
     $prov = ''; $err = '';
     $gen = ap_generate($bytes, 'image/jpeg', (string) $j['prompt_body'],
-                       (int) $j['out_w'], (int) $j['out_h'], $prov, $err);
+                       (int) $j['out_w'], (int) $j['out_h'], $prov, $err, $tier);
     if ($gen === false) { $fail($err); return; }
 
     $ev = array('id' => (int) $j['ev_id'], 'out_w' => (int) $j['out_w'], 'out_h' => (int) $j['out_h'],
@@ -295,10 +297,12 @@ function apx_run_job(PDO $pdo, $jobId)
     $out = 'out-' . $j['token'] . '.jpg';
     if (@file_put_contents($dir . '/' . $out, $fin) === false) { $fail('Khong luu duoc anh'); return; }
 
+    $parts = explode('/', $prov, 2);
     $pdo->prepare("UPDATE `ai_jobs`
-                      SET state = 'done', provider = ?, out_file = ?, err = NULL, ms = ?, finished_at = NOW()
+                      SET state = 'done', provider = ?, model = ?, out_file = ?, err = NULL, ms = ?, finished_at = NOW()
                     WHERE id = ?")
-        ->execute(array($prov, $out, (int) ((microtime(true) - $t0) * 1000), (int) $jobId));
+        ->execute(array($parts[0], isset($parts[1]) ? $parts[1] : null, $out,
+                        (int) ((microtime(true) - $t0) * 1000), (int) $jobId));
     try {
         $pdo->prepare("UPDATE `ai_events`  SET uses = uses + 1 WHERE id = ?")->execute(array((int) $j['ev_id']));
         $pdo->prepare("UPDATE `ai_prompts` SET uses = uses + 1 WHERE id = ?")->execute(array((int) $j['prompt_id']));
@@ -320,8 +324,10 @@ case 'cfg': {
     apx_ok(array('data' => array(
         'gemini'  => trim((string) $c['gemini_key']) !== '',
         'fal'     => trim((string) $c['fal_key']) !== '',
-        'model'   => $c['gemini_model'],
+        'model'     => $c['gemini_model'],
+        'model_pro' => $c['gemini_model_pro'],
         'fal_model' => $c['fal_model'],
+        'fal_model_pro' => $c['fal_model_pro'],
         'inflight' => (int) $c['max_inflight'],
         'is_admin' => apx_admin(),
     )));
@@ -360,6 +366,7 @@ case 'event-save': {
         'out_w'    => max(256, min(4096, (int) (isset($B['out_w']) ? $B['out_w'] : 1024))),
         'out_h'    => max(256, min(4096, (int) (isset($B['out_h']) ? $B['out_h'] : 1024))),
         'max_images' => max(0, (int) (isset($B['max_images']) ? $B['max_images'] : 0)),
+        'model_tier' => ap_tier(isset($B['model_tier']) ? $B['model_tier'] : 'flash'),
     );
 
     if ($id > 0) {
@@ -461,15 +468,16 @@ case 'prompt-save': {
         $title, mb_substr($body, 0, 4000), apx_s(isset($B['tag']) ? $B['tag'] : '', 60) ?: null,
         apx_s(isset($B['thumb_file']) ? $B['thumb_file'] : '', 200) ?: null,
         empty($B['active']) ? 0 : 1, (int) (isset($B['sort_order']) ? $B['sort_order'] : 0),
+        empty($B['force_pro']) ? 0 : 1,
     );
     if ($id > 0) {
         $v[] = $id;
-        $PDO->prepare("UPDATE `ai_prompts` SET title=?, body=?, tag=?, thumb_file=?, active=?, sort_order=? WHERE id=?")
+        $PDO->prepare("UPDATE `ai_prompts` SET title=?, body=?, tag=?, thumb_file=?, active=?, sort_order=?, force_pro=? WHERE id=?")
             ->execute($v);
     } else {
         $v[] = $ME['display_name'];
-        $PDO->prepare("INSERT INTO `ai_prompts` (title, body, tag, thumb_file, active, sort_order, created_by, created_at)
-                       VALUES (?,?,?,?,?,?,?, NOW())")->execute($v);
+        $PDO->prepare("INSERT INTO `ai_prompts` (title, body, tag, thumb_file, active, sort_order, force_pro, created_by, created_at)
+                       VALUES (?,?,?,?,?,?,?,?, NOW())")->execute($v);
         $id = (int) $PDO->lastInsertId();
     }
     apx_ok(array('data' => array('id' => $id)));
@@ -501,7 +509,7 @@ case 'jobs': {
     $id = (int) (isset($_GET['id']) ? $_GET['id'] : 0);
     $w  = $id > 0 ? (' WHERE j.event_id = ' . $id) : '';
     $rows = $PDO->query(
-        "SELECT j.token, j.state, j.provider, j.err, j.attempts, j.ms, j.created_at, j.finished_at,
+        "SELECT j.token, j.state, j.provider, j.model, j.err, j.attempts, j.ms, j.created_at, j.finished_at,
                 e.name AS ev_name, p.title AS prompt_title
            FROM `ai_jobs` j
            LEFT JOIN `ai_events`  e ON e.id = j.event_id
@@ -522,13 +530,14 @@ case 'test': {
     $bytes = ap_jpeg($im, 88);
     imagedestroy($im);
 
+    $tier = ap_tier(isset($_GET['tier']) ? $_GET['tier'] : 'flash');
     $prov = ''; $err = '';
     $t0 = microtime(true);
     $g = ap_generate($bytes, 'image/jpeg',
-        'A friendly professional headshot, studio lighting, plain background.', 1024, 1024, $prov, $err);
+        'A friendly professional headshot, studio lighting, plain background.', 1024, 1024, $prov, $err, $tier);
     $ms = (int) ((microtime(true) - $t0) * 1000);
     if ($g === false) apx_fail('Gọi model không thành công sau ' . $ms . 'ms: ' . $err, 502);
-    apx_ok(array('data' => array('provider' => $prov, 'ms' => $ms, 'bytes' => strlen($g))));
+    apx_ok(array('data' => array('tier' => $tier, 'provider' => $prov, 'ms' => $ms, 'bytes' => strlen($g))));
 }
 
 default:

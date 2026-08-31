@@ -19,11 +19,24 @@ return array(
 
     /* --- Google Gemini: duong chinh --- */
     'gemini_key'   => '',
-    'gemini_model' => 'gemini-3.1-flash-image',
+
+    /* Muc Nhanh - dung cho hau het su kien.
+       ~0,067 USD/anh 1K, khoang 14 giay. */
+    'gemini_model'     => 'gemini-3.1-flash-image',   /* Nano Banana 2 */
+
+    /* Muc Cao - dep hon va viet CHU trong anh dung hon nhieu.
+       Dat gap doi (~0,134 USD/anh) va cham hon. Chon theo tung su kien,
+       hoac danh dau rieng cho nhung prompt co chu trong anh. */
+    'gemini_model_pro' => 'gemini-3-pro-image',       /* Nano Banana Pro */
 
     /* --- fal.ai: duong du phong khi Google nghen hoac loi --- */
-    'fal_key'      => '',
-    'fal_model'    => 'fal-ai/nano-banana/edit',
+    'fal_key'       => '',
+    'fal_model'     => 'fal-ai/nano-banana/edit',
+
+    /* fal cung chay dung Nano Banana Pro, nen day KHONG phai la ha chat luong -
+       cung model, khac nha cung cap. De rong neu muon muc Cao bao loi thay vi
+       chuyen nha cung cap. */
+    'fal_model_pro' => 'fal-ai/nano-banana-pro/edit',
 
     /* --- Dieu phoi tai --- */
 

@@ -18,7 +18,9 @@ function ap_cfg()
     if ($c !== null) return $c;
     $d = array(
         'gemini_key' => '', 'gemini_model' => 'gemini-3.1-flash-image',
+        'gemini_model_pro' => 'gemini-3-pro-image',
         'fal_key' => '', 'fal_model' => 'fal-ai/nano-banana/edit',
+        'fal_model_pro' => 'fal-ai/nano-banana-pro/edit',
         'max_inflight' => 8, 'timeout' => 90, 'max_attempts' => 3,
     );
     $f = __DIR__ . '/ai-config.php';
@@ -132,6 +134,37 @@ function ap_migrate(PDO $pdo)
          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
     );
     foreach ($sql as $q) { try { $pdo->exec($q); } catch (Exception $e) { } }
+
+    /* Them cot cho bang da tao tu truoc */
+    $add = array(
+        'ai_events'  => array('model_tier' => "VARCHAR(8) NOT NULL DEFAULT 'flash'"),
+        'ai_prompts' => array('force_pro'  => "TINYINT(1) NOT NULL DEFAULT 0"),
+        'ai_jobs'    => array('model'      => "VARCHAR(48) NULL DEFAULT NULL"),
+    );
+    foreach ($add as $tbl => $cols) {
+        try {
+            $have = array();
+            foreach ($pdo->query("SHOW COLUMNS FROM `$tbl`") as $r) $have[$r['Field']] = 1;
+            foreach ($cols as $c => $def) {
+                if (!isset($have[$c])) $pdo->exec("ALTER TABLE `$tbl` ADD COLUMN `$c` $def");
+            }
+        } catch (Exception $e) { }
+    }
+}
+
+/** Chuan hoa muc chat luong. */
+function ap_tier($t)
+{
+    return ((string) $t === 'pro') ? 'pro' : 'flash';
+}
+
+/** Ten model thuc te theo muc chat luong. */
+function ap_model($tier)
+{
+    $c = ap_cfg();
+    return ap_tier($tier) === 'pro'
+        ? (string) $c['gemini_model_pro']
+        : (string) $c['gemini_model'];
 }
 
 /* ------------------------------------------------------------------ */
@@ -182,14 +215,16 @@ function ap_size_label($w, $h)
 }
 
 /** Google Gemini. Tra ve chuoi byte anh, hoac false. */
-function ap_gen_gemini($imgBytes, $mime, $prompt, $w, $h, &$err)
+function ap_gen_gemini($imgBytes, $mime, $prompt, $w, $h, &$err, $tier = 'flash')
 {
     $c = ap_cfg();
     $key = trim((string) $c['gemini_key']);
     if ($key === '') { $err = 'Chua khai bao gemini_key'; return false; }
+    $model = ap_model($tier);
+    if ($model === '') { $err = 'Chua khai bao model cho muc ' . ap_tier($tier); return false; }
 
     $payload = json_encode(array(
-        'model' => (string) $c['gemini_model'],
+        'model' => $model,
         'input' => array(
             array('type' => 'text', 'text' => (string) $prompt),
             array('type' => 'image', 'mime_type' => $mime, 'data' => base64_encode($imgBytes)),
@@ -208,7 +243,7 @@ function ap_gen_gemini($imgBytes, $mime, $prompt, $w, $h, &$err)
         $payload, $code, (int) $c['timeout']);
 
     if ($code !== 200) {
-        $err = 'Gemini HTTP ' . $code . ' ' . mb_substr(preg_replace('/\s+/', ' ', (string) $res), 0, 200);
+        $err = 'Gemini(' . $model . ') HTTP ' . $code . ' ' . mb_substr(preg_replace('/\s+/', ' ', (string) $res), 0, 200);
         return false;
     }
     $j = json_decode($res, true);
@@ -220,11 +255,13 @@ function ap_gen_gemini($imgBytes, $mime, $prompt, $w, $h, &$err)
 }
 
 /** fal.ai (mac dinh cung chay nano-banana). Tra ve chuoi byte anh, hoac false. */
-function ap_gen_fal($imgBytes, $mime, $prompt, $w, $h, &$err)
+function ap_gen_fal($imgBytes, $mime, $prompt, $w, $h, &$err, $tier = 'flash')
 {
     $c = ap_cfg();
     $key = trim((string) $c['fal_key']);
     if ($key === '') { $err = 'Chua khai bao fal_key'; return false; }
+    $fm = ap_tier($tier) === 'pro' ? trim((string) $c['fal_model_pro']) : trim((string) $c['fal_model']);
+    if ($fm === '') { $err = 'fal khong co model cho muc ' . ap_tier($tier); return false; }
 
     $dataUri = 'data:' . $mime . ';base64,' . base64_encode($imgBytes);
     $payload = json_encode(array(
@@ -236,7 +273,7 @@ function ap_gen_fal($imgBytes, $mime, $prompt, $w, $h, &$err)
     ), JSON_UNESCAPED_UNICODE);
 
     $hdr = array('Content-Type: application/json', 'Authorization: Key ' . $key);
-    $base = 'https://queue.fal.run/' . trim((string) $c['fal_model'], '/');
+    $base = 'https://queue.fal.run/' . trim($fm, '/');
 
     $code = 0;
     $res = ap_http('POST', $base, $hdr, $payload, $code, 30);
@@ -283,19 +320,25 @@ function ap_gen_fal($imgBytes, $mime, $prompt, $w, $h, &$err)
 }
 
 /** Duong chinh Gemini, hong thi sang fal. */
-function ap_generate($imgBytes, $mime, $prompt, $w, $h, &$provider, &$err)
+function ap_generate($imgBytes, $mime, $prompt, $w, $h, &$provider, &$err, $tier = 'flash')
 {
     $e1 = ''; $e2 = '';
-    $c = ap_cfg();
+    $c    = ap_cfg();
+    $tier = ap_tier($tier);
 
     if (trim((string) $c['gemini_key']) !== '') {
-        $b = ap_gen_gemini($imgBytes, $mime, $prompt, $w, $h, $e1);
-        if ($b !== false) { $provider = 'gemini'; return $b; }
+        $b = ap_gen_gemini($imgBytes, $mime, $prompt, $w, $h, $e1, $tier);
+        if ($b !== false) { $provider = 'gemini/' . ap_model($tier); return $b; }
     }
-    if (trim((string) $c['fal_key']) !== '') {
-        $b = ap_gen_fal($imgBytes, $mime, $prompt, $w, $h, $e2);
-        if ($b !== false) { $provider = 'fal'; return $b; }
+
+    /* Du phong fal. O muc pro chi dung khi da khai bao fal_model_pro,
+       de khong am tham ha chat luong cua anh can chu viet dung. */
+    $falModel = $tier === 'pro' ? trim((string) $c['fal_model_pro']) : trim((string) $c['fal_model']);
+    if (trim((string) $c['fal_key']) !== '' && $falModel !== '') {
+        $b = ap_gen_fal($imgBytes, $mime, $prompt, $w, $h, $e2, $tier);
+        if ($b !== false) { $provider = 'fal/' . $falModel; return $b; }
     }
+
     $err = trim($e1 . ($e2 !== '' ? ' | ' . $e2 : ''));
     if ($err === '') $err = 'Chua khai bao khoa API nao';
     return false;

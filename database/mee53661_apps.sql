@@ -106,6 +106,7 @@ CREATE TABLE `ai_events` (
   `uses` int(11) NOT NULL DEFAULT 0,
   `created_by` varchar(120) DEFAULT NULL,
   `created_at` datetime NOT NULL,
+  `model_tier` varchar(8) NOT NULL DEFAULT 'flash',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_slug` (`slug`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -146,6 +147,7 @@ CREATE TABLE `ai_jobs` (
   `started_at` datetime DEFAULT NULL,
   `finished_at` datetime DEFAULT NULL,
   `created_at` datetime NOT NULL,
+  `model` varchar(48) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_token` (`token`),
   KEY `k_state` (`state`,`id`),
@@ -180,6 +182,7 @@ CREATE TABLE `ai_prompts` (
   `uses` int(11) NOT NULL DEFAULT 0,
   `created_by` varchar(120) DEFAULT NULL,
   `created_at` datetime NOT NULL,
+  `force_pro` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `k_tag` (`tag`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -7639,7 +7642,7 @@ CREATE TABLE `video_reviews` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_token` (`token`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -7649,6 +7652,7 @@ CREATE TABLE `video_reviews` (
 LOCK TABLES `video_reviews` WRITE;
 /*!40000 ALTER TABLE `video_reviews` DISABLE KEYS */;
 INSERT INTO `video_reviews` VALUES (3,'764ff13fcdb6f976a64abe99366283c2','BS Luân Bài 3','','b!e4unr15XWkyaVG8edY6MkfZmAYHtCUBDugOk42Ie06yPpJHpQ4j6SpiGKdrEhZ21','01UTW2SKKZFVFBT6SE7NBZJC2H545VGDBD','BS Luân Bài 3.mp4',825123699,'https://apsaagency.sharepoint.com/_layouts/15/download.aspx?UniqueId=194a2d59-44fa-43fb-948b-47ef3b530c23&Translate=false&tempauth=v1.eyJzaXRlaWQiOiJhZmE3OGI3Yi01NzVlLTRjNWEtOWE1NC02ZjFlNzU4ZThjOTEiLCJhcHBfZGlzcGxheW5hbWUiOiJBUFNBIEludGVybmFsIEFwcCIsIm5hbWVpZCI6IjIxZWEwNWIxLTA4YTYtNDI3Yi1iMzlkLTJlYjk5OTE1ZmIzMUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvYXBzYWFnZW5jeS5zaGFyZXBvaW50LmNvbUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJleHAiOiIxNzg3OTkzNTg3In0.CkAKDGVudHJhX2NsYWltcxIwQ0xhZHl0UUdFQUFhRm5ablkwRjZXblkxYTFWbGQxODJZelZwY25kUFFVRXFBQT09CjIKCmFjdG9yYXBwaWQSJDAwMDAwMDAzLTAwMDAtMDAwMC1jMDAwLTAwMDAwMDAwMDAwMAoKCgRzbmlkEgI2NBILCKjNz4eT68I_EAUaDTIwLjE5MC4xNjMuOTYqLDBXdHhESWdHUlQvUHNtNXRiMnpJU0lnQnVWT3Fld0pocVljK0JmZHVhSUE9MHk4AUIQojXq7nDgAICCD5Pt0-0XIkoQaGFzaGVkcHJvb2Z0b2tlbnoBMboBcHNlbGVjdGVkc2l0ZXMgYWxsc2l0ZXMucmVhZCBhbGxzaXRlcy53cml0ZSBhbGxzaXRlcy5tYW5hZ2UgYWxsc2l0ZXMuYXJjaGl2ZSBhbGxzaXRlcy5jcmVhdGUgYWxsc2l0ZXMuZnVsbGNvbnRyb2zIAQE.UJ5VpmfXeOe3vDr8fg4fUu-nvPZhkwjjOggewzWHOAs&ApiVersion=2.0',1787992987,1,'Harris','2026-08-28 15:43:25');
+INSERT INTO `video_reviews` VALUES (4,'54e25c7f8a27719594072f95f6959c00','Scene_BSLuan_Bai2_Ver1_29.8','','b!e4unr15XWkyaVG8edY6MkfZmAYHtCUBDugOk42Ie06yPpJHpQ4j6SpiGKdrEhZ21','01UTW2SKOYF5GNASIXX5GIBA5FZFQGPRW5','Scene_BSLuan_Bai2_Ver1_29.8.mp4',825266668,'https://apsaagency.sharepoint.com/_layouts/15/download.aspx?UniqueId=d04c2fd8-1749-4cbf-8083-a5c96067c6dd&Translate=false&tempauth=v1.eyJzaXRlaWQiOiJhZmE3OGI3Yi01NzVlLTRjNWEtOWE1NC02ZjFlNzU4ZThjOTEiLCJhcHBfZGlzcGxheW5hbWUiOiJBUFNBIEludGVybmFsIEFwcCIsIm5hbWVpZCI6IjIxZWEwNWIxLTA4YTYtNDI3Yi1iMzlkLTJlYjk5OTE1ZmIzMUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvYXBzYWFnZW5jeS5zaGFyZXBvaW50LmNvbUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJleHAiOiIxNzg4MTU1MTk2In0.CkAKDGVudHJhX2NsYWltcxIwQ0t1RzFOUUdFQUFhRmpWNFNHTmtOQzF6ZUVWeGFWTldXamxDVEVKSFFVRXFBQT09CjIKCmFjdG9yYXBwaWQSJDAwMDAwMDAzLTAwMDAtMDAwMC1jMDAwLTAwMDAwMDAwMDAwMAoKCgRzbmlkEgI2NBILCI6y5fCbycM_EAUaDTIwLjE5MC4xNjMuMjkqLFFUQ1BtZ1lBY1ZEenJTdS9Sd3hXVWZ6SXJQUzZTME9yck1Ud0lzOHhiODA9MHk4AUIQojaFDc6QAICCD54EMB2msEoQaGFzaGVkcHJvb2Z0b2tlbnoBMboBcHNlbGVjdGVkc2l0ZXMgYWxsc2l0ZXMucmVhZCBhbGxzaXRlcy53cml0ZSBhbGxzaXRlcy5tYW5hZ2UgYWxsc2l0ZXMuYXJjaGl2ZSBhbGxzaXRlcy5jcmVhdGUgYWxsc2l0ZXMuZnVsbGNvbnRyb2zIAQE.YqQxmFPX52d8XepwKdTpDTTGsG_Y2ynM13eUxDL2qHs&ApiVersion=2.0',1788154596,1,'Harris','2026-08-31 04:46:29');
 /*!40000 ALTER TABLE `video_reviews` ENABLE KEYS */;
 UNLOCK TABLES;
 
