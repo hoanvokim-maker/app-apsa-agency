@@ -145,6 +145,15 @@ function st_boot()
             'INSERT INTO quotation_statuses (skey,label,color,sort,prio,is_active,is_open,locked,created_at,updated_at)
              VALUES (?,?,?,?,?,?,?,?,?,?)'
         );
+
+        try {
+            if (!st_pdo()->query("SHOW COLUMNS FROM holidays LIKE 'kind'")->fetch()) {
+                $pdo->exec("ALTER TABLE holidays ADD `kind` VARCHAR(16) NOT NULL DEFAULT 'law'");
+            }
+            if (!st_pdo()->query("SHOW COLUMNS FROM holidays LIKE 'note'")->fetch()) {
+                $pdo->exec("ALTER TABLE holidays ADD `note` VARCHAR(200) NULL DEFAULT NULL");
+            }
+        } catch (Exception $e) { /* bo qua */ }
         foreach (st_seed_statuses() as $s) {
             $q->execute(array($s[0], $s[1], $s[2], $s[3], $s[4], $s[5], $s[6], $s[7], $now, $now));
         }
@@ -396,6 +405,7 @@ function st_holidays()
 if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') !== basename(__FILE__)) return;
 
 require_once __DIR__ . '/session-boot.php';
+require_once __DIR__ . '/vn-holidays.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
@@ -707,7 +717,7 @@ case 'all':
     }
 
     $hol = array();
-    foreach (st_pdo()->query('SELECT id, hdate, name FROM holidays ORDER BY hdate') as $r) $hol[] = $r;
+    foreach (st_pdo()->query('SELECT id, hdate, name, kind, note FROM holidays ORDER BY hdate') as $r) $hol[] = $r;
 
     $lt = array();
     foreach (st_pdo()->query('SELECT id, tkey, label, deduct_quota, sort, active FROM leave_types ORDER BY sort, id') as $r) $lt[] = $r;
@@ -718,6 +728,7 @@ case 'all':
         'status_counts' => $counts,
         'leave_types'   => $lt,
         'holidays'      => $hol,
+        'vn_years'      => vnh_years(),
         'default_quota' => (float) st_get('leave.default_quota', 14),
         'work_days'     => array_map('intval', array_keys(st_work_days())),
         'work_hours'    => st_json('leave.work_hours', array('am_start'=>'08:30','am_end'=>'12:00','pm_start'=>'13:30','pm_end'=>'17:30')),
@@ -949,14 +960,39 @@ case 'holiday-save':
     s_admin();
     $date = isset($B['hdate']) ? trim($B['hdate']) : '';
     $name = isset($B['name']) ? trim($B['name']) : '';
+    $kind = isset($B['kind']) ? trim($B['kind']) : 'law';
+    $note = isset($B['note']) ? trim($B['note']) : '';
+    if (!in_array($kind, array('law', 'bu', 'company'), true)) $kind = 'law';
     if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) s_fail('Ngày không hợp lệ.');
     if ($name === '') s_fail('Nhập tên ngày lễ.');
     $ins = st_pdo()->prepare(
-        'INSERT INTO holidays (hdate, name, created_at) VALUES (?,?,?)
-         ON DUPLICATE KEY UPDATE name = VALUES(name)'
+        'INSERT INTO holidays (hdate, name, kind, note, created_at) VALUES (?,?,?,?,?)
+         ON DUPLICATE KEY UPDATE name = VALUES(name), kind = VALUES(kind), note = VALUES(note)'
     );
-    $ins->execute(array($date, mb_substr($name, 0, 160, 'UTF-8'), $now));
+    $ins->execute(array(
+        $date, mb_substr($name, 0, 160, 'UTF-8'), $kind,
+        $note === '' ? null : mb_substr($note, 0, 200, 'UTF-8'), $now
+    ));
     s_out(array('ok' => true, 'message' => 'Đã lưu ngày lễ.'));
+    break;
+
+case 'holiday-seed':
+    s_admin();
+    $year = isset($B['year']) ? (int) $B['year'] : 0;
+    $rows = vnh_year($year);
+    if (!$rows) s_fail('Chưa có dữ liệu ngày lễ cho năm ' . $year . '.');
+    $ins = st_pdo()->prepare(
+        'INSERT IGNORE INTO holidays (hdate, name, kind, note, created_at) VALUES (?,?,?,?,?)'
+    );
+    $add = 0;
+    foreach ($rows as $r) {
+        $ins->execute(array($r[0], $r[1], $r[2], $r[3] === '' ? null : $r[3], $now));
+        $add += $ins->rowCount();
+    }
+    $skip = count($rows) - $add;
+    s_out(array('ok' => true, 'message' =>
+        'Đã nạp lịch nghỉ lễ năm ' . $year . ': thêm ' . $add . ' ngày'
+        . ($skip > 0 ? ', bỏ qua ' . $skip . ' ngày đã có.' : '.')));
     break;
 
 case 'holiday-delete':

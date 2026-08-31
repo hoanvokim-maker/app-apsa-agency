@@ -1476,9 +1476,11 @@ CREATE TABLE `holidays` (
   `hdate` date NOT NULL,
   `name` varchar(160) NOT NULL DEFAULT '',
   `created_at` datetime NOT NULL,
+  `kind` varchar(16) NOT NULL DEFAULT 'law',
+  `note` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_hdate` (`hdate`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1487,7 +1489,33 @@ CREATE TABLE `holidays` (
 
 LOCK TABLES `holidays` WRITE;
 /*!40000 ALTER TABLE `holidays` DISABLE KEYS */;
-INSERT INTO `holidays` VALUES (1,'2026-09-02','Quốc khánh 2/9','2026-08-25 15:22:23');
+INSERT INTO `holidays` VALUES (1,'2026-09-02','Quốc khánh 2/9','2026-08-25 15:22:23','law',NULL);
+INSERT INTO `holidays` VALUES (2,'2027-01-01','Tết Dương lịch','2026-08-31 12:48:03','law',NULL);
+INSERT INTO `holidays` VALUES (3,'2027-02-04','Nghỉ bù Tết Đinh Mùi','2026-08-31 12:48:03','bu','Dự kiến - kỳ nghỉ Tết 4/2 đến 10/2/2027, 7 ngày');
+INSERT INTO `holidays` VALUES (4,'2027-02-05','Tết Đinh Mùi - ngày cuối năm Bính Ngọ','2026-08-31 12:48:03','law','Dự kiến');
+INSERT INTO `holidays` VALUES (5,'2027-02-06','Mùng 1 Tết Đinh Mùi','2026-08-31 12:48:03','law','Dự kiến');
+INSERT INTO `holidays` VALUES (6,'2027-02-07','Mùng 2 Tết Đinh Mùi','2026-08-31 12:48:03','law','Dự kiến');
+INSERT INTO `holidays` VALUES (7,'2027-02-08','Mùng 3 Tết Đinh Mùi','2026-08-31 12:48:03','law','Dự kiến');
+INSERT INTO `holidays` VALUES (8,'2027-02-09','Mùng 4 Tết Đinh Mùi','2026-08-31 12:48:03','law','Dự kiến');
+INSERT INTO `holidays` VALUES (9,'2027-02-10','Nghỉ bù Tết Đinh Mùi','2026-08-31 12:48:03','bu','Dự kiến - bù mùng 1 và mùng 2 rơi vào cuối tuần');
+INSERT INTO `holidays` VALUES (10,'2027-04-16','Giỗ Tổ Hùng Vương (10/3 âm lịch)','2026-08-31 12:48:03','law',NULL);
+INSERT INTO `holidays` VALUES (11,'2027-04-30','Ngày Giải phóng miền Nam 30/4','2026-08-31 12:48:03','law',NULL);
+INSERT INTO `holidays` VALUES (12,'2027-05-01','Ngày Quốc tế Lao động 1/5','2026-08-31 12:48:03','law',NULL);
+INSERT INTO `holidays` VALUES (13,'2027-05-03','Nghỉ bù 1/5','2026-08-31 12:48:03','bu','Dự kiến - 1/5/2027 rơi vào thứ Bảy');
+INSERT INTO `holidays` VALUES (14,'2027-09-02','Quốc khánh 2/9','2026-08-31 12:48:03','law','Dự kiến - kỳ nghỉ 2/9 đến 5/9/2027, 4 ngày');
+INSERT INTO `holidays` VALUES (15,'2027-09-03','Quốc khánh - ngày liền kề 3/9','2026-08-31 12:48:03','law','Dự kiến');
+INSERT INTO `holidays` VALUES (16,'2026-01-01','Tết Dương lịch','2026-08-31 12:48:03','law',NULL);
+INSERT INTO `holidays` VALUES (17,'2026-02-16','Tết Bính Ngọ - 29 tháng Chạp','2026-08-31 12:48:03','law','Kỳ nghỉ Tết 14/2 đến 22/2/2026, 9 ngày');
+INSERT INTO `holidays` VALUES (18,'2026-02-17','Mùng 1 Tết Bính Ngọ','2026-08-31 12:48:03','law',NULL);
+INSERT INTO `holidays` VALUES (19,'2026-02-18','Mùng 2 Tết Bính Ngọ','2026-08-31 12:48:03','law',NULL);
+INSERT INTO `holidays` VALUES (20,'2026-02-19','Mùng 3 Tết Bính Ngọ','2026-08-31 12:48:03','law',NULL);
+INSERT INTO `holidays` VALUES (21,'2026-02-20','Mùng 4 Tết Bính Ngọ','2026-08-31 12:48:03','law',NULL);
+INSERT INTO `holidays` VALUES (22,'2026-04-26','Giỗ Tổ Hùng Vương (10/3 âm lịch)','2026-08-31 12:48:03','law',NULL);
+INSERT INTO `holidays` VALUES (23,'2026-04-27','Nghỉ bù Giỗ Tổ Hùng Vương','2026-08-31 12:48:03','bu','Do 10/3 âm lịch rơi vào Chủ nhật');
+INSERT INTO `holidays` VALUES (24,'2026-04-30','Ngày Giải phóng miền Nam 30/4','2026-08-31 12:48:03','law',NULL);
+INSERT INTO `holidays` VALUES (25,'2026-05-01','Ngày Quốc tế Lao động 1/5','2026-08-31 12:48:03','law',NULL);
+INSERT INTO `holidays` VALUES (26,'2026-08-31','Hoán đổi nghỉ lễ Quốc khánh','2026-08-31 12:48:03','bu','Làm bù thứ Bảy 22/8/2026');
+INSERT INTO `holidays` VALUES (27,'2026-09-01','Quốc khánh - ngày liền kề 1/9','2026-08-31 12:48:03','law',NULL);
 /*!40000 ALTER TABLE `holidays` ENABLE KEYS */;
 UNLOCK TABLES;
 

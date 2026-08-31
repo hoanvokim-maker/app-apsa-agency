@@ -287,11 +287,24 @@
       <h2>Ngày nghỉ lễ</h2>
       <div class="hint">Những ngày khai báo ở đây sẽ <b>không bị tính</b> vào đơn xin nghỉ — nhân viên trùng ngày lễ thì không mất ngày phép.</div>
       <div class="grid3" style="align-items:end">
-        <div class="fg"><label>Ngày</label><input type="date" id="hDate" /></div>
-        <div class="fg"><label>Tên ngày lễ</label><input type="text" id="hName" placeholder="Ví dụ: Quốc khánh 2/9" /></div>
-        <div class="fg"><button class="btn primary" style="width:100%" onclick="saveHoliday()">+ Thêm ngày lễ</button></div>
-      </div>
-      <div style="margin-top:18px" id="holList"></div>
+            <div class="fg"><label>Ngày</label><input type="date" id="hDate" /></div>
+            <div class="fg"><label>Tên ngày lễ</label><input type="text" id="hName" placeholder="Ví dụ: Quốc khánh 2/9" /></div>
+            <div class="fg"><label>Loại</label><select id="hKind">
+              <option value="law">Nghỉ lễ theo luật</option>
+              <option value="bu">Nghỉ bù / hoán đổi</option>
+              <option value="company">Nghỉ riêng của công ty</option>
+            </select></div>
+          </div>
+          <div class="grid3" style="align-items:end;margin-top:12px">
+            <div class="fg" style="grid-column:span 2"><label>Ghi chú</label><input type="text" id="hNote" placeholder="Ví dụ: làm bù thứ Bảy 22/8" /></div>
+            <div class="fg"><button class="btn primary" style="width:100%" onclick="saveHoliday()">+ Thêm ngày lễ</button></div>
+          </div>
+          <div class="grid3" style="align-items:end;margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08)">
+            <div class="fg"><label>Nạp sẵn lịch nghỉ lễ Việt Nam</label><select id="hYear"></select></div>
+            <div class="fg"><button class="btn" style="width:100%" onclick="seedHolidays()">Nạp lịch năm này</button></div>
+            <div class="fg"><div class="hint" style="margin:0">Chỉ thêm những ngày còn thiếu, không ghi đè ngày anh đã tự sửa.</div></div>
+          </div>
+          <div style="margin-top:18px" id="holList"></div>
     </div>
   </div>
 
@@ -677,15 +690,47 @@ function paintLtypes() {
       '</tbody></table>';
 }
 
+function hWd(d) {
+  var w = new Date(String(d) + 'T00:00:00').getDay();
+  return ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'][w] || '';
+}
+function hBadge(k) {
+  var m = { law: ['Theo luật', '#22c55e'], bu: ['Nghỉ bù', '#facc15'], company: ['Công ty', '#9a9a9a'] };
+  var x = m[k] || m.law;
+  return '<span style="font-size:11px;font-weight:700;white-space:nowrap;padding:1px 8px;border-radius:20px;'
+    + 'border:1px solid ' + x[1] + '55;color:' + x[1] + '">' + x[0] + '</span>';
+}
 function paintHolidays() {
   const rows = D.holidays || [];
-  document.getElementById('holList').innerHTML = !rows.length
-    ? '<div class="empty">Chưa khai báo ngày lễ nào.</div>'
-    : '<table class="tbl"><thead><tr><th>Ngày</th><th>Tên</th><th></th></tr></thead><tbody>' +
-      rows.map(h =>
-        '<tr><td style="white-space:nowrap"><b>' + dvn(h.hdate) + '</b></td><td>' + esc(h.name) + '</td>' +
-        '<td style="text-align:right"><button class="btn sm danger" onclick="delHoliday(' + h.id + ')">Xoá</button></td></tr>'
-      ).join('') + '</tbody></table>';
+  const sel = document.getElementById('hYear');
+  const ys = D.vn_years || [];
+  if (sel && sel.options.length !== ys.length) {
+    sel.innerHTML = ys.map(y => '<option value="' + y + '">Năm ' + y + '</option>').join('');
+    const now = new Date().getFullYear();
+    if (ys.indexOf(now) >= 0) sel.value = String(now);
+  }
+  const box = document.getElementById('holList');
+  if (!rows.length) { box.innerHTML = '<div class="empty">Chưa khai báo ngày lễ nào.</div>'; return; }
+  const by = {};
+  rows.forEach(h => { const y = String(h.hdate).slice(0, 4); (by[y] = by[y] || []).push(h); });
+  box.innerHTML = Object.keys(by).sort().reverse().map(y => {
+    const list = by[y];
+    const nLaw = list.filter(h => (h.kind || 'law') === 'law').length;
+    return '<h3 style="margin:26px 0 8px;font-size:15px;font-weight:700">Năm ' + y
+      + ' <span style="color:#9a9a9a;font-weight:400;font-size:13px">— ' + list.length
+      + ' ngày nghỉ, trong đó ' + nLaw + ' ngày theo luật</span></h3>'
+      + '<table class="tbl"><thead><tr><th>Ngày</th><th>Thứ</th><th>Tên ngày lễ</th><th>Loại</th><th></th></tr></thead><tbody>'
+      + list.map(h =>
+          '<tr><td style="white-space:nowrap"><b>' + dvn(h.hdate) + '</b></td>'
+          + '<td style="white-space:nowrap;color:#9a9a9a">' + hWd(h.hdate) + '</td>'
+          + '<td>' + esc(h.name)
+          + (h.note ? '<div style="font-size:12px;color:#9a9a9a;margin-top:2px">' + esc(h.note) + '</div>' : '')
+          + '</td>'
+          + '<td>' + hBadge(h.kind || 'law') + '</td>'
+          + '<td style="text-align:right"><button class="btn sm danger" onclick="delHoliday(' + h.id + ')">Xoá</button></td></tr>'
+        ).join('')
+      + '</tbody></table>';
+  }).join('');
 }
 
 function paintCompany() {
@@ -856,14 +901,23 @@ async function delLtype(id) {
 
 /* ── ngày lễ ── */
 async function saveHoliday() {
-  const body = { hdate: document.getElementById('hDate').value, name: document.getElementById('hName').value.trim() };
-  if (!body.hdate) return toast('Chọn ngày đã nhé.', true);
-  if (!body.name)  return toast('Nhập tên ngày lễ.', true);
-  try {
-    const j = await api('holiday-save', { body });
-    document.getElementById('hName').value = '';
-    toast(j.message); await reload(); tab('holiday');
-  } catch (e) { toast(e.message, true); }
+  const body = {
+    hdate: document.getElementById('hDate').value,
+    name:  document.getElementById('hName').value.trim(),
+    kind:  document.getElementById('hKind').value,
+    note:  document.getElementById('hNote').value.trim()
+  };
+  const j = await api('holiday-save', { body });
+  document.getElementById('hName').value = '';
+  document.getElementById('hNote').value = '';
+  toast(j.message); await reload(); tab('holiday');
+}
+
+async function seedHolidays() {
+  const y = document.getElementById('hYear').value;
+  if (!y) return;
+  const j = await api('holiday-seed', { body: { year: +y } });
+  toast(j.message); await reload(); tab('holiday');
 }
 async function delHoliday(id) {
   try { const j = await api('holiday-delete', { body: { id } }); toast(j.message); await reload(); tab('holiday'); }

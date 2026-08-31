@@ -1,5 +1,5 @@
 {
-    "version": "1.6.18",
+    "version": "1.6.19",
     "updated": "2026-08-31",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-29",
             "note": "Phiên bản 1.6",
             "items": [
+                {
+                    "d": "2026-08-31",
+                    "v": "1.6.19",
+                    "t": "Ngay nghi le: them loai + ghi chu, nap san lich nghi le Viet Nam 2026-2027 (api/vn-holidays.php)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-31",
                     "v": "1.6.18",
