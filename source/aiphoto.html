@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script>
+  document.documentElement.style.visibility = 'hidden';
+  fetch('./api/auth-api.php?action=me', { credentials: 'same-origin' })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(res => {
+      if (!res.ok) throw new Error();
+      window.__APSA_USER = res.data;
+      document.documentElement.style.visibility = 'visible';
+    })
+    .catch(() => {
+      location.replace('./login.html?next=' + encodeURIComponent(location.pathname + location.search));
+    });
+</script>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=1">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#dff20d">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>APSA — Chụp ảnh AI</title>
+  <script src="/apsa-ui.js?v=29"></script>
+  <script src="/perm-guard.js?v=2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/theme.css?v=22" />
+<style>
+  :root {
+    --bg: #000; --bg2: #0b0b0b; --bg3: #141414; --bg4: #1c1c1c;
+    --border: rgba(255,255,255,.08); --border-h: rgba(255,255,255,.16);
+    --text: #fff; --text2: #9a9a9a; --text3: #5e5e5e;
+    --green: #dff20d; --red: #ff4d4d; --ok: #22c55e; --blue: #3894ff; --gold: #facc15;
+  }
+  body { font-family: 'Oxanium', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  header { position: sticky; top: 0; z-index: 100; background: rgba(0,0,0,.9); backdrop-filter: blur(16px);
+           border-bottom: 1px solid var(--border); height: 60px; padding: 0 28px;
+           display: flex; align-items: center; justify-content: space-between; }
+  .logo img { height: 26px; filter: brightness(0) invert(1); opacity: .9; display: block; }
+  .back-btn { display: flex; align-items: center; gap: 6px; color: var(--text2); text-decoration: none;
+              font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); }
+  .back-btn:hover { color: var(--text); border-color: var(--border-h); }
+
+  .qwrap { max-width: 1160px; margin: 0 auto; padding: 0 28px 60px; }
+  .qhead { max-width: 1160px; margin: 0 auto; padding: 26px 28px 12px; }
+  .qhead h1 { font-size: 26px; font-weight: 700; margin: 0 0 6px; }
+  .qhead p { margin: 0; color: var(--text2); font-size: 13px; line-height: 1.6; }
+
+  .qtabs { display: flex; gap: 8px; border-bottom: 1px solid var(--border); margin: 18px 0 20px; }
+  .qtab { background: none; border: 0; border-bottom: 2px solid transparent; color: var(--text2);
+          font-family: inherit; font-size: 14px; font-weight: 600; padding: 10px 14px; cursor: pointer; }
+  .qtab.on { color: var(--text); border-bottom-color: var(--green); }
+
+  .qbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+  .qb { font-family: inherit; font-size: 13px; font-weight: 600; padding: 9px 16px; border-radius: 10px;
+        border: 1px solid var(--border-h); background: transparent; color: var(--text); cursor: pointer; }
+  .qb:hover { border-color: var(--text2); }
+  .qb.pri { background: var(--green); color: #0d0d0d; border-color: var(--green); }
+  .qb.dan { color: var(--red); border-color: rgba(255,77,77,.35); }
+  .qb.sm { padding: 6px 11px; font-size: 12px; border-radius: 8px; }
+  .qb[disabled] { opacity: .45; cursor: default; }
+
+  .qgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+  .qc { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .qc .cv { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; background: var(--bg4); }
+  .qc .bd { padding: 14px 16px 16px; }
+  .qc h3 { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+  .qmeta { font-size: 12px; color: var(--text2); line-height: 1.7; }
+  .qtag { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
+          border: 1px solid var(--border-h); color: var(--text2); margin-left: 6px; vertical-align: 2px; }
+  .qtag.ok { color: var(--ok); border-color: rgba(34,197,94,.4); }
+  .qtag.no { color: var(--text3); }
+  .qtag.wr { color: var(--gold); border-color: rgba(250,204,21,.4); }
+  .qtag.pro { color: var(--blue); border-color: rgba(56,148,255,.4); }
+  .qlink { display: flex; gap: 6px; align-items: center; margin-top: 10px; }
+  .qlink input { flex: 1; min-width: 0; font-family: inherit; font-size: 12px; padding: 7px 10px;
+                 background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; color: var(--text2); }
+  .qacts { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+
+  table.qt { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.qt th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em;
+                color: var(--text3); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  table.qt td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.qt tr:hover td { background: var(--bg2); }
+  .qth { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; display: block; background: var(--bg4); }
+
+  .qov { position: fixed; inset: 0; background: rgba(0,0,0,.72); backdrop-filter: blur(4px);
+         z-index: 300; display: none; overflow-y: auto; padding: 30px 16px; }
+  .qov.on { display: block; }
+  .qdlg { max-width: 640px; margin: 0 auto; background: var(--bg2); border: 1px solid var(--border-h);
+          border-radius: 16px; padding: 22px; }
+  .qdlg h2 { margin: 0 0 16px; font-size: 19px; font-weight: 700; }
+  .qf { margin-bottom: 13px; }
+  .qf label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 5px; }
+  .qf input[type=text], .qf input[type=number], .qf input[type=datetime-local], .qf select, .qf textarea {
+    width: 100%; font-family: inherit; font-size: 14px; padding: 9px 12px; color: var(--text);
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 9px;
+  }
+  .qf textarea { min-height: 130px; resize: vertical; line-height: 1.55; }
+  .qf .hint { font-size: 11px; color: var(--text3); margin-top: 4px; line-height: 1.5; }
+  .q2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .q3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .qck { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .qpk { max-height: 230px; overflow-y: auto; border: 1px solid var(--border); border-radius: 10px; padding: 8px; }
+  .qpk label { display: flex; gap: 9px; align-items: center; padding: 6px 8px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+  .qpk label:hover { background: var(--bg3); }
+  .qend { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+  .qimg { display: flex; gap: 10px; align-items: center; }
+  .qimg img { width: 74px; height: 48px; object-fit: cover; border-radius: 8px; background: var(--bg4); border: 1px solid var(--border); }
+
+  .qmsg { padding: 40px 0; text-align: center; color: var(--text2); font-size: 14px; }
+  .qtoast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(20px);
+            background: var(--bg4); border: 1px solid var(--border-h); color: var(--text);
+            padding: 11px 20px; border-radius: 30px; font-size: 13px; opacity: 0;
+            transition: .25s; pointer-events: none; z-index: 400; }
+  .qtoast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .qqr { background: #fff; padding: 10px; border-radius: 10px; width: 150px; margin: 14px auto 0; }
+  .qqr img { display: block; width: 100%; height: auto; image-rendering: pixelated; }
+  @media (max-width: 640px) { .qwrap, .qhead { padding-left: 16px; padding-right: 16px; } header { padding: 0 16px; } .q3 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><img src="/Logo%20rectange.png" alt="APSA" /></div>
+  <a class="back-btn" href="./index.html">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Trang chủ
+  </a>
+</header>
+
+<div class="qhead">
+  <h1>Chụp ảnh AI</h1>
+  <p>Tạo sự kiện, chọn kiểu ảnh từ thư viện prompt rồi gửi link cho khách. Khách mở link, chụp một tấm bằng camera và nhận ảnh AI có watermark của sự kiện.</p>
+</div>
+
+<div class="qwrap">
+  <div class="qtabs">
+    <button class="qtab on" id="tab-ev" onclick="tab('ev')">Sự kiện</button>
+    <button class="qtab" id="tab-pr" onclick="tab('pr')">Thư viện prompt</button>
+    <button class="qtab" id="tab-lg" onclick="tab('lg')">Nhật ký</button>
+  </div>
+
+  <!-- SU KIEN -->
+  <div id="pane-ev">
+    <div class="qbar">
+      <button class="qb pri" onclick="evNew()">+ Tạo sự kiện</button>
+      <button class="qb" onclick="tryModel('flash')">Kiểm tra model Nhanh</button>
+      <button class="qb" onclick="tryModel('pro')">Kiểm tra model Cao</button>
+      <span class="qmeta" id="cfgInfo"></span>
+    </div>
+    <div class="qgrid" id="evList"></div>
+  </div>
+
+  <!-- PROMPT -->
+  <div id="pane-pr" style="display:none">
+    <div class="qbar"><button class="qb pri" onclick="prNew()">+ Thêm kiểu ảnh</button></div>
+    <table class="qt"><thead><tr>
+      <th style="width:60px"></th><th>Kiểu ảnh</th><th style="width:120px">Nhãn</th>
+      <th style="width:90px">Chất lượng</th><th style="width:70px">Lượt</th><th style="width:170px"></th>
+    </tr></thead><tbody id="prList"></tbody></table>
+  </div>
+
+  <!-- NHAT KY -->
+  <div id="pane-lg" style="display:none">
+    <div class="qbar">
+      <select id="lgEv" onchange="loadJobs()" style="font-family:inherit;font-size:13px;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:9px;color:var(--text)"></select>
+      <button class="qb" onclick="loadJobs()">Tải lại</button>
+      <span class="qmeta" id="lgSum"></span>
+    </div>
+    <table class="qt"><thead><tr>
+      <th style="width:100px">Trạng thái</th><th>Sự kiện</th><th>Kiểu ảnh</th>
+      <th style="width:150px">Model</th><th style="width:80px">Thời gian</th><th style="width:150px">Lúc</th>
+    </tr></thead><tbody id="lgList"></tbody></table>
+  </div>
+</div>
+
+<!-- HOP SU KIEN -->
+<div class="qov" id="ovEv"><div class="qdlg">
+  <h2 id="evTitle">Sự kiện</h2>
+  <div class="qf"><label>Tên sự kiện</label><input type="text" id="e_name" maxlength="160" /></div>
+  <div class="qf"><label>Mô tả ngắn (khách nhìn thấy)</label><input type="text" id="e_note" maxlength="500" /></div>
+  <div class="q2">
+    <div class="qf"><label>Bắt đầu</label><input type="datetime-local" id="e_start" /></div>
+    <div class="qf"><label>Kết thúc</label><input type="datetime-local" id="e_end" /></div>
+  </div>
+  <div class="q3">
+    <div class="qf"><label>Rộng (px)</label><input type="number" id="e_w" min="256" max="4096" step="8" /></div>
+    <div class="qf"><label>Cao (px)</label><input type="number" id="e_h" min="256" max="4096" step="8" /></div>
+    <div class="qf"><label>Giới hạn ảnh</label><input type="number" id="e_max" min="0" step="10" />
+      <div class="hint">0 = không giới hạn</div></div>
+  </div>
+  <div class="q2">
+    <div class="qf"><label>Chất lượng</label><select id="e_tier">
+      <option value="flash">Nhanh — Nano Banana 2</option>
+      <option value="pro">Cao — Nano Banana Pro (chữ ít sai)</option>
+    </select></div>
+    <div class="qf"><label>Vị trí watermark</label><select id="e_wmpos">
+      <option value="br">Dưới phải</option><option value="bl">Dưới trái</option>
+      <option value="tr">Trên phải</option><option value="tl">Trên trái</option>
+      <option value="c">Giữa</option>
+    </select></div>
+  </div>
+  <div class="qf"><label>Watermark rộng bao nhiêu % ảnh</label><input type="number" id="e_wmsc" min="5" max="100" /></div>
+
+  <div class="qf"><label>Ảnh bìa</label>
+    <div class="qimg"><img id="e_cover" alt="" />
+      <button class="qb sm" id="b_cover" onclick="pickFile('cover')">Chọn ảnh…</button></div>
+    <div class="hint" id="h_up">Lưu sự kiện trước rồi mới thêm được ảnh.</div>
+  </div>
+  <div class="qf"><label>Watermark (PNG nền trong suốt)</label>
+    <div class="qimg"><img id="e_wm" alt="" />
+      <button class="qb sm" id="b_wm" onclick="pickFile('wm')">Chọn ảnh…</button>
+      <button class="qb sm dan" id="b_wmx" onclick="wmClear()">Gỡ</button></div>
+  </div>
+
+  <div class="qf"><label>Kiểu ảnh cho sự kiện này</label>
+    <div class="qpk" id="e_prompts"></div>
+    <div class="hint">Khách sẽ thấy đúng các kiểu ảnh được tick, theo thứ tự trong thư viện.</div>
+  </div>
+  <label class="qck"><input type="checkbox" id="e_active" /> Đang mở cho khách dùng</label>
+  <div class="qend">
+    <button class="qb" onclick="closeOv('ovEv')">Huỷ</button>
+    <button class="qb pri" onclick="evSave()">Lưu</button>
+  </div>
+</div></div>
+
+<!-- HOP PROMPT -->
+<div class="qov" id="ovPr"><div class="qdlg">
+  <h2 id="prTitle">Kiểu ảnh</h2>
+  <div class="qf"><label>Tên kiểu ảnh (khách nhìn thấy)</label><input type="text" id="p_title" maxlength="160" /></div>
+  <div class="q2">
+    <div class="qf"><label>Nhãn</label><input type="text" id="p_tag" maxlength="60" />
+      <div class="hint">Ví dụ: Tết, Cyberpunk, Vintage…</div></div>
+    <div class="qf"><label>Thứ tự</label><input type="number" id="p_sort" step="1" /></div>
+  </div>
+  <div class="qf"><label>Nội dung prompt</label>
+    <textarea id="p_body" maxlength="4000" placeholder="Mô tả bằng tiếng Anh cho kết quả ổn định hơn. Nhớ dặn model giữ nguyên gương mặt người trong ảnh."></textarea>
+    <div class="hint">Mẹo: thêm câu "keep the person's face and identity exactly the same as the input photo" để nhân vật giống thật.</div>
+  </div>
+  <div class="qf"><label>Ảnh minh hoạ</label>
+    <div class="qimg"><img id="p_thumb" alt="" />
+      <button class="qb sm" onclick="pickFile('thumb')">Chọn ảnh…</button>
+      <button class="qb sm dan" onclick="thumbClear()">Gỡ</button></div>
+  </div>
+  <label class="qck" style="margin-bottom:9px"><input type="checkbox" id="p_pro" /> Luôn dùng chất lượng Cao cho kiểu này</label>
+  <label class="qck"><input type="checkbox" id="p_active" /> Đang bật</label>
+  <div class="qend">
+    <button class="qb" onclick="closeOv('ovPr')">Huỷ</button>
+    <button class="qb pri" onclick="prSave()">Lưu</button>
+  </div>
+</div></div>
+
+<!-- HOP QR -->
+<div class="qov" id="ovQr"><div class="qdlg" style="max-width:360px;text-align:center">
+  <h2 id="qrName" style="font-size:16px">Link sự kiện</h2>
+  <div class="qqr" id="qrBox"></div>
+  <p class="qmeta" style="margin-top:12px;word-break:break-all" id="qrUrl"></p>
+  <div class="qend" style="justify-content:center">
+    <button class="qb" onclick="closeOv('ovQr')">Đóng</button>
+  </div>
+</div></div>
+
+<input type="file" id="fi" accept="image/*" style="display:none" />
+<div class="qtoast" id="toast"></div>
+
+<script src="./qrlib.js?v=1"></script>
+<script>
+'use strict';
+var API = './api/aiphoto-api.php';
+var EVS = [], PRS = [], CFG = null, curEv = null, curPr = null, upKind = '';
+
+function el(i) { return document.getElementById(i); }
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+function toast(m) {
+  var t = el('toast'); t.textContent = m; t.classList.add('on');
+  clearTimeout(t._t); t._t = setTimeout(function () { t.classList.remove('on'); }, 2200);
+}
+function api(action, body, q) {
+  var u = API + '?action=' + action + (q || '');
+  var o = { credentials: 'same-origin' };
+  if (body) { o.method = 'POST'; o.headers = { 'Content-Type': 'application/json' }; o.body = JSON.stringify(body); }
+  return fetch(u, o).then(function (r) { return r.json(); }).then(function (j) {
+    if (!j.ok) throw new Error(j.error || 'Có lỗi xảy ra');
+    return j.data;
+  });
+}
+function openOv(i) { el(i).classList.add('on'); }
+function closeOv(i) { el(i).classList.remove('on'); }
+function tab(k) {
+  ['ev', 'pr', 'lg'].forEach(function (x) {
+    el('tab-' + x).classList.toggle('on', x === k);
+    el('pane-' + x).style.display = (x === k ? '' : 'none');
+  });
+  if (k === 'lg') loadJobs();
+}
+function dmy(s) {
+  if (!s) return '';
+  var m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
+  return m ? (m[3] + '/' + m[2] + ' ' + m[4] + ':' + m[5]) : String(s);
+}
+function toLocal(s) { return s ? String(s).replace(' ', 'T').slice(0, 16) : ''; }
+function toSql(s) { return s ? (String(s).replace('T', ' ').slice(0, 16) + ':00') : ''; }
+var STATE = { ok: ['Đang mở', 'ok'], off: ['Đang tắt', 'no'], early: ['Chưa tới ngày', 'wr'],
+              ended: ['Đã kết thúc', 'no'], full: ['Hết lượt', 'wr'] };
+
+/* ---------- cau hinh ---------- */
+function loadCfg() {
+  api('cfg').then(function (d) {
+    CFG = d;
+    var s = [];
+    s.push(d.gemini ? 'Gemini: ' + esc(d.model) : 'Gemini: chưa có khoá');
+    s.push(d.fal ? 'Dự phòng fal: có' : 'Dự phòng fal: chưa có khoá');
+    s.push('Tối đa ' + d.inflight + ' ảnh chạy cùng lúc');
+    el('cfgInfo').innerHTML = s.join(' &nbsp;·&nbsp; ');
+  }).catch(function (e) { el('cfgInfo').textContent = e.message; });
+}
+function tryModel(t) {
+  toast('Đang gọi thử model ' + (t === 'pro' ? 'Cao' : 'Nhanh') + '…');
+  api('test', null, '&tier=' + t)
+    .then(function (d) { toast('OK — ' + d.provider + ' · ' + d.ms + 'ms · ' + Math.round(d.bytes / 1024) + 'KB'); })
+    .catch(function (e) { alert(e.message); });
+}
+
+/* ---------- su kien ---------- */
+function loadEvs() {
+  return api('events').then(function (d) {
+    EVS = d.items;
+    var sel = el('lgEv');
+    sel.innerHTML = '<option value="0">Tất cả sự kiện</option>'
+      + EVS.map(function (e) { return '<option value="' + e.id + '">' + esc(e.name) + '</option>'; }).join('');
+    if (!EVS.length) { el('evList').innerHTML = '<div class="qmsg">Chưa có sự kiện nào. Bấm “Tạo sự kiện” để bắt đầu.</div>'; return; }
+    el('evList').innerHTML = EVS.map(function (e) {
+      var st = STATE[e.state] || ['?', 'no'];
+      var url = location.origin + '/ap.html?e=' + encodeURIComponent(e.slug);
+      return '<div class="qc">'
+        + (e.cover_file ? '<img class="cv" src="./uploads/aiphoto/' + e.id + '/' + esc(e.cover_file) + '" alt="" />' : '')
+        + '<div class="bd"><h3>' + esc(e.name)
+        + '<span class="qtag ' + st[1] + '">' + st[0] + '</span>'
+        + (e.model_tier === 'pro' ? '<span class="qtag pro">Cao</span>' : '')
+        + '</h3><div class="qmeta">'
+        + (e.start_at || e.end_at ? dmy(e.start_at) + ' → ' + dmy(e.end_at) + '<br />' : '')
+        + e.out_w + '×' + e.out_h + ' px · ' + e.n_prompt + ' kiểu ảnh'
+        + (e.wm_file ? ' · có watermark' : '')
+        + '<br />' + (e.uses || 0) + ' ảnh đã tạo · ' + (e.views || 0) + ' lượt mở'
+        + (+e.max_images > 0 ? ' · giới hạn ' + e.max_images : '')
+        + '</div><div class="qlink"><input type="text" readonly value="' + esc(url) + '" onclick="this.select()" />'
+        + '<button class="qb sm" onclick="cp(\'' + esc(url) + '\')">Chép</button>'
+        + '<button class="qb sm" onclick="qrShow(' + e.id + ')">QR</button></div>'
+        + '<div class="qacts">'
+        + '<button class="qb sm" onclick="evEdit(' + e.id + ')">Sửa</button>'
+        + '<a class="qb sm" style="text-decoration:none" href="' + esc(url) + '" target="_blank" rel="noopener">Mở thử</a>'
+        + '<button class="qb sm dan" onclick="evDel(' + e.id + ')">Xoá</button>'
+        + '</div></div></div>';
+    }).join('');
+  }).catch(function (e) { el('evList').innerHTML = '<div class="qmsg">' + esc(e.message) + '</div>'; });
+}
+function cp(u) {
+  if (navigator.clipboard) navigator.clipboard.writeText(u).then(function () { toast('Đã chép link'); });
+  else toast('Bạn chọn ô link rồi Ctrl+C nhé');
+}
+function qrShow(id) {
+  var e = EVS.filter(function (x) { return x.id === id; })[0];
+  if (!e) return;
+  var url = location.origin + '/ap.html?e=' + encodeURIComponent(e.slug);
+  el('qrName').textContent = e.name;
+  el('qrUrl').textContent = url;
+  try {
+    var q = qrcode(0, 'M'); q.addData(url); q.make();
+    el('qrBox').innerHTML = q.createImgTag(6, 0);
+    var im = el('qrBox').querySelector('img');
+    if (im) { im.style.width = '100%'; im.style.height = 'auto'; }
+  } catch (x) { el('qrBox').textContent = 'Không tạo được QR'; }
+  openOv('ovQr');
+}
+
+function fillPk(ids) {
+  el('e_prompts').innerHTML = PRS.length
+    ? PRS.map(function (p) {
+        return '<label><input type="checkbox" value="' + p.id + '"' + (ids.indexOf(p.id) >= 0 ? ' checked' : '')
+          + (p.active ? '' : ' disabled') + ' /> ' + esc(p.title)
+          + (p.tag ? ' <span class="qtag">' + esc(p.tag) + '</span>' : '')
+          + (p.active ? '' : ' <span class="qtag no">đang tắt</span>') + '</label>';
+      }).join('')
+    : '<div class="qmeta" style="padding:8px">Thư viện prompt còn trống. Sang tab “Thư viện prompt” để thêm.</div>';
+}
+function evNew() {
+  curEv = { id: 0, out_w: 1024, out_h: 1024, wm_scale: 22, wm_pos: 'br', model_tier: 'flash', active: 1, max_images: 0 };
+  el('evTitle').textContent = 'Tạo sự kiện';
+  el('e_name').value = ''; el('e_note').value = '';
+  el('e_start').value = ''; el('e_end').value = '';
+  el('e_w').value = 1024; el('e_h').value = 1024; el('e_max').value = 0;
+  el('e_tier').value = 'flash'; el('e_wmpos').value = 'br'; el('e_wmsc').value = 22;
+  el('e_active').checked = true;
+  el('e_cover').src = ''; el('e_wm').src = '';
+  upLock(true);
+  fillPk([]);
+  openOv('ovEv');
+}
+function evEdit(id) {
+  var e = EVS.filter(function (x) { return x.id === id; })[0];
+  if (!e) return;
+  curEv = e;
+  el('evTitle').textContent = e.name;
+  el('e_name').value = e.name || ''; el('e_note').value = e.note || '';
+  el('e_start').value = toLocal(e.start_at); el('e_end').value = toLocal(e.end_at);
+  el('e_w').value = e.out_w; el('e_h').value = e.out_h; el('e_max').value = e.max_images || 0;
+  el('e_tier').value = e.model_tier === 'pro' ? 'pro' : 'flash';
+  el('e_wmpos').value = e.wm_pos || 'br'; el('e_wmsc').value = e.wm_scale || 22;
+  el('e_active').checked = !!(+e.active);
+  el('e_cover').src = e.cover_file ? ('./uploads/aiphoto/' + e.id + '/' + e.cover_file) : '';
+  el('e_wm').src = e.wm_file ? ('./uploads/aiphoto/' + e.id + '/' + e.wm_file) : '';
+  upLock(false);
+  api('event-prompts', null, '&id=' + e.id).then(function (d) { fillPk(d.ids); });
+  openOv('ovEv');
+}
+function upLock(lock) {
+  ['b_cover', 'b_wm', 'b_wmx'].forEach(function (i) { el(i).disabled = lock; });
+  el('h_up').style.display = lock ? '' : 'none';
+}
+function evSave() {
+  var ids = [];
+  el('e_prompts').querySelectorAll('input:checked').forEach(function (c) { ids.push(+c.value); });
+  var b = {
+    id: curEv.id, name: el('e_name').value.trim(), note: el('e_note').value.trim(),
+    start_at: toSql(el('e_start').value), end_at: toSql(el('e_end').value),
+    out_w: +el('e_w').value, out_h: +el('e_h').value, max_images: +el('e_max').value,
+    model_tier: el('e_tier').value, wm_pos: el('e_wmpos').value, wm_scale: +el('e_wmsc').value,
+    active: el('e_active').checked ? 1 : 0, prompts: ids
+  };
+  if (!b.name) { alert('Chưa có tên sự kiện.'); return; }
+  api('event-save', b).then(function (d) {
+    toast('Đã lưu');
+    return loadEvs().then(function () {
+      if (!curEv.id) { evEdit(d.id); toast('Đã tạo. Giờ thêm ảnh bìa / watermark được rồi.'); }
+      else closeOv('ovEv');
+    });
+  }).catch(function (e) { alert(e.message); });
+}
+function evDel(id) {
+  var e = EVS.filter(function (x) { return x.id === id; })[0];
+  if (!e) return;
+  if (!confirm('Xoá sự kiện “' + e.name + '”?\nẢnh đã tạo trong sự kiện này cũng bị xoá theo.')) return;
+  api('event-del', { id: id }).then(function () { toast('Đã xoá'); loadEvs(); }).catch(function (x) { alert(x.message); });
+}
+function wmClear() {
+  if (!curEv || !curEv.id) return;
+  api('wm-clear', { id: curEv.id }).then(function () {
+    el('e_wm').src = ''; curEv.wm_file = null; toast('Đã gỡ watermark'); loadEvs();
+  });
+}
+function thumbClear() { if (curPr) { curPr.thumb_file = ''; el('p_thumb').src = ''; } }
+
+/* ---------- tai anh ---------- */
+function pickFile(kind) { upKind = kind; el('fi').value = ''; el('fi').click(); }
+el('fi').addEventListener('change', function () {
+  var f = this.files[0];
+  if (!f) return;
+  var q = '&kind=' + upKind + (upKind === 'thumb' ? '' : '&id=' + (curEv ? curEv.id : 0));
+  var fd = new FormData(); fd.append('f', f);
+  toast('Đang tải ảnh lên…');
+  fetch(API + '?action=upload' + q, { method: 'POST', body: fd, credentials: 'same-origin' })
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      if (!j.ok) throw new Error(j.error);
+      if (upKind === 'thumb') { curPr.thumb_file = j.data.file; el('p_thumb').src = j.data.url; }
+      else if (upKind === 'wm') { curEv.wm_file = j.data.file; el('e_wm').src = j.data.url + '?t=' + Date.now(); }
+      else { curEv.cover_file = j.data.file; el('e_cover').src = j.data.url + '?t=' + Date.now(); }
+      toast('Xong'); loadEvs();
+    })
+    .catch(function (e) { alert(e.message); });
+});
+
+/* ---------- thu vien prompt ---------- */
+function loadPrs() {
+  return api('prompts').then(function (d) {
+    PRS = d.items;
+    el('prList').innerHTML = PRS.length ? PRS.map(function (p) {
+      return '<tr>'
+        + '<td>' + (p.thumb ? '<img class="qth" src="' + esc(p.thumb) + '" alt="" />' : '') + '</td>'
+        + '<td><b>' + esc(p.title) + '</b>' + (+p.active ? '' : ' <span class="qtag no">tắt</span>')
+        + '<div class="qmeta" style="max-width:520px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(p.body) + '</div></td>'
+        + '<td>' + esc(p.tag || '') + '</td>'
+        + '<td>' + (+p.force_pro ? '<span class="qtag pro">Cao</span>' : '<span class="qmeta">theo sự kiện</span>') + '</td>'
+        + '<td>' + (p.uses || 0) + '</td>'
+        + '<td><button class="qb sm" onclick="prEdit(' + p.id + ')">Sửa</button> '
+        + '<button class="qb sm dan" onclick="prDel(' + p.id + ')">Xoá</button></td></tr>';
+    }).join('') : '<tr><td colspan="6"><div class="qmsg">Thư viện còn trống.</div></td></tr>';
+  }).catch(function (e) { el('prList').innerHTML = '<tr><td colspan="6"><div class="qmsg">' + esc(e.message) + '</div></td></tr>'; });
+}
+function prNew() {
+  curPr = { id: 0, thumb_file: '' };
+  el('prTitle').textContent = 'Thêm kiểu ảnh';
+  el('p_title').value = ''; el('p_tag').value = ''; el('p_body').value = '';
+  el('p_sort').value = 0; el('p_pro').checked = false; el('p_active').checked = true;
+  el('p_thumb').src = '';
+  openOv('ovPr');
+}
+function prEdit(id) {
+  var p = PRS.filter(function (x) { return x.id === id; })[0];
+  if (!p) return;
+  curPr = { id: p.id, thumb_file: p.thumb_file || '' };
+  el('prTitle').textContent = p.title;
+  el('p_title').value = p.title || ''; el('p_tag').value = p.tag || ''; el('p_body').value = p.body || '';
+  el('p_sort').value = p.sort_order || 0;
+  el('p_pro').checked = !!(+p.force_pro); el('p_active').checked = !!(+p.active);
+  el('p_thumb').src = p.thumb || '';
+  openOv('ovPr');
+}
+function prSave() {
+  var b = {
+    id: curPr.id, title: el('p_title').value.trim(), body: el('p_body').value.trim(),
+    tag: el('p_tag').value.trim(), thumb_file: curPr.thumb_file || '',
+    sort_order: +el('p_sort').value, force_pro: el('p_pro').checked ? 1 : 0,
+    active: el('p_active').checked ? 1 : 0
+  };
+  if (!b.title) { alert('Chưa có tên kiểu ảnh.'); return; }
+  if (!b.body) { alert('Chưa có nội dung prompt.'); return; }
+  api('prompt-save', b).then(function () { toast('Đã lưu'); closeOv('ovPr'); loadPrs(); })
+    .catch(function (e) { alert(e.message); });
+}
+function prDel(id) {
+  var p = PRS.filter(function (x) { return x.id === id; })[0];
+  if (!p || !confirm('Xoá kiểu ảnh “' + p.title + '”?')) return;
+  api('prompt-del', { id: id }).then(function () { toast('Đã xoá'); loadPrs(); })
+    .catch(function (e) {
+      if (confirm(e.message + '\n\nXoá hẳn luôn?')) {
+        api('prompt-del', { id: id, force: 1 }).then(function () { toast('Đã xoá'); loadPrs(); loadEvs(); });
+      }
+    });
+}
+
+/* ---------- nhat ky ---------- */
+function loadJobs() {
+  var id = +el('lgEv').value || 0;
+  api('jobs', null, id ? ('&id=' + id) : '').then(function (d) {
+    var s = d.summary.map(function (r) {
+      return r.state + ': ' + r.n + (r.avg_ms ? ' (' + Math.round(r.avg_ms / 1000) + 's)' : '');
+    }).join(' · ');
+    el('lgSum').textContent = s;
+    el('lgList').innerHTML = d.items.length ? d.items.map(function (j) {
+      var cls = j.state === 'done' ? 'ok' : (j.state === 'error' ? 'wr' : 'no');
+      return '<tr><td><span class="qtag ' + cls + '">' + esc(j.state) + '</span></td>'
+        + '<td>' + esc(j.ev_name || '') + '</td><td>' + esc(j.prompt_title || '') + '</td>'
+        + '<td class="qmeta">' + esc(j.model || j.provider || '') + (j.err ? '<br /><span style="color:var(--red)">' + esc(j.err) + '</span>' : '') + '</td>'
+        + '<td>' + (j.ms ? Math.round(j.ms / 1000) + 's' : '') + '</td>'
+        + '<td class="qmeta">' + dmy(j.created_at) + '</td></tr>';
+    }).join('') : '<tr><td colspan="6"><div class="qmsg">Chưa có ảnh nào được tạo.</div></td></tr>';
+  }).catch(function (e) { el('lgList').innerHTML = '<tr><td colspan="6"><div class="qmsg">' + esc(e.message) + '</div></td></tr>'; });
+}
+
+document.querySelectorAll('.qov').forEach(function (o) {
+  o.addEventListener('click', function (ev) { if (ev.target === o) o.classList.remove('on'); });
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') document.querySelectorAll('.qov.on').forEach(function (o) { o.classList.remove('on'); });
+});
+
+loadCfg();
+loadPrs().then(loadEvs);
+</script>
+</body>
+</html>

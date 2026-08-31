@@ -1,5 +1,5 @@
 {
-    "version": "1.6.17",
+    "version": "1.6.18",
     "updated": "2026-08-31",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-29",
             "note": "Phiên bản 1.6",
             "items": [
+                {
+                    "d": "2026-08-31",
+                    "v": "1.6.18",
+                    "t": "Chup anh AI: trang quan tri aiphoto.html + trang khach ap.html + qrlib.js, dang ky menu/quyen",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-31",
                     "v": "1.6.17",
