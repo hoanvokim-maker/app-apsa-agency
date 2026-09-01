@@ -717,7 +717,14 @@
       .grid .card .card-icon { width:56px !important; height:56px !important; }
       .form-row { grid-template-columns: 1fr; }
     }
-  </style>
+      .filter-pill.drop-on {
+      outline: 2px dashed var(--green, #dff20d);
+      outline-offset: 2px;
+      background: rgba(223, 242, 13, .14);
+      transform: scale(1.06);
+    }
+    .grid.sorting ~ * .filter-pill, .filter-pill { transition: transform .12s, background .12s; }
+</style>
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -821,21 +828,6 @@
   </nav>
 </header>
 
-<!-- ── FEATURED ── -->
-<div class="featured-wrap">
-  <a class="featured-bar" href="https://manage.apsa.agency" target="_blank" rel="noopener">
-    <span class="fb-icon"><svg class="fb-svg" viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="27" width="10" height="17" fill="#ffffff"/>
-<rect x="19" y="16" width="10" height="28" fill="#dff20d"/>
-<rect x="34" y="6" width="10" height="38" fill="#5e5e5e"/></svg></span>
-    <span class="fb-title">Manage Dashboard</span>
-    <span class="fb-desc">Quản lý dự án, khách hàng, công việc và hiệu suất team</span>
-    <span class="fb-dot"></span>
-    <span class="fb-btn">
-      Mở
-      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </span>
-  </a>
-</div>
 
 <!-- ── FILTER ── -->
 <div class="filter-bar" id="filterBar">
@@ -859,7 +851,7 @@
 <div class="personal-bar">
   <button class="pbtn" id="btnSort" onclick="toggleSortMode()">⠿ Sắp xếp &amp; ẩn</button>
   <button class="pbtn" id="btnReset" onclick="resetLayout()" style="display:none">↺ Về mặc định</button>
-  <span class="phint" id="sortHint">Bấm ☆ trên thẻ để đưa vào nhóm <b>Thường dùng</b> · kéo thả thẳng vào thẻ để đổi vị trí — tất cả lưu riêng cho tài khoản của bạn và áp dụng luôn cho thanh bên trái.</span>
+  <span class="phint" id="sortHint">Bấm ☆ trên thẻ để đưa vào nhóm <b>Thường dùng</b> · kéo thả thẳng vào thẻ để đổi vị trí · kéo thẻ thả lên tên nhóm phía trên để chuyển nhóm — tất cả lưu riêng cho tài khoản của bạn và áp dụng luôn cho thanh bên trái.</span>
 </div>
 
 <!-- ── GRID ── -->
@@ -1021,7 +1013,7 @@
       const res = await fetch(AUTH_API + '?action=prefs-get&key=home', { credentials: 'same-origin', cache: 'no-store' });
       const j = await res.json();
       if (j && j.ok && j.data && j.data.value && typeof j.data.value === 'object') {
-        PREFS = Object.assign({ order: [], hidden: [], custom: [], pinned: [] }, j.data.value);
+        PREFS = Object.assign({ order: [], hidden: [], custom: [], pinned: [], cats: {} }, j.data.value);
         localStorage.setItem(prefsCacheKey(), JSON.stringify(PREFS));
       } else if (migrateLegacy()) {
         savePrefs(true);   // lần đầu: chuyển dữ liệu cũ trong trình duyệt lên tài khoản
@@ -1083,6 +1075,10 @@
   }
 
   function isHidden(id) { return (PREFS.hidden || []).includes(id); }
+  function effCat(t) {
+    const c = PREFS.cats || {};
+    return c[t.id] || t.cat;
+  }
   function isPinned(id) { return (PREFS.pinned || []).includes(id); }
 
   /* Ghim / bỏ ghim — quyết định module nằm ở nhóm Thường dùng hay nhóm dưới */
@@ -1141,7 +1137,7 @@
     const filtered = tools.filter(t => {
       if (!SORT_MODE && isHidden(t.id)) return false;      // đã ẩn thì không hiện (trừ khi đang sắp xếp)
       const matchCat = currentFilter === 'all' ? true
-        : (currentFilter === 'fav' ? isPinned(t.id) : t.cat === currentFilter);
+        : (currentFilter === 'fav' ? isPinned(t.id) : effCat(t) === currentFilter);
       const matchQ = !q || t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q);
       return matchCat && matchQ;
     });
@@ -1163,7 +1159,7 @@
       card.href = SORT_MODE ? 'javascript:void(0)' : t.url;
       if (!SORT_MODE && /^https?:\/\//i.test(t.url)) { card.target = '_blank'; card.rel = 'noopener'; }
       card.className = 'card' + (isHidden(t.id) ? ' is-hidden' : '');
-      card.dataset.cat = t.cat;
+      card.dataset.cat = effCat(t);
       card.dataset.id  = t.id;
       card.style.setProperty('--card-color', t.color);
       card.style.setProperty('--icon-bg', t.color + '22');
@@ -1188,7 +1184,7 @@
           <div class="card-desc">${t.desc}</div>
         </div>
         <div class="card-footer">
-          <span class="card-tag">${catLabel(t.cat)}</span>
+          <span class="card-tag">${catLabel(effCat(t))}</span>
           <span class="card-arrow">
             <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
               <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -1255,7 +1251,7 @@
     } else {
       if (fb) fb.classList.remove('locked');
       if (reset) reset.style.display = 'none';
-      if (hint) hint.innerHTML = 'Bấm ☆ trên thẻ để đưa vào nhóm <b>Thường dùng</b> · kéo thả thẳng vào thẻ để đổi vị trí — tất cả lưu riêng cho tài khoản của bạn và áp dụng luôn cho thanh bên trái.';
+      if (hint) hint.innerHTML = 'Bấm ☆ trên thẻ để đưa vào nhóm <b>Thường dùng</b> · kéo thả thẳng vào thẻ để đổi vị trí · kéo thẻ thả lên tên nhóm phía trên để chuyển nhóm — tất cả lưu riêng cho tài khoản của bạn và áp dụng luôn cho thanh bên trái.';
     }
     renderGrid();
   }
@@ -1349,6 +1345,15 @@
     DRAG.ghost.style.top  = (e.clientY - DRAG.oy) + 'px';
 
     const el = document.elementFromPoint(e.clientX, e.clientY);
+      document.querySelectorAll('.filter-pill.drop-on')
+        .forEach(b => b.classList.remove('drop-on'));
+      DRAG.pill = null;
+      const pill = el && el.closest ? el.closest('.filter-pill') : null;
+      if (pill) {
+        const mk = /setFilter\('([a-z]+)'/.exec(pill.getAttribute('onclick') || '');
+        if (mk && mk[1] !== 'all') { DRAG.pill = mk[1]; pill.classList.add('drop-on'); }
+      }
+      if (DRAG.pill) return;
     const over = el && el.closest ? el.closest('.card[data-id]') : null;
     if (over && over !== DRAG.card) {
       const r = over.getBoundingClientRect();
@@ -1372,8 +1377,27 @@
     if (DRAG.ghost) DRAG.ghost.remove();
     DRAG.card.classList.remove('drag-placeholder');
     document.body.style.userSelect = '';
-    const moved = DRAG.moved, card = DRAG.card;
+    const moved = DRAG.moved, card = DRAG.card, dropPill = DRAG.pill;
     DRAG = null;
+    document.querySelectorAll('.filter-pill.drop-on')
+      .forEach(b => b.classList.remove('drop-on'));
+    if (dropPill) {
+      const id = +card.dataset.id;
+      const g2 = ev => { ev.preventDefault(); ev.stopPropagation(); };
+      card.addEventListener('click', g2, true);
+      setTimeout(() => card.removeEventListener('click', g2, true), 400);
+      if (dropPill === 'fav') {
+        if (!isPinned(id)) PREFS.pinned.push(id);
+        apsaToast('Đã đưa vào nhóm Thường dùng');
+      } else {
+        PREFS.cats = PREFS.cats || {};
+        PREFS.cats[id] = dropPill;
+        apsaToast('Đã chuyển sang nhóm ' + catLabel(dropPill));
+      }
+      savePrefs(true);
+      renderGrid();
+      return;
+    }
     if (moved) {
       // vừa kéo xong thì không mở link
       const guard = ev => { ev.preventDefault(); ev.stopPropagation(); };
