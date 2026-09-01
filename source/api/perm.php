@@ -60,10 +60,10 @@ function pm_groups()
         ),
         array(
             'key' => 'media', 'name' => 'Sản xuất & Media', 'def' => 2,
-            'mods' => array(98, 34, 23, 17, 18, 25, 24, 100, 101),
+            'mods' => array(98, 34, 23, 17, 18, 25, 100, 101),
             'pages' => array('videos.html', 'review.html', 'albums.html', 'album.html', 'logos.html',
                              'brand-guidelines.html', 'inspiration.html', 'frame.html', 'aiphoto.html'),
-            'note' => 'Duyệt video · Album gửi khách · Thư viện ảnh · Kho Logos · Brand Guidelines · Inspiration · AI Studio · Frame Avatar · Chụp ảnh AI',
+            'note' => 'Duyệt video · Album gửi khách · Thư viện ảnh · Kho Logos · Brand Guidelines · Inspiration · Frame Avatar · Chụp ảnh AI',
             'needs' => array(),
         ),
         array(

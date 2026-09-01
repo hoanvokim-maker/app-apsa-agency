@@ -365,7 +365,6 @@
     { ico: 'image',   name: 'Thư viện ảnh',      url: 'https://imglib.apsa.agency', id: 23 },
     { ico: 'image',   name: 'Frame Avatar',      url: './frame.html', id: 100 },
     { ico: 'spark',   name: 'Chụp ảnh AI',        url: './aiphoto.html', id: 101 },
-    { ico: 'ai',      name: 'AI Studio',         url: 'https://ai.apsa.agency', id: 24 },
     { grp: 'Tiện ích' },
     { ico: 'qr',      name: 'Quản lý Link',         url: './event-qr-generator.html', id: 1 },
     { ico: 'key',     name: 'Accounts nhân viên', url: './accounts.html', id: 90 },

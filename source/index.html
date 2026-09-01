@@ -840,32 +840,19 @@
 <!-- ── FILTER ── -->
 <div class="filter-bar" id="filterBar">
   <button class="filter-pill active" onclick="setFilter('all', this)">Tất cả</button>
+  <button class="filter-pill" onclick="setFilter('fav', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 6 46 17 24 28 2 17 24 6Z" fill="#dff20d"/>
+<path d="M11 22v11c0 3.9 5.8 7 13 7s13-3.1 13-7V22l-13 6.5L11 22Z" fill="#ffffff"/>
+<rect x="42" y="17" width="3" height="15" fill="#5e5e5e"/><circle cx="43.5" cy="34" r="3.2" fill="#5e5e5e"/></svg> Thường dùng</button>
+  <button class="filter-pill" onclick="setFilter('quanly', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="27" width="10" height="17" fill="#ffffff"/>
+<rect x="19" y="16" width="10" height="28" fill="#dff20d"/>
+<rect x="34" y="6" width="10" height="38" fill="#5e5e5e"/></svg> Quản lý</button>
   <button class="filter-pill" onclick="setFilter('design', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4C12.4 4 3 12.7 3 23.5S12.4 43 24 43c3 0 5-1.8 5-4.3 0-1.3-.6-2.3-1.4-3.2-.8-.9-1.3-1.8-1.3-3 0-2.4 2-4.3 4.5-4.3H36c5.5 0 9-3.6 9-9C45 11.4 35.6 4 24 4Z" fill="#ffffff"/>
 <circle cx="13" cy="20" r="3.6" fill="#dff20d"/><circle cx="21" cy="13" r="3.6" fill="#5e5e5e"/>
 <circle cx="31" cy="14" r="3.6" fill="#dff20d"/><circle cx="12" cy="30" r="3.6" fill="#5e5e5e"/></svg> Design</button>
-  <button class="filter-pill" onclick="setFilter('content', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M33 4l11 11-4.5 4.5-11-11L33 4Z" fill="#5e5e5e"/>
-<path d="M26 11l11 11L16 43H5v-11L26 11Z" fill="#dff20d"/>
-<path d="M5 32h11v11" fill="#ffffff"/></svg> Nội dung</button>
-  <button class="filter-pill" onclick="setFilter('data', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="27" width="10" height="17" fill="#ffffff"/>
-<rect x="19" y="16" width="10" height="28" fill="#dff20d"/>
-<rect x="34" y="6" width="10" height="38" fill="#5e5e5e"/></svg> Dữ liệu</button>
-  <button class="filter-pill" onclick="setFilter('quote', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M9 4h20l10 10v30H9V4Z" fill="#ffffff"/><path d="M29 4l10 10H29V4Z" fill="#5e5e5e"/>
-<rect x="15" y="22" width="18" height="3.4" fill="#0d0d0d"/><rect x="15" y="30" width="12" height="3.4" fill="#0d0d0d"/>
-<rect x="15" y="38" width="18" height="3.4" fill="#dff20d"/></svg> Báo giá</button>
-  <button class="filter-pill" onclick="setFilter('media', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="9" width="40" height="30" rx="3" fill="#ffffff"/>
-<circle cx="15" cy="19" r="4.5" fill="#dff20d"/>
-<path d="M4 34l11-11 9 9 7-6 13 12v1H4z" fill="#5e5e5e"/>
-<rect x="4" y="35" width="40" height="4" fill="#5e5e5e"/></svg> Media</button>
-  <button class="filter-pill" onclick="setFilter('dev', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M20 3h8l1.2 6.1 4.6 2.7 5.6-2.6 4 6.9-4.4 4.3v5.2l4.4 4.3-4 6.9-5.6-2.6-4.6 2.7L28 45h-8l-1.2-6.1-4.6-2.7-5.6 2.6-4-6.9 4.4-4.3v-5.2L4.6 18l4-6.9 5.6 2.6 4.6-2.7L20 3Z" fill="#dff20d"/>
-<circle cx="24" cy="24" r="7.5" fill="#0d0d0d"/><circle cx="24" cy="24" r="3.6" fill="#ffffff"/></svg> Dev</button>
-  <button class="filter-pill" onclick="setFilter('utility', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M31 4a13 13 0 0 0-11.6 18.8L4 38.2 9.8 44l15.4-15.4A13 13 0 1 0 31 4Zm0 8a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z" fill="#dff20d"/>
+  <button class="filter-pill" onclick="setFilter('tienich', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M31 4a13 13 0 0 0-11.6 18.8L4 38.2 9.8 44l15.4-15.4A13 13 0 1 0 31 4Zm0 8a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z" fill="#dff20d"/>
 <rect x="6" y="34" width="8" height="4" rx="2" transform="rotate(-45 10 36)" fill="#ffffff"/></svg> Tiện ích</button>
-  <button class="filter-pill" onclick="setFilter('docs', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M9 4h20l10 10v30H9V4Z" fill="#ffffff"/><path d="M29 4l10 10H29V4Z" fill="#5e5e5e"/>
-<rect x="15" y="22" width="18" height="3.4" fill="#0d0d0d"/><rect x="15" y="30" width="12" height="3.4" fill="#0d0d0d"/>
-<rect x="15" y="38" width="18" height="3.4" fill="#dff20d"/></svg> Tài liệu</button>
-  <button class="filter-pill" onclick="setFilter('training', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 6 46 17 24 28 2 17 24 6Z" fill="#dff20d"/>
-<path d="M11 22v11c0 3.9 5.8 7 13 7s13-3.1 13-7V22l-13 6.5L11 22Z" fill="#ffffff"/>
-<rect x="42" y="17" width="3" height="15" fill="#5e5e5e"/><circle cx="43.5" cy="34" r="3.2" fill="#5e5e5e"/></svg> Training</button>
+  <button class="filter-pill" onclick="setFilter('caidat', this)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M20 3h8l1.2 6.1 4.6 2.7 5.6-2.6 4 6.9-4.4 4.3v5.2l4.4 4.3-4 6.9-5.6-2.6-4.6 2.7L28 45h-8l-1.2-6.1-4.6-2.7-5.6 2.6-4-6.9 4.4-4.3v-5.2L4.6 18l4-6.9 5.6 2.6 4.6-2.7L20 3Z" fill="#dff20d"/>
+<circle cx="24" cy="24" r="7.5" fill="#0d0d0d"/><circle cx="24" cy="24" r="3.6" fill="#ffffff"/></svg> Cài đặt</button>
 </div>
 
 <!-- ── CÁ NHÂN HOÁ ── -->
@@ -933,15 +920,11 @@
       <div class="form-group">
         <label>Danh mục</label>
         <select id="toolCat">
-          <option value="utility">🔧 Tiện ích</option>
+          <option value="fav">⭐ Thường dùng</option>
+          <option value="quanly">📊 Quản lý</option>
           <option value="design">🎨 Design</option>
-          <option value="content">✍️ Nội dung</option>
-          <option value="quote">Báo giá</option>
-          <option value="data">📊 Dữ liệu</option>
-          <option value="media">🖼️ Media</option>
-          <option value="dev">⚙️ Dev</option>
-          <option value="docs">📄 Tài liệu</option>
-          <option value="training">🎓 Training</option>
+          <option value="tienich">🔧 Tiện ích</option>
+          <option value="caidat">⚙️ Cài đặt</option>
         </select>
       </div>
       <div class="form-group">
@@ -973,33 +956,32 @@
 <script>
   // ── DEFAULT TOOLS ──────────────────────────────────────────────
   const DEFAULT_TOOLS = [
-    { id: 92, ico: 'gear', name: 'Cài đặt hệ thống', desc: 'Cỡ chữ toàn app, quỹ phép năm mặc định, giờ làm việc, ngày nghỉ lễ, loại nghỉ và các trạng thái dự án. Chỉ Admin.', url: './settings.html', cat: 'utility', emoji: '⚙️', color: '#dff20d', isNew: true, admin: true },
-    { id: 91, ico: 'leave', name: 'Xin nghỉ phép', desc: 'Nộp đơn xin nghỉ (nguyên ngày / nửa ngày), Admin duyệt xong tự thêm vào lịch Outlook. Có theo dõi quỹ phép năm.', url: './leave.html', cat: 'utility', emoji: '🌴', color: '#dff20d', isNew: true },
-    { id: 1, ico: 'qr', name: 'Quản lý Link', desc: 'Rút gọn link dạng /u/… có đếm lượt bấm, kèm tạo QR code cho link hoặc sự kiện lịch (Google & Apple Calendar).', url: './event-qr-generator.html', cat: 'utility', emoji: '📲', color: '#dff20d', isNew: false },
+    { id: 92, ico: 'gear', name: 'Cài đặt hệ thống', desc: 'Cỡ chữ toàn app, quỹ phép năm mặc định, giờ làm việc, ngày nghỉ lễ, loại nghỉ và các trạng thái dự án. Chỉ Admin.', url: './settings.html', cat: 'caidat', emoji: '⚙️', color: '#dff20d', isNew: true, admin: true },
+    { id: 91, ico: 'leave', name: 'Xin nghỉ phép', desc: 'Nộp đơn xin nghỉ (nguyên ngày / nửa ngày), Admin duyệt xong tự thêm vào lịch Outlook. Có theo dõi quỹ phép năm.', url: './leave.html', cat: 'quanly', emoji: '🌴', color: '#dff20d', isNew: true },
+    { id: 1, ico: 'qr', name: 'Quản lý Link', desc: 'Rút gọn link dạng /u/… có đếm lượt bấm, kèm tạo QR code cho link hoặc sự kiện lịch (Google & Apple Calendar).', url: './event-qr-generator.html', cat: 'tienich', emoji: '📲', color: '#dff20d', isNew: false },
     { id: 17, ico: 'tag', name: 'Kho Logos', desc: 'Tải logo nhãn hàng dược, chuỗi nhà thuốc, bệnh viện, hiệp hội.', url: './logos.html', cat: 'design', emoji: '🏷️', color: '#c9dd00', isNew: true },
-    { id: 18, ico: 'book', name: 'Brand Guidelines', desc: 'Xem và tải brand guidelines các nhãn hàng: AZ, Tezspire, Ozempic...', url: './brand-guidelines.html', cat: 'docs', emoji: '📘', color: '#c9dd00', isNew: true },
+    { id: 18, ico: 'book', name: 'Brand Guidelines', desc: 'Xem và tải brand guidelines các nhãn hàng: AZ, Tezspire, Ozempic...', url: './brand-guidelines.html', cat: 'design', emoji: '📘', color: '#c9dd00', isNew: true },
     // Tài liệu
-    { id: 90, ico: 'key', name: 'Accounts nhân viên', desc: 'Quản lý tài khoản các nền tảng của toàn bộ team APSA.', url: './accounts.html', cat: 'utility', emoji: '👤', color: '#dff20d', isNew: true },
+    { id: 90, ico: 'key', name: 'Accounts nhân viên', desc: 'Quản lý tài khoản các nền tảng của toàn bộ team APSA.', url: './accounts.html', cat: 'quanly', emoji: '👤', color: '#dff20d', isNew: true },
     // Training
-    { id: 23, ico: 'image', name: 'Thư viện ảnh', desc: 'Upload, nén WebP và lấy link ảnh trực tiếp. Tự động xoá EXIF/GPS, tối đa 25MB mỗi ảnh.', url: 'https://imglib.apsa.agency', cat: 'media', emoji: '🖼️', color: '#ffffff', isNew: true },
-    { id: 24, ico: 'spark', name: 'AI Studio', desc: 'Tạo hình ảnh và nội dung bằng AI cho các dự án của APSA.', url: 'https://ai.apsa.agency', cat: 'media', emoji: '✨', color: '#c9dd00', isNew: true },
+    { id: 23, ico: 'image', name: 'Thư viện ảnh', desc: 'Upload, nén WebP và lấy link ảnh trực tiếp. Tự động xoá EXIF/GPS, tối đa 25MB mỗi ảnh.', url: 'https://imglib.apsa.agency', cat: 'design', emoji: '🖼️', color: '#ffffff', isNew: true },
     { id: 25, ico: 'bulb', name: 'Inspiration', desc: 'Kéo thả ảnh, video, link Facebook / Instagram / YouTube để lưu ý tưởng khi làm sự kiện.', url: './inspiration.html', cat: 'design', emoji: '💡', color: '#dff20d', isNew: true },
-    { id: 26, ico: 'price', name: 'Rate Card', desc: 'Bảng giá tham khảo Event / Design / Media / In ấn — xem, thêm, sửa, xoá theo 3 hạng Basic/Standard/Premium.', url: './ratecard.html', cat: 'data', emoji: '💰', color: '#dff20d', isNew: true },
-    { id: 35, ico: 'grid', name: 'Làm việc', desc: 'Danh sách dự án đang thực hiện: ai đang phụ trách, phần việc, hạn chót, tiến độ và cảnh báo quá hạn. Bấm mở từng dự án để xem chi tiết.', url: './assignments.html', cat: 'utility', emoji: '🧑‍💼', color: '#dff20d', isNew: true },
-    { id: 27, ico: 'shield', name: 'Quản lý User', desc: 'Tạo, sửa, xoá tài khoản đăng nhập cho team. Chỉ Admin thao tác được.', url: './users.html', cat: 'utility', emoji: '🔐', color: '#ff4d4d', isNew: true },
-    { id: 34, ico: 'album', name: 'Album ảnh gửi khách', desc: 'Tạo album, upload ảnh (tự nén) rồi gửi link cho khách xem trên điện thoại — khách lướt, thả tim, chọn ảnh và ghi chú ngay trên link.', url: './albums.html', cat: 'media', emoji: '📸', color: '#dff20d', isNew: true },
-    { id: 100, ico: 'image', name: 'Frame Avatar', desc: 'Tạo khung ảnh theo sự kiện — khách mở link, chọn khung, tải ảnh của họ lên rồi lưu ảnh đã ghép về máy.', url: './frame.html', cat: 'media', emoji: '🖼', color: '#dff20d', isNew: true },
-  { id: 101, ico: 'spark', name: 'Chụp ảnh AI', desc: 'Tạo sự kiện chụp ảnh AI: khách mở link, chọn kiểu ảnh, chụp bằng camera và nhận ngay ảnh AI có watermark của sự kiện.', url: './aiphoto.html', cat: 'media', emoji: '📸', color: '#dff20d', isNew: true },
-    { id: 32, ico: 'invoice', name: 'Báo giá & Nghiệm thu', desc: 'Soạn báo giá Event / Media / Khác theo công ty khách hàng, lấy hạng mục từ Rate Card, nhập số liệu nghiệm thu và xuất Excel đúng format APSA.', url: './quotation.html', cat: 'quote', emoji: '🧾', color: '#dff20d', isNew: true },
-    { id: 31, ico: 'building', name: 'Quản lý Công ty', desc: 'Danh sách công ty khách hàng: mã số thuế, địa chỉ, người liên hệ và tổng công nợ theo công ty.', url: './companies.html', cat: 'data', emoji: '🏢', color: '#ffffff', isNew: true },
-    { id: 29, ico: 'people', name: 'Quản lý Khách hàng', desc: 'Danh bạ người liên hệ theo công ty: tên, email, số điện thoại và lưu ý.', url: './customers.html', cat: 'data', emoji: '🤝', color: '#ffffff', isNew: true },
-    { id: 30, ico: 'card', name: 'Quản lý Công nợ', desc: 'Công nợ theo công ty: nhập nhanh khoản nợ, ghi nhận đã trả, cảnh báo nợ quá hạn.', url: './debts.html', cat: 'data', emoji: '💳', color: '#ffffff', isNew: true },
-    { id: 95, ico: 'supplier', name: 'Nhà cung cấp', desc: 'Danh bạ nhà cung cấp: công ty, người liên hệ, số điện thoại, địa chỉ — dùng chung với rate card VFR.', url: './suppliers.html', cat: 'data', emoji: '🏭', color: '#ffffff', isNew: true },
-    { id: 96, ico: 'contract', name: 'Tủ hợp đồng', desc: 'Hợp đồng Vendor / Client / Personal lưu trên SharePoint — tìm nhanh, tải về, mở thẳng trên máy. Chỉ Admin.', url: './contracts.html', cat: 'tailieu', emoji: '📁', color: '#ffffff', isNew: true },
-    { id: 97, ico: 'money', name: 'Chi phí thực tế', desc: 'Toàn bộ khoản chi của mọi dự án — lọc, sắp xếp, sửa nhanh, thanh toán bằng QR. Chỉ Admin.', url: './chi-phi.html', cat: 'tailieu', emoji: '💸', color: '#ffffff', isNew: true },
-    { id: 98, ico: 'video', name: 'Duyệt video', desc: 'Chọn video trên SharePoint, tạo link bí mật gửi khách. Khách dừng đúng giây và góp ý bằng chữ, hình hoặc vẽ trực tiếp lên khung hình.', url: './videos.html', cat: 'tailieu', emoji: '🎬' },
-    { id: 99, ico: 'salary', name: 'Bảng lương', desc: 'Nhập file lương ACB, tự tra mã ngân hàng, bắn Zalo kèm QR từng người và đính Ủy nhiệm chi. Chỉ Admin.', url: './luong.html', cat: 'data', emoji: '💵' },
-    { id: 28, ico: 'shuttle', name: 'APSA Badminton Championship', desc: 'Trang giải cầu lông nội bộ 03.10.2026 — thông tin, đăng ký thi đấu, lịch thi đấu. Quản trị bài đăng & danh sách đăng ký.', url: './badminton/index.html', cat: 'utility', emoji: '🏸', color: '#dff20d', isNew: true },
+    { id: 26, ico: 'price', name: 'Rate Card', desc: 'Bảng giá tham khảo Event / Design / Media / In ấn — xem, thêm, sửa, xoá theo 3 hạng Basic/Standard/Premium.', url: './ratecard.html', cat: 'quanly', emoji: '💰', color: '#dff20d', isNew: true },
+    { id: 35, ico: 'grid', name: 'Làm việc', desc: 'Danh sách dự án đang thực hiện: ai đang phụ trách, phần việc, hạn chót, tiến độ và cảnh báo quá hạn. Bấm mở từng dự án để xem chi tiết.', url: './assignments.html', cat: 'quanly', emoji: '🧑‍💼', color: '#dff20d', isNew: true },
+    { id: 27, ico: 'shield', name: 'Quản lý User', desc: 'Tạo, sửa, xoá tài khoản đăng nhập cho team. Chỉ Admin thao tác được.', url: './users.html', cat: 'caidat', emoji: '🔐', color: '#ff4d4d', isNew: true },
+    { id: 34, ico: 'album', name: 'Album ảnh gửi khách', desc: 'Tạo album, upload ảnh (tự nén) rồi gửi link cho khách xem trên điện thoại — khách lướt, thả tim, chọn ảnh và ghi chú ngay trên link.', url: './albums.html', cat: 'design', emoji: '📸', color: '#dff20d', isNew: true },
+    { id: 100, ico: 'image', name: 'Frame Avatar', desc: 'Tạo khung ảnh theo sự kiện — khách mở link, chọn khung, tải ảnh của họ lên rồi lưu ảnh đã ghép về máy.', url: './frame.html', cat: 'design', emoji: '🖼', color: '#dff20d', isNew: true },
+  { id: 101, ico: 'spark', name: 'Chụp ảnh AI', desc: 'Tạo sự kiện chụp ảnh AI: khách mở link, chọn kiểu ảnh, chụp bằng camera và nhận ngay ảnh AI có watermark của sự kiện.', url: './aiphoto.html', cat: 'design', emoji: '📸', color: '#dff20d', isNew: true },
+    { id: 32, ico: 'invoice', name: 'Báo giá & Nghiệm thu', desc: 'Soạn báo giá Event / Media / Khác theo công ty khách hàng, lấy hạng mục từ Rate Card, nhập số liệu nghiệm thu và xuất Excel đúng format APSA.', url: './quotation.html', cat: 'quanly', emoji: '🧾', color: '#dff20d', isNew: true },
+    { id: 31, ico: 'building', name: 'Quản lý Công ty', desc: 'Danh sách công ty khách hàng: mã số thuế, địa chỉ, người liên hệ và tổng công nợ theo công ty.', url: './companies.html', cat: 'quanly', emoji: '🏢', color: '#ffffff', isNew: true },
+    { id: 29, ico: 'people', name: 'Quản lý Khách hàng', desc: 'Danh bạ người liên hệ theo công ty: tên, email, số điện thoại và lưu ý.', url: './customers.html', cat: 'quanly', emoji: '🤝', color: '#ffffff', isNew: true },
+    { id: 30, ico: 'card', name: 'Quản lý Công nợ', desc: 'Công nợ theo công ty: nhập nhanh khoản nợ, ghi nhận đã trả, cảnh báo nợ quá hạn.', url: './debts.html', cat: 'quanly', emoji: '💳', color: '#ffffff', isNew: true },
+    { id: 95, ico: 'supplier', name: 'Nhà cung cấp', desc: 'Danh bạ nhà cung cấp: công ty, người liên hệ, số điện thoại, địa chỉ — dùng chung với rate card VFR.', url: './suppliers.html', cat: 'quanly', emoji: '🏭', color: '#ffffff', isNew: true },
+    { id: 96, ico: 'contract', name: 'Tủ hợp đồng', desc: 'Hợp đồng Vendor / Client / Personal lưu trên SharePoint — tìm nhanh, tải về, mở thẳng trên máy. Chỉ Admin.', url: './contracts.html', cat: 'quanly', emoji: '📁', color: '#ffffff', isNew: true },
+    { id: 97, ico: 'money', name: 'Chi phí thực tế', desc: 'Toàn bộ khoản chi của mọi dự án — lọc, sắp xếp, sửa nhanh, thanh toán bằng QR. Chỉ Admin.', url: './chi-phi.html', cat: 'quanly', emoji: '💸', color: '#ffffff', isNew: true },
+    { id: 98, ico: 'video', name: 'Duyệt video', desc: 'Chọn video trên SharePoint, tạo link bí mật gửi khách. Khách dừng đúng giây và góp ý bằng chữ, hình hoặc vẽ trực tiếp lên khung hình.', url: './videos.html', cat: 'design', emoji: '🎬' },
+    { id: 99, ico: 'salary', name: 'Bảng lương', desc: 'Nhập file lương ACB, tự tra mã ngân hàng, bắn Zalo kèm QR từng người và đính Ủy nhiệm chi. Chỉ Admin.', url: './luong.html', cat: 'quanly', emoji: '💵' },
+    { id: 28, ico: 'shuttle', name: 'APSA Badminton Championship', desc: 'Trang giải cầu lông nội bộ 03.10.2026 — thông tin, đăng ký thi đấu, lịch thi đấu. Quản trị bài đăng & danh sách đăng ký.', url: './badminton/index.html', cat: 'tienich', emoji: '🏸', color: '#dff20d', isNew: true },
   ];
 
   // Các công cụ đã gỡ bỏ — tự động xóa khỏi danh sách đã lưu trên máy người dùng
@@ -1158,7 +1140,8 @@
     const q = document.getElementById('searchInput').value.toLowerCase();
     const filtered = tools.filter(t => {
       if (!SORT_MODE && isHidden(t.id)) return false;      // đã ẩn thì không hiện (trừ khi đang sắp xếp)
-      const matchCat = currentFilter === 'all' || t.cat === currentFilter;
+      const matchCat = currentFilter === 'all' ? true
+        : (currentFilter === 'fav' ? isPinned(t.id) : t.cat === currentFilter);
       const matchQ = !q || t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q);
       return matchCat && matchQ;
     });
@@ -1403,7 +1386,7 @@
   }
 
   function catLabel(cat) {
-    const m = { utility:'Tiện ích', design:'Design', content:'Nội dung', data:'Dữ liệu', media:'Media', dev:'Dev', docs:'Tài liệu', training:'Training', quote:'Báo giá' };
+    const m = { fav:'Thường dùng', quanly:'Quản lý', design:'Design', tienich:'Tiện ích', caidat:'Cài đặt' };
     return m[cat] || cat;
   }
 
