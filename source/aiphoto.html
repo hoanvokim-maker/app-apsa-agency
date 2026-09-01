@@ -29,6 +29,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/theme.css?v=22" />
 <style>
+  *, *::before, *::after { box-sizing: border-box; }
   :root {
     --bg: #000; --bg2: #0b0b0b; --bg3: #141414; --bg4: #1c1c1c;
     --border: rgba(255,255,255,.08); --border-h: rgba(255,255,255,.16);
@@ -109,6 +110,7 @@
   .qpk label:hover { background: var(--bg3); }
   .qend { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
   .qimg { display: flex; gap: 10px; align-items: center; }
+  .qimg img[src=""], .qimg img:not([src]) { display: none; }
   .qimg img { width: 74px; height: 48px; object-fit: cover; border-radius: 8px; background: var(--bg4); border: 1px solid var(--border); }
 
   .qmsg { padding: 40px 0; text-align: center; color: var(--text2); font-size: 14px; }
@@ -119,7 +121,7 @@
   .qtoast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
   .qqr { background: #fff; padding: 10px; border-radius: 10px; width: 150px; margin: 14px auto 0; }
   .qqr img { display: block; width: 100%; height: auto; image-rendering: pixelated; }
-  @media (max-width: 640px) { .qwrap, .qhead { padding-left: 16px; padding-right: 16px; } header { padding: 0 16px; } .q3 { grid-template-columns: 1fr; } }
+  @media (max-width: 640px) { .qwrap, .qhead { padding-left: 16px; padding-right: 16px; } header { padding: 0 16px; } .q3, .q2 { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>

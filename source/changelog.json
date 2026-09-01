@@ -1,12 +1,18 @@
 {
-    "version": "1.6.19",
-    "updated": "2026-08-31",
+    "version": "1.6.20",
+    "updated": "2026-09-01",
     "releases": [
         {
             "v": "1.6",
             "date": "2026-08-29",
             "note": "Phiên bản 1.6",
             "items": [
+                {
+                    "d": "2026-09-01",
+                    "v": "1.6.20",
+                    "t": "Chup anh AI: sua tran o nhap trong hop thoai (thieu box-sizing), an khung anh khi chua chon, hang 2 cot co lai tren dien thoai",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-08-31",
                     "v": "1.6.19",
