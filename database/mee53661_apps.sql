@@ -68,7 +68,7 @@ CREATE TABLE `ai_event_prompts` (
   `sort_order` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_ep` (`event_id`,`prompt_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -77,6 +77,8 @@ CREATE TABLE `ai_event_prompts` (
 
 LOCK TABLES `ai_event_prompts` WRITE;
 /*!40000 ALTER TABLE `ai_event_prompts` DISABLE KEYS */;
+INSERT INTO `ai_event_prompts` VALUES (2,1,1,0);
+INSERT INTO `ai_event_prompts` VALUES (3,1,2,1);
 /*!40000 ALTER TABLE `ai_event_prompts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -109,7 +111,7 @@ CREATE TABLE `ai_events` (
   `model_tier` varchar(8) NOT NULL DEFAULT 'flash',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_slug` (`slug`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -118,6 +120,7 @@ CREATE TABLE `ai_events` (
 
 LOCK TABLES `ai_events` WRITE;
 /*!40000 ALTER TABLE `ai_events` DISABLE KEYS */;
+INSERT INTO `ai_events` VALUES (1,'test','test','',NULL,NULL,1,NULL,NULL,'c',100,1024,1024,0,4,3,'Harris','2026-09-01 20:42:33','flash');
 /*!40000 ALTER TABLE `ai_events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -152,7 +155,7 @@ CREATE TABLE `ai_jobs` (
   UNIQUE KEY `uq_token` (`token`),
   KEY `k_state` (`state`,`id`),
   KEY `k_event` (`event_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -161,6 +164,9 @@ CREATE TABLE `ai_jobs` (
 
 LOCK TABLES `ai_jobs` WRITE;
 /*!40000 ALTER TABLE `ai_jobs` DISABLE KEYS */;
+INSERT INTO `ai_jobs` VALUES (1,'5afae75dc8c2fbe0',1,1,'done','gemini','src-5afae75dc8c2fbe0.jpg','out-5afae75dc8c2fbe0.jpg',NULL,1,18260,'mtipwnwm4ywk8l5m','1.54.219.59','no',NULL,'2026-09-01 20:43:23','2026-09-01 20:43:41','2026-09-01 20:43:23','gemini-3.1-flash-image');
+INSERT INTO `ai_jobs` VALUES (2,'f4df44f46419d9bc',1,2,'done','gemini','src-f4df44f46419d9bc.jpg','out-f4df44f46419d9bc.jpg',NULL,1,15349,'mtipwnwm4ywk8l5m','1.54.219.59','no',NULL,'2026-09-01 20:47:42','2026-09-01 20:47:57','2026-09-01 20:47:42','gemini-3.1-flash-image');
+INSERT INTO `ai_jobs` VALUES (3,'cf4d58743b79e494',1,1,'done','gemini','src-cf4d58743b79e494.jpg','out-cf4d58743b79e494.jpg',NULL,1,17751,'mtipwnwm4ywk8l5m','1.54.219.59','no',NULL,'2026-09-01 20:48:30','2026-09-01 20:48:48','2026-09-01 20:48:30','gemini-3.1-flash-image');
 /*!40000 ALTER TABLE `ai_jobs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -185,7 +191,7 @@ CREATE TABLE `ai_prompts` (
   `force_pro` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `k_tag` (`tag`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -194,6 +200,8 @@ CREATE TABLE `ai_prompts` (
 
 LOCK TABLES `ai_prompts` WRITE;
 /*!40000 ALTER TABLE `ai_prompts` DISABLE KEYS */;
+INSERT INTO `ai_prompts` VALUES (1,'Badminton','Một bức ảnh chân dung thể thao hành động điện ảnh, chụp từ góc máy thấp để nhấn mạnh độ cao, mô tả chính xác một người đàn ông Đông Nam Á (có đặc điểm khuôn mặt giống tôi) đang nhảy cao giữa không trung để thực hiện một cú nhảy đập cầu lông mạnh mẽ (jumping smash), giống hệt tư thế trong. Cơ thể anh ta nghiêng lên trên và sang phải, chân co mạnh (gấp đầu gối), tay phải cầm vợt cầu lông giơ cao phía sau đầu chuẩn bị đập, tay trái duỗi thẳng về phía trước để giữ thăng bằng. Ánh mắt tập trung nhìn lên trên theo hướng quả cầu đang bay tới. Anh ta mặc áo thi đấu cầu lông ngắn tay màu đỏ với họa tiết trừu tượng màu trắng/xám và quần short cầu lông màu đỏ đô giống hệt như trong, cùng giày cầu lông màu đỏ và trắng chuyên dụng. Bối cảnh là một sân cầu lông trong nhà hiện đại với vách tường tôn lượn sóng xám đậm và ánh sáng studio tập trung mạnh, kịch tính, làm nổi bật cơ bắp và chuyển động. Một vệt chuyển động nhẹ của vợt và quả cầu lông vừa được đập hiện rõ trên không. Sàn sân màu xanh lá cây với vạch kẻ trắng sắc nét. Độ sâu trường ảnh nông, tập trung vào đối tượng. Ảnh siêu thực, photorealistic, độ phân giải cực cao, sắc nét từng chi tiết','Badminton','11d206a8a6b8.jpg',1,0,2,'Harris','2026-09-01 20:41:54',0);
+INSERT INTO `ai_prompts` VALUES (2,'Badminton woman','A photorealistic studio portrait, captured from a high-angle overhead perspective, that replaces the central subject\'s face and identity with those from [Your Portrait Image] while maintaining the exact composition and complex multi-exposure badminton smash pose. The central figure, now matching your features, is in a dynamic, full-extension badminton smash, body arched back, holding a Mizuno racquet, with a prominent trailing shuttlecock and multiple cascading racquets. Surrounding the central figure is an intricate stroboscopic multi-exposure effect, displaying at least five motion-blurred, layered \'ghost\' figures of the same player (matching your features) in various stages of the swing, before and after the central moment. The scene is bathed in an intense, dramatic, red-purple studio wash, with a powerful, bursting light flare originating from the upper-right corner. Multiple Mizuno-branded racquets and one shuttlecock are floating around the player. The background is dark, red-purple, with a subtle hexagonal mesh pattern texture. Text \'MIZUNO\' is clear on the central racquet face. Sharp focus on the new central face and racquet, with dramatic motion blur on all other elements.','Badminton','dcc527472d78.jpg',1,0,1,'Harris','2026-09-01 20:46:58',0);
 /*!40000 ALTER TABLE `ai_prompts` ENABLE KEYS */;
 UNLOCK TABLES;
 

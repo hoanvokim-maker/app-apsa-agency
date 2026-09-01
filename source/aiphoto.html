@@ -497,11 +497,18 @@ function loadPrs() {
     }).join('') : '<tr><td colspan="6"><div class="qmsg">Thư viện còn trống.</div></td></tr>';
   }).catch(function (e) { el('prList').innerHTML = '<tr><td colspan="6"><div class="qmsg">' + esc(e.message) + '</div></td></tr>'; });
 }
+/* so thu tu ke tiep: lon nhat dang co + 1 */
+function nextSort() {
+  var m = 0;
+  (PRS || []).forEach(function (p) { var v = parseInt(p.sort_order, 10) || 0; if (v > m) m = v; });
+  return m + 1;
+}
 function prNew() {
   curPr = { id: 0, thumb_file: '' };
   el('prTitle').textContent = 'Thêm kiểu ảnh';
   el('p_title').value = ''; el('p_tag').value = ''; el('p_body').value = '';
-  el('p_sort').value = 0; el('p_pro').checked = false; el('p_active').checked = true;
+  el('p_sort').value = nextSort();
+  el('p_pro').checked = false; el('p_active').checked = true;
   el('p_thumb').src = '';
   openOv('ovPr');
 }

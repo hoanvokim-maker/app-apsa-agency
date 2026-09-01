@@ -1,5 +1,5 @@
 {
-    "version": "1.6.20",
+    "version": "1.6.21",
     "updated": "2026-09-01",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-29",
             "note": "Phiên bản 1.6",
             "items": [
+                {
+                    "d": "2026-09-01",
+                    "v": "1.6.21",
+                    "t": "Chup anh AI: so thu tu prompt tu tang (lon nhat dang co + 1)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-01",
                     "v": "1.6.20",
