@@ -109,6 +109,9 @@ CREATE TABLE `ai_events` (
   `created_by` varchar(120) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `model_tier` varchar(8) NOT NULL DEFAULT 'flash',
+  `sp_dir` varchar(80) DEFAULT NULL,
+  `sp_src` varchar(80) DEFAULT NULL,
+  `sp_out` varchar(80) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_slug` (`slug`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -120,7 +123,7 @@ CREATE TABLE `ai_events` (
 
 LOCK TABLES `ai_events` WRITE;
 /*!40000 ALTER TABLE `ai_events` DISABLE KEYS */;
-INSERT INTO `ai_events` VALUES (1,'test','test','',NULL,NULL,1,NULL,NULL,'c',100,1024,1024,0,4,3,'Harris','2026-09-01 20:42:33','flash');
+INSERT INTO `ai_events` VALUES (1,'test','test','',NULL,NULL,1,NULL,NULL,'c',100,1024,1024,0,4,3,'Harris','2026-09-01 20:42:33','flash',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `ai_events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -151,6 +154,10 @@ CREATE TABLE `ai_jobs` (
   `finished_at` datetime DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `model` varchar(48) DEFAULT NULL,
+  `sp_src_id` varchar(80) DEFAULT NULL,
+  `sp_out_id` varchar(80) DEFAULT NULL,
+  `sp_at` datetime DEFAULT NULL,
+  `sp_err` varchar(300) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_token` (`token`),
   KEY `k_state` (`state`,`id`),
@@ -164,9 +171,9 @@ CREATE TABLE `ai_jobs` (
 
 LOCK TABLES `ai_jobs` WRITE;
 /*!40000 ALTER TABLE `ai_jobs` DISABLE KEYS */;
-INSERT INTO `ai_jobs` VALUES (1,'5afae75dc8c2fbe0',1,1,'done','gemini','src-5afae75dc8c2fbe0.jpg','out-5afae75dc8c2fbe0.jpg',NULL,1,18260,'mtipwnwm4ywk8l5m','1.54.219.59','no',NULL,'2026-09-01 20:43:23','2026-09-01 20:43:41','2026-09-01 20:43:23','gemini-3.1-flash-image');
-INSERT INTO `ai_jobs` VALUES (2,'f4df44f46419d9bc',1,2,'done','gemini','src-f4df44f46419d9bc.jpg','out-f4df44f46419d9bc.jpg',NULL,1,15349,'mtipwnwm4ywk8l5m','1.54.219.59','no',NULL,'2026-09-01 20:47:42','2026-09-01 20:47:57','2026-09-01 20:47:42','gemini-3.1-flash-image');
-INSERT INTO `ai_jobs` VALUES (3,'cf4d58743b79e494',1,1,'done','gemini','src-cf4d58743b79e494.jpg','out-cf4d58743b79e494.jpg',NULL,1,17751,'mtipwnwm4ywk8l5m','1.54.219.59','no',NULL,'2026-09-01 20:48:30','2026-09-01 20:48:48','2026-09-01 20:48:30','gemini-3.1-flash-image');
+INSERT INTO `ai_jobs` VALUES (1,'5afae75dc8c2fbe0',1,1,'done','gemini','src-5afae75dc8c2fbe0.jpg','out-5afae75dc8c2fbe0.jpg',NULL,1,18260,'mtipwnwm4ywk8l5m','1.54.219.59','no',NULL,'2026-09-01 20:43:23','2026-09-01 20:43:41','2026-09-01 20:43:23','gemini-3.1-flash-image',NULL,NULL,NULL,NULL);
+INSERT INTO `ai_jobs` VALUES (2,'f4df44f46419d9bc',1,2,'done','gemini','src-f4df44f46419d9bc.jpg','out-f4df44f46419d9bc.jpg',NULL,1,15349,'mtipwnwm4ywk8l5m','1.54.219.59','no',NULL,'2026-09-01 20:47:42','2026-09-01 20:47:57','2026-09-01 20:47:42','gemini-3.1-flash-image',NULL,NULL,NULL,NULL);
+INSERT INTO `ai_jobs` VALUES (3,'cf4d58743b79e494',1,1,'done','gemini','src-cf4d58743b79e494.jpg','out-cf4d58743b79e494.jpg',NULL,1,17751,'mtipwnwm4ywk8l5m','1.54.219.59','no',NULL,'2026-09-01 20:48:30','2026-09-01 20:48:48','2026-09-01 20:48:30','gemini-3.1-flash-image',NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `ai_jobs` ENABLE KEYS */;
 UNLOCK TABLES;
 

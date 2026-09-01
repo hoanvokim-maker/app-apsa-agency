@@ -171,11 +171,13 @@
     <div class="qbar">
       <select id="lgEv" onchange="loadJobs()" style="font-family:inherit;font-size:13px;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:9px;color:var(--text)"></select>
       <button class="qb" onclick="loadJobs()">Tải lại</button>
+      <button class="qb" onclick="spSync()">Đồng bộ SharePoint</button>
+      <button class="qb" onclick="spCheck()">Kiểm tra kết nối</button>
       <span class="qmeta" id="lgSum"></span>
     </div>
     <table class="qt"><thead><tr>
       <th style="width:100px">Trạng thái</th><th>Sự kiện</th><th>Kiểu ảnh</th>
-      <th style="width:150px">Model</th><th style="width:80px">Thời gian</th><th style="width:150px">Lúc</th>
+      <th style="width:150px">Model</th><th style="width:80px">Thời gian</th><th style="width:110px">SharePoint</th><th style="width:150px">Lúc</th>
     </tr></thead><tbody id="lgList"></tbody></table>
   </div>
 </div>
@@ -547,22 +549,41 @@ function prDel(id) {
 }
 
 /* ---------- nhat ky ---------- */
+function spCell(j) {
+  if (j.sp_out_id) return '<span class="qtag ok">Đã lên</span>';
+  if (j.sp_err) return '<span class="qtag wr" title="' + esc(j.sp_err) + '">Lỗi</span>';
+  if (j.state !== 'done') return '';
+  return '<span class="qtag no">Chờ</span>';
+}
+function spSync() {
+  toast('Đang đưa ảnh lên SharePoint…');
+  api('sp-sync', { id: +el('lgEv').value || 0 })
+    .then(function (d) { toast(d.msg); loadJobs(); })
+    .catch(function (e) { alert(e.message); });
+}
+function spCheck() {
+  api('sp-check').then(function (d) { alert(d.msg); }).catch(function (e) { alert(e.message); });
+}
 function loadJobs() {
   var id = +el('lgEv').value || 0;
   api('jobs', null, id ? ('&id=' + id) : '').then(function (d) {
     var s = d.summary.map(function (r) {
       return r.state + ': ' + r.n + (r.avg_ms ? ' (' + Math.round(r.avg_ms / 1000) + 's)' : '');
     }).join(' · ');
-    el('lgSum').textContent = s;
+    el('lgSum').textContent = s
+      + (d.sp_on === false ? '  ·  SharePoint: chưa khai báo kết nối'
+         : (d.sp_left > 0 ? '  ·  SharePoint: còn ' + d.sp_left + ' ảnh chờ đưa lên'
+                          : '  ·  SharePoint: đã đồng bộ đủ'));
     el('lgList').innerHTML = d.items.length ? d.items.map(function (j) {
       var cls = j.state === 'done' ? 'ok' : (j.state === 'error' ? 'wr' : 'no');
       return '<tr><td><span class="qtag ' + cls + '">' + esc(j.state) + '</span></td>'
         + '<td>' + esc(j.ev_name || '') + '</td><td>' + esc(j.prompt_title || '') + '</td>'
         + '<td class="qmeta">' + esc(j.model || j.provider || '') + (j.err ? '<br /><span style="color:var(--red)">' + esc(j.err) + '</span>' : '') + '</td>'
         + '<td>' + (j.ms ? Math.round(j.ms / 1000) + 's' : '') + '</td>'
+        + '<td>' + spCell(j) + '</td>'
         + '<td class="qmeta">' + dmy(j.created_at) + '</td></tr>';
-    }).join('') : '<tr><td colspan="6"><div class="qmsg">Chưa có ảnh nào được tạo.</div></td></tr>';
-  }).catch(function (e) { el('lgList').innerHTML = '<tr><td colspan="6"><div class="qmsg">' + esc(e.message) + '</div></td></tr>'; });
+    }).join('') : '<tr><td colspan="7"><div class="qmsg">Chưa có ảnh nào được tạo.</div></td></tr>';
+  }).catch(function (e) { el('lgList').innerHTML = '<tr><td colspan="7"><div class="qmsg">' + esc(e.message) + '</div></td></tr>'; });
 }
 
 document.querySelectorAll('.qov').forEach(function (o) {

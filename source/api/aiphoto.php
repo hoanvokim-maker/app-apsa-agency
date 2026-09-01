@@ -137,9 +137,16 @@ function ap_migrate(PDO $pdo)
 
     /* Them cot cho bang da tao tu truoc */
     $add = array(
-        'ai_events'  => array('model_tier' => "VARCHAR(8) NOT NULL DEFAULT 'flash'"),
+        'ai_events'  => array('model_tier' => "VARCHAR(8) NOT NULL DEFAULT 'flash'",
+                                'sp_dir' => 'VARCHAR(80) NULL DEFAULT NULL',
+                                'sp_src' => 'VARCHAR(80) NULL DEFAULT NULL',
+                                'sp_out' => 'VARCHAR(80) NULL DEFAULT NULL'),
         'ai_prompts' => array('force_pro'  => "TINYINT(1) NOT NULL DEFAULT 0"),
-        'ai_jobs'    => array('model'      => "VARCHAR(48) NULL DEFAULT NULL"),
+        'ai_jobs'    => array('model'      => "VARCHAR(48) NULL DEFAULT NULL",
+                                'sp_src_id' => 'VARCHAR(80) NULL DEFAULT NULL',
+                                'sp_out_id' => 'VARCHAR(80) NULL DEFAULT NULL',
+                                'sp_at'     => 'DATETIME NULL DEFAULT NULL',
+                                'sp_err'    => 'VARCHAR(300) NULL DEFAULT NULL'),
     );
     foreach ($add as $tbl => $cols) {
         try {

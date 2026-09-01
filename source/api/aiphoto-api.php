@@ -13,6 +13,7 @@
 require_once __DIR__ . '/db-config.php';
 require_once __DIR__ . '/session-boot.php';
 require_once __DIR__ . '/aiphoto.php';
+require_once __DIR__ . '/aiphoto-sp.php';
 
 /* ------------------------------------------------------------------ */
 /*  Ha tang chung                                                      */
@@ -307,7 +308,13 @@ function apx_run_job(PDO $pdo, $jobId)
         $pdo->prepare("UPDATE `ai_events`  SET uses = uses + 1 WHERE id = ?")->execute(array((int) $j['ev_id']));
         $pdo->prepare("UPDATE `ai_prompts` SET uses = uses + 1 WHERE id = ?")->execute(array((int) $j['prompt_id']));
     } catch (Exception $x) { }
-    @unlink($src);
+    /* Dua len SharePoint ngay. That bai thi de lan sau thu lai, khong chan khach. */
+    if (function_exists('apsp_enabled') && apsp_enabled()) {
+        $e3 = '';
+        try { apsp_sync_job($pdo, (int) $jobId, $e3); } catch (Exception $x) { }
+    } else {
+        @unlink($src);
+    }
 }
 
 /* ================================================================== */
@@ -510,6 +517,7 @@ case 'jobs': {
     $w  = $id > 0 ? (' WHERE j.event_id = ' . $id) : '';
     $rows = $PDO->query(
         "SELECT j.token, j.state, j.provider, j.model, j.err, j.attempts, j.ms, j.created_at, j.finished_at,
+                j.sp_out_id, j.sp_at, j.sp_err,
                 e.name AS ev_name, p.title AS prompt_title
            FROM `ai_jobs` j
            LEFT JOIN `ai_events`  e ON e.id = j.event_id
@@ -517,7 +525,11 @@ case 'jobs': {
           ORDER BY j.id DESC LIMIT 200")->fetchAll();
     $sum = $PDO->query(
         "SELECT state, COUNT(*) n, AVG(ms) avg_ms FROM `ai_jobs`" . str_replace('j.', '', $w) . " GROUP BY state")->fetchAll();
-    apx_ok(array('data' => array('items' => $rows, 'summary' => $sum)));
+    $left = (int) $PDO->query("SELECT COUNT(*) FROM `ai_jobs`
+         WHERE state = 'done' AND out_file IS NOT NULL AND sp_out_id IS NULL"
+         . ($id > 0 ? ' AND event_id = ' . $id : ''))->fetchColumn();
+    apx_ok(array('data' => array('items' => $rows, 'summary' => $sum,
+                                 'sp_on' => apsp_enabled(), 'sp_left' => $left)));
 }
 
 /* --- Thu goi model 1 lan --- */
@@ -538,6 +550,24 @@ case 'test': {
     $ms = (int) ((microtime(true) - $t0) * 1000);
     if ($g === false) apx_fail('Gọi model không thành công sau ' . $ms . 'ms: ' . $err, 502);
     apx_ok(array('data' => array('tier' => $tier, 'provider' => $prov, 'ms' => $ms, 'bytes' => strlen($g))));
+}
+
+/* --- SharePoint --- */
+case 'sp-check': {
+    list($ok, $msg) = apsp_check();
+    if (!$ok) apx_fail($msg, 502);
+    apx_ok(array('data' => array('msg' => $msg)));
+}
+
+case 'sp-sync': {
+    $id = (int) (isset($B['id']) ? $B['id'] : 0);
+    list($done, $bad, $left, $err) = apsp_sync_pending($PDO, $id, 25);
+    $m = 'Đã đưa lên SharePoint ' . $done . ' ảnh';
+    if ($bad > 0)  $m .= ', ' . $bad . ' ảnh lỗi';
+    if ($left > 0) $m .= ', còn ' . $left . ' ảnh chờ (bấm lại để làm tiếp)';
+    $m .= '.';
+    if ($err !== '') $m .= ' Lỗi gần nhất: ' . $err;
+    apx_ok(array('data' => array('msg' => $m, 'done' => $done, 'fail' => $bad, 'left' => $left)));
 }
 
 default:

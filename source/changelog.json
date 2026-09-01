@@ -1,5 +1,5 @@
 {
-    "version": "1.6.21",
+    "version": "1.6.22",
     "updated": "2026-09-01",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-29",
             "note": "Phiên bản 1.6",
             "items": [
+                {
+                    "d": "2026-09-01",
+                    "v": "1.6.22",
+                    "t": "Chup anh AI: dong bo SharePoint theo su kien (ddmmyyyy-Ten, 2 thu muc 01-Anh-goc va 02-Anh-AI), xoa anh goc tren server sau khi da len",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-01",
                     "v": "1.6.21",
