@@ -858,6 +858,25 @@
 <div class="container">
       <a id="zaloNudge" href="./zalo.html" style="display:none;align-items:center;gap:10px;margin:0 0 12px;padding:10px 14px;border:1px solid rgba(223,242,13,.35);background:rgba(223,242,13,.07);border-radius:10px;text-decoration:none;color:inherit;font-size:12.5px"><span style="font-size:15px">🔔</span><span style="flex:1">Bật <b>thông báo Zalo</b> để nhận ngay khi được giao việc, bị nhắc tên hay đơn nghỉ được duyệt.</span><span style="font-weight:700;color:#dff20d">Kết nối →</span></a>
 
+    <!-- ===== TONG HOP DU AN (v1.6.25) ===== -->
+    <section class="gsec" id="secBiz" style="display:none">
+      <div class="ghead"><span class="gttl">◈ Tổng hợp dự án</span><span class="gline"></span><span class="gnum" id="bizNum"></span></div>
+      <div class="biz-wrap">
+        <a class="biz-card" href="./quotation.html">
+          <div class="biz-lbl">Dự án đã nhận · tháng <b id="bizAM">--</b></div>
+          <div class="biz-num" id="bizAN">–</div>
+          <div class="biz-val" id="bizAV">&nbsp;</div>
+          <div class="biz-sub" id="bizAS"></div>
+        </a>
+        <a class="biz-card" href="./quotation.html">
+          <div class="biz-lbl">Dự kiến chạy · tháng <b id="bizBM">--</b></div>
+          <div class="biz-num" id="bizBN">–</div>
+          <div class="biz-val" id="bizBV">&nbsp;</div>
+          <div class="biz-sub" id="bizBS"></div>
+        </a>
+      </div>
+    </section>
+
     <!-- ===== TO-DO LIST (v1.2.5) ===== -->
     <section class="gsec" id="secTodo" style="display:none">
       <div class="ghead">
@@ -1557,6 +1576,20 @@
 .tdo-s a:hover{text-decoration:underline}
 .tdo-s .due.late{color:#ff4d6d;font-weight:600}
 .tdo-empty{font-size:12px;color:var(--text2,#9aa3b2);padding:6px 2px}
+/* ===== Tong hop du an (v1.6.25) ===== */
+.biz-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.biz-card{display:block;padding:14px 16px;border-radius:12px;text-decoration:none;color:inherit;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-left:3px solid var(--green,#dff20d);transition:background .15s,transform .15s}
+.biz-card:hover{background:rgba(255,255,255,.06);transform:translateY(-1px)}
+.biz-card+.biz-card{border-left-color:#7c9cff}
+.biz-lbl{font-size:11.5px;color:var(--text2,#9aa3b2);letter-spacing:.02em}
+.biz-lbl b{color:var(--text,#e8ebf0);font-weight:700}
+.biz-num{font-family:'Orbitron',sans-serif;font-size:30px;font-weight:800;line-height:1.1;margin-top:6px}
+.biz-val{font-size:14px;font-weight:700;color:var(--green,#dff20d);margin-top:2px}
+.biz-card+.biz-card .biz-val{color:#7c9cff}
+.biz-sub{font-size:11.5px;color:var(--text2,#9aa3b2);margin-top:6px;min-height:14px}
+@media(max-width:640px){.biz-wrap{grid-template-columns:1fr}.biz-num{font-size:26px}}
 </style>
 <script>
 /* ===== To-do list tren dashboard (v1.2.5) ===== */
@@ -1682,6 +1715,54 @@
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', lock);
   else lock();
+})();
+</script>
+<script>
+/* ===== Tổng hợp dự án — trang chủ (v1.6.25) ===== */
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+
+  function trim0(s) { return s.indexOf('.') >= 0 ? s.replace(/0+$/, '').replace(/\.$/, '') : s; }
+  function money(n) {
+    n = Math.round(Number(n) || 0);
+    if (n >= 1e9) return trim0((n / 1e9).toFixed(2)) + ' tỷ';
+    if (n >= 1e6) return trim0((n / 1e6).toFixed(1)) + ' tr';
+    return n.toLocaleString('vi-VN');
+  }
+  function full(n) { return (Math.round(Number(n) || 0)).toLocaleString('vi-VN') + ' đ'; }
+
+  function paint(d) {
+    var sec = $('secBiz');
+    if (!sec || !d || !d.ok || d.allowed === false) return;
+    var a = d.month || {}, b = d.next || {};
+
+    $('bizAM').textContent = a.label || '';
+    $('bizAN').textContent = a.count || 0;
+    $('bizAV').textContent = money(a.total);
+    $('bizAV').title = full(a.total);
+    $('bizAS').textContent = 'Đang chào giá: ' + (a.pend_count || 0) + ' · ' + money(a.pend_total)
+      + (a.lost ? '  ·  Trượt: ' + a.lost : '');
+
+    $('bizBM').textContent = b.label || '';
+    $('bizBN').textContent = b.count || 0;
+    $('bizBV').textContent = money(b.total);
+    $('bizBV').title = full(b.total);
+    $('bizBS').textContent = 'Đang chào giá: ' + (b.pend_count || 0) + ' · ' + money(b.pend_total)
+      + (b.nodate ? '  ·  ' + b.nodate + ' dự án chưa nhập ngày diễn ra' : '');
+
+    $('bizNum').textContent = (a.count || 0) + ' / ' + (b.count || 0);
+    sec.style.display = '';
+  }
+
+  function load() {
+    fetch('./api/home-stats.php', { credentials: 'same-origin', cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(paint)
+      .catch(function () { });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load);
+  else load();
 })();
 </script>
 </body>
