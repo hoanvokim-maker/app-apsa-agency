@@ -55,6 +55,14 @@ if (!$uid) {
     hs_out(array('ok' => false, 'error' => 'Chua dang nhap.'), 401);
 }
 
+$pdo = new PDO(
+    'mysql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME . ';charset=utf8mb4',
+    DB_USER,
+    DB_PASS,
+    array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+          PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC)
+);
+
 pm_init($pdo);
 if (pm_level('project') < 1) {
     hs_out(array('ok' => true, 'allowed' => false));
@@ -64,10 +72,11 @@ if (pm_level('project') < 1) {
 $WON  = array('order', 'confirmed', 'running', 'service_done', 'liq_sent', 'done', 'dong_du_an');
 /* Con dang chao gia — chua chot. */
 $PEND = array('request', 'quote');
-/* Da dong han — khong con chay nua. */
-$SHUT = array('done', 'lost', 'dong_du_an');
+/* Dang chay that su — can co ngay dien ra de xep lich. */
+$RUN  = array('order', 'confirmed', 'running', 'service_done', 'liq_sent');
 
 /* --- Moc thoi gian --- */
+$p0 = date('Y-m-01', strtotime('first day of last month'));
 $m0 = date('Y-m-01');
 $m1 = date('Y-m-01', strtotime('first day of next month'));
 $m2 = date('Y-m-01', strtotime('first day of +2 month'));
@@ -84,7 +93,8 @@ $sql = "SELECT q.id, q.status, q.quotation_date, q.event_date,
 
 $rows = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
-$mon = array('count' => 0, 'total' => 0.0, 'pend_count' => 0, 'pend_total' => 0.0, 'lost' => 0);
+$mon = array('count' => 0, 'total' => 0.0, 'pend_count' => 0, 'pend_total' => 0.0, 'lost' => 0,
+             'prev_count' => 0, 'prev_total' => 0.0);
 $nxt = array('count' => 0, 'total' => 0.0, 'pend_count' => 0, 'pend_total' => 0.0, 'nodate' => 0);
 
 foreach ($rows as $r) {
@@ -117,18 +127,26 @@ foreach ($rows as $r) {
             $nxt['pend_count']++;
             $nxt['pend_total'] += $tot;
         }
-    } elseif ($ev === '' && !in_array($st, $SHUT, true)) {
-        /* Du an con mo nhung chua nhap ngay dien ra -> khong xep lich duoc */
+    } elseif ($ev === '' && in_array($st, $RUN, true)) {
+        /* Du an dang chay nhung chua nhap ngay dien ra -> khong xep lich duoc */
         $nxt['nodate']++;
+    }
+
+    /* Thang truoc — de so sanh */
+    if ($won && $qd !== '' && $qd >= $p0 && $qd < $m0) {
+        $mon['prev_count']++;
+        $mon['prev_total'] += $tot;
     }
 }
 
 $mon['total']      = round($mon['total'], 2);
 $mon['pend_total'] = round($mon['pend_total'], 2);
+$mon['prev_total'] = round($mon['prev_total'], 2);
 $nxt['total']      = round($nxt['total'], 2);
 $nxt['pend_total'] = round($nxt['pend_total'], 2);
 
-$mon['label'] = date('m/Y');
+$mon['label']      = date('m/Y');
+$mon['prev_label'] = date('m/Y', strtotime($p0));
 $nxt['label'] = date('m/Y', strtotime($m1));
 
 hs_out(array('ok' => true, 'allowed' => true, 'month' => $mon, 'next' => $nxt));

@@ -1727,7 +1727,7 @@
     n = Math.round(Number(n) || 0);
     if (n >= 1e9) return trim0((n / 1e9).toFixed(2)) + ' tỷ';
     if (n >= 1e6) return trim0((n / 1e6).toFixed(1)) + ' tr';
-    return n.toLocaleString('vi-VN');
+    return n.toLocaleString('vi-VN') + ' đ';
   }
   function full(n) { return (Math.round(Number(n) || 0)).toLocaleString('vi-VN') + ' đ'; }
 
@@ -1740,15 +1740,16 @@
     $('bizAN').textContent = a.count || 0;
     $('bizAV').textContent = money(a.total);
     $('bizAV').title = full(a.total);
-    $('bizAS').textContent = 'Đang chào giá: ' + (a.pend_count || 0) + ' · ' + money(a.pend_total)
-      + (a.lost ? '  ·  Trượt: ' + a.lost : '');
+    $('bizAS').textContent = 'Chào giá: ' + (a.pend_count || 0) + ' · ' + money(a.pend_total)
+      + (a.lost ? '  ·  Trượt: ' + a.lost : '')
+      + '  ·  Tháng ' + (a.prev_label || '') + ': ' + (a.prev_count || 0) + ' · ' + money(a.prev_total);
 
     $('bizBM').textContent = b.label || '';
     $('bizBN').textContent = b.count || 0;
     $('bizBV').textContent = money(b.total);
     $('bizBV').title = full(b.total);
-    $('bizBS').textContent = 'Đang chào giá: ' + (b.pend_count || 0) + ' · ' + money(b.pend_total)
-      + (b.nodate ? '  ·  ' + b.nodate + ' dự án chưa nhập ngày diễn ra' : '');
+    $('bizBS').textContent = 'Chào giá: ' + (b.pend_count || 0) + ' · ' + money(b.pend_total)
+      + (b.nodate ? '  ·  ' + b.nodate + ' dự án đang chạy chưa nhập ngày diễn ra' : '');
 
     $('bizNum').textContent = (a.count || 0) + ' / ' + (b.count || 0);
     sec.style.display = '';
