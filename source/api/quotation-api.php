@@ -181,6 +181,7 @@ function loadExpenses(PDO $pdo, $qid) {
             'bank_holder' => (string) (isset($r['bank_holder']) ? $r['bank_holder'] : ''),
             'bank_masked' => (int) (isset($r['bank_masked']) ? $r['bank_masked'] : 0),
             'pay_date'    => (string) (isset($r['pay_date']) ? $r['pay_date'] : ''),
+            'pay_memo'    => (string) (isset($r['pay_memo']) ? $r['pay_memo'] : ''),
             'pay_req_at'   => (string) (isset($r['pay_req_at']) ? $r['pay_req_at'] : ''),
             'paid_at'      => (string) (isset($r['paid_at']) ? $r['paid_at'] : ''),
             'has_proof'    => (int) (!empty($r['proof_file']) ? 1 : 0),
@@ -401,6 +402,13 @@ if (!q_hasColumn($pdo, 'quotation_items', 'act_qty')) {
 /* --- Chi phi thuc te: nguoi nhan + trang thai tra tien --- */
 if (!q_hasColumn($pdo, 'quotation_expenses', 'pay_date')) {
     q_mig($pdo, "ALTER TABLE `quotation_expenses` ADD COLUMN `pay_date` DATE NULL DEFAULT NULL");
+}
+
+/* --- Noi dung chuyen khoan cho tung dong chi --- */
+if (!q_hasColumn($pdo, 'quotation_expenses', 'pay_memo')) {
+    q_mig($pdo, "ALTER TABLE `quotation_expenses`
+        ADD COLUMN `pay_memo` VARCHAR(190) NOT NULL DEFAULT ''
+        COMMENT 'noi dung chuyen khoan, dung cho QR'");
 }
 
 /* --- Danh ba nguoi nhan: phan biet cong ty voi ca nhan --- */
@@ -1826,6 +1834,8 @@ case 'exp-row-save': {
             $sets[] = '`bank_holder` = ?';  $par[] = q_payeeF($pdo, $B, 'bank_holder');
         }
             if (array_key_exists('pay_date', $B)) { $sets[] = '`pay_date` = ?'; $par[] = q_dateOf($B); }
+            if (array_key_exists('pay_memo', $B)) { $sets[] = '`pay_memo` = ?';
+                $par[] = mb_substr(trim(preg_replace('/\s+/u', ' ', (string) $B['pay_memo'])), 0, 190, 'UTF-8'); }
             if (isset($B['payee_type']) && q_payeeT($B) === 'user') { $sets[] = '`vat_percent` = ?'; $par[] = 0; }
         if (!$sets) q_fail('Khong co gi de cap nhat');
         $par[] = $id;

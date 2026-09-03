@@ -661,6 +661,7 @@ table.q tbody tr.dragblock td{ background:rgba(223,242,13,.05); }
   <script src="/perm-guard.js?v=3"></script>
 <script src="/exp-qr.js?v=10"></script>
 <script src="/exp-day.js?v=5"></script>
+  <script src="/exp-memo.js?v=1"></script>
   <script src="/exp-unc.js?v=3"></script>
 <script src="/exp-ac.js?v=4"></script>
 <script src="/quo-copy.js?v=1"></script>
@@ -1760,7 +1761,7 @@ async function openQuote(id, opts){
     renderAsg();
     EXP = (d.expenses || []).map(r => ({ id:Number(r.id)||0, has_proof:Number(r.has_proof)||0, proof_name:r.proof_name||'', kind:r.kind || 'item', name:r.name || '', description:r.description || '',
                                          qty:Number(r.qty)||0, unit:r.unit || '',
-                                         price:Number(r.price)||0, vat_percent:Number(r.vat_percent)||0, paid:Number(r.paid)||0, payee_type:r.payee_type||'', payee_id:Number(r.payee_id)||0, payee_name:r.payee_name||'', bank_name:r.bank_name||'', bank_account:r.bank_account||'', bank_holder:r.bank_holder||'', bank_masked:Number(r.bank_masked)||0, pay_date:r.pay_date||'' }));
+                                         price:Number(r.price)||0, vat_percent:Number(r.vat_percent)||0, paid:Number(r.paid)||0, payee_type:r.payee_type||'', payee_id:Number(r.payee_id)||0, payee_name:r.payee_name||'', bank_name:r.bank_name||'', bank_account:r.bank_account||'', bank_holder:r.bank_holder||'', bank_masked:Number(r.bank_masked)||0, pay_date:r.pay_date||'', pay_memo:r.pay_memo||'' }));
     renderExp();
     if (EXP.length) toggleExp(true);
     bindAutoSave(); asReset();
@@ -1848,7 +1849,7 @@ function asgDel(i){ ASG.splice(i, 1); renderAsg(); markDirty(); }
 let EXP = [];                       // [{kind:'group'|'item', name, description, qty, unit, price, vat_percent}]
 let EXP_OPEN = false;
 
-function expBlank(){ return { kind:'item', name:'', description:'', qty:1, unit:'Gói', price:0, vat_percent:8, paid:0, payee_type:'', payee_id:0, payee_name:'', bank_name:'', bank_account:'', bank_holder:'', pay_date:'' }; }
+function expBlank(){ return { kind:'item', name:'', description:'', qty:1, unit:'Gói', price:0, vat_percent:8, paid:0, payee_type:'', payee_id:0, payee_name:'', bank_name:'', bank_account:'', bank_holder:'', pay_date:'', pay_memo:'' }; }
 
 function toggleExp(force){
   EXP_OPEN = (force === undefined) ? !EXP_OPEN : !!force;
@@ -1966,7 +1967,7 @@ async function saveExp(qid, quiet){
     const d = await api(API, 'expenses-save', { body: { quotation_id: qid, list } });
     EXP = (d.rows || []).map(r => ({ id:Number(r.id)||0, has_proof:Number(r.has_proof)||0, proof_name:r.proof_name||'', kind:r.kind, name:r.name||'', description:r.description||'',
                                      qty:Number(r.qty)||0, unit:r.unit||'',
-                                     price:Number(r.price)||0, vat_percent:Number(r.vat_percent)||0, paid:Number(r.paid)||0, payee_type:r.payee_type||'', payee_id:Number(r.payee_id)||0, payee_name:r.payee_name||'', bank_name:r.bank_name||'', bank_account:r.bank_account||'', bank_holder:r.bank_holder||'', bank_masked:Number(r.bank_masked)||0, pay_date:r.pay_date||'' }));
+                                     price:Number(r.price)||0, vat_percent:Number(r.vat_percent)||0, paid:Number(r.paid)||0, payee_type:r.payee_type||'', payee_id:Number(r.payee_id)||0, payee_name:r.payee_name||'', bank_name:r.bank_name||'', bank_account:r.bank_account||'', bank_holder:r.bank_holder||'', bank_masked:Number(r.bank_masked)||0, pay_date:r.pay_date||'', pay_memo:r.pay_memo||'' }));
     if (!quiet) renderExp();
   } catch(e){ toast('Không lưu được chi phí: ' + e.message, 'err'); }
 }
