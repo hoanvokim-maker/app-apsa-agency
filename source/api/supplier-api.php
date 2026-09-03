@@ -158,7 +158,7 @@ case 'list': {
     $sql .= " ORDER BY `active` DESC, `name` ASC";
     $st = $pdo->prepare($sql);
     $st->execute($arg);
-    sp_ok(array('items' => $st->fetchAll(), 'is_admin' => $IS_ADMIN ? 1 : 0));
+    sp_ok(array('items' => $st->fetchAll(), 'is_admin' => $IS_ADMIN ? 1 : 0, 'caps' => sp_caps()));
     break;
 }
 
