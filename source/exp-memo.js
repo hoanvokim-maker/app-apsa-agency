@@ -133,9 +133,9 @@
   /* ---------- CSS ---------- */
   var st = document.createElement('style');
   st.textContent =
-      '.exptbl col:nth-child(9){width:164px}'
+      '.exptbl col:nth-child(9){width:158px !important}'
     + '.exp-dayc{overflow:hidden}'
-    + '.expday-wrap{display:flex;align-items:center;gap:5px;width:100%;min-width:0}'
+    + '.expday-wrap{display:flex;align-items:center;gap:4px;width:100%;min-width:0}'
     + '.expday-wrap>input.expday{flex:1 1 auto;min-width:0;max-width:none}'
     + '.expmemo{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;'
     + 'width:24px;height:24px;padding:0;border:1px solid rgba(255,255,255,.14);border-radius:7px;'
