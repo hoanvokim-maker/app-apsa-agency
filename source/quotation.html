@@ -2685,6 +2685,9 @@ function fitCols(){
   const LIQW  = 10 + 74 + 76 + 118 + 126;           // vạch ngăn + 4 cột nghiệm thu
   const keys  = LIQ ? ['name','desc','rmk','act'] : ['name','desc','rmk'];
 
+  /* Bo be rong cu truoc khi do — neu khong, lan do sau bi anh huong boi lan truoc */
+  t.style.width = '';
+  t.style.minWidth = '';
   const host = t.parentElement;
   const room = (host ? host.clientWidth : 0) - 2 - FIXED - (LIQ ? LIQW : 0);
   let need   = keys.reduce((sum, k) => sum + box[k], 0);
@@ -2700,8 +2703,21 @@ function fitCols(){
   } else if (room > need) {
     // Dư chỗ → chỉ nới Description (tới max của nó). Remark / Chứng từ giữ nguyên bề rộng
     // vừa đúng nội dung: không có ghi chú thì cột hẹp lại, bảng ngắn hơn khung cũng được.
-    const give = Math.min(room - need, FIT.desc.max - box.desc);
-    box.desc += give;
+    /* Chia phan du: uu tien Description, con lai rai sang cac cot khac */
+    let left = room - need;
+    const order = ['desc', 'name', 'rmk', 'act'];
+    for (let pass = 0; pass < 3 && left > 0; pass++) {
+      let moved = 0;
+      for (const k of order) {
+        if (left <= 0) break;
+        if (keys.indexOf(k) < 0) continue;
+        const cap = FIT[k].max - box[k];
+        if (cap <= 0) continue;
+        const add = Math.min(cap, left);
+        box[k] += add; left -= add; moved += add;
+      }
+      if (!moved) break;
+    }
   }
 
   thN.style.width = box.name + 'px';
@@ -2848,12 +2864,55 @@ function setLiq(on){
   const e = document.getElementById('btnExpLiq'); if (e) e.style.display = LIQ ? '' : 'none';
   const c = document.getElementById('btnCopyAct'); if (c) c.style.display = LIQ ? '' : 'none';
   fitCols();
+  /* Do lai sau khi trinh duyet ve xong — tranh do nham luc dang chuyen trang thai */
+  requestAnimationFrame(function () { try { fitCols(); } catch (e) {} });
   const hl = document.getElementById('hintLine');
   if (hl) hl.innerHTML = LIQ
     ? 'Nghiệm thu: để trống <b>Thành tiền thực tế</b> = tự tính SL × đơn giá · nhập tay số tiền (theo hoá đơn) sẽ hiện <b style="color:#ff6b6b">màu đỏ</b> và đơn giá = tiền ÷ SL'
     : 'Nhập nhanh giá: <b>1e6</b> = 1.000.000 · <b>4tr</b> = 4.000.000 · <b>1tr5</b> = 1.500.000 · <b>500k</b> = 500.000';
   renderAmounts();
 }
+var _fitTmr = null;
+window.addEventListener('resize', function () {
+  clearTimeout(_fitTmr);
+  _fitTmr = setTimeout(function () { try { fitCols(); } catch (e) {} }, 150);
+});
+try {
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () { try { fitCols(); } catch (e) {} });
+  }
+} catch (e) {}
+/* --- Tu do lai be rong bang khi khung chua doi kich thuoc --- */
+var _fitRO = null, _fitHostW = 0;
+function fitSoon() {
+  var d = [0, 120, 400, 1000, 2200];
+  for (var i = 0; i < d.length; i++) {
+    setTimeout(function () { try { fitCols(); } catch (e) {} }, d[i]);
+  }
+}
+window.fitSoon = fitSoon;
+function fitWatch() {
+  try {
+    var t = document.getElementById('qtable');
+    var host = t ? t.parentElement : null;
+    if (!host) return;
+    if (_fitRO) { try { _fitRO.disconnect(); } catch (e) {} }
+    if (typeof ResizeObserver === 'undefined') return;
+    _fitHostW = host.clientWidth;
+    _fitRO = new ResizeObserver(function () {
+      var w = host.clientWidth;
+      if (w === _fitHostW) return;
+      _fitHostW = w;
+      try { fitCols(); } catch (e) {}
+    });
+    _fitRO.observe(host);
+  } catch (e) {}
+}
+document.addEventListener('DOMContentLoaded', function () { setTimeout(fitWatch, 0); });
+document.addEventListener('DOMContentLoaded', fitSoon);
+if (document.readyState !== 'loading') fitSoon();
+window.addEventListener('load', fitSoon);
+if (document.readyState !== 'loading') setTimeout(fitWatch, 0);
 function toggleLiq(){
   const on = !LIQ;
   setLiq(on);
