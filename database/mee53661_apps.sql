@@ -45,10 +45,10 @@ CREATE TABLE `accounts` (
 
 LOCK TABLES `accounts` WRITE;
 /*!40000 ALTER TABLE `accounts` DISABLE KEYS */;
-INSERT INTO `accounts` VALUES (1,'Adobe CC','Adobe Creative Cloud','LeifZiminsky26587@outlook.com','@PSAAgency2026','[{\"name\":\"Thảo Lý\",\"color\":\"#ec4899\"}]','New','2026-06-14 14:20:55','2026-08-20 05:08:12');
+INSERT INTO `accounts` VALUES (1,'Adobe CC','Adobe Creative Cloud','LeifZiminsky26587@outlook.com','@PSAAgency2026','[{\"name\":\"Thảo Lý\",\"color\":\"#ec4899\"},{\"name\":\"Trần Mai Hiền\",\"color\":\"#dff20d\"}]','New','2026-06-14 14:20:55','2026-09-03 04:21:28');
 INSERT INTO `accounts` VALUES (2,'Adobe CC','Adobe Creative Cloud','IversonHofe754311@outlook.com','@PSAAgency2026','[{\"name\":\"Nhật Tân\",\"color\":\"#6c63ff\"},{\"name\":\"Anh Kim\",\"color\":\"#ec4899\"}]','New','2026-06-14 14:20:55','2026-08-20 05:08:22');
 INSERT INTO `accounts` VALUES (3,'Adobe CC','Adobe Creative Cloud','DontePierick6886@outlook.com','@PSAAgency2026','[{\"name\":\"Vy Vy\",\"color\":\"#6c63ff\"}]','New','2026-06-14 14:20:55','2026-08-20 05:08:38');
-INSERT INTO `accounts` VALUES (4,'Adobe CC','Adobe Creative Cloud','LowellWeaving15824@outlook.com','@PSAAgency2026','[{\"name\":\"Harris\",\"color\":\"#6c63ff\"}]','New','2026-06-14 14:20:55','2026-08-20 05:08:46');
+INSERT INTO `accounts` VALUES (4,'Adobe CC','Adobe Creative Cloud','LowellWeaving15824@outlook.com','@PSAAgency2026','[{\"name\":\"Harris\",\"color\":\"#6c63ff\"},{\"name\":\"Minh Trí\",\"color\":\"#dff20d\"}]','New','2026-06-14 14:20:55','2026-09-03 04:21:14');
 INSERT INTO `accounts` VALUES (5,'Adobe CC','Adobe Creative Cloud','account1@apsa.agency','default','[{\"name\":\"Tiên\",\"color\":\"#6c63ff\"},{\"name\":\"Minh Trí\",\"color\":\"#ec4899\"}]','','2026-08-01 15:14:24','2026-08-01 15:14:41');
 INSERT INTO `accounts` VALUES (6,'Chatgpt','ChatGPT','khanhsdoanf58+1@googlemail.com','ChatGPTPlus@123','[{\"name\":\"Admin\",\"color\":\"#6c63ff\"},{\"name\":\"Thảo Lý\",\"color\":\"#ec4899\"}]','','2026-08-11 16:01:16','2026-08-11 16:01:16');
 /*!40000 ALTER TABLE `accounts` ENABLE KEYS */;
@@ -123,7 +123,7 @@ CREATE TABLE `ai_events` (
 
 LOCK TABLES `ai_events` WRITE;
 /*!40000 ALTER TABLE `ai_events` DISABLE KEYS */;
-INSERT INTO `ai_events` VALUES (1,'test','test','',NULL,NULL,1,NULL,NULL,'c',100,1024,1024,0,4,3,'Harris','2026-09-01 20:42:33','flash',NULL,NULL,NULL);
+INSERT INTO `ai_events` VALUES (1,'test','test','',NULL,NULL,1,NULL,NULL,'c',100,1024,1024,0,5,4,'Harris','2026-09-01 20:42:33','flash','01UTW2SKN2SWGP3BYGPRBKQ4UF57QZLCMK','01UTW2SKIABIUU36I645BLUKGZWVW2MCA5','01UTW2SKOMQUXECSRE65GY2VZZHKN2LCUQ');
 /*!40000 ALTER TABLE `ai_events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -162,7 +162,7 @@ CREATE TABLE `ai_jobs` (
   UNIQUE KEY `uq_token` (`token`),
   KEY `k_state` (`state`,`id`),
   KEY `k_event` (`event_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -174,6 +174,7 @@ LOCK TABLES `ai_jobs` WRITE;
 INSERT INTO `ai_jobs` VALUES (1,'5afae75dc8c2fbe0',1,1,'done','gemini','src-5afae75dc8c2fbe0.jpg','out-5afae75dc8c2fbe0.jpg',NULL,1,18260,'mtipwnwm4ywk8l5m','1.54.219.59','no',NULL,'2026-09-01 20:43:23','2026-09-01 20:43:41','2026-09-01 20:43:23','gemini-3.1-flash-image',NULL,NULL,NULL,NULL);
 INSERT INTO `ai_jobs` VALUES (2,'f4df44f46419d9bc',1,2,'done','gemini','src-f4df44f46419d9bc.jpg','out-f4df44f46419d9bc.jpg',NULL,1,15349,'mtipwnwm4ywk8l5m','1.54.219.59','no',NULL,'2026-09-01 20:47:42','2026-09-01 20:47:57','2026-09-01 20:47:42','gemini-3.1-flash-image',NULL,NULL,NULL,NULL);
 INSERT INTO `ai_jobs` VALUES (3,'cf4d58743b79e494',1,1,'done','gemini','src-cf4d58743b79e494.jpg','out-cf4d58743b79e494.jpg',NULL,1,17751,'mtipwnwm4ywk8l5m','1.54.219.59','no',NULL,'2026-09-01 20:48:30','2026-09-01 20:48:48','2026-09-01 20:48:30','gemini-3.1-flash-image',NULL,NULL,NULL,NULL);
+INSERT INTO `ai_jobs` VALUES (4,'63e2b83cd6843ae4',1,2,'done','gemini',NULL,'out-63e2b83cd6843ae4.jpg',NULL,1,18132,'mtkzze32aehbotyo','1.54.219.59','no',NULL,'2026-09-03 11:00:59','2026-09-03 11:01:17','2026-09-03 11:00:59','gemini-3.1-flash-image','01UTW2SKOYVO2CF75UT5CKWZUSKUMD3HP2','01UTW2SKISQVLK42RXYFDYKC774H7ITHBQ','2026-09-03 11:01:23',NULL);
 /*!40000 ALTER TABLE `ai_jobs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -208,7 +209,7 @@ CREATE TABLE `ai_prompts` (
 LOCK TABLES `ai_prompts` WRITE;
 /*!40000 ALTER TABLE `ai_prompts` DISABLE KEYS */;
 INSERT INTO `ai_prompts` VALUES (1,'Badminton','Một bức ảnh chân dung thể thao hành động điện ảnh, chụp từ góc máy thấp để nhấn mạnh độ cao, mô tả chính xác một người đàn ông Đông Nam Á (có đặc điểm khuôn mặt giống tôi) đang nhảy cao giữa không trung để thực hiện một cú nhảy đập cầu lông mạnh mẽ (jumping smash), giống hệt tư thế trong. Cơ thể anh ta nghiêng lên trên và sang phải, chân co mạnh (gấp đầu gối), tay phải cầm vợt cầu lông giơ cao phía sau đầu chuẩn bị đập, tay trái duỗi thẳng về phía trước để giữ thăng bằng. Ánh mắt tập trung nhìn lên trên theo hướng quả cầu đang bay tới. Anh ta mặc áo thi đấu cầu lông ngắn tay màu đỏ với họa tiết trừu tượng màu trắng/xám và quần short cầu lông màu đỏ đô giống hệt như trong, cùng giày cầu lông màu đỏ và trắng chuyên dụng. Bối cảnh là một sân cầu lông trong nhà hiện đại với vách tường tôn lượn sóng xám đậm và ánh sáng studio tập trung mạnh, kịch tính, làm nổi bật cơ bắp và chuyển động. Một vệt chuyển động nhẹ của vợt và quả cầu lông vừa được đập hiện rõ trên không. Sàn sân màu xanh lá cây với vạch kẻ trắng sắc nét. Độ sâu trường ảnh nông, tập trung vào đối tượng. Ảnh siêu thực, photorealistic, độ phân giải cực cao, sắc nét từng chi tiết','Badminton','11d206a8a6b8.jpg',1,0,2,'Harris','2026-09-01 20:41:54',0);
-INSERT INTO `ai_prompts` VALUES (2,'Badminton woman','A photorealistic studio portrait, captured from a high-angle overhead perspective, that replaces the central subject\'s face and identity with those from [Your Portrait Image] while maintaining the exact composition and complex multi-exposure badminton smash pose. The central figure, now matching your features, is in a dynamic, full-extension badminton smash, body arched back, holding a Mizuno racquet, with a prominent trailing shuttlecock and multiple cascading racquets. Surrounding the central figure is an intricate stroboscopic multi-exposure effect, displaying at least five motion-blurred, layered \'ghost\' figures of the same player (matching your features) in various stages of the swing, before and after the central moment. The scene is bathed in an intense, dramatic, red-purple studio wash, with a powerful, bursting light flare originating from the upper-right corner. Multiple Mizuno-branded racquets and one shuttlecock are floating around the player. The background is dark, red-purple, with a subtle hexagonal mesh pattern texture. Text \'MIZUNO\' is clear on the central racquet face. Sharp focus on the new central face and racquet, with dramatic motion blur on all other elements.','Badminton','dcc527472d78.jpg',1,0,1,'Harris','2026-09-01 20:46:58',0);
+INSERT INTO `ai_prompts` VALUES (2,'Badminton woman','A photorealistic studio portrait, captured from a high-angle overhead perspective, that replaces the central subject\'s face and identity with those from [Your Portrait Image] while maintaining the exact composition and complex multi-exposure badminton smash pose. The central figure, now matching your features, is in a dynamic, full-extension badminton smash, body arched back, holding a Mizuno racquet, with a prominent trailing shuttlecock and multiple cascading racquets. Surrounding the central figure is an intricate stroboscopic multi-exposure effect, displaying at least five motion-blurred, layered \'ghost\' figures of the same player (matching your features) in various stages of the swing, before and after the central moment. The scene is bathed in an intense, dramatic, red-purple studio wash, with a powerful, bursting light flare originating from the upper-right corner. Multiple Mizuno-branded racquets and one shuttlecock are floating around the player. The background is dark, red-purple, with a subtle hexagonal mesh pattern texture. Text \'MIZUNO\' is clear on the central racquet face. Sharp focus on the new central face and racquet, with dramatic motion blur on all other elements.','Badminton','dcc527472d78.jpg',1,0,2,'Harris','2026-09-01 20:46:58',0);
 /*!40000 ALTER TABLE `ai_prompts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -578,25 +579,28 @@ CREATE TABLE `app_user_prefs` (
 LOCK TABLES `app_user_prefs` WRITE;
 /*!40000 ALTER TABLE `app_user_prefs` DISABLE KEYS */;
 INSERT INTO `app_user_prefs` VALUES (1,'home','{\"order\":[32,33,30,29,26,31,97,95,27,98,1,90,23,24,100,101,25,35,17,18,91,96,99,34,92,28],\"hidden\":[28],\"custom\":[],\"pinned\":[32,30,29,26,31,97,95,27],\"cats\":[]}','2026-09-01 16:10:14');
-INSERT INTO `app_user_prefs` VALUES (1,'quo_recent','[{\"id\":5,\"code\":\"17082026-145\",\"title\":\"AZ-R&I-NEXIUM-BOOTH\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-17\",\"at\":1788243281525},{\"id\":293,\"code\":\"28082026-156\",\"title\":\"APSA-NỘI-BỘ\",\"client\":\"APSA\",\"date\":\"2026-08-28\",\"at\":1788243172276},{\"id\":14,\"code\":\"30072026-136\",\"title\":\"AZ-ONCO-KOSELUGO-LAUNCHING\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-30\",\"at\":1788104816286},{\"id\":11,\"code\":\"04082026-139\",\"title\":\"AZ-CVRM-VAE-DESIGN\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-04\",\"at\":1788057852298},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787995803644},{\"id\":291,\"code\":\"26082026-154\",\"title\":\"TSS-Media-Go-Supermarket\",\"client\":\"CÔNG TY CỔ PHẦN TONA SYNTEGRA SOLAR\",\"date\":\"2026-08-26\",\"at\":1787994106291},{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1787927991964},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787910070056},{\"id\":37,\"code\":\"09072026-113\",\"title\":\"AZ-CVRM-Registration\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-09\",\"at\":1787885783331},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787756785549}]','2026-09-01 06:14:42');
+INSERT INTO `app_user_prefs` VALUES (1,'quo_recent','[{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1788406281327},{\"id\":5,\"code\":\"17082026-145\",\"title\":\"AZ-R&I-NEXIUM-BOOTH\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-17\",\"at\":1788243281525},{\"id\":293,\"code\":\"28082026-156\",\"title\":\"APSA-NỘI-BỘ\",\"client\":\"APSA\",\"date\":\"2026-08-28\",\"at\":1788243172276},{\"id\":14,\"code\":\"30072026-136\",\"title\":\"AZ-ONCO-KOSELUGO-LAUNCHING\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-30\",\"at\":1788104816286},{\"id\":11,\"code\":\"04082026-139\",\"title\":\"AZ-CVRM-VAE-DESIGN\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-04\",\"at\":1788057852298},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787995803644},{\"id\":291,\"code\":\"26082026-154\",\"title\":\"TSS-Media-Go-Supermarket\",\"client\":\"CÔNG TY CỔ PHẦN TONA SYNTEGRA SOLAR\",\"date\":\"2026-08-26\",\"at\":1787994106291},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787910070056},{\"id\":37,\"code\":\"09072026-113\",\"title\":\"AZ-CVRM-Registration\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-09\",\"at\":1787885783331},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787756785549}]','2026-09-03 03:31:22');
 INSERT INTO `app_user_prefs` VALUES (1,'ui','{\"font_size\":\"md\"}','2026-08-26 07:23:53');
 INSERT INTO `app_user_prefs` VALUES (3,'home','{\"order\":[32,26,30,1,17,18,90,23,24,25,27,28,29,35,34,31],\"hidden\":[28],\"custom\":[]}','2026-08-24 02:48:51');
 INSERT INTO `app_user_prefs` VALUES (3,'quo_recent','[{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1787914239122},{\"id\":106,\"code\":\"26032026-44\",\"title\":\"OGN-HoiDuocHoc-NhaTrang\",\"client\":\"Organon\",\"date\":\"2026-03-26\",\"at\":1787812919618},{\"id\":8,\"code\":\"12082026-142\",\"title\":\"AZ-ONCO-PEAKSharing-VietDuc-25Aug\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-12\",\"at\":1787802284452},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787799999075},{\"id\":44,\"code\":\"02072026-106\",\"title\":\"AZ-MSD-ONCO-ImAE-ExpertMeeting\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-02\",\"at\":1787713497617},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787565621783},{\"id\":30,\"code\":\"19072026-120\",\"title\":\"AZ-ONCO-PEAKSharing-175\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-19\",\"at\":1787540605254},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787539299199}]','2026-08-28 10:50:39');
 INSERT INTO `app_user_prefs` VALUES (3,'ui','{\"font_size\":\"md\"}','2026-08-26 03:12:49');
-INSERT INTO `app_user_prefs` VALUES (4,'home','{\"order\":[32,95,96,1,17,18,90,23,24,25,26,35,27,34,31,29,30,28,92,91],\"hidden\":[],\"custom\":[],\"pinned\":[32,95,96]}','2026-08-28 06:33:33');
-INSERT INTO `app_user_prefs` VALUES (4,'quo_recent','[{\"id\":2,\"code\":\"20082026-148\",\"title\":\"AZ-CVRM-TRANING-2508\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-20\",\"at\":1787887877435},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787887862041},{\"id\":71,\"code\":\"26052026-79\",\"title\":\"AZ-ONCO-PEAKSharing-Huế-11Jun\",\"client\":\"AstraZeneca\",\"date\":\"2026-05-26\",\"at\":1787827855968},{\"id\":10,\"code\":\"05082026-140\",\"title\":\"AZ-R&I-COPD Forum Đà Nẵng-2026\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-05\",\"at\":1787815158605},{\"id\":34,\"code\":\"13072026-116\",\"title\":\"AZ-CVRM-GalaDinner midyear 2026\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-13\",\"at\":1787815122918},{\"id\":56,\"code\":\"17062026-94\",\"title\":\"AZ-KACD-FM RIGI\",\"client\":\"AstraZeneca\",\"date\":\"2026-06-17\",\"at\":1787814737146},{\"id\":46,\"code\":\"01072026-104\",\"title\":\"AZ-R&I-Breztri-NSM-Midyear-0708\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-01\",\"at\":1787814483935},{\"id\":35,\"code\":\"13072026-115\",\"title\":\"AZ-R&I-Satellite-DaNang-2507\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-13\",\"at\":1787814172499},{\"id\":33,\"code\":\"15072026-117\",\"title\":\"OGN-Minisympo-2026-Session-2\",\"client\":\"Organon\",\"date\":\"2026-07-15\",\"at\":1787814068781},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787719569227}]','2026-08-28 03:31:18');
+INSERT INTO `app_user_prefs` VALUES (4,'home','{\"order\":[32,95,96,1,17,18,90,23,24,25,26,35,27,34,31,29,30,28,92,91,100,101,97,98,99],\"hidden\":[],\"custom\":[],\"pinned\":[32,95,96,27],\"cats\":[]}','2026-09-03 02:24:45');
+INSERT INTO `app_user_prefs` VALUES (4,'quo_recent','[{\"id\":293,\"code\":\"28082026-156\",\"title\":\"APSA-NỘI-BỘ\",\"client\":\"APSA\",\"date\":\"2026-08-28\",\"at\":1788407439234},{\"id\":2,\"code\":\"20082026-148\",\"title\":\"AZ-CVRM-TRANING-2508\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-20\",\"at\":1787887877435},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787887862041},{\"id\":71,\"code\":\"26052026-79\",\"title\":\"AZ-ONCO-PEAKSharing-Huế-11Jun\",\"client\":\"AstraZeneca\",\"date\":\"2026-05-26\",\"at\":1787827855968},{\"id\":10,\"code\":\"05082026-140\",\"title\":\"AZ-R&I-COPD Forum Đà Nẵng-2026\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-05\",\"at\":1787815158605},{\"id\":34,\"code\":\"13072026-116\",\"title\":\"AZ-CVRM-GalaDinner midyear 2026\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-13\",\"at\":1787815122918},{\"id\":56,\"code\":\"17062026-94\",\"title\":\"AZ-KACD-FM RIGI\",\"client\":\"AstraZeneca\",\"date\":\"2026-06-17\",\"at\":1787814737146},{\"id\":46,\"code\":\"01072026-104\",\"title\":\"AZ-R&I-Breztri-NSM-Midyear-0708\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-01\",\"at\":1787814483935},{\"id\":35,\"code\":\"13072026-115\",\"title\":\"AZ-R&I-Satellite-DaNang-2507\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-13\",\"at\":1787814172499},{\"id\":33,\"code\":\"15072026-117\",\"title\":\"OGN-Minisympo-2026-Session-2\",\"client\":\"Organon\",\"date\":\"2026-07-15\",\"at\":1787814068781}]','2026-09-03 03:50:32');
 INSERT INTO `app_user_prefs` VALUES (5,'home','{\"order\":[32,26,30,29,1,91,27,17,18,90,23,24,25,28,35,34,31,92],\"hidden\":[],\"custom\":[],\"pinned\":[]}','2026-08-26 06:01:17');
 INSERT INTO `app_user_prefs` VALUES (5,'quo_recent','[{\"id\":4,\"code\":\"18082026-146\",\"title\":\"OGN-MKT-HOIDUOCHOC-CANTHO\",\"client\":\"Organon\",\"date\":\"2026-08-18\",\"at\":1787816878997},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787816868468},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787557635740},{\"id\":65,\"code\":\"03062026-85\",\"title\":\"AZ-ONCO-aHUS speaker tour-GS. Rostaing\",\"client\":\"AstraZeneca\",\"date\":\"2026-06-03\",\"at\":1787540468281},{\"id\":2,\"code\":\"20082026-148\",\"title\":\"AZ-CVRM-TRANING-2508\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-20\",\"at\":1787540368897}]','2026-08-27 07:47:59');
 INSERT INTO `app_user_prefs` VALUES (5,'ui','{\"font_size\":\"xl\"}','2026-08-26 03:12:53');
 INSERT INTO `app_user_prefs` VALUES (6,'quo_recent','[{\"id\":7,\"code\":\"12082026-143\",\"title\":\"AZ-ONCO-GI-SOTAYBENHNHAN\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-12\",\"at\":1787714099126}]','2026-08-26 03:14:59');
 INSERT INTO `app_user_prefs` VALUES (6,'ui','{\"font_size\":\"xl\"}','2026-08-26 03:12:53');
 INSERT INTO `app_user_prefs` VALUES (7,'home','{\"order\":[32,1,17,18,90,23,24,25,26,35,27,34,31,29,30,28],\"hidden\":[34,31,28],\"custom\":[]}','2026-08-24 03:59:09');
-INSERT INTO `app_user_prefs` VALUES (7,'quo_recent','[{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787568241648},{\"id\":33,\"code\":\"15072026-117\",\"title\":\"OGN-Minisympo-2026-Session-2\",\"client\":\"Organon\",\"date\":\"2026-07-15\",\"at\":1787558968374},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787543976353}]','2026-08-24 10:44:02');
+INSERT INTO `app_user_prefs` VALUES (7,'quo_recent','[{\"id\":4,\"code\":\"18082026-146\",\"title\":\"OGN-MKT-HOIDUOCHOC-CANTHO\",\"client\":\"Organon\",\"date\":\"2026-08-18\",\"at\":1788408240348},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787568241648},{\"id\":33,\"code\":\"15072026-117\",\"title\":\"OGN-Minisympo-2026-Session-2\",\"client\":\"Organon\",\"date\":\"2026-07-15\",\"at\":1787558968374},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787543976353}]','2026-09-03 04:04:01');
 INSERT INTO `app_user_prefs` VALUES (7,'ui','{\"font_size\":\"xl\"}','2026-08-24 07:46:16');
 INSERT INTO `app_user_prefs` VALUES (8,'ui','{\"font_size\":\"xl\"}','2026-08-25 06:03:41');
 INSERT INTO `app_user_prefs` VALUES (9,'home','{\"order\":[1,90,91,17,18,23,24,25,26,35,27,34,32,31,29,30,28,92,95,96,97],\"hidden\":[],\"custom\":[],\"pinned\":[1,90,91]}','2026-08-28 09:39:23');
 INSERT INTO `app_user_prefs` VALUES (9,'quo_recent','[{\"id\":140,\"code\":\"16012026-9\",\"title\":\"AZ-VDO Hope Nexium\",\"client\":\"AstraZeneca\",\"date\":\"2026-01-16\",\"at\":1787909949845}]','2026-08-28 09:39:10');
 INSERT INTO `app_user_prefs` VALUES (14,'quo_recent','[{\"id\":175,\"code\":\"06112025-242\",\"title\":\"AZ-CVRM-Lokelma Launching\",\"client\":\"AstraZeneca\",\"date\":\"2025-11-06\",\"at\":1787719846081},{\"id\":158,\"code\":\"10122025-259\",\"title\":\"AZ-Bidding CVRM NC 2026\",\"client\":\"AstraZeneca\",\"date\":\"2025-12-10\",\"at\":1787719821956}]','2026-08-26 04:50:46');
+INSERT INTO `app_user_prefs` VALUES (34,'home','{\"order\":[32,26,35,30,92,95,29,1,91,98,17,18,31,90,23,25,27,34,100,101,96,97,99,28],\"hidden\":[17,18,28],\"custom\":[],\"pinned\":[32,26,35,30]}','2026-09-03 03:24:38');
+INSERT INTO `app_user_prefs` VALUES (34,'quo_recent','[{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1788406175398}]','2026-09-03 03:29:38');
+INSERT INTO `app_user_prefs` VALUES (34,'ui','{\"font_size\":\"md\"}','2026-09-03 03:26:54');
 /*!40000 ALTER TABLE `app_user_prefs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -636,7 +640,7 @@ CREATE TABLE `app_users` (
   `id_card` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -645,14 +649,14 @@ CREATE TABLE `app_users` (
 
 LOCK TABLES `app_users` WRITE;
 /*!40000 ALTER TABLE `app_users` DISABLE KEYS */;
-INSERT INTO `app_users` VALUES (1,'admin','$2y$10$tgjxDVP41TkZC7QgOnnIbuaB8HFuMpI8iZCJQTqih1BFPVh6ksnU2','Harris','admin',1,'2026-08-05 16:47:25','2026-09-02 02:44:12','2026-09-02 02:44:12','account','inhouse',1,'0939399755','','','4a984eea65a98cf7d5b8','Harris Vo','2026-08-26 11:54:06',NULL,NULL,'Võ Kim Hoàn','Techcombank','390317301221','VO KIM HOAN','',NULL);
+INSERT INTO `app_users` VALUES (1,'admin','$2y$10$tgjxDVP41TkZC7QgOnnIbuaB8HFuMpI8iZCJQTqih1BFPVh6ksnU2','Harris','admin',1,'2026-08-05 16:47:25','2026-09-03 03:06:41','2026-09-03 03:06:41','account','inhouse',1,'0939399755','','','4a984eea65a98cf7d5b8','Harris Vo','2026-08-26 11:54:06',NULL,NULL,'Võ Kim Hoàn','Techcombank','390317301221','VO KIM HOAN','',NULL);
 INSERT INTO `app_users` VALUES (3,'thaoly','$2y$10$apwNXhmb03WC5brdnZnV2unSiF6fKbehZHlK2/lojsPd4MtBAB3LS','Thảo Lý','member',1,'2026-08-11 04:37:01','2026-08-29 08:49:40','2026-08-28 09:25:43','account','inhouse',1,'0359151858‬','','','639651dd5d97b4c9ed86','Nguyên Thảo','2026-08-26 12:00:43',NULL,NULL,'Lý Nguyễn Nguyên Thảo','VietinBank','0359151858','LY NGUYEN NGUYEN THAO','',NULL);
-INSERT INTO `app_users` VALUES (4,'trangdo','$2y$10$1Dj1IZCt0H6BNWX/DmN0LulFIoMya7pYPc0PedQJmsleIOSfIFfni','Trang Đỗ','member',1,'2026-08-11 04:37:51','2026-08-29 08:51:15','2026-08-28 03:24:15','admin','inhouse',1,'0899144286','','','4235f4df0980e0deb991','Trang','2026-08-26 12:08:03',NULL,NULL,'Đỗ Thảo Trang','Vietcombank','0071001172146','DO THAO TRANG','',NULL);
-INSERT INTO `app_users` VALUES (5,'nhattan','$2y$10$W8tp/Ef.JYD/V.XURuNJseFsfThk2KGlZM71rxdupY6chvGTv9Ep.','Nhật Tân','member',1,'2026-08-11 04:38:13','2026-08-29 08:49:10','2026-08-26 02:58:12','account','inhouse',1,'0901975356‬','','','61f88bb9bff556ab0fe4','Nhật Tân','2026-08-26 12:00:09',NULL,NULL,'Nguyễn Nhật Tân','TPBank','0901975356','NGUYEN NHAT TAN','',NULL);
+INSERT INTO `app_users` VALUES (4,'trangdo','$2y$10$1Dj1IZCt0H6BNWX/DmN0LulFIoMya7pYPc0PedQJmsleIOSfIFfni','Trang Đỗ','member',1,'2026-08-11 04:37:51','2026-09-03 02:20:42','2026-09-03 02:20:42','admin','inhouse',1,'0899144286','','','4235f4df0980e0deb991','Trang','2026-08-26 12:08:03',NULL,NULL,'Đỗ Thảo Trang','Vietcombank','0071001172146','DO THAO TRANG','',NULL);
+INSERT INTO `app_users` VALUES (5,'nhattan','$2y$10$W8tp/Ef.JYD/V.XURuNJseFsfThk2KGlZM71rxdupY6chvGTv9Ep.','Nhật Tân','member',1,'2026-08-11 04:38:13','2026-09-03 02:46:01','2026-09-03 02:46:01','account','inhouse',1,'0901975356‬','','','61f88bb9bff556ab0fe4','Nhật Tân','2026-08-26 12:00:09',NULL,NULL,'Nguyễn Nhật Tân','TPBank','0901975356','NGUYEN NHAT TAN','',NULL);
 INSERT INTO `app_users` VALUES (6,'cankim','$2y$10$02p2Ljt1T7pbjDC5aFZ.T.H90nY52ggV0V8iYRxCIyc2FmQuAnbA.','Can Kim','member',1,'2026-08-11 04:39:10','2026-08-29 08:49:53','2026-08-26 03:11:08','account','inhouse',1,'0705131256','','','c622f49807d1ee8fb7c0','Can Kim','2026-08-26 12:06:47',NULL,NULL,'Phan Lê Anh Kim','Techcombank','19036371573017','PHAN LE ANH KIM','',NULL);
-INSERT INTO `app_users` VALUES (7,'anhthu','$2y$10$XdyxyHCs3lSZ.fJG3NOBvOlk5KhQONtosEv0oLyVUDfaJXeUIiU6G','Anh Thư','member',1,'2026-08-11 04:39:27','2026-08-29 09:04:53','2026-08-28 04:03:13','account','inhouse',1,'0833329030','account3@apsa.agency','','4637a8d8d18e38d0619f','Anh Thư','2026-08-26 12:02:49',NULL,NULL,'Nguyễn Trần Anh Thư','Techcombank','20043006662288','NGUYEN TRAN ANH THU','','');
-INSERT INTO `app_users` VALUES (8,'minhtri','$2y$10$DefjfsNDrXtCXWlJku2fDujVDtvLlaW3aCmVGcAzJbqEjhgMDw6za','Minh Trí','member',1,'2026-08-11 14:03:06','2026-08-31 06:56:41','2026-08-31 06:56:41','designer','inhouse',1,'0879979111‬','','','65991a3da6724f2c1663','Minh Trí','2026-08-26 12:25:01',NULL,NULL,'Nguyễn Phan Minh Trí','Vietcombank','3879979111','NGUYEN PHAN MINH TRI','',NULL);
-INSERT INTO `app_users` VALUES (9,'tientien','$2y$10$CjtsEP9TagGQMDVRln5Ftu0GFNKjGsGJL6wUhrrLxBg4ZR34qCxQS','Tiên Tiên','member',1,'2026-08-11 14:03:32','2026-08-29 08:50:44','2026-08-28 09:39:09','designer','inhouse',1,'0933376083','','','b0d0139ba4cc4d9214dd','Ngô Tiên','2026-08-26 12:22:33',NULL,NULL,'Ngô Thuỷ Tiên','Vietcombank','9933376083','NGO THUY TIEN','',NULL);
+INSERT INTO `app_users` VALUES (7,'anhthu','$2y$10$XdyxyHCs3lSZ.fJG3NOBvOlk5KhQONtosEv0oLyVUDfaJXeUIiU6G','Anh Thư','member',1,'2026-08-11 04:39:27','2026-09-03 03:54:53','2026-09-03 03:54:53','account','inhouse',1,'0833329030','account3@apsa.agency','','4637a8d8d18e38d0619f','Anh Thư','2026-08-26 12:02:49',NULL,NULL,'Nguyễn Trần Anh Thư','Techcombank','20043006662288','NGUYEN TRAN ANH THU','','');
+INSERT INTO `app_users` VALUES (8,'minhtri','$2y$10$DefjfsNDrXtCXWlJku2fDujVDtvLlaW3aCmVGcAzJbqEjhgMDw6za','Minh Trí','member',1,'2026-08-11 14:03:06','2026-09-03 03:12:36','2026-09-03 03:12:36','designer','inhouse',1,'0879979111‬','','','65991a3da6724f2c1663','Minh Trí','2026-08-26 12:25:01',NULL,NULL,'Nguyễn Phan Minh Trí','Vietcombank','3879979111','NGUYEN PHAN MINH TRI','',NULL);
+INSERT INTO `app_users` VALUES (9,'tientien','$2y$10$CjtsEP9TagGQMDVRln5Ftu0GFNKjGsGJL6wUhrrLxBg4ZR34qCxQS','Tiên Tiên','member',1,'2026-08-11 14:03:32','2026-09-03 03:52:39','2026-09-03 03:52:39','designer','inhouse',1,'0933376083','','','b0d0139ba4cc4d9214dd','Ngô Tiên','2026-08-26 12:22:33',NULL,NULL,'Ngô Thuỷ Tiên','Vietcombank','9933376083','NGO THUY TIEN','',NULL);
 INSERT INTO `app_users` VALUES (10,'vyvy','$2y$10$JCqFrpMvEx7J.Q0/Lhb8Wu1FcQqsrHP4ihPFGUt455/iezkoVjm6a','Vy Vy','member',1,'2026-08-11 14:03:44','2026-08-30 17:27:00','2026-08-30 17:27:00','designer','inhouse',1,'0935027114','','','7d49e0bdebe902b75bf8','Thảo Vy','2026-08-26 12:24:33',NULL,NULL,'Nguyễn Lê Thảo Vy','AGRIBANK','4707205179584','Nguyễn Lê Thảo Vy','Vinh Tho - Khanh Hoa',NULL);
 INSERT INTO `app_users` VALUES (11,'fl.anh.kiet','$2y$10$g/6Q33K0brrl31mculArY.fRg2y5L3vdmolhUja7C0C4KxbEJEeni','Anh Kiệt','member',1,'2026-08-26 04:10:30','2026-08-26 04:27:50',NULL,'editor','freelancer',0,'0931326075','','Làm buổi tối + Cuối tuần',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `app_users` VALUES (12,'fl.duy.ngoc','$2y$10$li3y9elsMzZLxBX1yTORgONl0MoAnPt/vFsnrDiyStyyVz0KW7RqO','Duy Ngọc','member',1,'2026-08-26 04:12:42','2026-08-26 04:28:42',NULL,'editor','freelancer',0,'0367375014','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
@@ -675,6 +679,7 @@ INSERT INTO `app_users` VALUES (30,'fl.ung.tuyet.my','$2y$10$MFbcDbEg8RTaXy04BDc
 INSERT INTO `app_users` VALUES (31,'fl.ngo.nguyen.tuan.anh','$2y$10$NmGTeeaiuxcdvDhefjFOees6C/aJM3h9GHxCUJ5/zyqX7IlKmwWse','NGÔ NGUYỄN TUẤN ANH','member',1,'2026-08-28 14:55:04','2026-08-28 14:55:04',NULL,'photographer','freelancer',0,'0987180608','','079088000990',NULL,NULL,NULL,NULL,NULL,'NGÔ NGUYỄN TUẤN ANH','Vietcombank','0331000437834','NGÔ NGUYỄN TUẤN ANH','Quận 3',NULL);
 INSERT INTO `app_users` VALUES (32,'fl.vo.hoang.van.nghia','$2y$10$zIXqvCaWdH2IgZY16QXDzOjaxhVEnJcyeqBGYBHzVRSSwcSqyBAGe','VÕ HOÀNG VĂN NGHĨA','member',1,'2026-08-28 14:56:25','2026-08-28 14:56:25',NULL,'photographer','freelancer',0,'0379436247','','056098001355',NULL,NULL,NULL,NULL,NULL,'VÕ HOÀNG VĂN NGHĨA','MBBANK','8885886886866','VÕ HOÀNG VĂN NGHĨA','Chi nhánh Bắc Sài Gòn',NULL);
 INSERT INTO `app_users` VALUES (33,'fl.nguyen.van.nam','$2y$10$PrVPUe.OowuCLMfJ6gCYjOh05uYrxxfD2ufDyL/XRwCPEl/lgKr7q','NGUYỄN VĂN NAM','member',1,'2026-08-28 14:57:18','2026-08-28 14:57:18',NULL,'photographer','freelancer',0,'0944728839','','060091007407',NULL,NULL,NULL,NULL,NULL,'NGUYỄN VĂN NAM','Techcombank','19035260196013','NGUYỄN VĂN NAM','Chi nhánh Bàu Cát',NULL);
+INSERT INTO `app_users` VALUES (34,'maihien','$2y$10$8c/0ey8nmFbzBMBHXOcBFeVEmTM5rsqBjkqTC7D49mbEk8tpYeYEm','Trần Mai Hiền','member',1,'2026-09-03 03:08:59','2026-09-03 04:20:52','2026-09-03 04:20:52','account','inhouse',1,'0377884355','account4@apsa.agency','',NULL,NULL,NULL,NULL,NULL,'Trần Mai Hiền','MB Bank','6100108102004','Trần Mai Hiền','Bình Chánh','068304010423');
 /*!40000 ALTER TABLE `app_users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1574,6 +1579,7 @@ INSERT INTO `hr_employment` VALUES (11,'none','2026-08-26','2026-08-26',NULL,'',
 INSERT INTO `hr_employment` VALUES (12,'none','2026-08-26','2026-08-26',NULL,'','Nhan su co truoc khi doi cach tinh phep','2026-08-27 09:47:02','2026-08-27 09:47:02');
 INSERT INTO `hr_employment` VALUES (13,'none','2026-08-26','2026-08-26',NULL,'','Nhan su co truoc khi doi cach tinh phep','2026-08-27 09:47:02','2026-08-27 09:47:02');
 INSERT INTO `hr_employment` VALUES (14,'legacy','2026-08-26','2026-08-26',NULL,'','Nhan su co truoc khi doi cach tinh phep','2026-08-27 09:47:02','2026-08-27 09:47:02');
+INSERT INTO `hr_employment` VALUES (34,'accrual','2026-09-03',NULL,NULL,'','','2026-09-03 10:26:26','2026-09-03 10:26:26');
 /*!40000 ALTER TABLE `hr_employment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2417,7 +2423,7 @@ CREATE TABLE `perm_rules` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_rule` (`scope`,`scope_key`,`grp`)
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2668,7 +2674,7 @@ CREATE TABLE `quotation_expenses` (
   PRIMARY KEY (`id`),
   KEY `idx_quo` (`quotation_id`),
   KEY `idx_sort` (`quotation_id`,`sort_order`)
-) ENGINE=InnoDB AUTO_INCREMENT=716 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=720 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3219,6 +3225,9 @@ INSERT INTO `quotation_expenses` VALUES (712,293,'group','MEDIA','MEDIA','',0.00
 INSERT INTO `quotation_expenses` VALUES (713,293,'item','MEDIA','Tuấn anh','Phí chụp hình video tháng 8',1.00,'Gói',13300000.00,0.00,1,NULL,'2026-08-30 12:58:49','2026-08-30 13:30:18',1,'user',31,'NGÔ NGUYỄN TUẤN ANH','Vietcombank','0331000437834','NGÔ NGUYỄN TUẤN ANH',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'2026-08-29');
 INSERT INTO `quotation_expenses` VALUES (714,293,'item','MEDIA','Nghĩa','Phí chụp hình tháng 8',1.00,'Gói',4200000.00,0.00,2,NULL,'2026-08-30 12:58:49','2026-08-30 12:59:25',1,'user',32,'VÕ HOÀNG VĂN NGHĨA','MBBANK','8885886886866','VÕ HOÀNG VĂN NGHĨA',NULL,NULL,'2026-08-30 19:59:25','Harris','2026-08/68087d0275b293661503068a.jpg','IMG_65B8C282CFF7-1.jpeg','image/jpeg','2026-08-30');
 INSERT INTO `quotation_expenses` VALUES (715,293,'item','MEDIA','Nam Foto HCM','Phí chụp hình tháng 5 - 8',1.00,'Gói',33100000.00,0.00,3,NULL,'2026-08-30 12:58:49','2026-08-30 12:59:56',1,'user',33,'NGUYỄN VĂN NAM','Techcombank','19035260196013','NGUYỄN VĂN NAM',NULL,NULL,'2026-08-30 19:59:56','Harris','2026-08/7c75f051f80f3c8a0380928d.jpg','1787903357082_1554465069341145010_2632543978476199080_c5021ab7de74bf386ed8bb9cb25e0979.jpg','image/jpeg',NULL);
+INSERT INTO `quotation_expenses` VALUES (717,293,'group','VẬN CHUYỂN','VẬN CHUYỂN','',0.00,'',0.00,0.00,4,NULL,'2026-09-03 02:35:39','2026-09-03 02:35:39',0,NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `quotation_expenses` VALUES (718,293,'item','VẬN CHUYỂN','Cước phí tháng 8/2026','247 Express',1.00,'Gói',3931763.00,8.00,5,NULL,'2026-09-03 02:35:39','2026-09-03 02:36:34',0,NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `quotation_expenses` VALUES (719,294,'item','','','',1.00,'Gói',0.00,8.00,0,NULL,'2026-09-03 03:25:06','2026-09-03 03:25:06',0,NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `quotation_expenses` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3249,7 +3258,7 @@ CREATE TABLE `quotation_items` (
   `act_file_name` varchar(200) DEFAULT NULL COMMENT 'Tên file gốc',
   PRIMARY KEY (`id`),
   KEY `idx_quotation` (`quotation_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7647 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7655 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -6582,7 +6591,8 @@ INSERT INTO `quotation_items` VALUES (7636,14,'item','Keymoment - option 2','Thi
 INSERT INTO `quotation_items` VALUES (7637,14,'item','Keymoment - option 2','Thiết bị tương tác tại bàn Quả cầu Plasma, đường kính 10cm, 2 người sử dụng 1 quả cầu',40.00,'Gói',800000.00,'',85,40.00,'Gói',800000.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (7640,11,'section','Coding VAE','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (7641,11,'item','Coding VAE','VAE + MASS',55.00,'Gói',1800000.00,'',1,55.00,'Gói',1700000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (7646,293,'section','','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7651,293,'section','','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7654,294,'section','','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
 /*!40000 ALTER TABLE `quotation_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -6783,7 +6793,7 @@ CREATE TABLE `quotations` (
   KEY `idx_kind` (`kind`),
   KEY `idx_status` (`status`),
   KEY `idx_manage_id` (`manage_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=294 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=295 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -7080,6 +7090,7 @@ INSERT INTO `quotations` VALUES (290,'event','26082026-153','test Nhật Tân',N
 INSERT INTO `quotations` VALUES (291,'media','26082026-154','TSS-Media-Go-Supermarket',23,66,'CÔNG TY CỔ PHẦN TONA SYNTEGRA SOLAR','','0314404282','G-2417, The Manor Officetel, 89 Nguyễn Hữu Cảnh, Phường Thạnh Mỹ Tây, TP. Hồ Chí Minh, Việt Nam','2026-08-26','','VND',10.00,8.00,0,1,'','Harris',NULL,'2026-08-26 07:22:18','2026-08-29 06:14:19',1,NULL,'dong_du_an','',NULL,NULL,NULL,NULL,NULL,'2026-08-29 13:14:19',1,'Harris');
 INSERT INTO `quotations` VALUES (292,'event','28082026-155','AZ-ONCO-Blood Cancer Awareness Day',1,71,'AstraZeneca Việt Nam','','0315158696','Tầng 18, Tòa nhà AB, Số 76, Đường Lê Lai, Phường Bến Thành, Thành phố Hồ Chí Minh, Việt Nam','2026-08-28','28/09/2026','VND',10.00,8.00,1,1,'','Thảo Lý',NULL,'2026-08-28 09:26:53','2026-08-28 09:29:53',0,NULL,'request','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `quotations` VALUES (293,'other','28082026-156','APSA-NỘI-BỘ',4,8,'APSA','','0317301221','23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh, Việt Nam.','2026-08-28','','VND',10.00,8.00,0,1,'','Harris',NULL,'2026-08-28 14:58:15','2026-08-28 14:58:15',0,NULL,'request','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `quotations` VALUES (294,'event','03092026-157','abccc',13,NULL,'Everon Vietnam','','0109900023','Căn biệt thự TT4C-11, Khu đô thị mới Đại Kim, đường Nguyễn Xiển, Phường Đại Kim, Quận Hoàng Mai, Thành phố Hà Nội, Việt Nam','2026-09-03','','VND',10.00,8.00,1,1,'','Trần Mai Hiền','2026-09-03 10:25:11','2026-09-03 03:21:26','2026-09-03 03:25:11',0,NULL,'request','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `quotations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -7648,7 +7659,7 @@ CREATE TABLE `video_comments` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `k_rev` (`review_id`,`t_ms`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -7657,6 +7668,7 @@ CREATE TABLE `video_comments` (
 
 LOCK TABLES `video_comments` WRITE;
 /*!40000 ALTER TABLE `video_comments` DISABLE KEYS */;
+INSERT INTO `video_comments` VALUES (4,4,20487,'Nhật Tân','test thui ạ','4/3f3dc81b4fc4fcde4d5b.jpg',0,'2026-09-03 03:15:53');
 /*!40000 ALTER TABLE `video_comments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -7692,7 +7704,7 @@ CREATE TABLE `video_reviews` (
 
 LOCK TABLES `video_reviews` WRITE;
 /*!40000 ALTER TABLE `video_reviews` DISABLE KEYS */;
-INSERT INTO `video_reviews` VALUES (4,'54e25c7f8a27719594072f95f6959c00','Scene_BSLuan_Bai2_Ver1_29.8','','b!e4unr15XWkyaVG8edY6MkfZmAYHtCUBDugOk42Ie06yPpJHpQ4j6SpiGKdrEhZ21','01UTW2SKOYF5GNASIXX5GIBA5FZFQGPRW5','Scene_BSLuan_Bai2_Ver1_29.8.mp4',825266668,'https://apsaagency.sharepoint.com/_layouts/15/download.aspx?UniqueId=d04c2fd8-1749-4cbf-8083-a5c96067c6dd&Translate=false&tempauth=v1.eyJzaXRlaWQiOiJhZmE3OGI3Yi01NzVlLTRjNWEtOWE1NC02ZjFlNzU4ZThjOTEiLCJhcHBfZGlzcGxheW5hbWUiOiJBUFNBIEludGVybmFsIEFwcCIsIm5hbWVpZCI6IjIxZWEwNWIxLTA4YTYtNDI3Yi1iMzlkLTJlYjk5OTE1ZmIzMUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvYXBzYWFnZW5jeS5zaGFyZXBvaW50LmNvbUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJleHAiOiIxNzg4MzMzMDA5In0.CkAKDGVudHJhX2NsYWltcxIwQ0pYNTN0UUdFQUFhRm10blJVWnhWVGRFYm10cGQxaFZhWE5WVkd0eVFVRXFBQT09CjIKCmFjdG9yYXBwaWQSJDAwMDAwMDAzLTAwMDAtMDAwMC1jMDAwLTAwMDAwMDAwMDAwMAoKCgRzbmlkEgI2NBILCNKrvYPcsMQ_EAUaDTQwLjEyNi4zNS4xNTMqLFFUQ1BtZ1lBY1ZEenJTdS9Sd3hXVWZ6SXJQUzZTME9yck1Ud0lzOHhiODA9MHk4AUIQojcuoVQgAICPHuZfXlznVEoQaGFzaGVkcHJvb2Z0b2tlbnoBMboBcHNlbGVjdGVkc2l0ZXMgYWxsc2l0ZXMucmVhZCBhbGxzaXRlcy53cml0ZSBhbGxzaXRlcy5tYW5hZ2UgYWxsc2l0ZXMuYXJjaGl2ZSBhbGxzaXRlcy5jcmVhdGUgYWxsc2l0ZXMuZnVsbGNvbnRyb2zIAQE.vyo3N9I5hAMny4ZkfpzL_PNWbA2oLMoHoe90Rmg2ot8&ApiVersion=2.0',1788332410,1,'Harris','2026-08-31 04:46:29');
+INSERT INTO `video_reviews` VALUES (4,'54e25c7f8a27719594072f95f6959c00','Scene_BSLuan_Bai2_Ver1_29.8','','b!e4unr15XWkyaVG8edY6MkfZmAYHtCUBDugOk42Ie06yPpJHpQ4j6SpiGKdrEhZ21','01UTW2SKOYF5GNASIXX5GIBA5FZFQGPRW5','Scene_BSLuan_Bai2_Ver1_29.8.mp4',825266668,'https://apsaagency.sharepoint.com/_layouts/15/download.aspx?UniqueId=d04c2fd8-1749-4cbf-8083-a5c96067c6dd&Translate=false&tempauth=v1.eyJzaXRlaWQiOiJhZmE3OGI3Yi01NzVlLTRjNWEtOWE1NC02ZjFlNzU4ZThjOTEiLCJhcHBfZGlzcGxheW5hbWUiOiJBUFNBIEludGVybmFsIEFwcCIsIm5hbWVpZCI6IjIxZWEwNWIxLTA4YTYtNDI3Yi1iMzlkLTJlYjk5OTE1ZmIzMUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvYXBzYWFnZW5jeS5zaGFyZXBvaW50LmNvbUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJleHAiOiIxNzg4NDA4ODY3In0.CkAKDGVudHJhX2NsYWltcxIwQ09iSjQ5UUdFQUFhRm1ORmIxSkpjVU50WWtVeVpHVXRkSGh0VkVwc1FVRXFBQT09CjIKCmFjdG9yYXBwaWQSJDAwMDAwMDAzLTAwMDAtMDAwMC1jMDAwLTAwMDAwMDAwMDAwMAoKCgRzbmlkEgI2NBILCJDC9erv3MQ_EAUaDTIwLjE5MC4xNjMuMjkqLFFUQ1BtZ1lBY1ZEenJTdS9Sd3hXVWZ6SXJQUzZTME9yck1Ud0lzOHhiODA9MHk4AUIQojd2-SiwAICCD5O1SXUwMUoQaGFzaGVkcHJvb2Z0b2tlbnoBMboBcHNlbGVjdGVkc2l0ZXMgYWxsc2l0ZXMucmVhZCBhbGxzaXRlcy53cml0ZSBhbGxzaXRlcy5tYW5hZ2UgYWxsc2l0ZXMuYXJjaGl2ZSBhbGxzaXRlcy5jcmVhdGUgYWxsc2l0ZXMuZnVsbGNvbnRyb2zIAQE.VJ5ezYn9yP-5MRr2M_kLPT_CQj1Urz7Yun4ZT3qXr_Y&ApiVersion=2.0',1788408267,1,'Harris','2026-08-31 04:46:29');
 /*!40000 ALTER TABLE `video_reviews` ENABLE KEYS */;
 UNLOCK TABLES;
 

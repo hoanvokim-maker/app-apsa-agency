@@ -1,12 +1,18 @@
 {
-    "version": "1.6.26",
-    "updated": "2026-09-02",
+    "version": "1.6.27",
+    "updated": "2026-09-03",
     "releases": [
         {
             "v": "1.6",
             "date": "2026-08-29",
             "note": "Phiên bản 1.6",
             "items": [
+                {
+                    "d": "2026-09-03",
+                    "v": "1.6.27",
+                    "t": "1.6.27 - Phan quyen theo vi tri chi tiet tung module; Zalo notification mo cho moi tai khoan",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-02",
                     "v": "1.6.26",

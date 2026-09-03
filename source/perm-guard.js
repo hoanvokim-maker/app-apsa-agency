@@ -37,6 +37,29 @@
     return (P.perm[key] === undefined) ? 2 : Number(P.perm[key]);
   }
 
+  function modOfPage(f) {
+    if (!f || !P || !P.mods) return null;
+    for (var i = 0; i < P.mods.length; i++) {
+      var pg = String(P.mods[i].page || '').toLowerCase();
+      if (pg && (pg === f || pg.split('/').pop() === f)) return P.mods[i];
+    }
+    return null;
+  }
+  function modLvl(id) {
+    if (!P || !P.mperm) return 2;
+    var v = P.mperm[String(id)];
+    return (v === undefined || v === null) ? 2 : Number(v);
+  }
+  /* Muc quyen cua 1 trang: uu tien luat cua module, khong co thi lay luat cua nhom */
+  function gateOfPage(f) {
+    var m = modOfPage(f);
+    if (m) return { lvl: modLvl(m.id), name: m.name };
+    var g = groupOfPage(f);
+    if (g) return { lvl: lvl(g.key), name: g.name };
+    return null;
+  }
+  window.apsaModLevel = modLvl;
+
   window.apsaCan = function (key, need) {
     return lvl(key) >= (need === undefined ? 1 : need);
   };
@@ -48,14 +71,27 @@
     for (var i = 0; i < a.length; i++) {
       var el = a[i];
       if (el.getAttribute('data-perm-ok') === '1') continue;
-      var g = groupOfPage(fileOf(el.getAttribute('href')));
+      var g = gateOfPage(fileOf(el.getAttribute('href')));
       if (!g) { el.setAttribute('data-perm-ok', '1'); continue; }
-      if (lvl(g.key) <= 0) {
+      if (g.lvl <= 0) {
         var box = el.closest('.tile, .card-tile, li, .nav-i, .mi') || el;
         box.style.display = 'none';
         box.setAttribute('data-perm-hidden', '1');
       } else {
         el.setAttribute('data-perm-ok', '1');
+      }
+    }
+    /* the co data-mod: an theo id module, dung cho module khong co trang rieng */
+    var dm = document.querySelectorAll('[data-mod]');
+    for (var k = 0; k < dm.length; k++) {
+      var e2 = dm[k];
+      if (e2.getAttribute('data-perm-ok') === '1') continue;
+      if (modLvl(e2.getAttribute('data-mod')) <= 0) {
+        var b2 = (e2.closest ? e2.closest('.tile, .card-tile, li, .nav-i, .mi') : null) || e2;
+        b2.style.display = 'none';
+        b2.setAttribute('data-perm-hidden', '1');
+      } else {
+        e2.setAttribute('data-perm-ok', '1');
       }
     }
   }
@@ -88,17 +124,19 @@
       var j = await r.json();
       var d = j.data || j;
       if (!d || !d.groups) return;
-      P = { admin: !!d.admin, perm: d.perm || {}, groups: d.groups || [] };
+      P = { admin: !!d.admin, perm: d.perm || {}, groups: d.groups || [],
+             mperm: d.mperm || {}, mods: d.mods || [] };
       window.APSA_PERM = P;
     } catch (e) { return; }
 
     if (P.admin) return;
 
-    var g = groupOfPage(page());
-    if (g && lvl(g.key) <= 0) {
-      BLOCK = g.name;
-      if (document.body) deny(g.name);
-      else document.addEventListener('DOMContentLoaded', function () { deny(g.name); });
+    var t = gateOfPage(page());
+    if (t && t.lvl <= 0) {
+      BLOCK = t.name;
+      var nm = t.name;
+      if (document.body) deny(nm);
+      else document.addEventListener('DOMContentLoaded', function () { deny(nm); });
       return;
     }
     sweep();

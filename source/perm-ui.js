@@ -1,14 +1,17 @@
-/* perm-ui.js — tab "Phan quyen" trong settings.html
- * Nap SAU script chinh cua settings.html (can ham tab(), toast(), api()).
- * v1
- */
+/* =====================================================================
+ *  perm-ui.js  —  Phan quyen theo VI TRI, chi tiet toi tung MODULE
+ *  Gan them tab "Phan quyen" vao trang settings.html
+ *  v1.6.27
+ * ===================================================================*/
 (function () {
   'use strict';
 
-  var Q = String.fromCharCode(63);
   var API = 'api/settings-api.php';
-  var D = null;          // du lieu tu perm-get
+  var Q = String.fromCharCode(63);
+  var D = null;          /* { groups, mods, positions, users, rules } */
   var LOADED = false;
+  var CURPOS = null;     /* vi tri dang chon */
+
   var LV = [
     { v: 0, t: 'Không vào được' },
     { v: 1, t: 'Chỉ xem' },
@@ -37,162 +40,141 @@
     return j;
   }
 
-  /* muc quyen hien tai cua 1 doi tuong (chua co luat => mac dinh cua nhom) */
-  function lvOf(scope, key, g) {
-    var r = (D.rules && D.rules[scope]) ? D.rules[scope] : {};
-    if (r && r[key] && r[key][g.key] !== undefined) return Number(r[key][g.key]);
-    return Number(g.def);
+  /* ---- tra cuu ---- */
+  function grpOf(key) {
+    for (var i = 0; i < D.groups.length; i++) if (D.groups[i].key === key) return D.groups[i];
+    return null;
   }
-  function isSet(scope, key) {
+  function modsOf(key) {
+    var out = [];
+    for (var i = 0; i < D.mods.length; i++) if (D.mods[i].grp === key) out.push(D.mods[i]);
+    return out;
+  }
+  function ruleOf(scope, skey, k) {
     var r = (D.rules && D.rules[scope]) ? D.rules[scope] : {};
-    return !!(r && r[key]);
+    var b = r[skey] || {};
+    return (b[k] === undefined || b[k] === null) ? null : Number(b[k]);
+  }
+  /* Muc that su ap dung cho 1 module, theo dung thu tu cua perm.php */
+  function effMod(scope, skey, m) {
+    var g = grpOf(m.grp);
+    if (!g) return 0;
+    if (g.adminOnly) return 0;
+    var chain = scope === 'user' ? [['user', skey], ['pos', posOfUser(skey)]] : [['pos', skey]];
+    for (var i = 0; i < chain.length; i++) {
+      if (!chain[i][1]) continue;
+      var a = ruleOf(chain[i][0], chain[i][1], 'm:' + m.id);
+      if (a !== null) return a;
+      var b = ruleOf(chain[i][0], chain[i][1], m.grp);
+      if (b !== null) return b;
+    }
+    return Number(g.def || 0);
+  }
+  function posOfUser(id) {
+    for (var i = 0; i < D.users.length; i++) {
+      if (String(D.users[i].id) === String(id)) return D.users[i].pos || '-';
+    }
+    return '-';
+  }
+  function lvText(v) {
+    for (var i = 0; i < LV.length; i++) if (LV[i].v === v) return LV[i].t;
+    return '?';
   }
 
-  function selHtml(scope, key, g, cur) {
-    var dis = g.adminOnly ? ' disabled' : '';
-    var h = '<select class="pmsel" data-scope="' + scope + '" data-key="' + esc(key) +
-      '" data-g="' + g.key + '"' + dis + '>';
+  /* ---- ve 1 the select ---- */
+  function selHtml(scope, skey, kind, k, cur, dflt) {
+    var h = '<select class="pmsel" data-scope="' + scope + '" data-skey="' + esc(skey) +
+      '" data-kind="' + kind + '" data-k="' + esc(k) + '">';
+    h += '<option value=""' + (cur === null ? ' selected' : '') + '>— ' +
+      esc(dflt) + ' —</option>';
     for (var i = 0; i < LV.length; i++) {
-      h += '<option value="' + LV[i].v + '"' + (Number(cur) === LV[i].v ? ' selected' : '') +
-        '>' + LV[i].t + '</option>';
+      h += '<option value="' + LV[i].v + '"' + (cur === LV[i].v ? ' selected' : '') + '>' +
+        LV[i].t + '</option>';
     }
     return h + '</select>';
   }
 
-  function matrixHtml() {
-    var gs = D.groups, ps = D.positions;
-    var h = '<div class="pmwrap"><table class="pmtbl"><thead><tr>' +
-      '<th class="pmg">Nhóm module</th>';
-    for (var j = 0; j < ps.length; j++) h += '<th>' + esc(ps[j].label) + '</th>';
-    h += '</tr></thead><tbody>';
-    for (var i = 0; i < gs.length; i++) {
-      var g = gs[i];
-      h += '<tr' + (g.adminOnly ? ' class="pmadmin"' : '') + '><td class="pmg">' +
-        '<b>' + esc(g.name) + '</b><span>' + esc(g.note) + '</span>' +
-        (g.needs && g.needs.length ? '<i>cần có quyền xem: ' + esc(needNames(g.needs)) + '</i>' : '') +
-        '</td>';
-      for (var k = 0; k < ps.length; k++) {
-        h += '<td>' + (g.adminOnly
-          ? '<span class="pmna">Chỉ Admin</span>'
-          : selHtml('pos', ps[k].key, g, lvOf('pos', ps[k].key, g))) + '</td>';
-      }
-      h += '</tr>';
-    }
-    h += '</tbody></table></div>';
-    return h;
-  }
-
-  function needNames(keys) {
-    var out = [];
-    for (var i = 0; i < keys.length; i++) {
-      for (var j = 0; j < D.groups.length; j++) {
-        if (D.groups[j].key === keys[i]) out.push(D.groups[j].name);
-      }
-    }
-    return out.join(', ');
-  }
-
-  function userHtml() {
-    var h = '<div class="pmuser"><div class="fg"><label>Chọn nhân sự cần đặt quyền riêng</label>' +
-      '<select id="pmUser"><option value="">— mặc định theo vị trí —</option>';
-    for (var i = 0; i < D.users.length; i++) {
-      var u = D.users[i];
-      if (u.admin) continue;
-      h += '<option value="' + u.id + '">' + esc(u.name || u.username) +
-        (u.pos ? ' · ' + esc(u.pos) : '') + (isSet('user', String(u.id)) ? ' — có quyền riêng' : '') +
-        '</option>';
-    }
-    h += '</select></div><div id="pmUserBox" class="pmubox"></div></div>';
-    return h;
-  }
-
-  function renderUserBox() {
-    var box = el('pmUserBox');
-    var id = el('pmUser').value;
-    if (!id) { box.innerHTML = '<div class="hint">Chọn một người để đặt quyền riêng, khác với vị trí của họ.</div>'; return; }
-    var u = null;
-    for (var i = 0; i < D.users.length; i++) if (String(D.users[i].id) === String(id)) u = D.users[i];
-    if (!u) { box.innerHTML = ''; return; }
-    var pos = u.pos || '-';
-    var h = '<div class="pmurow"><b>' + esc(u.name || u.username) + '</b> · vị trí <b>' + esc(pos) + '</b>' +
-      (isSet('user', id) ? ' <span class="pmtag">đang dùng quyền riêng</span>'
-                         : ' <span class="pmtag off">đang theo vị trí</span>') + '</div>';
-    h += '<div class="pmugrid">';
-    for (var k = 0; k < D.groups.length; k++) {
-      var g = D.groups[k];
-      var cur = isSet('user', id) ? lvOf('user', id, g) : lvOf('pos', pos, g);
-      h += '<div class="fg"><label>' + esc(g.name) + '</label>' +
-        (g.adminOnly ? '<div class="pmna">Chỉ Admin</div>' : selHtml('user', id, g, cur)) + '</div>';
-    }
-    h += '</div>';
-    h += '<div class="pmacts">' +
-      '<button class="btn primary" onclick="pmSaveUser()">Lưu quyền riêng cho người này</button>' +
-      '<button class="btn" onclick="pmResetUser()">Bỏ quyền riêng, dùng theo vị trí</button></div>';
-    box.innerHTML = h;
-  }
-
-  function paneHtml() {
-    return '<div class="card">' +
-      '<h2>Phân quyền hệ thống</h2>' +
-      '<div class="hint">Các module liên quan nhau được gom chung một nhóm để quyền không bị xung đột — ' +
-      'ví dụ <b>Chi phí thực tế</b> đọc dữ liệu của <b>Báo giá</b> nên nằm chung nhóm. ' +
-      'Admin luôn có toàn quyền. Quyền được chặn cả ở giao diện lẫn ở API.</div>' +
-      matrixHtml() +
-      '<div class="pmacts"><button class="btn primary" onclick="pmSaveAll()">Lưu phân quyền theo vị trí</button>' +
-      '<span class="hint" id="pmMsg"></span></div>' +
-      '</div>' +
-      '<div class="card"><h2>Quyền riêng theo từng người</h2>' +
-      '<div class="hint">Dùng khi một người cần quyền khác với vị trí của họ. Quyền riêng luôn thắng quyền của vị trí.</div>' +
-      userHtml() + '</div>';
-  }
-
-  /* ---- rang buoc phu thuoc: nhom A can nhom B thi B toi thieu "Chi xem" ---- */
-  function fixNeeds(scope, key) {
-    var changed = [];
+  /* ---- ve ma tran cho 1 doi tuong (1 vi tri hoac 1 user) ---- */
+  function matrixHtml(scope, skey) {
+    if (!skey) return '<div class="pmna">Chọn một đối tượng để bắt đầu.</div>';
+    var h = '';
     for (var i = 0; i < D.groups.length; i++) {
       var g = D.groups[i];
-      if (!g.needs || !g.needs.length) continue;
-      var cur = readSel(scope, key, g.key);
-      if (cur === null || cur <= 0) continue;
-      for (var j = 0; j < g.needs.length; j++) {
-        var nk = g.needs[j];
-        var nv = readSel(scope, key, nk);
-        if (nv !== null && nv < 1) { writeSel(scope, key, nk, 1); changed.push(nameOf(nk)); }
+      var ms = modsOf(g.key);
+      if (g.adminOnly) {
+        h += '<div class="pmgrp locked"><div class="pmgh"><b>' + esc(g.name) +
+          '</b><span class="pmtag">Chỉ Admin</span></div>' +
+          '<div class="pmnote">' + esc(g.note || '') + '</div></div>';
+        continue;
+      }
+      var gcur = ruleOf(scope, skey, g.key);
+      h += '<div class="pmgrp"><div class="pmgh"><b>' + esc(g.name) + '</b>' +
+        '<span class="pmsp"></span>' +
+        '<span class="pmgl">Cả nhóm:</span>' +
+        selHtml(scope, skey, 'g', g.key, gcur, 'Mặc định · ' + lvText(Number(g.def || 0))) +
+        '</div>';
+      if (g.note) h += '<div class="pmnote">' + esc(g.note) + '</div>';
+      if (ms.length) {
+        h += '<div class="pmmods">';
+        for (var j = 0; j < ms.length; j++) {
+          var m = ms[j];
+          var mcur = ruleOf(scope, skey, 'm:' + m.id);
+          var base = 'Theo nhóm · ' + lvText(gcur !== null ? gcur : effMod(scope, skey, m));
+          h += '<div class="pmmod"><span class="pmmn">' + esc(m.name) + '</span>' +
+            selHtml(scope, skey, 'm', 'm:' + m.id, mcur, base) + '</div>';
+        }
+        h += '</div>';
+      }
+      h += '</div>';
+    }
+    return h;
+  }
+
+  /* ---- gom du lieu de luu ---- */
+  function collect(scope, skey) {
+    var out = {};
+    var all = document.querySelectorAll('.pmsel[data-scope="' + scope + '"][data-skey="' +
+      cssq(skey) + '"]');
+    for (var i = 0; i < all.length; i++) {
+      var s = all[i];
+      if (s.value === '') continue;
+      out[s.getAttribute('data-k')] = Number(s.value);
+    }
+    /* Nhom phu thuoc: mo nhom A thi nhom A can cung phai mo it nhat "chi xem" */
+    for (var g = 0; g < D.groups.length; g++) {
+      var gr = D.groups[g];
+      var lv = out[gr.key];
+      if (lv === undefined || lv < 1) continue;
+      var needs = gr.needs || [];
+      for (var n = 0; n < needs.length; n++) {
+        if (out[needs[n]] === undefined || out[needs[n]] < 1) out[needs[n]] = 1;
       }
     }
-    return changed;
-  }
-  function nameOf(k) {
-    for (var i = 0; i < D.groups.length; i++) if (D.groups[i].key === k) return D.groups[i].name;
-    return k;
-  }
-  function sel(scope, key, g) {
-    return document.querySelector('.pmsel[data-scope="' + scope + '"][data-key="' + key + '"][data-g="' + g + '"]');
-  }
-  function readSel(scope, key, g) { var s = sel(scope, key, g); return s ? Number(s.value) : null; }
-  function writeSel(scope, key, g, v) { var s = sel(scope, key, g); if (s) s.value = String(v); }
-
-  function collect(scope, key) {
-    var out = {};
-    var all = document.querySelectorAll('.pmsel[data-scope="' + scope + '"][data-key="' + key + '"]');
-    for (var i = 0; i < all.length; i++) out[all[i].getAttribute('data-g')] = Number(all[i].value);
     return out;
   }
+  function cssq(s) { return String(s).replace(/"/g, '\\"'); }
 
-  window.pmSaveAll = async function () {
+  /* ---- bulk set ---- */
+  window.pmBulk = function (scope, skey, v) {
+    var all = document.querySelectorAll('.pmsel[data-scope="' + scope + '"][data-skey="' +
+      cssq(skey) + '"][data-kind="g"]');
+    for (var i = 0; i < all.length; i++) all[i].value = String(v);
+    var ms = document.querySelectorAll('.pmsel[data-scope="' + scope + '"][data-skey="' +
+      cssq(skey) + '"][data-kind="m"]');
+    for (var k = 0; k < ms.length; k++) ms[k].value = '';
+  };
+
+  /* ---- chon vi tri ---- */
+  window.pmPickPos = function (key) {
+    CURPOS = key;
+    render();
+  };
+
+  window.pmSavePos = async function () {
+    if (!CURPOS) return;
     try {
-      var msg = el('pmMsg');
-      var fixed = [];
-      for (var i = 0; i < D.positions.length; i++) {
-        var k = D.positions[i].key;
-        fixed = fixed.concat(fixNeeds('pos', k));
-      }
-      for (var j = 0; j < D.positions.length; j++) {
-        var pk = D.positions[j].key;
-        await call('perm-save', { scope: 'pos', key: pk, vals: collect('pos', pk) });
-      }
-      if (msg) msg.textContent = 'Đã lưu lúc ' + new Date().toLocaleTimeString('vi-VN');
-      say('Đã lưu phân quyền theo vị trí' + (fixed.length ? ' (tự mở quyền xem cho: ' + fixed.join(', ') + ')' : ''), 'ok');
+      await call('perm-save', { scope: 'pos', key: CURPOS, vals: collect('pos', CURPOS) });
+      say('Đã lưu phân quyền cho vị trí này', 'ok');
       await load(true);
     } catch (e) { say('Không lưu được: ' + e.message, 'err'); }
   };
@@ -201,7 +183,6 @@
     var id = el('pmUser').value;
     if (!id) return;
     try {
-      fixNeeds('user', id);
       await call('perm-save', { scope: 'user', key: id, vals: collect('user', id) });
       say('Đã lưu quyền riêng cho người này', 'ok');
       await load(true);
@@ -218,27 +199,100 @@
     } catch (e) { say('Không bỏ được: ' + e.message, 'err'); }
   };
 
-  async function load(keepUser) {
+  window.pmUserBox = function () {
+    var box = el('pmUserBox');
+    if (!box) return;
+    var id = el('pmUser').value;
+    if (!id) { box.innerHTML = '<div class="pmna">Chọn một người để đặt quyền riêng, khác với vị trí của họ.</div>'; return; }
+    var u = null;
+    for (var i = 0; i < D.users.length; i++) if (String(D.users[i].id) === String(id)) u = D.users[i];
+    if (!u) { box.innerHTML = ''; return; }
+    if (u.admin) {
+      box.innerHTML = '<div class="pmna"><b>' + esc(u.name || u.username) +
+        '</b> là Admin — luôn có toàn quyền, không cần đặt riêng.</div>';
+      return;
+    }
+    var has = D.rules && D.rules.user && D.rules.user[String(u.id)];
+    box.innerHTML = '<div class="pmwho"><b>' + esc(u.name || u.username) + '</b> · vị trí <b>' +
+      esc(u.pos || '—') + '</b>' +
+      (has ? ' <span class="pmtag">đang dùng quyền riêng</span>' : '') + '</div>' +
+      bulkHtml('user', String(u.id)) +
+      matrixHtml('user', String(u.id)) +
+      '<div class="pmacts"><button class="btn" onclick="pmSaveUser()">Lưu quyền riêng</button>' +
+      '<button class="btn dg" onclick="pmResetUser()">Bỏ quyền riêng</button></div>';
+  };
+
+  function bulkHtml(scope, skey) {
+    return '<div class="pmbulk">Đặt nhanh cả bảng: ' +
+      '<button class="btn sm" onclick="pmBulk(\'' + scope + '\',\'' + cssq(skey) + '\',0)">Không vào được</button>' +
+      '<button class="btn sm" onclick="pmBulk(\'' + scope + '\',\'' + cssq(skey) + '\',1)">Chỉ xem</button>' +
+      '<button class="btn sm" onclick="pmBulk(\'' + scope + '\',\'' + cssq(skey) + '\',2)">Toàn quyền</button>' +
+      '</div>';
+  }
+
+  function render() {
+    var pane = el('p-perm');
+    if (!pane || !D) return;
+    if (!CURPOS && D.positions.length) CURPOS = D.positions[0].key;
+
+    var h = '<div class="card"><h2>Phân quyền theo vị trí</h2>' +
+      '<div class="hint">Chọn một vị trí rồi bật/tắt từng module. Đặt ở mức <b>Cả nhóm</b> để áp cho toàn bộ module bên trong, ' +
+      'hoặc đặt riêng từng module để ghi đè. Admin luôn có toàn quyền.</div>' +
+      '<div class="pmpos">';
+    for (var i = 0; i < D.positions.length; i++) {
+      var p = D.positions[i];
+      var n = countRules('pos', p.key);
+      h += '<button class="pmchip' + (p.key === CURPOS ? ' on' : '') +
+        '" onclick="pmPickPos(\'' + cssq(p.key) + '\')">' + esc(p.label) +
+        (n ? '<i>' + n + '</i>' : '') + '</button>';
+    }
+    h += '</div>';
+
+    if (CURPOS) {
+      h += bulkHtml('pos', CURPOS) + matrixHtml('pos', CURPOS) +
+        '<div class="pmacts"><button class="btn" onclick="pmSavePos()">Lưu phân quyền vị trí này</button></div>';
+    }
+    h += '</div>';
+
+    h += '<div class="card"><h2>Quyền riêng theo từng người</h2>' +
+      '<div class="hint">Dùng khi một người cần quyền khác với vị trí của họ. Quyền riêng luôn thắng quyền của vị trí.</div>' +
+      '<label class="lb">Chọn nhân sự</label><select id="pmUser" onchange="pmUserBox()">' +
+      '<option value="">— mặc định theo vị trí —</option>';
+    for (var u = 0; u < D.users.length; u++) {
+      var uu = D.users[u];
+      var mark = (D.rules && D.rules.user && D.rules.user[String(uu.id)]) ? ' — có quyền riêng' : '';
+      h += '<option value="' + uu.id + '">' + esc(uu.name || uu.username) +
+        (uu.pos ? ' · ' + esc(uu.pos) : '') + esc(mark) + '</option>';
+    }
+    h += '</select><div id="pmUserBox"></div></div>';
+
+    pane.innerHTML = h;
+    window.pmUserBox();
+  }
+
+  function countRules(scope, skey) {
+    var r = (D.rules && D.rules[scope] && D.rules[scope][skey]) ? D.rules[scope][skey] : null;
+    if (!r) return 0;
+    var n = 0;
+    for (var k in r) if (Object.prototype.hasOwnProperty.call(r, k)) n++;
+    return n;
+  }
+
+  async function load(keep) {
     var pane = el('p-perm');
     if (!pane) return;
-    var keep = keepUser && el('pmUser') ? el('pmUser').value : '';
-    pane.innerHTML = '<div class="card"><div class="hint">Đang tải phân quyền…</div></div>';
+    if (!keep) pane.innerHTML = '<div class="card"><div class="hint">Đang tải phân quyền…</div></div>';
     try {
       D = await call('perm-get');
-      pane.innerHTML = paneHtml();
-      var u = el('pmUser');
-      if (u) {
-        if (keep) u.value = keep;
-        u.addEventListener('change', renderUserBox);
-        renderUserBox();
-      }
+      if (!D.mods) D.mods = [];
+      render();
       LOADED = true;
     } catch (e) {
-      pane.innerHTML = '<div class="card"><div class="hint">Không tải được phân quyền: ' + esc(e.message) + '</div></div>';
+      pane.innerHTML = '<div class="card"><div class="hint">Không tải được phân quyền: ' +
+        esc(e.message) + '</div></div>';
     }
   }
 
-  /* ---- gan tab vao trang ---- */
   function mount() {
     var tabs = document.querySelector('.tabs');
     var wrap = el('wrap');
@@ -262,51 +316,49 @@
     window.tab = function (n) {
       var out = _tab ? _tab.apply(this, arguments) : undefined;
       if (n === 'perm' && !LOADED) load(false);
+      try { document.body.classList[n === 'perm' ? 'add' : 'remove']('pm-wide'); } catch (e) { }
       return out;
     };
 
     var css = document.createElement('style');
     css.textContent =
-      '.pmwrap{overflow-x:auto;margin-top:14px}' +
-      '.pmtbl{width:100%;border-collapse:collapse;font-size:13px;min-width:820px}' +
-      '.pmtbl th,.pmtbl td{border:1px solid var(--line,#333);padding:8px 10px;text-align:left;vertical-align:top}' +
-      '.pmtbl thead th{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3,#888);' +
-      'background:var(--bg2,#141414);white-space:nowrap}' +
-      '.pmtbl td.pmg,.pmtbl th.pmg{min-width:230px}' +
-      '.pmtbl td.pmg b{display:block;font-size:13px}' +
-      '.pmtbl td.pmg span{display:block;font-size:10.5px;color:var(--text3,#888);line-height:1.45;margin-top:3px}' +
-      '.pmtbl td.pmg i{display:block;font-size:10.5px;color:#fdba74;font-style:normal;margin-top:4px}' +
-      '.pmtbl tr.pmadmin td{opacity:.6}' +
-      '.pmsel{width:100%;min-width:128px;background:var(--bg2,#141414);color:inherit;font-family:inherit;' +
-      'font-size:12.5px;border:1px solid var(--line,#333);border-radius:7px;padding:6px 8px}' +
-      '.pmna{font-size:11px;color:var(--text3,#888)}' +
-      '.pmacts{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap}' +
-      '.pmubox{margin-top:14px}' +
-      '.pmurow{font-size:13px;margin-bottom:12px}' +
-      '.pmtag{font-size:10.5px;border:1px solid #fdba74;color:#fdba74;border-radius:20px;padding:2px 8px;margin-left:6px}' +
-      '.pmtag.off{border-color:var(--line,#333);color:var(--text3,#888)}' +
-      '.pmugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}';
+      'body.pm-wide #p-perm .card{max-width:1180px}' +
+      '#p-perm .pmpos{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}' +
+      '#p-perm .pmchip{background:var(--bg2,#141414);border:1px solid var(--line,#333);' +
+      'color:var(--text2,#9aa3b2);border-radius:20px;padding:6px 14px;font:inherit;font-size:12.5px;' +
+      'cursor:pointer;display:inline-flex;align-items:center;gap:6px}' +
+      '#p-perm .pmchip:hover{border-color:#666;color:var(--text,#e8ebf0)}' +
+      '#p-perm .pmchip.on{background:var(--green,#dff20d);border-color:var(--green,#dff20d);' +
+      'color:#0f1115;font-weight:700}' +
+      '#p-perm .pmchip i{font-style:normal;font-size:10.5px;background:rgba(255,255,255,.12);' +
+      'border-radius:9px;padding:1px 6px}' +
+      '#p-perm .pmchip.on i{background:rgba(0,0,0,.18)}' +
+      '#p-perm .pmbulk{margin:16px 0 10px;font-size:12px;color:var(--text3,#888);' +
+      'display:flex;align-items:center;gap:8px;flex-wrap:wrap}' +
+      '#p-perm .btn.sm{padding:4px 10px;font-size:11.5px}' +
+      '#p-perm .pmgrp{border:1px solid var(--line,#333);border-radius:10px;padding:12px 14px;' +
+      'margin-bottom:10px;background:rgba(255,255,255,.02)}' +
+      '#p-perm .pmgrp.locked{opacity:.5}' +
+      '#p-perm .pmgh{display:flex;align-items:center;gap:10px;font-size:13.5px}' +
+      '#p-perm .pmsp{flex:1}' +
+      '#p-perm .pmgl{font-size:11.5px;color:var(--text3,#888)}' +
+      '#p-perm .pmnote{font-size:11.5px;color:var(--text3,#888);margin-top:4px}' +
+      '#p-perm .pmmods{display:grid;grid-template-columns:repeat(auto-fill,minmax(370px,1fr));' +
+      'gap:6px 18px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line,#333)}' +
+      '#p-perm .pmmod{display:flex;align-items:center;gap:10px;font-size:12.5px}' +
+      '#p-perm .pmmn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
+      '#p-perm .pmsel{background:var(--bg2,#141414);color:inherit;font-family:inherit;' +
+      'font-size:12px;border:1px solid var(--line,#333);border-radius:7px;padding:5px 8px;min-width:158px}' +
+      '#p-perm .pmtag{font-size:10.5px;border:1px solid #fdba74;color:#fdba74;border-radius:20px;' +
+      'padding:2px 8px}' +
+      '#p-perm .pmacts{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap}' +
+      '#p-perm .pmna{font-size:12.5px;color:var(--text3,#888);padding:10px 2px}' +
+      '#p-perm .pmwho{font-size:13px;margin:14px 0 4px}' +
+      '#p-perm .btn.dg{background:#ff4d4d;color:#fff;border-color:#ff4d4d}' +
+      '#p-perm .btn.dg:hover{background:#ff6b6b}';
     document.head.appendChild(css);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
   else mount();
-})();
-
-/* ---- tab Phan quyen can nhieu chieu ngang hon cac tab khac ---- */
-(function () {
-  'use strict';
-  var css = document.createElement('style');
-  css.textContent = 'body.pm-wide #p-perm .card{max-width:1560px}';
-  (document.head || document.documentElement).appendChild(css);
-  function hook() {
-    var _t = window.tab;
-    window.tab = function (n) {
-      var out = _t ? _t.apply(this, arguments) : undefined;
-      try { document.body.classList[n === 'perm' ? 'add' : 'remove']('pm-wide'); } catch (e) {}
-      return out;
-    };
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hook);
-  else hook();
 })();

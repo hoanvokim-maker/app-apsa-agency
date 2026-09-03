@@ -81,10 +81,17 @@ function pm_groups()
             'needs' => array(),
         ),
         array(
+            'key' => 'notify', 'name' => 'Thông báo Zalo', 'def' => 2,
+            'mods' => array(93),
+            'pages' => array('zalo.html'),
+            'note' => 'Đăng ký nhận thông báo Zalo — mọi tài khoản đều dùng được',
+            'needs' => array(),
+        ),
+        array(
             'key' => 'system', 'name' => 'Hệ thống', 'def' => 0, 'adminOnly' => true,
-            'mods' => array(27, 92, 93),
-            'pages' => array('users.html', 'settings.html', 'zalo.html'),
-            'note' => 'Quản lý User · Cài đặt hệ thống · Thông báo Zalo — chỉ Admin',
+            'mods' => array(27, 92),
+            'pages' => array('users.html', 'settings.html'),
+            'note' => 'Quản lý User · Cài đặt hệ thống — chỉ Admin',
             'needs' => array(),
         ),
     );
@@ -208,6 +215,102 @@ function pm_gate($key, $action = '', $reads = array())
     if ($lvl <= 0) pm_deny('Bạn không có quyền truy cập mục "' . $nm . '". Liên hệ Admin để được cấp quyền.');
     if ($lvl === 1 && $action !== '' && !in_array($action, $reads, true)) {
         pm_deny('Bạn chỉ được xem mục "' . $nm . '", không được thay đổi dữ liệu.');
+    }
+    return $lvl;
+}
+
+/* =====================================================================
+ *  Danh muc MODULE — phan quyen chi tiet toi tung module (v1.6.27)
+ *  'page' rong = module khong co trang .html rieng tren app nay.
+ * ===================================================================*/
+function pm_mods()
+{
+    static $m = null;
+    if ($m !== null) return $m;
+    $m = array(
+        array('id' =>  32, 'name' => 'Báo giá & Nghiệm thu',  'page' => 'quotation.html',          'grp' => 'project'),
+        array('id' =>  35, 'name' => 'Làm việc',              'page' => 'assignments.html',        'grp' => 'project'),
+        array('id' =>  97, 'name' => 'Chi phí thực tế',       'page' => 'chi-phi.html',            'grp' => 'project'),
+        array('id' =>  26, 'name' => 'Rate Card',             'page' => 'ratecard.html',           'grp' => 'project'),
+        array('id' =>  29, 'name' => 'Quản lý Khách hàng',    'page' => 'customers.html',          'grp' => 'partner'),
+        array('id' =>  31, 'name' => 'Quản lý Công ty',       'page' => 'companies.html',          'grp' => 'partner'),
+        array('id' =>  95, 'name' => 'Nhà cung cấp',          'page' => 'suppliers.html',          'grp' => 'partner'),
+        array('id' =>  30, 'name' => 'Quản lý Công nợ',       'page' => 'debts.html',              'grp' => 'finance'),
+        array('id' =>  96, 'name' => 'Tủ hợp đồng',           'page' => 'contracts.html',          'grp' => 'finance'),
+        array('id' =>  99, 'name' => 'Bảng lương',            'page' => 'luong.html',              'grp' => 'payroll'),
+        array('id' =>  98, 'name' => 'Duyệt video',           'page' => 'videos.html',             'grp' => 'media'),
+        array('id' =>  34, 'name' => 'Album ảnh gửi khách',   'page' => 'albums.html',             'grp' => 'media'),
+        array('id' =>  23, 'name' => 'Thư viện ảnh',          'page' => '',                        'grp' => 'media'),
+        array('id' =>  17, 'name' => 'Kho Logos',             'page' => 'logos.html',              'grp' => 'media'),
+        array('id' =>  18, 'name' => 'Brand Guidelines',      'page' => 'brand-guidelines.html',   'grp' => 'media'),
+        array('id' =>  25, 'name' => 'Inspiration',           'page' => 'inspiration.html',        'grp' => 'media'),
+        array('id' => 100, 'name' => 'Frame Avatar',          'page' => 'frame.html',              'grp' => 'media'),
+        array('id' => 101, 'name' => 'Chụp ảnh AI',           'page' => 'aiphoto.html',            'grp' => 'media'),
+        array('id' =>  90, 'name' => 'Accounts nhân viên',    'page' => 'accounts.html',           'grp' => 'hr'),
+        array('id' =>  91, 'name' => 'Xin nghỉ phép',         'page' => 'leave.html',              'grp' => 'hr'),
+        array('id' =>  94, 'name' => 'Policy công ty',        'page' => 'policy.html',             'grp' => 'hr'),
+        array('id' =>   1, 'name' => 'Quản lý Link',          'page' => 'event-qr-generator.html', 'grp' => 'tools'),
+        array('id' =>  28, 'name' => 'APSA Badminton',        'page' => 'badminton/index.html',    'grp' => 'tools'),
+        array('id' =>  93, 'name' => 'Thông báo Zalo',        'page' => 'zalo.html',               'grp' => 'notify'),
+        array('id' =>  27, 'name' => 'Quản lý User',          'page' => 'users.html',              'grp' => 'system'),
+        array('id' =>  92, 'name' => 'Cài đặt hệ thống',      'page' => 'settings.html',           'grp' => 'system'),
+    );
+    return $m;
+}
+
+function pm_mod($id)
+{
+    foreach (pm_mods() as $m) if ((int) $m['id'] === (int) $id) return $m;
+    return null;
+}
+
+/**
+ * Muc quyen cua user hien tai voi 1 module.
+ * Thu tu: luat rieng cua user (module -> nhom) -> luat cua vi tri (module -> nhom) -> mac dinh nhom.
+ */
+function pm_mod_level($id)
+{
+    $m = pm_mod($id);
+    if (!$m) return 0;
+    $g = pm_group($m['grp']);
+    if (!$g) return 0;
+
+    $u = pm_me();
+    if (!$u) return 0;
+    if (pm_is_admin()) return 2;
+    if (!empty($g['adminOnly'])) return 0;
+
+    $rules = pm_rules();
+    $uid   = (string) $u['id'];
+    $pos   = strtolower(trim((string) $u['position']));
+    if ($pos === '') $pos = '-';
+
+    $mk    = 'm:' . (int) $m['id'];
+    $chain = array(array('user', $uid), array('pos', $pos));
+    foreach ($chain as $c) {
+        if (isset($rules[$c[0]][$c[1]][$mk]))         return (int) $rules[$c[0]][$c[1]][$mk];
+        if (isset($rules[$c[0]][$c[1]][$m['grp']]))   return (int) $rules[$c[0]][$c[1]][$m['grp']];
+    }
+    return (int) $g['def'];
+}
+
+/** Bang quyen module cua user hien tai — dung cho giao dien. */
+function pm_my_mods()
+{
+    $out = array();
+    foreach (pm_mods() as $m) $out[(string) $m['id']] = pm_mod_level($m['id']);
+    return $out;
+}
+
+/** Chan truy cap theo module (dung trong API cua tung module). */
+function pm_gate_mod($id, $action = '', $reads = array())
+{
+    $lvl = pm_mod_level($id);
+    $m   = pm_mod($id);
+    $nm  = $m ? $m['name'] : ('module ' . $id);
+    if ($lvl <= 0) pm_deny('Bạn không có quyền truy cập "' . $nm . '". Liên hệ Admin để được cấp quyền.');
+    if ($lvl === 1 && $action !== '' && !in_array($action, $reads, true)) {
+        pm_deny('Bạn chỉ được xem "' . $nm . '", không được thay đổi dữ liệu.');
     }
     return $lvl;
 }

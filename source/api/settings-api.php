@@ -489,7 +489,8 @@ case 'perm-me': {
             'mods' => $g['mods'], 'pages' => $g['pages']);
     }
     s_out(array('ok' => true, 'admin' => pm_is_admin(),
-        'perm' => pm_my_map(), 'groups' => $pg));
+        'perm' => pm_my_map(), 'groups' => $pg,
+        'mperm' => pm_my_mods(), 'mods' => pm_mods()));
     break;
 }
 
@@ -514,7 +515,7 @@ case 'perm-get': {
             'pos' => strtolower(trim((string) $r['position'])),
         );
     }
-    s_out(array('ok' => true, 'groups' => pm_groups(), 'positions' => $pos,
+    s_out(array('ok' => true, 'groups' => pm_groups(), 'mods' => pm_mods(), 'positions' => $pos,
         'users' => $users, 'rules' => pm_rules()));
     break;
 }
@@ -530,6 +531,7 @@ case 'perm-save': {
     if ($key === '') s_fail('Thiếu đối tượng phân quyền');
     $ok = array();
     foreach (pm_groups() as $g) $ok[$g['key']] = 1;
+    foreach (pm_mods() as $m) $ok['m:' . (int) $m['id']] = 1;
     $pdo = pm_pdo();
     $pdo->beginTransaction();
     try {
