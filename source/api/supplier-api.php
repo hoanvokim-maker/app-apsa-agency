@@ -145,6 +145,7 @@ case 'save': {
     if ($name === '') sp_fail('Tên công ty là bắt buộc.');
 
     $f = array(
+            (isset($b['kind']) && $b['kind'] === 'person') ? 'person' : 'company',
         $name,
         sp_s(isset($b['contact'])  ? $b['contact']  : '', 200),
         sp_s(isset($b['address'])  ? $b['address']  : '', 400),
@@ -166,13 +167,13 @@ case 'save': {
         if ($id > 0) {
             $f[] = $id;
             $st = $pdo->prepare("UPDATE `ratecard_suppliers`
-                                    SET `name`=?,`contact`=?,`address`=?,`phone`=?,`phone2`=?,`email`=?,`tax_code`=?,`region`=?,`bank_name`=?,`bank_branch`=?,`bank_account`=?,`bank_holder`=?,`note`=?,`active`=?,`updated_by`=?
+                                    SET `kind`=?,`name`=?,`contact`=?,`address`=?,`phone`=?,`phone2`=?,`email`=?,`tax_code`=?,`region`=?,`bank_name`=?,`bank_branch`=?,`bank_account`=?,`bank_holder`=?,`note`=?,`active`=?,`updated_by`=?
                                   WHERE `id`=?");
             $st->execute($f);
         } else {
             $st = $pdo->prepare("INSERT INTO `ratecard_suppliers`
-                                 (`name`,`contact`,`address`,`phone`,`phone2`,`email`,`tax_code`,`region`,`bank_name`,`bank_branch`,`bank_account`,`bank_holder`,`note`,`active`,`updated_by`)
-                                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                                 (`kind`,`name`,`contact`,`address`,`phone`,`phone2`,`email`,`tax_code`,`region`,`bank_name`,`bank_branch`,`bank_account`,`bank_holder`,`note`,`active`,`updated_by`)
+                                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             $st->execute($f);
             $id = (int) $pdo->lastInsertId();
         }

@@ -168,6 +168,7 @@
   </div>
   <div id="chips"></div>
   <div id="rfilter" style="margin-top:10px"></div>
+      <div id="kfilter" style="margin-top:4px"></div>
 </div>
 
 <div class="wrap">
@@ -191,7 +192,11 @@
     <h2 id="eTitle">Nhà cung cấp mới</h2>
     <div class="mh-sub">Thông tin dùng cho báo giá và đối chiếu công nợ sản xuất.</div>
     <div class="fg">
-      <label>Công ty *</label>
+      <label>Loại</label>
+      <select id="eKind" onchange="kindLbl()"><option value="company">Công ty / Tổ chức</option><option value="person">Cá nhân</option></select>
+    </div>
+    <div class="fg">
+      <label id="eNameLb">Công ty *</label>
       <input type="text" id="eName" placeholder="VD: Song Khánh" autocomplete="off" />
     </div>
     <div class="grid2">
@@ -367,16 +372,31 @@ function regionLabel(v) {
   return '';
 }
 function setRegion(v) { FR = (FR === v) ? "" : v; draw(); }
+
+/* --- loc theo loai: cong ty / ca nhan --- */
+var KD = '';
+function kindOf(s) { return (s && s.kind === 'person') ? 'person' : 'company'; }
+function setKind(v) { KD = (KD === v) ? '' : v; draw(); }
+function drawKindBar() {
+  var pool = FR ? ITEMS.filter(function (s) { return (s.region || '') === FR; }) : ITEMS;
+  var nc = 0, np = 0;
+  for (var i = 0; i < pool.length; i++) { if (kindOf(pool[i]) === 'person') np++; else nc++; }
+  el('kfilter').innerHTML =
+      '<button class="rf' + (KD ? '' : ' on') + '" onclick="setKind(\'\')">Tất cả</button>'
+    + '<button class="rf' + (KD === 'company' ? ' on' : '') + '" onclick="setKind(\'company\')">Công ty <b>' + nc + '</b></button>'
+    + '<button class="rf' + (KD === 'person' ? ' on' : '') + '" onclick="setKind(\'person\')">Cá nhân <b>' + np + '</b></button>';
+}
 function drawRegionBar() {
+  var RP = KD ? ITEMS.filter(function (s) { return kindOf(s) === KD; }) : ITEMS;
   var h = '<button class="rf' + (FR ? '' : ' on') + '" onclick="setRegion(\'\')">Tất cả</button>';
   REGIONS.forEach(function (r) {
     var n = 0;
-    for (var i = 0; i < ITEMS.length; i++) if ((ITEMS[i].region || '') === r[0]) n++;
+    for (var i = 0; i < RP.length; i++) if ((RP[i].region || '') === r[0]) n++;
     h += '<button class="rf' + (FR === r[0] ? ' on' : '') + '" onclick="setRegion(\'' + r[0] + '\')">'
        + r[1] + '<b>' + n + '</b></button>';
   });
   var un = 0;
-  for (var j = 0; j < ITEMS.length; j++) if (!ITEMS[j].region) un++;
+  for (var j = 0; j < RP.length; j++) if (!RP[j].region) un++;
   if (un) h += '<span class="rf-note">' + un + ' chưa xác định</span>';
   el('rfilter').innerHTML = h;
 }
@@ -385,6 +405,7 @@ function draw() {
   var tm = terms(FQ);
   var base = ITEMS;
   if (FR) base = ITEMS.filter(function (s) { return (s.region || '') === FR; });
+  if (KD) base = base.filter(function (s) { return kindOf(s) === KD; });
   var rows = tm.length ? base.filter(function (s) {
     return hit([s.name, s.contact, s.phone, s.phone2, s.address, s.email, s.note, s.bank_name, s.bank_account, s.bank_holder].join(' '), tm);
   }) : base;
@@ -393,6 +414,7 @@ function draw() {
     + (tm.length ? '<span class="chip" style="margin-left:8px"><b>' + rows.length + '</b> khớp</span>' : '');
 
   drawRegionBar();
+  drawKindBar();
   if (!rows.length) {
     el('view').innerHTML = '<div class="empty"><b>' + (tm.length ? 'Không tìm thấy nhà cung cấp nào' : 'Chưa có nhà cung cấp')
       + '</b>' + (tm.length ? 'Thử từ khoá khác.' : 'Bấm “+ Nhà cung cấp” để thêm.') + '</div>';
@@ -440,7 +462,14 @@ el('q').addEventListener('keydown', function (e) { if (e.key === 'Escape') { e.s
 function clearSearch() { el('q').value = ''; FQ = ''; el('sbox').classList.remove('has'); draw(); el('q').focus(); }
 
 /* ── thêm / sửa ── */
+function kindLbl() {
+  var p = el('eKind').value === 'person';
+  el('eNameLb').textContent  = p ? 'Họ tên *' : 'Công ty *';
+  el('eName').placeholder    = p ? 'VD: Nguyễn Văn Nam' : 'VD: Song Khánh';
+}
 function fill(s) {
+  el('eKind').value = (s && s.kind === 'person') ? 'person' : 'company';
+  kindLbl();
   el('eName').value    = s ? (s.name || '') : '';
   el('eContact').value = s ? (s.contact || '') : '';
   el('eTax').value     = s ? (s.tax_code || '') : '';
@@ -477,6 +506,7 @@ function saveIt() {
   var b = {
     id: editing ? Number(editing.id) : 0,
     name: name,
+    kind: el('eKind').value,
     contact: el('eContact').value.trim(),
     tax_code: el('eTax').value.trim(),
     phone: el('ePhone').value.trim(),

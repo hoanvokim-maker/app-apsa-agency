@@ -65,7 +65,12 @@
              '</div>';
       }
     }
-    if (canNew()) h += '<div class="exp-ac-new">+ Tạo người nhận mới…</div>';
+    if (canNew()) {
+      var qv = (CUR && CUR.value) ? CUR.value.trim() : '';
+      h += '<div class="exp-ac-new">+ Th\u00eam m\u1edbi '
+         + (qv ? '\u201c' + esc(qv) + '\u201d' : 'nh\u00e0 cung c\u1ea5p / c\u00e1 nh\u00e2n')
+         + '\u2026</div>';
+    }
     b.innerHTML = h;
     b.classList.add('open');
     var nw = b.querySelector('.exp-ac-new');
@@ -262,7 +267,7 @@
     css += '.exp-ac-t.person{color:#ffd27a;border-color:rgba(255,210,122,.45);background:rgba(255,210,122,.12)}'
       + '.exp-ac-t.staff{color:#7ee0a6;border-color:rgba(126,224,166,.45);background:rgba(126,224,166,.12)}'
       + '.exp-ac-new{padding:9px 10px;font-size:12.5px;color:var(--green,#dff20d);cursor:pointer;'
-      +   'border-top:1px solid #333;background:rgba(255,255,255,.02)}'
+      +   'border-top:1px solid #3a3f47;background:#181b20;position:sticky;bottom:0;font-weight:700}'
       + '.exp-ac-new:hover{background:rgba(223,242,13,.12)}'
       + '.exp-np-ov{position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,.6);display:flex;'
       +   'align-items:center;justify-content:center;padding:20px}'
