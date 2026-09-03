@@ -270,9 +270,13 @@ function q_status($v) {
 }
 
 // ── Thông tin APSA in trên đầu báo giá ───────────────────────
-$__co = st_json('company.info', array('address'=>'','email'=>'','tax'=>''));
+$__co = st_json('company.info', array('address'=>'','email'=>'','tax'=>'','phone'=>'','name'=>''));
 define('APSA_ADDRESS', $__co['address'] !== '' ? $__co['address'] : '26 Ung Văn Khiêm, Phường Thạnh Mỹ Tây, TP Hồ Chí Minh, Việt Nam');
-define('APSA_EMAIL',   'Email: ' . ($__co['email'] !== '' ? $__co['email'] : 'hello@apsa.agency'));
+define('APSA_PHONE',   isset($__co['phone']) ? trim((string) $__co['phone']) : '');
+define('APSA_NAME',    (isset($__co['name']) && trim((string) $__co['name']) !== '')
+    ? trim((string) $__co['name']) : 'APSA Agency');
+define('APSA_EMAIL',   'Email: ' . ($__co['email'] !== '' ? $__co['email'] : 'hello@apsa.agency')
+    . (APSA_PHONE !== '' ? '   ·   Điện thoại: ' . APSA_PHONE : ''));
 define('APSA_TAX',     'MST: ' . ($__co['tax'] !== '' ? $__co['tax'] : '0317301221'));
 
 // Logo APSA (PNG 144x48) nhúng sẵn để file Excel xuất ra có logo như file mẫu
@@ -1943,6 +1947,19 @@ case 'payee-new': {
         q_ok(array('payee' => $old, 'existed' => 1));
     }
     q_ok(array('payee' => $row, 'existed' => 0));
+    break;
+}
+
+/* --- Thong tin cong ty cho chu ky mail --- */
+case 'co-info': {
+    $c = st_json('company.info', array());
+    q_ok(array(
+        'name'    => (isset($c['name'])    && trim((string) $c['name'])    !== '') ? trim((string) $c['name'])    : 'APSA Agency',
+        'address' => isset($c['address']) ? trim((string) $c['address']) : '',
+        'email'   => isset($c['email'])   ? trim((string) $c['email'])   : '',
+        'tax'     => isset($c['tax'])     ? trim((string) $c['tax'])     : '',
+        'phone'   => isset($c['phone'])   ? trim((string) $c['phone'])   : '',
+    ));
     break;
 }
 

@@ -3010,9 +3010,7 @@ function openMail(){
     'Rất mong nhận được phản hồi của ' + (cName ? 'anh/chị' : 'Quý khách') + '.\n\n' +
     'Trân trọng,\n' +
     (document.getElementById('uname').textContent || '') + '\n' +
-    'APSA Agency\n' +
-    '26 Ung Văn Khiêm, Phường Thạnh Mỹ Tây, TP Hồ Chí Minh\n' +
-    'hello@apsa.agency';
+    coSign();
 
   const w = document.getElementById('mlLiqWrap');
   w.style.display = LIQ ? '' : 'none';
@@ -3023,7 +3021,26 @@ function openMail(){
 }
 function closeMail(){ document.getElementById('mlOv').classList.remove('open'); }
 
+/* --- Chu ky cuoi mail: lay tu Cai dat > Thong tin cong ty --- */
+var CO_INFO = null;
+async function coLoad() {
+  if (CO_INFO) return CO_INFO;
+  try { CO_INFO = await api(API, 'co-info'); } catch (e) { CO_INFO = {}; }
+  return CO_INFO;
+}
+function coSign() {
+  var c = CO_INFO || {};
+  var out = (c.name || 'APSA Agency') + '\n';
+  if (c.address) out += c.address + '\n';
+  var l2 = [];
+  if (c.phone) l2.push('ĐT: ' + c.phone);
+  if (c.email) l2.push(c.email);
+  if (l2.length) out += l2.join('  ·  ');
+  return out.replace(/\n+$/, '');
+}
+try { coLoad(); } catch (e) {}
 async function makeEml(){
+  await coLoad();
   const id = await saveQuote(true);
   if (!id) return;
   const qs = '&to=' + encodeURIComponent(document.getElementById('mlTo').value.trim())
