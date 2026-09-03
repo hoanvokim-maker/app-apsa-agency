@@ -214,6 +214,17 @@ case 'list': {
     rv_ok(array('rows' => $rows));
 }
 
+case 'rename': {
+    rv_needAdmin($pdo);
+    $id    = (int) (isset($B['id']) ? $B['id'] : 0);
+    $title = rv_s(isset($B['title']) ? $B['title'] : '', 300);
+    $note  = rv_s(isset($B['note']) ? $B['note'] : '', 500);
+    if (!$id) rv_fail('Thiếu id');
+    if ($title === '') rv_fail('Tiêu đề không được để trống.');
+    $pdo->prepare("UPDATE `video_reviews` SET title = ?, note = ? WHERE id = ?")->execute(array($title, $note, $id));
+    rv_ok(array('id' => $id));
+}
+
 case 'toggle': {
     rv_needAdmin($pdo);
     $id = (int) ($B['id'] ?? 0);
