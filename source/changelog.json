@@ -1,5 +1,5 @@
 {
-    "version": "1.7.5",
+    "version": "1.7.6",
     "updated": "2026-09-03",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-03",
             "note": "Phiên bản 1.7",
             "items": [
+                {
+                    "d": "2026-09-03",
+                    "v": "1.7.6",
+                    "t": "Phan quyen chi tiet: Xem / Them / Sua / Xoa cho tung module (dot 1: loi + giao dien)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-03",
                     "v": "1.7.5",

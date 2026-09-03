@@ -123,6 +123,15 @@ function pm_init($pdo = null)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
         );
     } catch (PDOException $e) { /* da co */ }
+    try {
+        $has = $pdo->query("SHOW COLUMNS FROM `perm_rules` LIKE 'caps'")->fetch();
+        if (!$has) {
+            $pdo->exec("ALTER TABLE `perm_rules` ADD COLUMN `caps` TINYINT NOT NULL DEFAULT 0
+                        COMMENT '1=xem 2=them 4=sua 8=xoa'");
+            $pdo->exec("UPDATE `perm_rules`
+                           SET `caps` = CASE WHEN `lvl` >= 2 THEN 15 WHEN `lvl` = 1 THEN 1 ELSE 0 END");
+        }
+    } catch (PDOException $e) { /* bo qua */ }
 }
 
 /** Thong tin user dang dang nhap. */
@@ -150,6 +159,106 @@ function pm_is_admin()
 }
 
 /** Tat ca luat dang luu, dang [scope][scope_key][grp] = lvl */
+/* ============================================================ */
+/*  Quyen chi tiet: Xem / Them / Sua / Xoa  (bitmask)            */
+/* ============================================================ */
+
+if (!defined('PM_V')) {
+    define('PM_V', 1);   /* xem  */
+    define('PM_A', 2);   /* them */
+    define('PM_E', 4);   /* sua  */
+    define('PM_D', 8);   /* xoa  */
+    define('PM_ALL', 15);
+}
+
+function pm_caps_from_lvl($l)
+{
+    $l = (int) $l;
+    if ($l >= 2) return PM_ALL;
+    if ($l === 1) return PM_V;
+    return 0;
+}
+
+function pm_lvl_from_caps($c)
+{
+    $c = (int) $c;
+    if ($c & (PM_A | PM_E | PM_D)) return 2;
+    if ($c & PM_V) return 1;
+    return 0;
+}
+
+/** Chuan hoa: co quyen ghi thi bat buoc phai co quyen xem. */
+function pm_caps_norm($c)
+{
+    $c = ((int) $c) & PM_ALL;
+    if ($c & (PM_A | PM_E | PM_D)) $c |= PM_V;
+    return $c;
+}
+
+/** Ban do rule dang bitmask (song song voi pm_rules dang 0/1/2). */
+function pm_rcaps()
+{
+    static $r = null;
+    if ($r !== null) return $r;
+    pm_init();
+    $r = array('pos' => array(), 'user' => array());
+    try {
+        foreach (pm_pdo()->query("SELECT scope, scope_key, grp, lvl, caps FROM `perm_rules`") as $x) {
+            $c = (int) $x['caps'];
+            if ($c === 0 && (int) $x['lvl'] > 0) $c = pm_caps_from_lvl($x['lvl']);
+            $r[$x['scope']][$x['scope_key']][$x['grp']] = $c;
+        }
+    } catch (PDOException $e) { /* bo qua */ }
+    return $r;
+}
+
+/** Bitmask quyen cua user hien tai tren 1 module. */
+function pm_mod_caps($id)
+{
+    $m = pm_mod($id);           if (!$m) return 0;
+    $g = pm_group($m['grp']);   if (!$g) return 0;
+    $u = pm_me();               if (!$u) return 0;
+    if (pm_is_admin()) return PM_ALL;
+    if (!empty($g['adminOnly'])) return 0;
+
+    $rules = pm_rcaps();
+    $uid = (string) $u['id'];
+    $pos = strtolower(trim((string) $u['position']));
+    if ($pos === '') $pos = '-';
+    $mk = 'm:' . (int) $m['id'];
+    foreach (array(array('user', $uid), array('pos', $pos)) as $c) {
+        if (isset($rules[$c[0]][$c[1]][$mk]))       return pm_caps_norm($rules[$c[0]][$c[1]][$mk]);
+        if (isset($rules[$c[0]][$c[1]][$m['grp']])) return pm_caps_norm($rules[$c[0]][$c[1]][$m['grp']]);
+    }
+    return pm_caps_from_lvl(isset($g['def']) ? $g['def'] : 0);
+}
+
+/** $what: view | add | edit | del */
+function pm_can($id, $what)
+{
+    $map = array('view' => PM_V, 'add' => PM_A, 'edit' => PM_E, 'del' => PM_D);
+    if (!isset($map[$what])) return false;
+    return (pm_mod_caps($id) & $map[$what]) === $map[$what];
+}
+
+function pm_gate_cap($id, $what, $msg = '')
+{
+    if (pm_can($id, $what)) return;
+    $m  = pm_mod($id);
+    $lb = array('view' => 'xem', 'add' => 'thêm', 'edit' => 'sửa', 'del' => 'xoá');
+    $n  = $m ? $m['name'] : 'mục này';
+    $w  = isset($lb[$what]) ? $lb[$what] : $what;
+    pm_deny($msg !== '' ? $msg
+        : ('Bạn không có quyền ' . $w . ' trong mục ' . $n . '. Liên hệ Admin để được cấp quyền.'));
+}
+
+function pm_my_caps()
+{
+    $out = array();
+    foreach (pm_mods() as $m) $out[(string) $m['id']] = pm_mod_caps($m['id']);
+    return $out;
+}
+
 function pm_rules()
 {
     static $r = null;

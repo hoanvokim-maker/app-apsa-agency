@@ -490,7 +490,8 @@ case 'perm-me': {
     }
     s_out(array('ok' => true, 'admin' => pm_is_admin(),
         'perm' => pm_my_map(), 'groups' => $pg,
-        'mperm' => pm_my_mods(), 'mods' => pm_mods()));
+        'mperm' => pm_my_mods(), 'mods' => pm_mods(),
+        'mcaps' => pm_my_caps()));
     break;
 }
 
@@ -516,7 +517,7 @@ case 'perm-get': {
         );
     }
     s_out(array('ok' => true, 'groups' => pm_groups(), 'mods' => pm_mods(), 'positions' => $pos,
-        'users' => $users, 'rules' => pm_rules()));
+        'users' => $users, 'rules' => pm_rules(), 'caps' => pm_rcaps()));
     break;
 }
 
@@ -537,13 +538,11 @@ case 'perm-save': {
     try {
         $del = $pdo->prepare("DELETE FROM `perm_rules` WHERE scope = ? AND scope_key = ?");
         $del->execute(array($scope, $key));
-        $ins = $pdo->prepare("INSERT INTO `perm_rules` (scope, scope_key, grp, lvl) VALUES (?,?,?,?)");
+        $ins = $pdo->prepare("INSERT INTO `perm_rules` (scope, scope_key, grp, lvl, caps) VALUES (?,?,?,?,?)");
         foreach ($vals as $gk => $lv) {
             if (!isset($ok[$gk])) continue;
-            $lv = (int) $lv;
-            if ($lv < 0) $lv = 0;
-            if ($lv > 2) $lv = 2;
-            $ins->execute(array($scope, $key, $gk, $lv));
+            $cp = pm_caps_norm((int) $lv);
+            $ins->execute(array($scope, $key, $gk, pm_lvl_from_caps($cp), $cp));
         }
         $pdo->commit();
     } catch (Throwable $e) {

@@ -2524,7 +2524,7 @@ CREATE TABLE `perm_rules` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_rule` (`scope`,`scope_key`,`grp`)
-) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2541,6 +2541,9 @@ INSERT INTO `perm_rules` VALUES (62,'pos','account','m:18',2,'2026-09-03 04:39:4
 INSERT INTO `perm_rules` VALUES (63,'pos','account','m:25',2,'2026-09-03 04:39:44');
 INSERT INTO `perm_rules` VALUES (64,'pos','account','m:100',2,'2026-09-03 04:39:44');
 INSERT INTO `perm_rules` VALUES (65,'pos','account','m:101',2,'2026-09-03 04:39:44');
+INSERT INTO `perm_rules` VALUES (72,'pos','admin','m:29',2,'2026-09-03 08:40:42');
+INSERT INTO `perm_rules` VALUES (73,'pos','admin','m:31',2,'2026-09-03 08:40:42');
+INSERT INTO `perm_rules` VALUES (74,'pos','admin','m:95',2,'2026-09-03 08:40:42');
 /*!40000 ALTER TABLE `perm_rules` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -7738,7 +7741,7 @@ CREATE TABLE `staff_positions` (
 LOCK TABLES `staff_positions` WRITE;
 /*!40000 ALTER TABLE `staff_positions` DISABLE KEYS */;
 INSERT INTO `staff_positions` VALUES (1,'account','Account',1,1,'2026-08-26 12:23:57','2026-08-26 12:30:55');
-INSERT INTO `staff_positions` VALUES (2,'admin','Admin',2,1,'2026-08-26 12:23:57','2026-08-26 12:30:55');
+INSERT INTO `staff_positions` VALUES (2,'admin','Administration',2,1,'2026-08-26 12:23:57','2026-09-03 15:39:52');
 INSERT INTO `staff_positions` VALUES (3,'designer','Designer',3,1,'2026-08-26 12:23:57','2026-08-26 12:30:55');
 INSERT INTO `staff_positions` VALUES (4,'editor','Video editor',4,1,'2026-08-26 12:23:57','2026-08-26 12:30:55');
 INSERT INTO `staff_positions` VALUES (6,'production','Production',5,1,'2026-08-26 12:30:31','2026-08-26 12:30:55');

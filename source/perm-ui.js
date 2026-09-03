@@ -41,6 +41,55 @@
   }
 
   /* ---- tra cuu ---- */
+  /* ---- quyen chi tiet: Xem / Them / Sua / Xoa (bitmask) ---- */
+  var CAP = [{ b: 1, t: 'Xem' }, { b: 2, t: 'Thêm' }, { b: 4, t: 'Sửa' }, { b: 8, t: 'Xoá' }];
+  function capsOfLvl(l) { l = Number(l) || 0; return l >= 2 ? 15 : (l === 1 ? 1 : 0); }
+  function capsNorm(c) { c = (Number(c) || 0) & 15; if (c & 14) c |= 1; return c; }
+  function capsText(c) {
+    c = Number(c) || 0;
+    if (!c) return 'Không vào được';
+    if ((c & 15) === 15) return 'Toàn quyền';
+    var o = [];
+    for (var i = 0; i < CAP.length; i++) if (c & CAP[i].b) o.push(CAP[i].t);
+    return o.join(' · ');
+  }
+  (function () {
+    if (document.getElementById('pmcaps-css')) return;
+    var st = document.createElement('style');
+    st.id = 'pmcaps-css';
+    st.textContent =
+        '.pmcaps{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}'
+      + '.pmcaps.inh{opacity:.45}'
+      + '.pmcaps label{display:inline-flex;align-items:center;gap:3px;font-size:11.5px;'
+      + 'cursor:pointer;white-space:nowrap}'
+      + '.pmcaps input{margin:0;cursor:pointer}'
+      + '.pmrst{border:1px solid rgba(255,255,255,.2);background:transparent;color:inherit;'
+      + 'border-radius:6px;font-size:11px;line-height:1;padding:3px 6px;cursor:pointer;opacity:.75}'
+      + '.pmrst:hover{opacity:1}'
+      + '.pmcaps.inh .pmrst{display:none}'
+      + '.pmcapl{font-size:11px;opacity:.65;white-space:nowrap}';
+    document.head.appendChild(st);
+  })();
+  window.pmTick = function (inp) {
+    var box = inp.closest('.pmcaps'); if (!box) return;
+    var cs = box.querySelectorAll('input[type=checkbox]'), v = 0, i;
+    for (i = 0; i < cs.length; i++) if (cs[i].checked) v |= Number(cs[i].getAttribute('data-b'));
+    v = capsNorm(v);
+    for (i = 0; i < cs.length; i++) cs[i].checked = !!(v & Number(cs[i].getAttribute('data-b')));
+    box.setAttribute('data-set', '1');
+    box.classList.remove('inh');
+    var lb = box.querySelector('.pmcapl'); if (lb) lb.textContent = '';
+  };
+  window.pmInh = function (btn) {
+    var box = btn.closest('.pmcaps'); if (!box) return;
+    var inh = Number(box.getAttribute('data-inh')) || 0;
+    var cs = box.querySelectorAll('input[type=checkbox]');
+    for (var i = 0; i < cs.length; i++) cs[i].checked = !!(inh & Number(cs[i].getAttribute('data-b')));
+    box.setAttribute('data-set', '0');
+    box.classList.add('inh');
+    var lb = box.querySelector('.pmcapl'); if (lb) lb.textContent = 'mặc định · ' + capsText(inh);
+  };
+
   function grpOf(key) {
     for (var i = 0; i < D.groups.length; i++) if (D.groups[i].key === key) return D.groups[i];
     return null;
@@ -51,7 +100,7 @@
     return out;
   }
   function ruleOf(scope, skey, k) {
-    var r = (D.rules && D.rules[scope]) ? D.rules[scope] : {};
+    var r = (D.caps && D.caps[scope]) ? D.caps[scope] : {};
     var b = r[skey] || {};
     return (b[k] === undefined || b[k] === null) ? null : Number(b[k]);
   }
@@ -68,7 +117,7 @@
       var b = ruleOf(chain[i][0], chain[i][1], m.grp);
       if (b !== null) return b;
     }
-    return Number(g.def || 0);
+    return capsOfLvl(Number(g.def || 0));
   }
   function posOfUser(id) {
     for (var i = 0; i < D.users.length; i++) {
@@ -82,16 +131,23 @@
   }
 
   /* ---- ve 1 the select ---- */
-  function selHtml(scope, skey, kind, k, cur, dflt) {
-    var h = '<select class="pmsel" data-scope="' + scope + '" data-skey="' + esc(skey) +
-      '" data-kind="' + kind + '" data-k="' + esc(k) + '">';
-    h += '<option value=""' + (cur === null ? ' selected' : '') + '>— ' +
-      esc(dflt) + ' —</option>';
-    for (var i = 0; i < LV.length; i++) {
-      h += '<option value="' + LV[i].v + '"' + (cur === LV[i].v ? ' selected' : '') + '>' +
-        LV[i].t + '</option>';
+  /* ---- ve 1 o quyen: 4 checkbox + nut ve mac dinh ---- */
+  function capsHtml(scope, skey, kind, k, cur, inh) {
+    var set = (cur !== null && cur !== undefined);
+    var val = set ? Number(cur) : (Number(inh) || 0);
+    inh = Number(inh) || 0;
+    var h = '<span class="pmcaps' + (set ? '' : ' inh') + '" data-scope="' + esc(scope) + '"'
+          + ' data-skey="' + esc(skey) + '" data-kind="' + kind + '" data-k="' + esc(k) + '"'
+          + ' data-set="' + (set ? 1 : 0) + '" data-inh="' + inh + '">';
+    for (var i = 0; i < CAP.length; i++) {
+      h += '<label><input type="checkbox" data-b="' + CAP[i].b + '"'
+         + ((val & CAP[i].b) ? ' checked' : '')
+         + ' onchange="pmTick(this)"> ' + CAP[i].t + '</label>';
     }
-    return h + '</select>';
+    h += '<button type="button" class="pmrst" title="Bỏ đặt riêng, quay về mặc định"'
+       + ' onclick="pmInh(this)">↺</button>'
+       + '<span class="pmcapl">' + (set ? '' : 'mặc định · ' + capsText(inh)) + '</span>';
+    return h + '</span>';
   }
 
   /* ---- ve ma tran cho 1 doi tuong (1 vi tri hoac 1 user) ---- */
@@ -111,7 +167,7 @@
       h += '<div class="pmgrp"><div class="pmgh"><b>' + esc(g.name) + '</b>' +
         '<span class="pmsp"></span>' +
         '<span class="pmgl">Cả nhóm:</span>' +
-        selHtml(scope, skey, 'g', g.key, gcur, 'Mặc định · ' + lvText(Number(g.def || 0))) +
+        capsHtml(scope, skey, 'g', g.key, gcur, capsOfLvl(Number(g.def || 0))) +
         '</div>';
       if (g.note) h += '<div class="pmnote">' + esc(g.note) + '</div>';
       if (ms.length) {
@@ -119,9 +175,9 @@
         for (var j = 0; j < ms.length; j++) {
           var m = ms[j];
           var mcur = ruleOf(scope, skey, 'm:' + m.id);
-          var base = 'Theo nhóm · ' + lvText(gcur !== null ? gcur : effMod(scope, skey, m));
+          var base = (gcur !== null ? gcur : effMod(scope, skey, m));
           h += '<div class="pmmod"><span class="pmmn">' + esc(m.name) + '</span>' +
-            selHtml(scope, skey, 'm', 'm:' + m.id, mcur, base) + '</div>';
+            capsHtml(scope, skey, 'm', 'm:' + m.id, mcur, base) + '</div>';
         }
         h += '</div>';
       }
@@ -131,14 +187,17 @@
   }
 
   /* ---- gom du lieu de luu ---- */
+  /* ---- gom du lieu de luu ---- */
   function collect(scope, skey) {
     var out = {};
-    var all = document.querySelectorAll('.pmsel[data-scope="' + scope + '"][data-skey="' +
+    var all = document.querySelectorAll('.pmcaps[data-scope="' + scope + '"][data-skey="' +
       cssq(skey) + '"]');
     for (var i = 0; i < all.length; i++) {
       var s = all[i];
-      if (s.value === '') continue;
-      out[s.getAttribute('data-k')] = Number(s.value);
+      if (s.getAttribute('data-set') !== '1') continue;
+      var cs = s.querySelectorAll('input[type=checkbox]'), v = 0;
+      for (var c = 0; c < cs.length; c++) if (cs[c].checked) v |= Number(cs[c].getAttribute('data-b'));
+      out[s.getAttribute('data-k')] = capsNorm(v);
     }
     /* Nhom phu thuoc: mo nhom A thi nhom A can cung phai mo it nhat "chi xem" */
     for (var g = 0; g < D.groups.length; g++) {
@@ -155,13 +214,19 @@
   function cssq(s) { return String(s).replace(/"/g, '\\"'); }
 
   /* ---- bulk set ---- */
+  /* ---- bulk set ---- */
   window.pmBulk = function (scope, skey, v) {
-    var all = document.querySelectorAll('.pmsel[data-scope="' + scope + '"][data-skey="' +
+    var all = document.querySelectorAll('.pmcaps[data-scope="' + scope + '"][data-skey="' +
       cssq(skey) + '"][data-kind="g"]');
-    for (var i = 0; i < all.length; i++) all[i].value = String(v);
-    var ms = document.querySelectorAll('.pmsel[data-scope="' + scope + '"][data-skey="' +
-      cssq(skey) + '"][data-kind="m"]');
-    for (var k = 0; k < ms.length; k++) ms[k].value = '';
+    v = capsNorm(v);
+    for (var i = 0; i < all.length; i++) {
+      var box = all[i];
+      var cs = box.querySelectorAll('input[type=checkbox]');
+      for (var j = 0; j < cs.length; j++) cs[j].checked = !!(v & Number(cs[j].getAttribute('data-b')));
+      box.setAttribute('data-set', '1');
+      box.classList.remove('inh');
+      var lb = box.querySelector('.pmcapl'); if (lb) lb.textContent = '';
+    }
   };
 
   /* ---- chon vi tri ---- */
@@ -226,7 +291,7 @@
     return '<div class="pmbulk">Đặt nhanh cả bảng: ' +
       '<button class="btn sm" onclick="pmBulk(\'' + scope + '\',\'' + cssq(skey) + '\',0)">Không vào được</button>' +
       '<button class="btn sm" onclick="pmBulk(\'' + scope + '\',\'' + cssq(skey) + '\',1)">Chỉ xem</button>' +
-      '<button class="btn sm" onclick="pmBulk(\'' + scope + '\',\'' + cssq(skey) + '\',2)">Toàn quyền</button>' +
+      '<button class="btn sm" onclick="pmBulk(\'' + scope + '\',\'' + cssq(skey) + '\',15)">Toàn quyền</button>' +
       '</div>';
   }
 
