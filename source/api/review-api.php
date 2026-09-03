@@ -57,6 +57,26 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS `video_comments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
 /* ── ai đang đăng nhập ─────────────────────────────────────── */
+/* --- Bang playlist --- */
+$pdo->exec("CREATE TABLE IF NOT EXISTS `video_playlists` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `token` CHAR(32) NOT NULL,
+  `title` VARCHAR(300) NOT NULL DEFAULT '',
+  `note` VARCHAR(500) NOT NULL DEFAULT '',
+  `active` TINYINT(1) NOT NULL DEFAULT 1,
+  `created_by` VARCHAR(120) NOT NULL DEFAULT '',
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`), UNIQUE KEY `k_tok` (`token`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+$pdo->exec("CREATE TABLE IF NOT EXISTS `video_playlist_items` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `playlist_id` INT UNSIGNED NOT NULL,
+  `review_id` INT UNSIGNED NOT NULL,
+  `sort` INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`), KEY `k_pl` (`playlist_id`, `sort`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
 /* --- Bo sung cot cho tinh nang sua gop y --- */
 foreach (array(
     'edited_at' => "ALTER TABLE `video_comments` ADD COLUMN `edited_at` DATETIME NULL DEFAULT NULL",
@@ -223,6 +243,89 @@ case 'rename': {
     if ($title === '') rv_fail('Tiêu đề không được để trống.');
     $pdo->prepare("UPDATE `video_reviews` SET title = ?, note = ? WHERE id = ?")->execute(array($title, $note, $id));
     rv_ok(array('id' => $id));
+}
+
+/* ===================== PLAYLIST ===================== */
+case 'pl-list': {
+    rv_needRead($pdo);
+    $st = $pdo->query("SELECT p.*,
+            (SELECT COUNT(*) FROM `video_playlist_items` i WHERE i.playlist_id = p.id) AS n_vid
+        FROM `video_playlists` p ORDER BY p.id DESC LIMIT 300");
+    rv_ok(array('rows' => $st->fetchAll(), 'admin' => rv_lvl($pdo) >= 2 ? 1 : 0));
+}
+
+case 'pl-save': {
+    rv_needAdmin($pdo);
+    $id    = (int) (isset($B['id']) ? $B['id'] : 0);
+    $title = rv_s(isset($B['title']) ? $B['title'] : '', 300);
+    $note  = rv_s(isset($B['note']) ? $B['note'] : '', 500);
+    $ids   = (isset($B['items']) && is_array($B['items'])) ? $B['items'] : null;
+    if ($title === '') rv_fail('Tên playlist không được để trống.');
+    $tk = null;
+    if ($id > 0) {
+        $pdo->prepare("UPDATE `video_playlists` SET title = ?, note = ? WHERE id = ?")->execute(array($title, $note, $id));
+    } else {
+        $me = rv_me($pdo);
+        $tk = bin2hex(random_bytes(16));
+        $who = $me ? (isset($me['display_name']) && $me['display_name'] !== '' ? $me['display_name'] : $me['username']) : '';
+        $st = $pdo->prepare("INSERT INTO `video_playlists` (token, title, note, created_by) VALUES (?,?,?,?)");
+        $st->execute(array($tk, $title, $note, $who));
+        $id = (int) $pdo->lastInsertId();
+    }
+    if ($ids !== null) {
+        $pdo->prepare("DELETE FROM `video_playlist_items` WHERE playlist_id = ?")->execute(array($id));
+        $ins = $pdo->prepare("INSERT INTO `video_playlist_items` (playlist_id, review_id, sort) VALUES (?,?,?)");
+        $n = 0;
+        foreach ($ids as $rid) {
+            $rid = (int) $rid;
+            if ($rid > 0) { $ins->execute(array($id, $rid, $n)); $n++; }
+        }
+    }
+    rv_ok(array('id' => $id, 'token' => $tk));
+}
+
+case 'pl-items': {
+    rv_needRead($pdo);
+    $id = (int) (isset($_GET['id']) ? $_GET['id'] : 0);
+    $st = $pdo->prepare("SELECT review_id FROM `video_playlist_items` WHERE playlist_id = ? ORDER BY sort ASC, id ASC");
+    $st->execute(array($id));
+    rv_ok(array('items' => array_map('intval', $st->fetchAll(PDO::FETCH_COLUMN))));
+}
+
+case 'pl-toggle': {
+    rv_needAdmin($pdo);
+    $id = (int) (isset($B['id']) ? $B['id'] : 0);
+    $a  = (int) !!(isset($B['active']) ? $B['active'] : 0);
+    $pdo->prepare("UPDATE `video_playlists` SET active = ? WHERE id = ?")->execute(array($a, $id));
+    rv_ok(array('id' => $id, 'active' => $a));
+}
+
+case 'pl-del': {
+    rv_needAdmin($pdo);
+    $id = (int) (isset($B['id']) ? $B['id'] : 0);
+    $pdo->prepare("DELETE FROM `video_playlist_items` WHERE playlist_id = ?")->execute(array($id));
+    $pdo->prepare("DELETE FROM `video_playlists` WHERE id = ?")->execute(array($id));
+    rv_ok(array('id' => $id));
+}
+
+/* Cong khai theo token */
+case 'pl-open': {
+    $t = preg_replace('/[^a-f0-9]/', '', strtolower((string) (isset($_GET['t']) ? $_GET['t'] : '')));
+    if (strlen($t) !== 32) rv_fail('Link không hợp lệ.', 404);
+    $st = $pdo->prepare("SELECT * FROM `video_playlists` WHERE token = ?");
+    $st->execute(array($t));
+    $p = $st->fetch();
+    if (!$p) rv_fail('Link không tồn tại.', 404);
+    if (!(int) $p['active'] && rv_lvl($pdo) < 2) rv_fail('Link đã bị tắt.', 403);
+    $st = $pdo->prepare("SELECT r.token, r.title, r.file_name, r.file_size, r.active,
+            (SELECT COUNT(*) FROM `video_comments` c WHERE c.review_id = r.id) AS n_cmt,
+            (SELECT COUNT(*) FROM `video_comments` c WHERE c.review_id = r.id AND c.resolved = 0) AS n_open
+        FROM `video_playlist_items` i JOIN `video_reviews` r ON r.id = i.review_id
+        WHERE i.playlist_id = ? ORDER BY i.sort ASC, i.id ASC");
+    $st->execute(array((int) $p['id']));
+    $rows = array();
+    foreach ($st->fetchAll() as $r) { if ((int) $r['active']) { unset($r['active']); $rows[] = $r; } }
+    rv_ok(array('title' => $p['title'], 'note' => $p['note'], 'videos' => $rows));
 }
 
 case 'toggle': {

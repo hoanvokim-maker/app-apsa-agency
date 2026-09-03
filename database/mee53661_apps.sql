@@ -7745,7 +7745,7 @@ CREATE TABLE `short_links` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_short_code` (`code`),
   KEY `idx_short_created` (`created_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -7754,6 +7754,9 @@ CREATE TABLE `short_links` (
 
 LOCK TABLES `short_links` WRITE;
 /*!40000 ALTER TABLE `short_links` DISABLE KEYS */;
+INSERT INTO `short_links` VALUES (4,'5u7jeW','https://www.apple.com','PsO - North Forum',1,1,0,NULL,1,'Harris','2026-09-03 23:18:52','2026-09-03 23:20:31');
+INSERT INTO `short_links` VALUES (5,'5N6dhv','https://www.apple.com','SpA-South',1,1,1,'2026-09-03 23:24:45',1,'Harris','2026-09-03 23:20:03','2026-09-03 23:24:45');
+INSERT INTO `short_links` VALUES (6,'gJsJSG','https://www.apple.com','SpA-North',1,1,0,NULL,1,'Harris','2026-09-03 23:20:53','2026-09-03 23:20:53');
 /*!40000 ALTER TABLE `short_links` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -7853,7 +7856,7 @@ CREATE TABLE `video_comments` (
   `owner_key` varchar(40) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `k_rev` (`review_id`,`t_ms`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -7863,6 +7866,61 @@ CREATE TABLE `video_comments` (
 LOCK TABLES `video_comments` WRITE;
 /*!40000 ALTER TABLE `video_comments` DISABLE KEYS */;
 /*!40000 ALTER TABLE `video_comments` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `video_playlist_items`
+--
+
+DROP TABLE IF EXISTS `video_playlist_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `video_playlist_items` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `playlist_id` int(10) unsigned NOT NULL,
+  `review_id` int(10) unsigned NOT NULL,
+  `sort` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `k_pl` (`playlist_id`,`sort`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `video_playlist_items`
+--
+
+LOCK TABLES `video_playlist_items` WRITE;
+/*!40000 ALTER TABLE `video_playlist_items` DISABLE KEYS */;
+/*!40000 ALTER TABLE `video_playlist_items` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `video_playlists`
+--
+
+DROP TABLE IF EXISTS `video_playlists`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `video_playlists` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `token` char(32) NOT NULL,
+  `title` varchar(300) NOT NULL DEFAULT '',
+  `note` varchar(500) NOT NULL DEFAULT '',
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_by` varchar(120) NOT NULL DEFAULT '',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `k_tok` (`token`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `video_playlists`
+--
+
+LOCK TABLES `video_playlists` WRITE;
+/*!40000 ALTER TABLE `video_playlists` DISABLE KEYS */;
+/*!40000 ALTER TABLE `video_playlists` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -7897,9 +7955,9 @@ CREATE TABLE `video_reviews` (
 
 LOCK TABLES `video_reviews` WRITE;
 /*!40000 ALTER TABLE `video_reviews` DISABLE KEYS */;
-INSERT INTO `video_reviews` VALUES (4,'54e25c7f8a27719594072f95f6959c00','Scene_BSLuan_Bai2_Ver1_29.8','','b!e4unr15XWkyaVG8edY6MkfZmAYHtCUBDugOk42Ie06yPpJHpQ4j6SpiGKdrEhZ21','01UTW2SKOYF5GNASIXX5GIBA5FZFQGPRW5','Scene_BSLuan_Bai2_Ver1_29.8.mp4',825266668,'https://apsaagency.sharepoint.com/_layouts/15/download.aspx?UniqueId=d04c2fd8-1749-4cbf-8083-a5c96067c6dd&Translate=false&tempauth=v1.eyJzaXRlaWQiOiJhZmE3OGI3Yi01NzVlLTRjNWEtOWE1NC02ZjFlNzU4ZThjOTEiLCJhcHBfZGlzcGxheW5hbWUiOiJBUFNBIEludGVybmFsIEFwcCIsIm5hbWVpZCI6IjIxZWEwNWIxLTA4YTYtNDI3Yi1iMzlkLTJlYjk5OTE1ZmIzMUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvYXBzYWFnZW5jeS5zaGFyZXBvaW50LmNvbUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJleHAiOiIxNzg4NDQxNzcwIn0.CkAKDGVudHJhX2NsYWltcxIwQ0lqSzVkUUdFQUFhRm10cGIzQkJTbFE0TFd0aE9YUmxjRlppZVVKSVFVRXFBQT09CjIKCmFjdG9yYXBwaWQSJDAwMDAwMDAzLTAwMDAtMDAwMC1jMDAwLTAwMDAwMDAwMDAwMAoKCgRzbmlkEgI2NBILCPCr6qmD8MQ_EAUaDDQwLjEyNi4zNS44OCosUVRDUG1nWUFjVkR6clN1L1J3eFdVZnpJclBTNlMwT3JyTVR3SXM4eGI4MD0weTgBQhCiN5ZaOoAAgI8e5ewfvrahShBoYXNoZWRwcm9vZnRva2VuegExugFwc2VsZWN0ZWRzaXRlcyBhbGxzaXRlcy5yZWFkIGFsbHNpdGVzLndyaXRlIGFsbHNpdGVzLm1hbmFnZSBhbGxzaXRlcy5hcmNoaXZlIGFsbHNpdGVzLmNyZWF0ZSBhbGxzaXRlcy5mdWxsY29udHJvbMgBAQ.3k6Ti-3kTucCHavlZyyG0p8kQ3DAf3NPk0WTGGrJK4s&ApiVersion=2.0',1788441170,1,'Harris','2026-08-31 04:46:29');
-INSERT INTO `video_reviews` VALUES (6,'020c1d9cfa843cc4a0bfd67d67fd1b7a','BS Luân Bài 3 | V2','','b!e4unr15XWkyaVG8edY6MkfZmAYHtCUBDugOk42Ie06yPpJHpQ4j6SpiGKdrEhZ21','01UTW2SKKZFVFBT6SE7NBZJC2H545VGDBD','BS Luân Bài 3.mp4',745607227,'https://apsaagency.sharepoint.com/_layouts/15/download.aspx?UniqueId=194a2d59-44fa-43fb-948b-47ef3b530c23&Translate=false&tempauth=v1.eyJzaXRlaWQiOiJhZmE3OGI3Yi01NzVlLTRjNWEtOWE1NC02ZjFlNzU4ZThjOTEiLCJhcHBfZGlzcGxheW5hbWUiOiJBUFNBIEludGVybmFsIEFwcCIsIm5hbWVpZCI6IjIxZWEwNWIxLTA4YTYtNDI3Yi1iMzlkLTJlYjk5OTE1ZmIzMUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvYXBzYWFnZW5jeS5zaGFyZXBvaW50LmNvbUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJleHAiOiIxNzg4NDQxNzc0In0.CkAKDGVudHJhX2NsYWltcxIwQ0lqSzVkUUdFQUFhRm10cGIzQkJTbFE0TFd0aE9YUmxjRlppZVVKSVFVRXFBQT09CjIKCmFjdG9yYXBwaWQSJDAwMDAwMDAzLTAwMDAtMDAwMC1jMDAwLTAwMDAwMDAwMDAwMAoKCgRzbmlkEgI2NBILCKqb08qD8MQ_EAUaDTIwLjE5MC4xNjMuMjkqLDBXdHhESWdHUlQvUHNtNXRiMnpJU0lnQnVWT3Fld0pocVljK0JmZHVhSUE9MHk4AUIQojeWWxJgAICCD5_v4U-LO0oQaGFzaGVkcHJvb2Z0b2tlbnoBMboBcHNlbGVjdGVkc2l0ZXMgYWxsc2l0ZXMucmVhZCBhbGxzaXRlcy53cml0ZSBhbGxzaXRlcy5tYW5hZ2UgYWxsc2l0ZXMuYXJjaGl2ZSBhbGxzaXRlcy5jcmVhdGUgYWxsc2l0ZXMuZnVsbGNvbnRyb2zIAQE.m0J6thIbseRJLuCivqY2wykru2n55VNklQT313x11qE&ApiVersion=2.0',1788441174,1,'Harris','2026-09-03 12:21:29');
-INSERT INTO `video_reviews` VALUES (7,'fee83cba24ffc36efc9b5544dbc7e80f','5 Phút Nhận Diện Nhanh Bệnh Lý Tiêu Hóa Trên Thường Gặp','','b!e4unr15XWkyaVG8edY6MkfZmAYHtCUBDugOk42Ie06yPpJHpQ4j6SpiGKdrEhZ21','01UTW2SKP7VKPIYOPSL5BJMUP6PVWNU5QV','5 Phút Nhận Diện Nhanh Bệnh Lý Tiêu Hóa Trên Thường Gặp.mp4',453980183,'https://apsaagency.sharepoint.com/_layouts/15/download.aspx?UniqueId=8c9eaaff-f239-425f-9651-fe7d6cda7615&Translate=false&tempauth=v1.eyJzaXRlaWQiOiJhZmE3OGI3Yi01NzVlLTRjNWEtOWE1NC02ZjFlNzU4ZThjOTEiLCJhcHBfZGlzcGxheW5hbWUiOiJBUFNBIEludGVybmFsIEFwcCIsIm5hbWVpZCI6IjIxZWEwNWIxLTA4YTYtNDI3Yi1iMzlkLTJlYjk5OTE1ZmIzMUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvYXBzYWFnZW5jeS5zaGFyZXBvaW50LmNvbUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJleHAiOiIxNzg4NDQxNzYxIn0.CkAKDGVudHJhX2NsYWltcxIwQ0lqSzVkUUdFQUFhRm10cGIzQkJTbFE0TFd0aE9YUmxjRlppZVVKSVFVRXFBQT09CjIKCmFjdG9yYXBwaWQSJDAwMDAwMDAzLTAwMDAtMDAwMC1jMDAwLTAwMDAwMDAwMDAwMAoKCgRzbmlkEgI2NBILCMb2ldSC8MQ_EAUaDTIwLjE5MC4xNjMuMjkqLFYxUXljdFpOYjBkMDdXaUNrcExyUVI2MW5LSUQ4NzlIS3JmTGpYSE9nRms9MHk4AUIQojeWWAagAICPHuyb6is7X0oQaGFzaGVkcHJvb2Z0b2tlbnoBMboBcHNlbGVjdGVkc2l0ZXMgYWxsc2l0ZXMucmVhZCBhbGxzaXRlcy53cml0ZSBhbGxzaXRlcy5tYW5hZ2UgYWxsc2l0ZXMuYXJjaGl2ZSBhbGxzaXRlcy5jcmVhdGUgYWxsc2l0ZXMuZnVsbGNvbnRyb2zIAQE.SH8NYXGnUaqJDrldtaBsDpFwFDnmjZRcTT4-txiBaAU&ApiVersion=2.0',1788441161,1,'Harris','2026-09-03 12:21:54');
+INSERT INTO `video_reviews` VALUES (4,'54e25c7f8a27719594072f95f6959c00','BS Luân Bài 2 | Từ Triệu Chứng Đến Quyết Định Tư Vấn Của Dược Sĩ','','b!e4unr15XWkyaVG8edY6MkfZmAYHtCUBDugOk42Ie06yPpJHpQ4j6SpiGKdrEhZ21','01UTW2SKOYF5GNASIXX5GIBA5FZFQGPRW5','Scene_BSLuan_Bai2_Ver1_29.8.mp4',825266668,'https://apsaagency.sharepoint.com/_layouts/15/download.aspx?UniqueId=d04c2fd8-1749-4cbf-8083-a5c96067c6dd&Translate=false&tempauth=v1.eyJzaXRlaWQiOiJhZmE3OGI3Yi01NzVlLTRjNWEtOWE1NC02ZjFlNzU4ZThjOTEiLCJhcHBfZGlzcGxheW5hbWUiOiJBUFNBIEludGVybmFsIEFwcCIsIm5hbWVpZCI6IjIxZWEwNWIxLTA4YTYtNDI3Yi1iMzlkLTJlYjk5OTE1ZmIzMUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvYXBzYWFnZW5jeS5zaGFyZXBvaW50LmNvbUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJleHAiOiIxNzg4NDU1NTM1In0.CkAKDGVudHJhX2NsYWltcxIwQ0xLMjV0UUdFQUFhRmsxTmNsZE9MVUZMU2tVdGVqSXdTMlpHU1ZKNVFVRXFBQT09CjIKCmFjdG9yYXBwaWQSJDAwMDAwMDAzLTAwMDAtMDAwMC1jMDAwLTAwMDAwMDAwMDAwMAoKCgRzbmlkEgI2NBILCL6g4-6E-MQ_EAUaDTIwLjE5MC4xNjMuOTYqLFFUQ1BtZ1lBY1ZEenJTdS9Sd3hXVWZ6SXJQUzZTME9yck1Ud0lzOHhiODA9MHk4AUIQojejerYQAICCD5xwOgI7EEoQaGFzaGVkcHJvb2Z0b2tlbnoBMboBcHNlbGVjdGVkc2l0ZXMgYWxsc2l0ZXMucmVhZCBhbGxzaXRlcy53cml0ZSBhbGxzaXRlcy5tYW5hZ2UgYWxsc2l0ZXMuYXJjaGl2ZSBhbGxzaXRlcy5jcmVhdGUgYWxsc2l0ZXMuZnVsbGNvbnRyb2zIAQE.3tV9pIGGEtLExZrwbQ_YWuHsTW94iMv0fIgIfTNVfjc&ApiVersion=2.0',1788454935,1,'Harris','2026-08-31 04:46:29');
+INSERT INTO `video_reviews` VALUES (6,'020c1d9cfa843cc4a0bfd67d67fd1b7a','BS Luân Bài 3 | Nguyên Tắc Vàng Trong Quản Lý Điều Trị Bệnh Liên Quan Acid Dịch Vị v2','','b!e4unr15XWkyaVG8edY6MkfZmAYHtCUBDugOk42Ie06yPpJHpQ4j6SpiGKdrEhZ21','01UTW2SKKZFVFBT6SE7NBZJC2H545VGDBD','BS Luân Bài 3.mp4',745607227,'https://apsaagency.sharepoint.com/_layouts/15/download.aspx?UniqueId=194a2d59-44fa-43fb-948b-47ef3b530c23&Translate=false&tempauth=v1.eyJzaXRlaWQiOiJhZmE3OGI3Yi01NzVlLTRjNWEtOWE1NC02ZjFlNzU4ZThjOTEiLCJhcHBfZGlzcGxheW5hbWUiOiJBUFNBIEludGVybmFsIEFwcCIsIm5hbWVpZCI6IjIxZWEwNWIxLTA4YTYtNDI3Yi1iMzlkLTJlYjk5OTE1ZmIzMUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvYXBzYWFnZW5jeS5zaGFyZXBvaW50LmNvbUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJleHAiOiIxNzg4NDQxNzc0In0.CkAKDGVudHJhX2NsYWltcxIwQ0lqSzVkUUdFQUFhRm10cGIzQkJTbFE0TFd0aE9YUmxjRlppZVVKSVFVRXFBQT09CjIKCmFjdG9yYXBwaWQSJDAwMDAwMDAzLTAwMDAtMDAwMC1jMDAwLTAwMDAwMDAwMDAwMAoKCgRzbmlkEgI2NBILCKqb08qD8MQ_EAUaDTIwLjE5MC4xNjMuMjkqLDBXdHhESWdHUlQvUHNtNXRiMnpJU0lnQnVWT3Fld0pocVljK0JmZHVhSUE9MHk4AUIQojeWWxJgAICCD5_v4U-LO0oQaGFzaGVkcHJvb2Z0b2tlbnoBMboBcHNlbGVjdGVkc2l0ZXMgYWxsc2l0ZXMucmVhZCBhbGxzaXRlcy53cml0ZSBhbGxzaXRlcy5tYW5hZ2UgYWxsc2l0ZXMuYXJjaGl2ZSBhbGxzaXRlcy5jcmVhdGUgYWxsc2l0ZXMuZnVsbGNvbnRyb2zIAQE.m0J6thIbseRJLuCivqY2wykru2n55VNklQT313x11qE&ApiVersion=2.0',1788441174,1,'Harris','2026-09-03 12:21:29');
+INSERT INTO `video_reviews` VALUES (7,'fee83cba24ffc36efc9b5544dbc7e80f','BS Luân - Bài 1 | 5 Phút Nhận Diện Nhanh Bệnh Lý Tiêu Hóa Trên Thường Gặp','','b!e4unr15XWkyaVG8edY6MkfZmAYHtCUBDugOk42Ie06yPpJHpQ4j6SpiGKdrEhZ21','01UTW2SKP7VKPIYOPSL5BJMUP6PVWNU5QV','5 Phút Nhận Diện Nhanh Bệnh Lý Tiêu Hóa Trên Thường Gặp.mp4',453980183,'https://apsaagency.sharepoint.com/_layouts/15/download.aspx?UniqueId=8c9eaaff-f239-425f-9651-fe7d6cda7615&Translate=false&tempauth=v1.eyJzaXRlaWQiOiJhZmE3OGI3Yi01NzVlLTRjNWEtOWE1NC02ZjFlNzU4ZThjOTEiLCJhcHBfZGlzcGxheW5hbWUiOiJBUFNBIEludGVybmFsIEFwcCIsIm5hbWVpZCI6IjIxZWEwNWIxLTA4YTYtNDI3Yi1iMzlkLTJlYjk5OTE1ZmIzMUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvYXBzYWFnZW5jeS5zaGFyZXBvaW50LmNvbUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJleHAiOiIxNzg4NDU1NjA2In0.CkAKDGVudHJhX2NsYWltcxIwQ0xLMjV0UUdFQUFhRmsxTmNsZE9MVUZMU2tVdGVqSXdTMlpHU1ZKNVFVRXFBQT09CjIKCmFjdG9yYXBwaWQSJDAwMDAwMDAzLTAwMDAtMDAwMC1jMDAwLTAwMDAwMDAwMDAwMAoKCgRzbmlkEgI2NBILCLjQvJOK-MQ_EAUaDTIwLjE5MC4xNjMuMjkqLFYxUXljdFpOYjBkMDdXaUNrcExyUVI2MW5LSUQ4NzlIS3JmTGpYSE9nRms9MHk4AUIQojejjAlQAICPHuCwewoKTkoQaGFzaGVkcHJvb2Z0b2tlbnoBMboBcHNlbGVjdGVkc2l0ZXMgYWxsc2l0ZXMucmVhZCBhbGxzaXRlcy53cml0ZSBhbGxzaXRlcy5tYW5hZ2UgYWxsc2l0ZXMuYXJjaGl2ZSBhbGxzaXRlcy5jcmVhdGUgYWxsc2l0ZXMuZnVsbGNvbnRyb2zIAQE.MrL4aJbvrHiMRjvrWo-D5aEIyCDPnUlcUlP7kpRbn3I&ApiVersion=2.0',1788455006,1,'Harris','2026-09-03 12:21:54');
 /*!40000 ALTER TABLE `video_reviews` ENABLE KEYS */;
 UNLOCK TABLES;
 

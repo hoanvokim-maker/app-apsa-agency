@@ -241,6 +241,19 @@ function whoLoad() {
   try { return m ? decodeURIComponent(m[1]) : ''; } catch (e) { return ''; }
 }
 
+/* --- Che do nhung trong playlist: an header + tieu de --- */
+try {
+  if (/[?&]embed=1/.test(location.search)) {
+    document.documentElement.classList.add('rv-embed');
+    var _emb = document.createElement('style');
+    _emb.textContent =
+      '.rv-embed header{display:none!important}' +
+      '.rv-embed h1{display:none!important}' +
+      '.rv-embed body{padding-top:10px!important}';
+    document.head.appendChild(_emb);
+  }
+} catch (e) { }
+
 /* --- Ma rieng cua trinh duyet: de biet gop y nao la cua minh --- */
 var OKEY = '';
 try {

@@ -121,6 +121,11 @@
   <div class="stats" id="stats"></div>
 </div>
 
+<div class="vtabs">
+  <button class="vb tb on" id="tabV" onclick="setTab('v')">Link video</button>
+  <button class="vb tb" id="tabP" onclick="setTab('p')">Playlist</button>
+</div>
+
 <div class="wrap">
   <div class="toolbar">
     <button class="vb pri" onclick="openNew()">＋ Tạo link duyệt</button>
@@ -135,6 +140,22 @@
     <tbody id="tb"></tbody>
   </table>
   <div class="empty" id="emp" style="display:none">Chưa có link duyệt nào.</div>
+</div>
+
+<div class="wrap" id="wrapPl" style="display:none">
+  <div class="toolbar">
+    <button class="vb pri" onclick="plNew()">+ Tạo playlist</button>
+    <span class="spacer"></span>
+    <button class="vb" onclick="plLoad()">↻ Tải lại</button>
+  </div>
+  <table>
+    <thead><tr>
+      <th>Playlist</th><th>Số video</th><th>Người tạo</th><th>Ngày tạo</th>
+      <th>Trạng thái</th><th style="text-align:right">Thao tác</th>
+    </tr></thead>
+    <tbody id="ptb"></tbody>
+  </table>
+  <div class="empty" id="pemp" style="display:none">Chưa có playlist nào. Bấm “+ Tạo playlist” để gom nhiều video vào một link gửi khách.</div>
 </div>
 
 <div class="ov" id="ovNew">
@@ -329,6 +350,182 @@ function mk() {
 }
 
 document.addEventListener('DOMContentLoaded', load);
+
+/* ================= PLAYLIST ================= */
+var PLS = [], PLSEL = [], PLID = 0;
+
+(function plCss() {
+  var st = document.createElement('style');
+  st.textContent =
+    '.vtabs{display:flex;gap:8px;margin:0 0 12px}' +
+    '.vb.tb{opacity:.6}.vb.tb.on{opacity:1;border-color:#d7f205;color:#d7f205}' +
+    '.plov{position:fixed;inset:0;background:rgba(0,0,0,.62);display:flex;align-items:center;' +
+    'justify-content:center;z-index:9999;padding:16px}' +
+    '.plbx{background:#161a20;border:1px solid #2b3138;border-radius:14px;padding:18px 20px;' +
+    'width:min(760px,100%);max-height:90vh;display:flex;flex-direction:column;box-shadow:0 18px 50px rgba(0,0,0,.5)}' +
+    '.plbx h3{margin:0 0 12px;font-size:15px;letter-spacing:.04em;text-transform:uppercase}' +
+    '.plbx label{display:block;font-size:11px;opacity:.65;margin:10px 0 4px;text-transform:uppercase;letter-spacing:.06em}' +
+    '.plbx input[type=text],.plbx textarea{width:100%;box-sizing:border-box;font:inherit;font-size:13px;' +
+    'padding:8px 10px;border-radius:8px;border:1px solid #333a43;background:#0f1216;color:#e6e8ea;resize:vertical}' +
+    '.plscroll{overflow:auto;flex:1;min-height:80px;margin-top:4px}' +
+    '.plrow{display:flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid #262b33;' +
+    'border-radius:8px;margin-bottom:6px;background:#0f1216}' +
+    '.plrow .nm{flex:1;min-width:0;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
+    '.plrow .ix{width:20px;color:#9aa0a6;font-size:12px}' +
+    '.plrow .mini{font:inherit;font-size:11px;padding:2px 7px;border-radius:6px;cursor:pointer;' +
+    'border:1px solid rgba(255,255,255,.16);background:transparent;color:#9aa0a6}' +
+    '.plrow .mini:disabled{opacity:.3;cursor:default}' +
+    '.plpick{display:flex;align-items:center;gap:8px;padding:5px 8px;font-size:12.5px;cursor:pointer;' +
+    'border-radius:7px}' +
+    '.plpick:hover{background:rgba(255,255,255,.05)}' +
+    '.plpick input{accent-color:#d7f205}' +
+    '.plft{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}' +
+    '.plft button{font:inherit;font-size:12.5px;padding:7px 16px;border-radius:8px;cursor:pointer;' +
+    'border:1px solid rgba(255,255,255,.16);background:transparent;color:#9aa0a6}' +
+    '.plft button.ok{border-color:#d7f205;background:#d7f205;color:#0d0f12;font-weight:700}' +
+    '.plft button[disabled]{opacity:.55;cursor:default}';
+  document.head.appendChild(st);
+})();
+
+function setTab(k) {
+  var v = k === 'v';
+  document.querySelector('.wrap').style.display = v ? '' : 'none';
+  el('wrapPl').style.display = v ? 'none' : '';
+  el('tabV').classList.toggle('on', v);
+  el('tabP').classList.toggle('on', !v);
+  if (!v) plLoad();
+}
+
+function plLink(tk) { return location.origin + '/playlist.html?t=' + tk; }
+
+function plLoad() {
+  api('pl-list').then(function (d) {
+    PLS = d.rows || [];
+    el('pemp').style.display = PLS.length ? 'none' : '';
+    el('ptb').innerHTML = PLS.map(function (p) {
+      return '<tr>' +
+        '<td><div class="ttl">' + esc(p.title) + '</div>' +
+        (p.note ? '<div class="fn">' + esc(p.note) + '</div>' : '') + '</td>' +
+        '<td>' + (Number(p.n_vid) || 0) + '</td>' +
+        '<td>' + esc(p.created_by) + '</td>' +
+        '<td>' + dmy(p.created_at) + '</td>' +
+        '<td>' + (Number(p.active) ? '<span class="pill on">Đang mở</span>'
+                                   : '<span class="pill off">Đã tắt</span>') + '</td>' +
+        '<td><div class="acts">' +
+        '<button class="vb sm" onclick="plCopy(\'' + p.token + '\', this)">⧉ Copy link</button>' +
+        '<a class="vb sm" href="./playlist.html?t=' + p.token + '" target="_blank" rel="noopener">↗ Mở</a>' +
+        '<button class="vb sm" onclick="plEdit(' + p.id + ')">✎ Sửa</button>' +
+        '<button class="vb sm" onclick="plTog(' + p.id + ',' + (Number(p.active) ? 0 : 1) + ')">' +
+        (Number(p.active) ? 'Tắt' : 'Bật') + '</button>' +
+        '<button class="vb sm" onclick="plDel(' + p.id + ')">Xóa</button>' +
+        '</div></td></tr>';
+    }).join('');
+  }).catch(function (e) { toast(e.message); });
+}
+
+function plCopy(tk, b) {
+  var u = plLink(tk), old = b.textContent;
+  function done() { b.textContent = '✓ Đã copy'; setTimeout(function () { b.textContent = old; }, 1500); }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(u).then(done).catch(fb);
+  } else fb();
+  function fb() {
+    var t = document.createElement('textarea'); t.value = u; document.body.appendChild(t); t.select();
+    try { document.execCommand('copy'); done(); } catch (e) { toast(u); }
+    document.body.removeChild(t);
+  }
+}
+
+function plTog(id, a) { api('pl-toggle', { id: id, active: a }).then(plLoad).catch(function (e) { toast(e.message); }); }
+
+function plDel(id) {
+  if (!confirm('Xóa playlist này? Các video bên trong vẫn giữ nguyên.')) return;
+  api('pl-del', { id: id }).then(function () { toast('Đã xóa'); plLoad(); }).catch(function (e) { toast(e.message); });
+}
+
+function plNew() { plOpen(0, '', '', []); }
+
+function plEdit(id) {
+  var p = null, i;
+  for (i = 0; i < PLS.length; i++) if (Number(PLS[i].id) === Number(id)) p = PLS[i];
+  if (!p) return;
+  api('pl-items', null, '&id=' + id).then(function (d) {
+    plOpen(id, p.title, p.note, d.items || []);
+  }).catch(function (e) { toast(e.message); });
+}
+
+function plOpen(id, title, note, sel) {
+  PLID = id;
+  PLSEL = (sel || []).map(Number);
+  var ov = document.createElement('div');
+  ov.className = 'plov';
+  ov.innerHTML = '<div class="plbx">' +
+    '<h3>' + (id ? 'Sửa playlist' : 'Tạo playlist mới') + '</h3>' +
+    '<label>Tên playlist *</label><input class="pt" type="text" maxlength="300" />' +
+    '<label>Ghi chú gửi khách</label><textarea class="pn" rows="2" maxlength="500"></textarea>' +
+    '<label>Video trong playlist <span class="pc"></span></label>' +
+    '<div class="plscroll"><div class="psel"></div><div class="pall"></div></div>' +
+    '<div class="plft"><button class="no">Huỷ</button><button class="ok">Lưu</button></div></div>';
+  document.body.appendChild(ov);
+  ov.querySelector('.pt').value = title || '';
+  ov.querySelector('.pn').value = note || '';
+  window.__plov = ov;
+  plDrawPick();
+  ov.querySelector('.pt').focus();
+  function close() { if (ov.parentNode) ov.parentNode.removeChild(ov); window.__plov = null; }
+  ov.onclick = function (e) { if (e.target === ov) close(); };
+  ov.querySelector('.no').onclick = close;
+  ov.querySelector('.ok').onclick = function () {
+    var b = ov.querySelector('.ok');
+    var t = ov.querySelector('.pt').value.trim();
+    if (!t) { toast('Tên playlist không được để trống.'); return; }
+    if (!PLSEL.length) { toast('Chọn ít nhất 1 video.'); return; }
+    b.disabled = true; b.textContent = 'Đang lưu…';
+    api('pl-save', { id: PLID, title: t, note: ov.querySelector('.pn').value, items: PLSEL })
+      .then(function () { close(); toast('Đã lưu playlist'); plLoad(); })
+      .catch(function (e) { b.disabled = false; b.textContent = 'Lưu'; toast(e.message); });
+  };
+}
+
+function plRow(id) { for (var i = 0; i < ROWS.length; i++) if (Number(ROWS[i].id) === Number(id)) return ROWS[i]; return null; }
+
+function plDrawPick() {
+  var ov = window.__plov; if (!ov) return;
+  ov.querySelector('.pc').textContent = PLSEL.length ? '· đã chọn ' + PLSEL.length : '';
+  ov.querySelector('.psel').innerHTML = PLSEL.map(function (id, i) {
+    var r = plRow(id); if (!r) return '';
+    return '<div class="plrow"><span class="ix">' + (i + 1) + '</span>' +
+      '<span class="nm">' + esc(r.title || r.file_name) + '</span>' +
+      '<button class="mini" onclick="plMove(' + i + ',-1)"' + (i === 0 ? ' disabled' : '') + '>↑</button>' +
+      '<button class="mini" onclick="plMove(' + i + ',1)"' + (i === PLSEL.length - 1 ? ' disabled' : '') + '>↓</button>' +
+      '<button class="mini" onclick="plToggleId(' + id + ')">✕</button></div>';
+  }).join('');
+  var av = ROWS.filter(function (r) { return PLSEL.indexOf(Number(r.id)) < 0; });
+  ov.querySelector('.pall').innerHTML =
+    (av.length ? '<div style="font-size:11px;opacity:.55;margin:10px 0 4px;text-transform:uppercase;letter-spacing:.06em">Thêm video</div>' : '') +
+    av.map(function (r) {
+      return '<div class="plpick" onclick="plToggleId(' + r.id + ')">' +
+        '<input type="checkbox" onclick="event.preventDefault()" />' +
+        '<span class="nm">' + esc(r.title || r.file_name) + '</span>' +
+        (Number(r.active) ? '' : '<span style="font-size:10.5px;opacity:.55">(đã tắt)</span>') +
+        '</div>';
+    }).join('');
+}
+
+function plToggleId(id) {
+  id = Number(id);
+  var i = PLSEL.indexOf(id);
+  if (i < 0) PLSEL.push(id); else PLSEL.splice(i, 1);
+  plDrawPick();
+}
+
+function plMove(i, d) {
+  var j = i + d;
+  if (j < 0 || j >= PLSEL.length) return;
+  var t = PLSEL[i]; PLSEL[i] = PLSEL[j]; PLSEL[j] = t;
+  plDrawPick();
+}
+
 </script>
 </body>
 </html>
