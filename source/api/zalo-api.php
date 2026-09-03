@@ -20,6 +20,7 @@ require_once __DIR__ . '/db-config.php';
 require_once __DIR__ . '/zalo.php';
 
 $ACTION = isset($_GET['action']) ? (string) $_GET['action'] : '';
+if (PHP_SAPI === 'cli' && isset($argv[1])) $ACTION = (string) $argv[1];
 
 function za_out($d, $c = 200) { http_response_code($c); echo json_encode($d, JSON_UNESCAPED_UNICODE); exit; }
 function za_fail($m, $c = 400) { za_out(array('ok' => false, 'error' => $m), $c); }
@@ -111,6 +112,80 @@ if ($ACTION === 'cron-due') {
 /* ================================================================== */
 /*  Các action còn lại đều cần đăng nhập                              */
 /* ================================================================== */
+
+/* ============================================================ */
+/*  Cron: nhac Admin cac khoan chi den han thanh toan            */
+/* ============================================================ */
+
+if ($ACTION === 'cron-pay-due') {
+    if (PHP_SAPI !== 'cli') {
+        $cfg = zb_cfg();
+        $key = trim((string) $cfg['cron_key']);
+        $got = isset($_GET['key']) ? (string) $_GET['key'] : '';
+        if ($key === '' || !hash_equals($key, $got)) za_fail('Sai khoá.', 403);
+    }
+
+    $pdo   = za_pdo();
+    $today = date('Y-m-d');
+    $sent  = 0; $noted = 0;
+
+    try {
+        $st = $pdo->prepare(
+            "SELECT e.id, e.name, e.qty, e.price, e.vat_percent, e.pay_date, e.payee_name,
+                    q.code, q.title
+               FROM `quotation_expenses` e
+               JOIN `quotations` q ON q.id = e.quotation_id
+              WHERE e.paid = 0
+                AND e.pay_date IS NOT NULL
+                AND e.pay_date <> '0000-00-00'
+                AND e.pay_date <= ?
+                AND q.deleted_at IS NULL
+              ORDER BY e.pay_date ASC, q.code ASC");
+        $st->execute(array($today));
+        $rows = $st->fetchAll();
+    } catch (Exception $e) { $rows = array(); }
+
+    if (!$rows) za_out(array('ok' => true, 'due' => 0, 'noted' => 0, 'sent' => 0));
+
+    $lines = array(); $tong = 0;
+    foreach ($rows as $r) {
+        $amt   = (float) $r['qty'] * (float) $r['price'];
+        $amt   = $amt + $amt * ((float) $r['vat_percent'] / 100);
+        $tong += $amt;
+        $d   = (string) $r['pay_date'];
+        $dd  = (int) round((strtotime($today) - strtotime($d)) / 86400);
+        $tag = $dd > 0 ? ('quá hạn ' . $dd . ' ngày') : 'đến hạn hôm nay';
+        $who = trim((string) $r['payee_name']);
+        $lines[] = '• ' . mb_substr((string) $r['name'], 0, 46, 'UTF-8')
+                 . ($who !== '' ? ' — ' . $who : '')
+                 . ' — ' . number_format($amt, 0, ',', '.') . ' đ'
+                 . ' — ' . date('d/m', strtotime($d)) . ' (' . $tag . ')'
+                 . ' — ' . (string) $r['code'];
+    }
+    $title = 'Có ' . count($rows) . ' khoản chi đến hạn thanh toán';
+    $body  = implode("\n", array_slice($lines, 0, 15))
+           . (count($lines) > 15 ? "\n… và " . (count($lines) - 15) . ' khoản khác' : '')
+           . "\nTổng: " . number_format($tong, 0, ',', '.') . ' đ';
+    $url   = './chi-phi.html';
+
+    $ad  = $pdo->query("SELECT id FROM `app_users` WHERE `role` = 'admin' AND active = 1")->fetchAll();
+    $ins = $pdo->prepare("INSERT INTO `app_notifications` (user_id, kind, title, body, url, actor)
+                               VALUES (?,?,?,?,?,?)");
+    foreach ($ad as $a) {
+        $uid = (int) $a['id'];
+        try {
+            $ins->execute(array($uid, 'pay_due', mb_substr($title, 0, 200, 'UTF-8'),
+                                mb_substr($body, 0, 500, 'UTF-8'), $url, 'Hệ thống'));
+            $noted++;
+        } catch (PDOException $e) { /* bo qua */ }
+        if (zb_enabled()) {
+            $acts = array(array('kind' => 'open', 'label' => 'Mở Chi phí thực tế', 'url' => $url));
+            if (zb_push($pdo, $uid, 'pay_due', $title, $body, $url, $acts)) $sent++;
+        }
+    }
+    za_out(array('ok' => true, 'due' => count($rows), 'admins' => count($ad),
+                 'noted' => $noted, 'sent' => $sent));
+}
 
 require_once __DIR__ . '/session-boot.php';
 

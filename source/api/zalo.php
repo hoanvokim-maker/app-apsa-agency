@@ -70,7 +70,8 @@ function zb_kinds()
         'reply',            // có người trả lời bình luận
         'leave_new',        // đơn xin nghỉ mới (Admin)
         'leave_canceled',   // đơn nghỉ bị huỷ
-        'leave_approved',   // đơn nghỉ được duyệt
+        'leave_approved',
+        'pay_due',          // chi phi den han thanh toan   // đơn nghỉ được duyệt
         'leave_rejected',   // đơn nghỉ bị từ chối
         'reopen_request',   // xin mở lại dự án đã đóng (Admin)
     );
@@ -80,6 +81,7 @@ function zb_kinds()
 function zb_icon($kind)
 {
     $m = array(
+        'pay_due'           => "\u{1F4B8}",
         'assign'         => '📌',
         'task_done'      => '✅',
         'task_due'       => '⏰',
