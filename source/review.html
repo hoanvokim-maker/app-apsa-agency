@@ -241,8 +241,30 @@ function whoLoad() {
   try { return m ? decodeURIComponent(m[1]) : ''; } catch (e) { return ''; }
 }
 
+/* --- Ma rieng cua trinh duyet: de biet gop y nao la cua minh --- */
+var OKEY = '';
+try {
+  OKEY = localStorage.getItem('rv_okey') || '';
+  if (!OKEY) { OKEY = 'k' + Date.now().toString(36) + Math.random().toString(36).slice(2, 12); localStorage.setItem('rv_okey', OKEY); }
+} catch (e) { OKEY = 'k' + Math.random().toString(36).slice(2, 14); }
+try {
+  var _rvst = document.createElement('style');
+  _rvst.textContent =
+    '.cm .edt{font-size:11px;opacity:.6;font-style:italic;margin-top:2px}' +
+    '.cm .acts.mine{margin-top:4px}' +
+    '.cm .edbox{margin-top:6px}' +
+    '.cm .edta{width:100%;box-sizing:border-box;min-height:60px;font:inherit;padding:6px;border-radius:6px;' +
+    'border:1px solid #3a3f47;background:#14171c;color:inherit;resize:vertical}' +
+    '.cm .edbtn{display:flex;gap:6px;margin-top:6px}' +
+    '.cm .edbtn button{font:inherit;font-size:11.5px;padding:4px 10px;border-radius:7px;cursor:pointer;' +
+    'border:1px solid rgba(255,255,255,.14);background:transparent;color:#9aa0a6}' +
+    '.cm .edbtn button.ok{border-color:#d7f205;color:#0d0f12;background:#d7f205;font-weight:700}' +
+    '.cm .edbtn button[disabled]{opacity:.55;cursor:default}';
+  document.head.appendChild(_rvst);
+} catch (e) { }
+
 function api(action, body) {
-  var u = API + '?action=' + action + '&t=' + encodeURIComponent(T);
+  var u = API + '?action=' + action + '&t=' + encodeURIComponent(T) + '&ok=' + encodeURIComponent(OKEY);
   var o = { credentials: 'same-origin' };
   if (body) { o.method = 'POST'; o.headers = { 'Content-Type': 'application/json' }; o.body = JSON.stringify(body); }
   return fetch(u, o).then(function (r) { return r.json(); }).then(function (j) {
@@ -322,6 +344,35 @@ function loadCm() {
     CM = d.rows || []; ADMIN = d.admin ? 1 : 0; renderCm(); paintTl();
   }).catch(function (e) { toast(e.message); });
 }
+function edtFmt(v) {
+  var t = String(v || '').replace('T', ' ');
+  var m = t.match(/^(\d{4})-(\d{2})-(\d{2})[ ](\d{2}):(\d{2})/);
+  if (!m) return t;
+  return m[4] + ':' + m[5] + ' ' + m[3] + '/' + m[2] + '/' + m[1];
+}
+function cedit(id) {
+  var c = null, i;
+  for (i = 0; i < CM.length; i++) if (Number(CM[i].id) === Number(id)) c = CM[i];
+  if (!c) return;
+  var host = document.getElementById('cm' + id);
+  if (!host || host.querySelector('.edbox')) return;
+  var box = document.createElement('div');
+  box.className = 'edbox';
+  box.innerHTML = '<textarea class="edta" rows="3"></textarea>' +
+    '<div class="edbtn"><button class="ok">Lưu</button><button class="no">Huỷ</button></div>';
+  host.appendChild(box);
+  var ta = box.querySelector('.edta');
+  ta.value = c.body || '';
+  ta.focus();
+  box.querySelector('.no').onclick = function () { box.parentNode.removeChild(box); };
+  box.querySelector('.ok').onclick = function () {
+    var b = box.querySelector('.ok');
+    b.disabled = true; b.textContent = 'Đang lưu…';
+    api('cedit', { id: id, body: ta.value, ok: OKEY })
+      .then(function () { loadCm(); })
+      .catch(function (e) { b.disabled = false; b.textContent = 'Lưu'; toast(e.message); });
+  };
+}
 function renderCm() {
   var open = CM.filter(function (c) { return !Number(c.resolved); }).length;
   el('lh').textContent = 'Góp ý — ' + CM.length + ' mục' + (open ? ' · ' + open + ' chưa xử lý' : '');
@@ -331,10 +382,13 @@ function renderCm() {
       '" onclick="lb(this.src)" alt="" />' : '';
     var ac = ADMIN ? '<div class="acts"><button onclick="res(' + c.id + ',' + (Number(c.resolved) ? 0 : 1) + ')">' +
       (Number(c.resolved) ? '↩ Mở lại' : '✓ Đã xử lý') + '</button><button onclick="cdel(' + c.id + ')">Xóa</button></div>' : '';
-    return '<div class="cm' + (Number(c.resolved) ? ' done' : '') + '">' +
+    var ed = c.edited_at ? '<div class="edt">đã sửa lúc ' + edtFmt(c.edited_at) + '</div>' : '';
+    var mb = (ADMIN || Number(c.mine)) ? '<div class="acts mine"><button onclick="cedit(' + c.id + ')">✎ Sửa</button></div>' : '';
+    if (ADMIN && ac && mb) { ac = ac.replace('<div class="acts">', '<div class="acts">' + mb.replace(/<\/?div[^>]*>/g, '')); mb = ''; }
+    return '<div class="cm' + (Number(c.resolved) ? ' done' : '') + '" id="cm' + c.id + '">' +
       '<div class="top"><button class="ts" onclick="seek(' + c.t_ms + ')">' + fmt(c.t_ms) + '</button>' +
       '<span class="au">' + esc(c.author) + '</span><span class="dt">' + esc((c.created_at || '').slice(5, 16)) + '</span></div>' +
-      (c.body ? '<div class="bd">' + esc(c.body) + '</div>' : '') + im + ac + '</div>';
+      (c.body ? '<div class="bd">' + esc(c.body) + '</div>' : '') + ed + im + mb + ac + '</div>';
   }).join('');
 }
 function paintTl() {
@@ -434,7 +488,7 @@ function send() {
       el('bd').value = ''; IMGS = []; paintThumbs(); el('cmp').classList.remove('open');
       toast('Đã gửi góp ý lúc ' + fmt(ms)); loadCm(); return;
     }
-    var payload = { t_ms: ms, author: au, body: i === 0 ? bd : '', img: list[i] };
+    var payload = { t_ms: ms, author: au, body: i === 0 ? bd : '', img: list[i], ok: OKEY };
     if (!payload.body && !payload.img) { i++; next(); return; }
     api('comment', payload).then(function () { i++; next(); })
       .catch(function (e) { b.disabled = false; b.textContent = 'Gửi góp ý'; toast(e.message); });

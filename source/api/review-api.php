@@ -57,6 +57,17 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS `video_comments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
 /* ── ai đang đăng nhập ─────────────────────────────────────── */
+/* --- Bo sung cot cho tinh nang sua gop y --- */
+foreach (array(
+    'edited_at' => "ALTER TABLE `video_comments` ADD COLUMN `edited_at` DATETIME NULL DEFAULT NULL",
+    'owner_key' => "ALTER TABLE `video_comments` ADD COLUMN `owner_key` VARCHAR(40) NOT NULL DEFAULT ''",
+) as $rvCol => $rvSql) {
+    try {
+        $rvHas = $pdo->query("SHOW COLUMNS FROM `video_comments` LIKE " . $pdo->quote($rvCol))->fetch();
+        if (!$rvHas) $pdo->exec($rvSql);
+    } catch (PDOException $e) { }
+}
+
 function rv_me(PDO $pdo) {
     if (empty($_SESSION['user_id'])) return null;
     try {
@@ -224,6 +235,24 @@ case 'del': {
     rv_ok(array('id' => $id));
 }
 
+case 'cedit': {
+    $r    = rv_byToken($pdo, isset($B['t']) ? $B['t'] : (isset($_GET['t']) ? $_GET['t'] : ''));
+    $id   = (int) (isset($B['id']) ? $B['id'] : 0);
+    $body = rv_s(isset($B['body']) ? $B['body'] : '', 4000);
+    $rvOk = substr(preg_replace('/[^a-zA-Z0-9]/', '', (string) (isset($B['ok']) ? $B['ok'] : '')), 0, 40);
+    if (!$id) rv_fail('Thiếu id');
+    $st = $pdo->prepare("SELECT id, review_id, owner_key, img FROM `video_comments` WHERE id = ?");
+    $st->execute(array($id));
+    $c = $st->fetch();
+    if (!$c || (int) $c['review_id'] !== (int) $r['id']) rv_fail('Không tìm thấy góp ý.');
+    $isAdmin = rv_lvl($pdo) >= 2;
+    $isMine  = ($rvOk !== '' && (string) $c['owner_key'] === $rvOk);
+    if (!$isAdmin && !$isMine) rv_fail('Bạn chỉ có thể sửa góp ý của mình.', 403);
+    if ($body === '' && empty($c['img'])) rv_fail('Nội dung không được để trống.');
+    $pdo->prepare("UPDATE `video_comments` SET body = ?, edited_at = NOW() WHERE id = ?")->execute(array($body, $id));
+    rv_ok(array('id' => $id));
+}
+
 case 'cdel': {
     rv_needAdmin($pdo);
     $id = (int) ($B['id'] ?? 0);
@@ -257,13 +286,15 @@ case 'open': {
 
 case 'comments': {
     $r = rv_byToken($pdo, $_GET['t'] ?? '');
-    $st = $pdo->prepare("SELECT id, t_ms, author, body, img, resolved, created_at
+    $st = $pdo->prepare("SELECT id, t_ms, author, body, img, resolved, created_at, edited_at, owner_key
         FROM `video_comments` WHERE review_id = ? ORDER BY t_ms ASC, id ASC");
     $st->execute(array((int) $r['id']));
+    $rvOk = substr(preg_replace('/[^a-zA-Z0-9]/', '', (string) (isset($_GET['ok']) ? $_GET['ok'] : '')), 0, 40);
     $rows = array();
     foreach ($st->fetchAll() as $c) {
         $c['has_img'] = $c['img'] ? 1 : 0;
-        unset($c['img']);
+        $c['mine']    = ($rvOk !== '' && (string) $c['owner_key'] === $rvOk) ? 1 : 0;
+        unset($c['img'], $c['owner_key']);
         $rows[] = $c;
     }
     rv_ok(array('rows' => $rows, 'admin' => rv_lvl($pdo) >= 2 ? 1 : 0));
@@ -290,8 +321,9 @@ case 'comment': {
         $fname = (int) $r['id'] . '/' . bin2hex(random_bytes(10)) . '.' . $ext;
         if (file_put_contents(RV_DIR . '/' . $fname, $raw) === false) rv_fail('Không lưu được ảnh.', 500);
     }
-    $st = $pdo->prepare("INSERT INTO `video_comments` (review_id, t_ms, author, body, img) VALUES (?,?,?,?,?)");
-    $st->execute(array((int) $r['id'], $tms, $author, $body, $fname));
+    $rvOk = substr(preg_replace('/[^a-zA-Z0-9]/', '', (string) (isset($B['ok']) ? $B['ok'] : '')), 0, 40);
+    $st = $pdo->prepare("INSERT INTO `video_comments` (review_id, t_ms, author, body, img, owner_key) VALUES (?,?,?,?,?,?)");
+    $st->execute(array((int) $r['id'], $tms, $author, $body, $fname, $rvOk));
     rv_ok(array('id' => (int) $pdo->lastInsertId()));
 }
 
