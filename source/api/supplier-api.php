@@ -37,6 +37,31 @@ if (!$ME) sp_fail('Unauthorized — vui lòng đăng nhập', 401);
 $IS_ADMIN = (strcasecmp((string) ($ME['role'] ?? ''), 'admin') === 0);
 function sp_need_admin() { global $IS_ADMIN; if (!$IS_ADMIN) sp_fail('Chỉ Admin mới thêm/sửa được nhà cung cấp.', 403); }
 
+/** Quyen chi tiet tren module Nha cung cap (id 95). $what: view|add|edit|del */
+function sp_need_cap($what)
+{
+    global $IS_ADMIN;
+    if ($IS_ADMIN) return;
+    require_once __DIR__ . '/perm.php';
+    $ok = false;
+    if (function_exists('pm_can')) { pm_init(); $ok = pm_can(95, $what); }
+    if ($ok) return;
+    $lb = array('view' => 'xem', 'add' => 'thêm', 'edit' => 'sửa', 'del' => 'xoá');
+    $w  = isset($lb[$what]) ? $lb[$what] : $what;
+    sp_fail('Bạn không có quyền ' . $w . ' nhà cung cấp. Liên hệ Admin để được cấp quyền.', 403);
+}
+
+function sp_caps()
+{
+    global $IS_ADMIN;
+    if ($IS_ADMIN) return 15;
+    require_once __DIR__ . '/perm.php';
+    if (!function_exists('pm_mod_caps')) return 0;
+    pm_init();
+    return (int) pm_mod_caps(95);
+}
+
+
 /* Bang co san tu rate card; bo sung cot neu chua co. */
 function sp_ensure(PDO $pdo)
 {
@@ -117,7 +142,7 @@ $act = isset($_GET['action']) ? (string) $_GET['action'] : '';
 switch ($act) {
 
 case 'me':
-    sp_ok(array('name' => $WHO, 'is_admin' => $IS_ADMIN ? 1 : 0));
+    sp_ok(array('name' => $WHO, 'is_admin' => $IS_ADMIN ? 1 : 0, 'caps' => sp_caps()));
     break;
 
 case 'list': {
@@ -138,9 +163,9 @@ case 'list': {
 }
 
 case 'save': {
-    sp_need_admin();
     $b    = sp_body();
     $id   = (int) (isset($b['id']) ? $b['id'] : 0);
+    sp_need_cap($id > 0 ? 'edit' : 'add');
     $name = sp_s(isset($b['name']) ? $b['name'] : '', 200);
     if ($name === '') sp_fail('Tên công ty là bắt buộc.');
 
@@ -186,7 +211,7 @@ case 'save': {
 }
 
 case 'delete': {
-    sp_need_admin();
+    sp_need_cap('del');
     $b  = sp_body();
     $id = (int) (isset($b['id']) ? $b['id'] : 0);
     if (!$id) sp_fail('id is required');

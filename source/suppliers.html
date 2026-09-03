@@ -257,7 +257,7 @@
 
 <script>
 var API = './api/supplier-api.php';
-var ITEMS = [], IS_ADMIN = false, FQ = '', editing = null, delIdx = -1, qTimer = null;
+var ITEMS = [], IS_ADMIN = false, CAPS = 0, FQ = '', editing = null, delIdx = -1, qTimer = null;
 
 function el(id) { return document.getElementById(id); }
 function esc(s) {
@@ -333,9 +333,10 @@ function load() {
   api('list').then(function (d) {
     ITEMS = d.items || [];
     IS_ADMIN = !!Number(d.is_admin);
-    el('btnAdd').style.display = IS_ADMIN ? '' : 'none';
-    if (!IS_ADMIN) {
-      el('warn').innerHTML = '<div class="warnbox" style="margin-bottom:16px">Bạn đang xem ở chế độ chỉ đọc — chỉ Admin mới thêm/sửa được nhà cung cấp.</div>';
+    CAPS = IS_ADMIN ? 15 : (Number(d.caps) || 0);
+    el('btnAdd').style.display = (CAPS & 2) ? '' : 'none';
+    if (!(CAPS & 14)) {
+      el('warn').innerHTML = '<div class="warnbox" style="margin-bottom:16px">Bạn đang xem ở chế độ chỉ đọc — chưa được cấp quyền thêm/sửa nhà cung cấp.</div>';
     }
     draw();
   }).catch(function (e) {
@@ -442,10 +443,8 @@ function draw() {
       + '<td>' + bankCell(s, tm) + '</td>'
       + '<td class="addr">' + (s.address ? hlt(s.address, tm) : '<span style="color:var(--text3)">—</span>') + '</td>'
       + '<td class="ac">'
-      + (IS_ADMIN
-          ? '<button class="iconbtn" title="Sửa" onclick="openEdit(' + i + ')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg></button>'
-          + '<button class="iconbtn del" title="Xoá" onclick="askDel(' + i + ')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>'
-          : '')
+      + ((CAPS & 4) ? '<button class="iconbtn" title="Sửa" onclick="openEdit(' + i + ')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg></button>' : '')
+          + ((CAPS & 8) ? '<button class="iconbtn del" title="Xoá" onclick="askDel(' + i + ')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>' : '')
       + '</td></tr>';
   });
   el('view').innerHTML = h + '</tbody></table>';

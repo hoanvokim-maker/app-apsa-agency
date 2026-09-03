@@ -2522,9 +2522,10 @@ CREATE TABLE `perm_rules` (
   `grp` varchar(32) NOT NULL,
   `lvl` tinyint(4) NOT NULL DEFAULT 0,
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `caps` tinyint(4) NOT NULL DEFAULT 0 COMMENT '1=xem 2=them 4=sua 8=xoa',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_rule` (`scope`,`scope_key`,`grp`)
-) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=83 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2533,17 +2534,17 @@ CREATE TABLE `perm_rules` (
 
 LOCK TABLES `perm_rules` WRITE;
 /*!40000 ALTER TABLE `perm_rules` DISABLE KEYS */;
-INSERT INTO `perm_rules` VALUES (58,'pos','account','m:98',2,'2026-09-03 04:39:44');
-INSERT INTO `perm_rules` VALUES (59,'pos','account','m:34',2,'2026-09-03 04:39:44');
-INSERT INTO `perm_rules` VALUES (60,'pos','account','m:23',2,'2026-09-03 04:39:44');
-INSERT INTO `perm_rules` VALUES (61,'pos','account','m:17',2,'2026-09-03 04:39:44');
-INSERT INTO `perm_rules` VALUES (62,'pos','account','m:18',2,'2026-09-03 04:39:44');
-INSERT INTO `perm_rules` VALUES (63,'pos','account','m:25',2,'2026-09-03 04:39:44');
-INSERT INTO `perm_rules` VALUES (64,'pos','account','m:100',2,'2026-09-03 04:39:44');
-INSERT INTO `perm_rules` VALUES (65,'pos','account','m:101',2,'2026-09-03 04:39:44');
-INSERT INTO `perm_rules` VALUES (72,'pos','admin','m:29',2,'2026-09-03 08:40:42');
-INSERT INTO `perm_rules` VALUES (73,'pos','admin','m:31',2,'2026-09-03 08:40:42');
-INSERT INTO `perm_rules` VALUES (74,'pos','admin','m:95',2,'2026-09-03 08:40:42');
+INSERT INTO `perm_rules` VALUES (72,'pos','admin','m:29',2,'2026-09-03 08:50:58',15);
+INSERT INTO `perm_rules` VALUES (73,'pos','admin','m:31',2,'2026-09-03 08:50:58',15);
+INSERT INTO `perm_rules` VALUES (74,'pos','admin','m:95',2,'2026-09-03 08:50:58',15);
+INSERT INTO `perm_rules` VALUES (75,'pos','account','m:98',2,'2026-09-03 08:51:23',15);
+INSERT INTO `perm_rules` VALUES (76,'pos','account','m:34',2,'2026-09-03 08:51:23',15);
+INSERT INTO `perm_rules` VALUES (77,'pos','account','m:23',2,'2026-09-03 08:51:23',15);
+INSERT INTO `perm_rules` VALUES (78,'pos','account','m:17',2,'2026-09-03 08:51:23',15);
+INSERT INTO `perm_rules` VALUES (79,'pos','account','m:18',2,'2026-09-03 08:51:23',15);
+INSERT INTO `perm_rules` VALUES (80,'pos','account','m:25',2,'2026-09-03 08:51:23',15);
+INSERT INTO `perm_rules` VALUES (81,'pos','account','m:100',2,'2026-09-03 08:51:23',15);
+INSERT INTO `perm_rules` VALUES (82,'pos','account','m:101',2,'2026-09-03 08:51:23',15);
 /*!40000 ALTER TABLE `perm_rules` ENABLE KEYS */;
 UNLOCK TABLES;
 
