@@ -9,6 +9,7 @@
 require_once __DIR__ . '/db-config.php';
 require_once __DIR__ . '/session-boot.php';
 require_once __DIR__ . '/msgraph.php';
+require_once __DIR__ . '/perm.php';
 
 define('RV_DRIVE', 'b!e4unr15XWkyaVG8edY6MkfZmAYHtCUBDugOk42Ie06yPpJHpQ4j6SpiGKdrEhZ21');
 define('RV_DIR', dirname(__DIR__) . '/uploads/review');
@@ -70,7 +71,36 @@ function rv_isAdmin(PDO $pdo) {
     return strcasecmp((string) $me['role'], 'admin') === 0
         || strcasecmp((string) $me['position'], 'admin') === 0;
 }
-function rv_needAdmin(PDO $pdo) { if (!rv_isAdmin($pdo)) rv_fail('Chỉ Admin dùng được chức năng này.', 403); }
+/**
+ * Muc quyen cua user hien tai voi module "Duyet video" (id 98): 0 / 1 / 2.
+ * Admin luon 2. Khach chua dang nhap luon 0.
+ */
+function rv_lvl(PDO $pdo)
+{
+    if (rv_isAdmin($pdo)) return 2;
+    if (!rv_me($pdo)) return 0;
+    if (!function_exists('pm_mod_level')) return 0;
+    pm_init($pdo);
+    return (int) pm_mod_level(98);
+}
+
+/** Can quyen XEM: doc file tren SharePoint, xem danh sach link. */
+function rv_needRead(PDO $pdo)
+{
+    if (rv_lvl($pdo) >= 1) return;
+    rv_fail(rv_me($pdo)
+        ? 'Bạn không có quyền vào mục Duyệt video. Liên hệ Admin để được cấp quyền.'
+        : 'Chưa đăng nhập.', 403);
+}
+
+/** Can quyen THAO TAC: tao link, doi trang thai, xoa. */
+function rv_needAdmin(PDO $pdo)
+{
+    if (rv_lvl($pdo) >= 2) return;
+    rv_fail(rv_me($pdo)
+        ? 'Bạn chỉ được xem mục Duyệt video, không được thay đổi.'
+        : 'Chưa đăng nhập.', 403);
+}
 
 /* ── review theo token ─────────────────────────────────────── */
 function rv_byToken(PDO $pdo, $t, $needActive = true) {
@@ -111,11 +141,11 @@ switch ($ACT) {
 /* ═══════════ ADMIN ═══════════ */
 case 'me': {
     $me = rv_me($pdo);
-    rv_ok(array('admin' => rv_isAdmin($pdo) ? 1 : 0, 'name' => $me ? ($me['display_name'] ?: $me['username']) : ''));
+    rv_ok(array('admin' => rv_lvl($pdo) >= 2 ? 1 : 0, 'name' => $me ? ($me['display_name'] ?: $me['username']) : ''));
 }
 
 case 'browse': {
-    rv_needAdmin($pdo);
+    rv_needRead($pdo);
     $id  = isset($_GET['id']) && $_GET['id'] !== '' ? preg_replace('/[^A-Za-z0-9!._-]/', '', (string) $_GET['id']) : '';
     $err = ''; $tok = mg_token($err);
     if (!$tok) rv_fail('Không kết nối được SharePoint.', 502);
@@ -160,7 +190,7 @@ case 'create': {
 }
 
 case 'list': {
-    rv_needAdmin($pdo);
+    rv_needRead($pdo);
     $st = $pdo->query("SELECT r.*, 
             (SELECT COUNT(*) FROM `video_comments` c WHERE c.review_id = r.id) AS n_cmt,
             (SELECT COUNT(*) FROM `video_comments` c WHERE c.review_id = r.id AND c.resolved = 0) AS n_open
@@ -221,7 +251,7 @@ case 'open': {
     rv_ok(array(
         'title' => $r['title'], 'note' => $r['note'], 'file_name' => $r['file_name'],
         'size' => (int) $r['file_size'], 'created_at' => $r['created_at'],
-        'admin' => rv_isAdmin($pdo) ? 1 : 0,
+        'admin' => rv_lvl($pdo) >= 2 ? 1 : 0,
     ));
 }
 
@@ -236,7 +266,7 @@ case 'comments': {
         unset($c['img']);
         $rows[] = $c;
     }
-    rv_ok(array('rows' => $rows, 'admin' => rv_isAdmin($pdo) ? 1 : 0));
+    rv_ok(array('rows' => $rows, 'admin' => rv_lvl($pdo) >= 2 ? 1 : 0));
 }
 
 case 'comment': {

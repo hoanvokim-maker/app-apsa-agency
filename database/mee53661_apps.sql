@@ -679,7 +679,7 @@ INSERT INTO `app_users` VALUES (30,'fl.ung.tuyet.my','$2y$10$MFbcDbEg8RTaXy04BDc
 INSERT INTO `app_users` VALUES (31,'fl.ngo.nguyen.tuan.anh','$2y$10$NmGTeeaiuxcdvDhefjFOees6C/aJM3h9GHxCUJ5/zyqX7IlKmwWse','NGÔ NGUYỄN TUẤN ANH','member',1,'2026-08-28 14:55:04','2026-08-28 14:55:04',NULL,'photographer','freelancer',0,'0987180608','','079088000990',NULL,NULL,NULL,NULL,NULL,'NGÔ NGUYỄN TUẤN ANH','Vietcombank','0331000437834','NGÔ NGUYỄN TUẤN ANH','Quận 3',NULL);
 INSERT INTO `app_users` VALUES (32,'fl.vo.hoang.van.nghia','$2y$10$zIXqvCaWdH2IgZY16QXDzOjaxhVEnJcyeqBGYBHzVRSSwcSqyBAGe','VÕ HOÀNG VĂN NGHĨA','member',1,'2026-08-28 14:56:25','2026-08-28 14:56:25',NULL,'photographer','freelancer',0,'0379436247','','056098001355',NULL,NULL,NULL,NULL,NULL,'VÕ HOÀNG VĂN NGHĨA','MBBANK','8885886886866','VÕ HOÀNG VĂN NGHĨA','Chi nhánh Bắc Sài Gòn',NULL);
 INSERT INTO `app_users` VALUES (33,'fl.nguyen.van.nam','$2y$10$PrVPUe.OowuCLMfJ6gCYjOh05uYrxxfD2ufDyL/XRwCPEl/lgKr7q','NGUYỄN VĂN NAM','member',1,'2026-08-28 14:57:18','2026-08-28 14:57:18',NULL,'photographer','freelancer',0,'0944728839','','060091007407',NULL,NULL,NULL,NULL,NULL,'NGUYỄN VĂN NAM','Techcombank','19035260196013','NGUYỄN VĂN NAM','Chi nhánh Bàu Cát',NULL);
-INSERT INTO `app_users` VALUES (34,'maihien','$2y$10$8c/0ey8nmFbzBMBHXOcBFeVEmTM5rsqBjkqTC7D49mbEk8tpYeYEm','Trần Mai Hiền','member',1,'2026-09-03 03:08:59','2026-09-03 04:20:52','2026-09-03 04:20:52','account','inhouse',1,'0377884355','account4@apsa.agency','',NULL,NULL,NULL,NULL,NULL,'Trần Mai Hiền','MB Bank','6100108102004','Trần Mai Hiền','Bình Chánh','068304010423');
+INSERT INTO `app_users` VALUES (34,'maihien','$2y$10$8c/0ey8nmFbzBMBHXOcBFeVEmTM5rsqBjkqTC7D49mbEk8tpYeYEm','Trần Mai Hiền','member',1,'2026-09-03 03:08:59','2026-09-03 04:38:10','2026-09-03 04:20:52','account','inhouse',1,'0377884355','account4@apsa.agency','','62af3ca60ff2e6acbfe3','Trần Mai Hiền','2026-09-03 11:38:10',NULL,NULL,'Trần Mai Hiền','MB Bank','6100108102004','Trần Mai Hiền','Bình Chánh','068304010423');
 /*!40000 ALTER TABLE `app_users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -878,7 +878,7 @@ CREATE TABLE `brand_log` (
   `root` varchar(20) NOT NULL DEFAULT 'brand',
   PRIMARY KEY (`id`),
   KEY `k_time` (`created_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -922,6 +922,42 @@ INSERT INTO `brand_log` VALUES (34,4,'Trang Đỗ','upload','MSA-APSA-NIAGARA.pd
 INSERT INTO `brand_log` VALUES (35,4,'Trang Đỗ','upload','BBTL TÀI TRỢ TAI MŨI HỌNG.pdf','2.4 MB','2026-09-03 11:36:27','contracts');
 INSERT INTO `brand_log` VALUES (36,4,'Trang Đỗ','upload','HDDV AZ EXCELLENCE LAUNCH 1609.pdf','6.4 MB','2026-09-03 11:36:36','contracts');
 INSERT INTO `brand_log` VALUES (37,4,'Trang Đỗ','upload','HDDV COPD FORUM HCM .pdf','4.5 MB','2026-09-03 11:36:44','contracts');
+INSERT INTO `brand_log` VALUES (38,4,'Trang Đỗ','upload','HDDV EXPERT MEETING HN.pdf','4.6 MB','2026-09-03 11:36:52','contracts');
+INSERT INTO `brand_log` VALUES (39,4,'Trang Đỗ','upload','HDDV FOCUS MEETING 2609.pdf','4.8 MB','2026-09-03 11:36:59','contracts');
+INSERT INTO `brand_log` VALUES (40,4,'Trang Đỗ','upload','HDDV FOCUS MEETING DN 2009.pdf','10.5 MB','2026-09-03 11:37:09','contracts');
+INSERT INTO `brand_log` VALUES (41,4,'Trang Đỗ','upload','HDDV FOCUS MEETING HCM 0912.pdf','5.2 MB','2026-09-03 11:37:16','contracts');
+INSERT INTO `brand_log` VALUES (42,4,'Trang Đỗ','upload','HDDV FOCUS MEETING HCM 1010.pdf','5.5 MB','2026-09-03 11:37:25','contracts');
+INSERT INTO `brand_log` VALUES (43,4,'Trang Đỗ','upload','HDDV FOCUS MEETING HCM 2711.pdf','5 MB','2026-09-03 11:37:32','contracts');
+INSERT INTO `brand_log` VALUES (44,4,'Trang Đỗ','upload','HDDV FOCUS MEETING HN 2507.pdf','9 MB','2026-09-03 11:37:41','contracts');
+INSERT INTO `brand_log` VALUES (45,4,'Trang Đỗ','upload','HDDV FOCUS MEETING HN 2706.pdf','7.9 MB','2026-09-03 11:37:50','contracts');
+INSERT INTO `brand_log` VALUES (46,4,'Trang Đỗ','upload','HDDV FOCUS MEETING hn2706.pdf','5.6 MB','2026-09-03 11:37:58','contracts');
+INSERT INTO `brand_log` VALUES (47,4,'Trang Đỗ','upload','HDDV FOCUS MEETING TN 3011.pdf','7.4 MB','2026-09-03 11:38:09','contracts');
+INSERT INTO `brand_log` VALUES (48,4,'Trang Đỗ','upload','HDDV HIMALAYA LAUNCH.pdf','7.3 MB','2026-09-03 11:38:17','contracts');
+INSERT INTO `brand_log` VALUES (49,4,'Trang Đỗ','upload','HDDV HOPE ELEARNING.pdf','3.6 MB','2026-09-03 11:38:22','contracts');
+INSERT INTO `brand_log` VALUES (50,4,'Trang Đỗ','upload','HDDV HOPE RIGI 0505.pdf','3.7 MB','2026-09-03 11:38:29','contracts');
+INSERT INTO `brand_log` VALUES (51,4,'Trang Đỗ','upload','HDDV IMFINZI EVENT HCM.pdf','6.2 MB','2026-09-03 11:38:38','contracts');
+INSERT INTO `brand_log` VALUES (52,4,'Trang Đỗ','mkdir','NOVO NORDISK','','2026-09-03 11:38:42','contracts');
+INSERT INTO `brand_log` VALUES (53,4,'Trang Đỗ','upload','HDDV OBU EXCELLENCE WS 0112.pdf','5 MB','2026-09-03 11:38:48','contracts');
+INSERT INTO `brand_log` VALUES (54,4,'Trang Đỗ','mkdir','SONKIM LAND','','2026-09-03 11:38:57','contracts');
+INSERT INTO `brand_log` VALUES (55,4,'Trang Đỗ','upload','HDDV VIDEO TRAINING.pdf','3.8 MB','2026-09-03 11:38:57','contracts');
+INSERT INTO `brand_log` VALUES (56,4,'Trang Đỗ','upload','HDDV WITHEART SYMPOSIUM HN HCM.pdf','6.1 MB','2026-09-03 11:39:06','contracts');
+INSERT INTO `brand_log` VALUES (57,4,'Trang Đỗ','upload','MSA - APSA - NC 2026.pdf','53.8 MB','2026-09-03 11:39:41','contracts');
+INSERT INTO `brand_log` VALUES (58,4,'Trang Đỗ','mkdir','DECATHLON','','2026-09-03 11:39:45','contracts');
+INSERT INTO `brand_log` VALUES (59,4,'Trang Đỗ','mkdir','NOVARTIS','','2026-09-03 11:40:14','contracts');
+INSERT INTO `brand_log` VALUES (60,4,'Trang Đỗ','mkdir','WORWAG','','2026-09-03 11:41:13','contracts');
+INSERT INTO `brand_log` VALUES (61,4,'Trang Đỗ','mkdir','VFR - FURNITURE RESOURCE VN','','2026-09-03 11:41:59','contracts');
+INSERT INTO `brand_log` VALUES (62,4,'Trang Đỗ','mkdir','MC','','2026-09-03 11:42:26','contracts');
+INSERT INTO `brand_log` VALUES (63,4,'Trang Đỗ','mkdir','FREELANCER','','2026-09-03 11:42:44','contracts');
+INSERT INTO `brand_log` VALUES (64,4,'Trang Đỗ','mkdir','NAM KHÁNH','','2026-09-03 11:42:56','contracts');
+INSERT INTO `brand_log` VALUES (65,4,'Trang Đỗ','mkdir','KHÁCH SẠN','','2026-09-03 11:43:33','contracts');
+INSERT INTO `brand_log` VALUES (66,4,'Trang Đỗ','mkdir','SONG KHÁNH','','2026-09-03 11:44:09','contracts');
+INSERT INTO `brand_log` VALUES (67,4,'Trang Đỗ','mkdir','ÂU LẠC','','2026-09-03 11:44:27','contracts');
+INSERT INTO `brand_log` VALUES (68,4,'Trang Đỗ','mkdir','HÒA BÌNH','','2026-09-03 11:44:39','contracts');
+INSERT INTO `brand_log` VALUES (69,4,'Trang Đỗ','mkdir','BESIDE','','2026-09-03 11:44:47','contracts');
+INSERT INTO `brand_log` VALUES (70,4,'Trang Đỗ','mkdir','THÀNH ĐẠT','','2026-09-03 11:45:01','contracts');
+INSERT INTO `brand_log` VALUES (71,4,'Trang Đỗ','mkdir','PROSHOW','','2026-09-03 11:45:40','contracts');
+INSERT INTO `brand_log` VALUES (72,4,'Trang Đỗ','upload','BBNT FOCUS MEETING 2507.pdf','6.1 MB','2026-09-03 11:46:15','contracts');
+INSERT INTO `brand_log` VALUES (73,4,'Trang Đỗ','upload','BBNT HOPE.pdf','2.3 MB','2026-09-03 11:46:21','contracts');
 /*!40000 ALTER TABLE `brand_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2444,7 +2480,7 @@ CREATE TABLE `perm_rules` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_rule` (`scope`,`scope_key`,`grp`)
-) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2453,6 +2489,14 @@ CREATE TABLE `perm_rules` (
 
 LOCK TABLES `perm_rules` WRITE;
 /*!40000 ALTER TABLE `perm_rules` DISABLE KEYS */;
+INSERT INTO `perm_rules` VALUES (58,'pos','account','m:98',2,'2026-09-03 04:39:44');
+INSERT INTO `perm_rules` VALUES (59,'pos','account','m:34',2,'2026-09-03 04:39:44');
+INSERT INTO `perm_rules` VALUES (60,'pos','account','m:23',2,'2026-09-03 04:39:44');
+INSERT INTO `perm_rules` VALUES (61,'pos','account','m:17',2,'2026-09-03 04:39:44');
+INSERT INTO `perm_rules` VALUES (62,'pos','account','m:18',2,'2026-09-03 04:39:44');
+INSERT INTO `perm_rules` VALUES (63,'pos','account','m:25',2,'2026-09-03 04:39:44');
+INSERT INTO `perm_rules` VALUES (64,'pos','account','m:100',2,'2026-09-03 04:39:44');
+INSERT INTO `perm_rules` VALUES (65,'pos','account','m:101',2,'2026-09-03 04:39:44');
 /*!40000 ALTER TABLE `perm_rules` ENABLE KEYS */;
 UNLOCK TABLES;
 

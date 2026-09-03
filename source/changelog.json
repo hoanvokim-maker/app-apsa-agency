@@ -1,7 +1,20 @@
 {
-    "version": "1.6.30",
+    "version": "1.7.0",
     "updated": "2026-09-03",
     "releases": [
+        {
+            "v": "1.7",
+            "date": "2026-09-03",
+            "note": "Phiên bản 1.7",
+            "items": [
+                {
+                    "d": "2026-09-03",
+                    "v": "1.7.0",
+                    "t": "1.7.0 - Duyet video: doc file SharePoint va tao link mo cho moi user dang nhap, phan quyen theo module 98",
+                    "by": "mee53661"
+                }
+            ]
+        },
         {
             "v": "1.6",
             "date": "2026-08-29",
