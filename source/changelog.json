@@ -1,5 +1,5 @@
 {
-    "version": "1.6.27",
+    "version": "1.6.28",
     "updated": "2026-09-03",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-29",
             "note": "Phiên bản 1.6",
             "items": [
+                {
+                    "d": "2026-09-03",
+                    "v": "1.6.28",
+                    "t": "1.6.28 - Phan quyen: rut gon nhan mac dinh, noi rong o chon module (perm-ui v5)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-03",
                     "v": "1.6.27",
