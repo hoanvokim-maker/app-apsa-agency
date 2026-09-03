@@ -133,8 +133,11 @@
   /* ---------- CSS ---------- */
   var st = document.createElement('style');
   st.textContent =
-      '.expday-wrap{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}'
-    + '.expmemo{flex:none;display:inline-flex;align-items:center;justify-content:center;'
+      '.exptbl col:nth-child(9){width:164px}'
+    + '.exp-dayc{overflow:hidden}'
+    + '.expday-wrap{display:flex;align-items:center;gap:5px;width:100%;min-width:0}'
+    + '.expday-wrap>input.expday{flex:1 1 auto;min-width:0;max-width:none}'
+    + '.expmemo{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;'
     + 'width:24px;height:24px;padding:0;border:1px solid rgba(255,255,255,.14);border-radius:7px;'
     + 'background:transparent;color:var(--text3,#8b8f98);cursor:pointer}'
     + '.expmemo:hover{color:var(--text,#e8e8e8);border-color:rgba(255,255,255,.32)}'
