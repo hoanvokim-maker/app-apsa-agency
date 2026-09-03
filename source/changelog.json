@@ -1,5 +1,5 @@
 {
-    "version": "1.6.29",
+    "version": "1.6.30",
     "updated": "2026-09-03",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-08-29",
             "note": "Phiên bản 1.6",
             "items": [
+                {
+                    "d": "2026-09-03",
+                    "v": "1.6.30",
+                    "t": "1.6.30 - Don xin nghi cua Designer bao them cho Designer Leader (Zalo + thong bao trong app)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-03",
                     "v": "1.6.29",

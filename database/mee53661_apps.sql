@@ -47,9 +47,9 @@ LOCK TABLES `accounts` WRITE;
 /*!40000 ALTER TABLE `accounts` DISABLE KEYS */;
 INSERT INTO `accounts` VALUES (1,'Adobe CC','Adobe Creative Cloud','LeifZiminsky26587@outlook.com','@PSAAgency2026','[{\"name\":\"Thảo Lý\",\"color\":\"#ec4899\"},{\"name\":\"Trần Mai Hiền\",\"color\":\"#dff20d\"}]','New','2026-06-14 14:20:55','2026-09-03 04:21:28');
 INSERT INTO `accounts` VALUES (2,'Adobe CC','Adobe Creative Cloud','IversonHofe754311@outlook.com','@PSAAgency2026','[{\"name\":\"Nhật Tân\",\"color\":\"#6c63ff\"},{\"name\":\"Anh Kim\",\"color\":\"#ec4899\"}]','New','2026-06-14 14:20:55','2026-08-20 05:08:22');
-INSERT INTO `accounts` VALUES (3,'Adobe CC','Adobe Creative Cloud','DontePierick6886@outlook.com','@PSAAgency2026','[{\"name\":\"Vy Vy\",\"color\":\"#6c63ff\"}]','New','2026-06-14 14:20:55','2026-08-20 05:08:38');
+INSERT INTO `accounts` VALUES (3,'Adobe CC','Adobe Creative Cloud','DontePierick6886@outlook.com','@PSAAgency2026','[{\"name\":\"Vy Vy\",\"color\":\"#6c63ff\"},{\"name\":\"Tiên Tiên\",\"color\":\"#dff20d\"}]','New','2026-06-14 14:20:55','2026-09-03 04:28:14');
 INSERT INTO `accounts` VALUES (4,'Adobe CC','Adobe Creative Cloud','LowellWeaving15824@outlook.com','@PSAAgency2026','[{\"name\":\"Harris\",\"color\":\"#6c63ff\"},{\"name\":\"Minh Trí\",\"color\":\"#dff20d\"}]','New','2026-06-14 14:20:55','2026-09-03 04:21:14');
-INSERT INTO `accounts` VALUES (5,'Adobe CC','Adobe Creative Cloud','account1@apsa.agency','default','[{\"name\":\"Tiên\",\"color\":\"#6c63ff\"},{\"name\":\"Minh Trí\",\"color\":\"#ec4899\"}]','','2026-08-01 15:14:24','2026-08-01 15:14:41');
+INSERT INTO `accounts` VALUES (5,'Adobe CC','Adobe Creative Cloud','account1@apsa.agency','default','[]','','2026-08-01 15:14:24','2026-09-03 04:28:08');
 INSERT INTO `accounts` VALUES (6,'Chatgpt','ChatGPT','khanhsdoanf58+1@googlemail.com','ChatGPTPlus@123','[{\"name\":\"Admin\",\"color\":\"#6c63ff\"},{\"name\":\"Thảo Lý\",\"color\":\"#ec4899\"}]','','2026-08-11 16:01:16','2026-08-11 16:01:16');
 /*!40000 ALTER TABLE `accounts` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -878,7 +878,7 @@ CREATE TABLE `brand_log` (
   `root` varchar(20) NOT NULL DEFAULT 'brand',
   PRIMARY KEY (`id`),
   KEY `k_time` (`created_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -903,6 +903,25 @@ INSERT INTO `brand_log` VALUES (13,1,'Harris','upload','FA-2024-12-Handle sample
 INSERT INTO `brand_log` VALUES (16,1,'Harris','delete','Receipt_PAYMENT-000610946.pdf','file','2026-08-28 14:37:27','contracts');
 INSERT INTO `brand_log` VALUES (17,4,'Trang Đỗ','mkdir','OGN','','2026-09-03 11:25:57','contracts');
 INSERT INTO `brand_log` VALUES (18,4,'Trang Đỗ','upload','HOP DONG NGUYEN TAC - OGN X APSA.pdf','6.4 MB','2026-09-03 11:26:39','contracts');
+INSERT INTO `brand_log` VALUES (19,4,'Trang Đỗ','mkdir','PHYTO - DƯỢC LIỆU TRUNG ƯƠNG 2','','2026-09-03 11:27:44','contracts');
+INSERT INTO `brand_log` VALUES (20,4,'Trang Đỗ','upload','[HDDV]1511-2024.pdf','11.7 MB','2026-09-03 11:31:45','contracts');
+INSERT INTO `brand_log` VALUES (21,4,'Trang Đỗ','upload','BBNT ĐỢT 2 số 1001A của HDDV số 10-2024.pdf','12.6 MB','2026-09-03 11:31:56','contracts');
+INSERT INTO `brand_log` VALUES (22,4,'Trang Đỗ','upload','BBNT ĐỢT 3 số 1001A-2025 của HDDV 10-2024.pdf','7.3 MB','2026-09-03 11:32:04','contracts');
+INSERT INTO `brand_log` VALUES (23,4,'Trang Đỗ','upload','BBNT số 0402A-2025 của HDDV 02-2025.pdf','4.9 MB','2026-09-03 11:32:11','contracts');
+INSERT INTO `brand_log` VALUES (24,4,'Trang Đỗ','upload','BBNT số 0601-2025 của HDDV 1511-2024.pdf','4.7 MB','2026-09-03 11:32:18','contracts');
+INSERT INTO `brand_log` VALUES (25,4,'Trang Đỗ','upload','BBNT số 0701B-2025 của HDDV 2406-2024.pdf','4.7 MB','2026-09-03 11:32:25','contracts');
+INSERT INTO `brand_log` VALUES (26,4,'Trang Đỗ','upload','HDDV 02-2025.pdf','9.6 MB','2026-09-03 11:32:35','contracts');
+INSERT INTO `brand_log` VALUES (27,4,'Trang Đỗ','upload','HDDV 2406-2024.pdf','10.4 MB','2026-09-03 11:32:46','contracts');
+INSERT INTO `brand_log` VALUES (28,4,'Trang Đỗ','mkdir','AZ','','2026-09-03 11:33:08','contracts');
+INSERT INTO `brand_log` VALUES (29,4,'Trang Đỗ','mkdir','MSA','','2026-09-03 11:33:32','contracts');
+INSERT INTO `brand_log` VALUES (30,4,'Trang Đỗ','mkdir','MAL - Bien ban thanh ly','','2026-09-03 11:33:52','contracts');
+INSERT INTO `brand_log` VALUES (31,4,'Trang Đỗ','rename','MSA - Hop dong','tu: MSA','2026-09-03 11:34:05','contracts');
+INSERT INTO `brand_log` VALUES (32,4,'Trang Đỗ','upload','MSA - APSA - SAPHNELO LAUNCHING.pdf','12.6 MB','2026-09-03 11:36:02','contracts');
+INSERT INTO `brand_log` VALUES (33,4,'Trang Đỗ','upload','MSA - APSA - SOLIRIS LAUNCHING.pdf','7.8 MB','2026-09-03 11:36:12','contracts');
+INSERT INTO `brand_log` VALUES (34,4,'Trang Đỗ','upload','MSA-APSA-NIAGARA.pdf','6.3 MB','2026-09-03 11:36:19','contracts');
+INSERT INTO `brand_log` VALUES (35,4,'Trang Đỗ','upload','BBTL TÀI TRỢ TAI MŨI HỌNG.pdf','2.4 MB','2026-09-03 11:36:27','contracts');
+INSERT INTO `brand_log` VALUES (36,4,'Trang Đỗ','upload','HDDV AZ EXCELLENCE LAUNCH 1609.pdf','6.4 MB','2026-09-03 11:36:36','contracts');
+INSERT INTO `brand_log` VALUES (37,4,'Trang Đỗ','upload','HDDV COPD FORUM HCM .pdf','4.5 MB','2026-09-03 11:36:44','contracts');
 /*!40000 ALTER TABLE `brand_log` ENABLE KEYS */;
 UNLOCK TABLES;
 

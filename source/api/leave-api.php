@@ -81,6 +81,7 @@ function lv_me()
         'user'  => (string) $row['username'],
         'email' => isset($row['email']) ? (string) $row['email'] : '',
         'role'  => isset($row['role']) ? (string) $row['role'] : '',
+        'pos'   => isset($row['position']) ? strtolower(trim((string) $row['position'])) : '',
     );
     return $me;
 }
@@ -584,6 +585,45 @@ function lv_notify($userId, $kind, $title, $body, $url)
     } catch (Exception $e) { /* im lang */ }
 }
 
+/**
+ * Bao them cho "leader" cua team khi nhan su team do xin nghi.
+ *   key   = vi tri cua nguoi xin nghi (pkey trong staff_positions, chu thuong)
+ *   value = danh sach vi tri duoc bao them
+ * Muon them team khac thi chi can them 1 dong o day.
+ */
+function lv_lead_map()
+{
+    return array(
+        'designer' => array('designer_leader'),
+    );
+}
+
+/** Id cac nguoi giu vi tri leader ung voi vi tri cua nguoi xin nghi. */
+function lv_lead_ids($pos)
+{
+    $pos = strtolower(trim((string) $pos));
+    $map = lv_lead_map();
+    if ($pos === '' || !isset($map[$pos])) return array();
+
+    $want = array();
+    foreach ($map[$pos] as $w) {
+        $w = strtolower(trim((string) $w));
+        if ($w !== '') $want[] = $w;
+    }
+    if (!$want) return array();
+
+    $out = array();
+    try {
+        $in = implode(',', array_fill(0, count($want), '?'));
+        $st = lv_pdo()->prepare(
+            'SELECT id FROM app_users WHERE active = 1 AND LOWER(TRIM(`position`)) IN (' . $in . ')'
+        );
+        $st->execute($want);
+        foreach ($st as $r) $out[] = (int) $r['id'];
+    } catch (Exception $e) { }
+    return $out;
+}
+
 function lv_admin_ids()
 {
     $out = array();
@@ -858,7 +898,12 @@ case 'save':
     $tl   = lv_types();
     $body = $ME['name'] . ' xin nghỉ ' . rtrim(rtrim(number_format($days, 1, ',', ''), '0'), ',')
           . ' ngày (' . $tl[$type] . '): ' . lv_range_text($row);
-    foreach (lv_admin_ids() as $aid) {
+    /* Admin + leader cua team nguoi xin nghi */
+    $lvTo = lv_admin_ids();
+    foreach (lv_lead_ids(isset($ME['pos']) ? $ME['pos'] : '') as $lvLid) {
+        if (!in_array($lvLid, $lvTo, true)) $lvTo[] = $lvLid;
+    }
+    foreach ($lvTo as $aid) {
         if ($aid === $ME['id']) continue;
         lv_notify($aid, 'leave_new', 'Đơn nghỉ mới: ' . $tl[$type] . ' — ' . $ME['name'], $body, '/leave.html?id=' . $newId);
     }
