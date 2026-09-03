@@ -1,5 +1,5 @@
 {
-    "version": "1.7.19",
+    "version": "1.7.20",
     "updated": "2026-09-03",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-03",
             "note": "Phiên bản 1.7",
             "items": [
+                {
+                    "d": "2026-09-03",
+                    "v": "1.7.20",
+                    "t": "Quan ly Link: sua nut Tao moi bi de, them che do danh sach, nguoi tao + lich su chinh sua",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-03",
                     "v": "1.7.19",

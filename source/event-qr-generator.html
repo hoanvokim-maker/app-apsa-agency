@@ -34,6 +34,39 @@
     .nav-title { font-size: 14px; font-weight: 700; color: #ffffff; }
     .nav-action { display: inline-flex; align-items: center; gap: 5px; color: #c9dd00; font-size: 13px; font-weight: 600; background: rgba(223,242,13,0.12); border: 1px solid rgba(223,242,13,0.3); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-family: inherit; transition: all 0.2s; text-decoration: none; }
     .nav-action:hover { background: rgba(223,242,13,0.22); }
+    /* --- chua cho nut menu goc phai, tranh de len nut Tao moi --- */
+    .topnav { padding-right: 72px !important; }
+    /* --- chuyen doi Luoi / Danh sach --- */
+    .qv-wrap { display: flex; align-items: center; gap: 8px; }
+    .qv-btn { font: inherit; font-size: 11.5px; padding: 4px 12px; border-radius: 7px; cursor: pointer;
+              border: 1px solid rgba(255,255,255,.16); background: transparent; color: #9a9a9a; }
+    .qv-btn.on { border-color: #dff20d; color: #dff20d; }
+    .h-card-by { font-size: 11px; color: #7d7d7d; margin-top: 3px; }
+    .history-grid.as-list { display: block; }
+    .history-grid.as-list .h-card { display: flex; align-items: center; gap: 14px; padding: 8px 12px; margin-bottom: 6px; }
+    .history-grid.as-list .h-qr-wrap { flex: 0 0 44px; width: 44px; height: 44px; padding: 0; }
+    .history-grid.as-list .h-card-body { flex: 1; min-width: 0; padding: 0; }
+    .history-grid.as-list .h-card-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .history-grid.as-list .h-card-btns { flex: 0 0 auto; border-top: 0; padding: 0; margin: 0;
+      display: flex; flex-wrap: nowrap; align-items: center; gap: 6px; }
+    .history-grid.as-list .h-card-btn { flex: 0 0 auto; white-space: nowrap; }
+    .history-grid.as-list .h-card-meta { display: none; }
+    /* --- hop thoai lich su --- */
+    .qh-ov { position: fixed; inset: 0; background: rgba(0,0,0,.62); display: flex; align-items: center;
+             justify-content: center; z-index: 9999; padding: 16px; }
+    .qh-bx { background: #161a20; border: 1px solid #2b3138; border-radius: 14px; padding: 18px 20px;
+             width: min(640px,100%); max-height: 86vh; display: flex; flex-direction: column; color: #e6e8ea; }
+    .qh-bx h3 { margin: 0 0 12px; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; }
+    .qh-list { overflow: auto; flex: 1; }
+    .qh-row { border: 1px solid #262b33; border-radius: 9px; padding: 8px 10px; margin-bottom: 7px; background: #0f1216; }
+    .qh-top { display: flex; gap: 10px; align-items: baseline; font-size: 12.5px; }
+    .qh-top b { color: #dff20d; font-weight: 700; }
+    .qh-t { margin-left: auto; color: #7d7d7d; font-size: 11.5px; }
+    .qh-d { font-size: 12px; color: #9aa0a6; margin-top: 4px; word-break: break-word; }
+    .qh-empty { color: #7d7d7d; font-size: 12.5px; padding: 18px 4px; }
+    .qh-ft { display: flex; justify-content: flex-end; margin-top: 14px; }
+    .qh-ft button { font: inherit; font-size: 12.5px; padding: 7px 16px; border-radius: 8px; cursor: pointer;
+                    border: 1px solid rgba(255,255,255,.16); background: transparent; color: #9aa0a6; }
 
     /* ── CONTAINER ── */
     .wrap { max-width: 560px; margin: 0 auto; padding: 24px 16px 60px; }
@@ -3070,10 +3103,10 @@ function renderHistory(list) {
     container.innerHTML = `
       <div class="history-empty">
         <span class="e-icon"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-folder"/></svg></span>
-        <p>Chưa có QR nào được lưu.<br>Tạo QR đầu tiên để bắt đầu!</p>
+        <p>Chưa có QR nào được lưu.<br>Tạo QR mới để lưu tại đây!</p>
         <button class="btn-new-empty" onclick="showView('form')">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-          Tạo QR đầu tiên
+          Tạo QR mới
         </button>
       </div>`;
     return;
@@ -3090,6 +3123,13 @@ function renderHistory(list) {
     const thumb  = entry.svg
       ? entry.svg.replace(/width="[^"]*"/, 'width="100%"').replace(/height="[^"]*"/, 'height="100%"')
       : '';
+    const who = escHtml(entry.created_by || '');
+    const upd = escHtml(entry.updated_by || '');
+    const bits = [];
+    if (who) bits.push('Tạo: ' + who);
+    if (upd && upd !== who) bits.push('Sửa: ' + upd);
+    if (entry.savedAt) bits.push(escHtml(entry.savedAt));
+    const byLine = bits.length ? `<div class="h-card-by">${bits.join(' · ')}</div>` : '';
 
     return `
     <div class="h-card" onclick="viewEntry(${entry.id})">
@@ -3098,9 +3138,11 @@ function renderHistory(list) {
         ${badge}
         <div class="h-card-name" title="${escHtml(entry.name)}">${escHtml(entry.name)}</div>
         <div class="h-card-meta">${escHtml(meta)}</div>
+        ${byLine}
       </div>
       <div class="h-card-btns" onclick="event.stopPropagation()">
-        <button class="h-card-btn" title="Sửa" onclick="editEntry(${entry.id}, ${JSON.stringify(entry).replace(/"/g,'&quot;')})"><svg class='pill-ico' viewBox='0 0 48 48' aria-hidden='true'><use href='#i-pen'/></svg></button>
+        <button class="h-card-btn" title="Sửa" onclick="editEntry(${entry.id}, ${JSON.stringify(entry).replace(/"/g,'&quot;')})"><svg class='pill-ico' viewBox='0 0 48 48' aria-hidden="true"><use href="#i-pen"/></svg></button>
+        <button class="h-card-btn" title="Lịch sử" onclick="qrHistory(${entry.id}, event)">Lịch sử</button>
         <button class="h-card-btn" onclick="historyDLSVG(${entry.id}, event)">SVG</button>
         <button class="h-card-btn" onclick="historyDLPNG(${entry.id}, event)">PNG</button>
         <button class="h-card-btn del" title="Xóa" onclick="deleteEntry(${entry.id}, event)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-trash"/></svg></button>
@@ -3111,10 +3153,53 @@ function renderHistory(list) {
   container.innerHTML =
     `<div class="history-topbar">
        <div class="history-topbar-left">QR đã lưu <span class="history-count">${list.length}</span></div>
-       <button class="btn-clear-all" onclick="clearAll()">Xóa tất cả</button>
+       <div class="qv-wrap">
+         <button class="qv-btn${QRVIEW === 'grid' ? ' on' : ''}" onclick="setQrView('grid')">Lưới</button>
+         <button class="qv-btn${QRVIEW === 'list' ? ' on' : ''}" onclick="setQrView('list')">Danh sách</button>
+         <button class="btn-clear-all" onclick="clearAll()">Xóa tất cả</button>
+       </div>
      </div>` +
-    `<div class="history-grid">${items}</div>`;
+    `<div class="history-grid${QRVIEW === 'list' ? ' as-list' : ''}">${items}</div>`;
   window._qrList = list;
+}
+
+var QRVIEW = 'grid';
+try { if (localStorage.getItem('qr_view') === 'list') QRVIEW = 'list'; } catch (e) { }
+
+function setQrView(v) {
+  QRVIEW = (v === 'list') ? 'list' : 'grid';
+  try { localStorage.setItem('qr_view', QRVIEW); } catch (e) { }
+  renderHistory(window._qrList || []);
+}
+
+async function qrHistory(id, ev) {
+  if (ev) ev.stopPropagation();
+  let rows = [];
+  try {
+    const r = await apiCall('GET', { action: 'log', id: id });
+    rows = (r && r.data) ? r.data : [];
+  } catch (e) { }
+  const ent = (window._qrList || []).filter(x => Number(x.id) === Number(id))[0] || {};
+  const body = rows.length
+    ? rows.map(r => {
+        const when = String(r.at || '').replace('T', ' ');
+        const m = when.match(/^(\d{4})-(\d{2})-(\d{2})[ ](\d{2}):(\d{2})/);
+        const t = m ? (m[4] + ':' + m[5] + ' ' + m[3] + '/' + m[2] + '/' + m[1]) : when;
+        const lb = r.act === 'create' ? 'Tạo mới' : (r.act === 'edit' ? 'Chỉnh sửa' : r.act);
+        return `<div class="qh-row"><div class="qh-top"><b>${escHtml(lb)}</b>
+                <span>${escHtml(r.actor || 'không rõ')}</span><span class="qh-t">${escHtml(t)}</span></div>
+                ${r.detail ? `<div class="qh-d">${escHtml(r.detail)}</div>` : ''}</div>`;
+      }).join('')
+    : `<div class="qh-empty">Chưa ghi nhận thay đổi nào. Lịch sử bắt đầu được lưu từ hôm nay.</div>`;
+  const ov = document.createElement('div');
+  ov.className = 'qh-ov';
+  ov.innerHTML = `<div class="qh-bx"><h3>Lịch sử — ${escHtml(ent.name || '')}</h3>
+    <div class="qh-list">${body}</div>
+    <div class="qh-ft"><button class="no">Đóng</button></div></div>`;
+  document.body.appendChild(ov);
+  const close = () => { if (ov.parentNode) ov.parentNode.removeChild(ov); };
+  ov.onclick = e => { if (e.target === ov) close(); };
+  ov.querySelector('.no').onclick = close;
 }
 
 // ── View saved entry ──────────────────────────────────────────
