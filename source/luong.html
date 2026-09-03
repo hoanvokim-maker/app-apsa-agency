@@ -281,7 +281,7 @@ function render() {
 
   el('tb').innerHTML = ITEMS.map(function (r) {
     var u = r.user_id > 0
-      ? '<div class="sub ok">↳ ' + esc(r.user_name || ('user #' + r.user_id)) + '</div>'
+      ? '<div class="sub ok">↳ ' + (r.user_name ? esc(r.user_name) : '<i style="opacity:.65">\u0111\u00e3 g\u1ee1 kh\u1ecfi Qu\u1ea3n l\u00fd User</i>') + '</div>'
       : '<div class="sub warn">↳ chưa ghép được với user nào</div>';
     var bank = r.bank_name
       ? esc(r.bank_name) + '<div class="sub">mã ' + esc(r.bank_code) + (r.bank_short ? ' · ' + esc(r.bank_short) : '') + '</div>'
