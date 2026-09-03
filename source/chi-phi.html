@@ -646,7 +646,9 @@ function openQr(id) {
   el('qAcc').value  = r.bank_account || '';
   el('qName').value = r.bank_holder || r.payee_name || '';
   el('qAmt').value  = amt(r);
-  el('qInfo').value = noDia(r.code + ' ' + (r.name || '')).trim();
+  el('qInfo').value = r.pay_memo
+      ? noDia(r.pay_memo).trim()
+      : noDia(r.code + ' ' + (r.name || '')).trim();
   el('qSub').textContent = r.code + ' · ' + (r.payee_name || '') + ' · ' + fmt(amt(r)) + ' đ';
   el('qPaid').style.display = Number(r.paid) === 1 ? 'none' : 'inline-flex';
   el('mQr').classList.add('on');
@@ -694,7 +696,7 @@ el('mDel').addEventListener('click', function (e) { if (e.target === this) this.
 load();
 </script>
 <script src="/chi-phi-group.js?v=6"></script>
-<script src="/exp-pay.js?v=2"></script>
+<script src="/exp-pay.js?v=3"></script>
 <script src="/exp-due.js?v=5"></script>
 <script src="/exp-acb.js?v=1"></script>
 </body>

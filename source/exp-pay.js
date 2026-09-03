@@ -55,7 +55,9 @@
   function qrUrl(r) {
     var bin = pyBin(r.bank_name), acc = String(r.bank_account || '').replace(/[^0-9A-Za-z]/g, '');
     if (!bin || !acc) return '';
-    var info = noDia((r.q_code || r.code || '') + ' ' + (r.name || '')).slice(0, 50);
+    var info = noDia(r.pay_memo
+      ? r.pay_memo
+      : ((r.q_code || r.code || '') + ' ' + (r.name || ''))).slice(0, 50);
     return 'https://img.vietqr.io/image/' + bin + '-' + acc + '-compact2.png'
       + '?amount=' + amountOf(r)
       + '&addInfo=' + encodeURIComponent(info)
