@@ -355,7 +355,9 @@
       '#p-perm .pmna{font-size:12.5px;color:var(--text3,#888);padding:10px 2px}' +
       '#p-perm .pmwho{font-size:13px;margin:14px 0 4px}' +
       '#p-perm .btn.dg{background:#ff4d4d;color:#fff;border-color:#ff4d4d}' +
-      '#p-perm .btn.dg:hover{background:#ff6b6b}';
+      '#p-perm .btn.dg:hover{background:#ff6b6b}' +
+      '#p-perm .lb{display:block;margin:16px 0 6px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3,#888)}' +
+      '#p-perm select#pmUser{width:100%;max-width:520px;background:var(--bg2,#141414);color:inherit;font-family:inherit;font-size:13px;border:1px solid var(--line,#333);border-radius:8px;padding:9px 10px}';
     document.head.appendChild(css);
   }
 
