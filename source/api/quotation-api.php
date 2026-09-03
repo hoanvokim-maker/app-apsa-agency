@@ -402,6 +402,13 @@ if (!q_hasColumn($pdo, 'quotation_items', 'act_qty')) {
 if (!q_hasColumn($pdo, 'quotation_expenses', 'pay_date')) {
     q_mig($pdo, "ALTER TABLE `quotation_expenses` ADD COLUMN `pay_date` DATE NULL DEFAULT NULL");
 }
+
+/* --- Danh ba nguoi nhan: phan biet cong ty voi ca nhan --- */
+if (!q_hasColumn($pdo, 'ratecard_suppliers', 'kind')) {
+    q_mig($pdo, "ALTER TABLE `ratecard_suppliers`
+        ADD COLUMN `kind` VARCHAR(10) NOT NULL DEFAULT 'company'
+        COMMENT 'company = cong ty | person = ca nhan'");
+}
 if (!q_hasColumn($pdo, 'quotation_expenses', 'paid')) {
     q_mig($pdo, "ALTER TABLE `quotation_expenses`
         ADD COLUMN `paid`         TINYINT(1)   NOT NULL DEFAULT 0  COMMENT '1 = da tra',
@@ -1881,6 +1888,54 @@ case 'qr-png': {
     exit;
 }
 
+/* ---- Tao nguoi nhan moi: ca nhan hoac nha cung cap ---- */
+case 'payee-new': {
+    $kind = (isset($B['kind']) && $B['kind'] === 'company') ? 'company' : 'person';
+    $cut  = function ($v, $n) { return mb_substr(trim((string) $v), 0, $n, 'UTF-8'); };
+    $g    = function ($k) use ($B) { return isset($B[$k]) ? $B[$k] : ''; };
+
+    $name = $cut($g('name'), 200);
+    if ($name === '') q_fail('Chưa nhập tên người nhận.');
+
+    $row = array(
+        'name'         => $name,
+        'kind'         => $kind,
+        'phone'        => $cut($g('phone'), 40),
+        'tax_code'     => $cut($g('tax_code'), 40),
+        'bank_name'    => $cut($g('bank_name'), 120),
+        'bank_account' => $cut($g('bank_account'), 50),
+        'bank_holder'  => $cut($g('bank_holder'), 200),
+        'note'         => $cut($g('note'), 300),
+    );
+    if ($row['bank_holder'] === '') $row['bank_holder'] = $row['name'];
+
+    try {
+        $st = $pdo->prepare(
+            'INSERT INTO `ratecard_suppliers`
+                (`name`,`kind`,`phone`,`tax_code`,`bank_name`,`bank_account`,`bank_holder`,`note`,`active`)
+             VALUES (?,?,?,?,?,?,?,?,1)'
+        );
+        $st->execute(array($row['name'], $row['kind'], $row['phone'], $row['tax_code'],
+            $row['bank_name'], $row['bank_account'], $row['bank_holder'], $row['note']));
+        $row['id'] = (int) $pdo->lastInsertId();
+    } catch (PDOException $e) {
+        /* Trung ten thi dung luon ban ghi da co */
+        $old = null;
+        try {
+            $q = $pdo->prepare('SELECT id, name, kind, bank_name, bank_account, bank_holder
+                                  FROM `ratecard_suppliers` WHERE `name` = ? LIMIT 1');
+            $q->execute(array($row['name']));
+            $old = $q->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e2) { }
+        if (!$old) q_fail('Không lưu được người nhận: ' . $e->getMessage(), 500);
+        $old['id']   = (int) $old['id'];
+        $old['kind'] = (string) (isset($old['kind']) ? $old['kind'] : 'company');
+        q_ok(array('payee' => $old, 'existed' => 1));
+    }
+    q_ok(array('payee' => $row, 'existed' => 0));
+    break;
+}
+
 case 'payees': {
     q_ok(q_payeeList($pdo));
 }
@@ -3333,17 +3388,18 @@ function q_payeeList(PDO $pdo) {
     $see = q_seePersonalBank($pdo);
     $out = array('sup' => array(), 'user' => array(), 'see_personal_bank' => $see ? 1 : 0);
     try {
-        $st = $pdo->query("SELECT id, name, bank_name, bank_account, bank_holder FROM `ratecard_suppliers` WHERE active = 1 ORDER BY name ASC");
+        $st = $pdo->query("SELECT id, name, kind, bank_name, bank_account, bank_holder FROM `ratecard_suppliers` WHERE active = 1 ORDER BY name ASC");
         foreach ($st->fetchAll() as $r) {
             $out['sup'][] = array(
                 'id' => (int) $r['id'], 'name' => $r['name'],
+                'kind' => (string) (isset($r['kind']) ? $r['kind'] : 'company'),
                 'bank_name' => $r['bank_name'], 'bank_account' => $r['bank_account'],
                 'bank_holder' => $r['bank_holder'],
             );
         }
     } catch (PDOException $e) { /* bang chua co */ }
     try {
-        $st = $pdo->query("SELECT id, display_name, staff_type, bank_name, bank_account, bank_holder FROM `app_users` WHERE active = 1 AND staff_type = 'freelancer' ORDER BY display_name ASC");
+        $st = $pdo->query("SELECT id, display_name, staff_type, bank_name, bank_account, bank_holder FROM `app_users` WHERE active = 1 ORDER BY display_name ASC");
         foreach ($st->fetchAll() as $r) {
             $out['user'][] = array(
                 'id' => (int) $r['id'], 'name' => $r['display_name'],

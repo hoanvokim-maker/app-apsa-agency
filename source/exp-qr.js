@@ -151,7 +151,7 @@
       r.bank_name    = o ? (o.bank_name    || '') : '';
       r.bank_account = o ? (o.bank_account || '') : '';
       r.bank_holder  = o ? (o.bank_holder  || '') : '';
-      r.vat_percent  = (p[0] === 'sup') ? 8 : 0;   // công ty 8% VAT · cá nhân không VAT
+      r.vat_percent  = (p[0] === 'sup' && (!o || o.kind !== 'person')) ? 8 : 0;   // công ty 8% VAT · cá nhân không VAT
       r.bank_masked  = (p[0] === 'user' && !EXP_PAYEES.seeBank) ? 1 : 0;
     }
     markDirty();

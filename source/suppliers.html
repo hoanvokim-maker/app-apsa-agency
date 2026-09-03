@@ -408,7 +408,7 @@ function draw() {
     var i = ITEMS.indexOf(s);
     var off = !Number(s.active);
     h += '<tr' + (off ? ' class="off"' : '') + '>'
-      + '<td><div class="nm">' + hlt(s.name, tm) + (off ? '<span class="badge">ngừng</span>' : '') + '</div>'
+      + '<td><div class="nm">' + hlt(s.name, tm) + (off ? '<span class="badge">ngừng</span>' : '') + (s.kind === 'person' ? '<span class="badge">Cá nhân</span>' : '') + '</div>'
       + (s.email ? '<div class="sub">' + hlt(s.email, tm) + '</div>' : '')
       + (s.tax_code ? '<div class="sub">MST: ' + esc(s.tax_code) + '</div>' : '')
       + (s.note ? '<div class="sub">' + hlt(s.note, tm) + '</div>' : '')

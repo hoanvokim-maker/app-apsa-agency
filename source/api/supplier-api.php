@@ -122,7 +122,7 @@ case 'me':
 
 case 'list': {
     $q  = sp_s(isset($_GET['q']) ? $_GET['q'] : '', 120);
-    $sql = "SELECT `id`,`name`,`contact`,`address`,`phone`,`phone2`,`email`,`tax_code`,`region`,`bank_name`,`bank_branch`,`bank_account`,`bank_holder`,`note`,`active`,`updated_by`,`updated_at`
+    $sql = "SELECT `id`,`name`,`contact`,`address`,`phone`,`phone2`,`email`,`tax_code`,`region`,`bank_name`,`bank_branch`,`bank_account`,`bank_holder`,`kind`,`note`,`active`,`updated_by`,`updated_at`
               FROM `ratecard_suppliers`";
     $arg = array();
     if ($q !== '') {

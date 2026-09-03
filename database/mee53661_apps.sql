@@ -123,7 +123,7 @@ CREATE TABLE `ai_events` (
 
 LOCK TABLES `ai_events` WRITE;
 /*!40000 ALTER TABLE `ai_events` DISABLE KEYS */;
-INSERT INTO `ai_events` VALUES (1,'test','test','',NULL,NULL,1,NULL,NULL,'c',100,1024,1024,0,5,4,'Harris','2026-09-01 20:42:33','flash','01UTW2SKN2SWGP3BYGPRBKQ4UF57QZLCMK','01UTW2SKIABIUU36I645BLUKGZWVW2MCA5','01UTW2SKOMQUXECSRE65GY2VZZHKN2LCUQ');
+INSERT INTO `ai_events` VALUES (1,'test','test','',NULL,NULL,1,NULL,NULL,'c',100,1024,1024,0,6,5,'Harris','2026-09-01 20:42:33','flash','01UTW2SKN2SWGP3BYGPRBKQ4UF57QZLCMK','01UTW2SKIABIUU36I645BLUKGZWVW2MCA5','01UTW2SKOMQUXECSRE65GY2VZZHKN2LCUQ');
 /*!40000 ALTER TABLE `ai_events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -162,7 +162,7 @@ CREATE TABLE `ai_jobs` (
   UNIQUE KEY `uq_token` (`token`),
   KEY `k_state` (`state`,`id`),
   KEY `k_event` (`event_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -175,6 +175,7 @@ INSERT INTO `ai_jobs` VALUES (1,'5afae75dc8c2fbe0',1,1,'done','gemini','src-5afa
 INSERT INTO `ai_jobs` VALUES (2,'f4df44f46419d9bc',1,2,'done','gemini','src-f4df44f46419d9bc.jpg','out-f4df44f46419d9bc.jpg',NULL,1,15349,'mtipwnwm4ywk8l5m','1.54.219.59','no',NULL,'2026-09-01 20:47:42','2026-09-01 20:47:57','2026-09-01 20:47:42','gemini-3.1-flash-image',NULL,NULL,NULL,NULL);
 INSERT INTO `ai_jobs` VALUES (3,'cf4d58743b79e494',1,1,'done','gemini','src-cf4d58743b79e494.jpg','out-cf4d58743b79e494.jpg',NULL,1,17751,'mtipwnwm4ywk8l5m','1.54.219.59','no',NULL,'2026-09-01 20:48:30','2026-09-01 20:48:48','2026-09-01 20:48:30','gemini-3.1-flash-image',NULL,NULL,NULL,NULL);
 INSERT INTO `ai_jobs` VALUES (4,'63e2b83cd6843ae4',1,2,'done','gemini',NULL,'out-63e2b83cd6843ae4.jpg',NULL,1,18132,'mtkzze32aehbotyo','1.54.219.59','no',NULL,'2026-09-03 11:00:59','2026-09-03 11:01:17','2026-09-03 11:00:59','gemini-3.1-flash-image','01UTW2SKOYVO2CF75UT5CKWZUSKUMD3HP2','01UTW2SKISQVLK42RXYFDYKC774H7ITHBQ','2026-09-03 11:01:23',NULL);
+INSERT INTO `ai_jobs` VALUES (5,'a81b4ba1fdea4f1d',1,2,'done','gemini',NULL,'out-a81b4ba1fdea4f1d.jpg',NULL,1,14789,'mtl1s36mt5z7k7fv','1.54.219.59','no',NULL,'2026-09-03 11:51:17','2026-09-03 11:51:32','2026-09-03 11:51:17','gemini-3.1-flash-image','01UTW2SKM4JPI37XO2DRCKRRJSJQZAJFIR','01UTW2SKNAY4ZGCENN6VFY6NDPVLDUA6ZG','2026-09-03 11:51:35',NULL);
 /*!40000 ALTER TABLE `ai_jobs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -209,7 +210,7 @@ CREATE TABLE `ai_prompts` (
 LOCK TABLES `ai_prompts` WRITE;
 /*!40000 ALTER TABLE `ai_prompts` DISABLE KEYS */;
 INSERT INTO `ai_prompts` VALUES (1,'Badminton','Một bức ảnh chân dung thể thao hành động điện ảnh, chụp từ góc máy thấp để nhấn mạnh độ cao, mô tả chính xác một người đàn ông Đông Nam Á (có đặc điểm khuôn mặt giống tôi) đang nhảy cao giữa không trung để thực hiện một cú nhảy đập cầu lông mạnh mẽ (jumping smash), giống hệt tư thế trong. Cơ thể anh ta nghiêng lên trên và sang phải, chân co mạnh (gấp đầu gối), tay phải cầm vợt cầu lông giơ cao phía sau đầu chuẩn bị đập, tay trái duỗi thẳng về phía trước để giữ thăng bằng. Ánh mắt tập trung nhìn lên trên theo hướng quả cầu đang bay tới. Anh ta mặc áo thi đấu cầu lông ngắn tay màu đỏ với họa tiết trừu tượng màu trắng/xám và quần short cầu lông màu đỏ đô giống hệt như trong, cùng giày cầu lông màu đỏ và trắng chuyên dụng. Bối cảnh là một sân cầu lông trong nhà hiện đại với vách tường tôn lượn sóng xám đậm và ánh sáng studio tập trung mạnh, kịch tính, làm nổi bật cơ bắp và chuyển động. Một vệt chuyển động nhẹ của vợt và quả cầu lông vừa được đập hiện rõ trên không. Sàn sân màu xanh lá cây với vạch kẻ trắng sắc nét. Độ sâu trường ảnh nông, tập trung vào đối tượng. Ảnh siêu thực, photorealistic, độ phân giải cực cao, sắc nét từng chi tiết','Badminton','11d206a8a6b8.jpg',1,0,2,'Harris','2026-09-01 20:41:54',0);
-INSERT INTO `ai_prompts` VALUES (2,'Badminton woman','A photorealistic studio portrait, captured from a high-angle overhead perspective, that replaces the central subject\'s face and identity with those from [Your Portrait Image] while maintaining the exact composition and complex multi-exposure badminton smash pose. The central figure, now matching your features, is in a dynamic, full-extension badminton smash, body arched back, holding a Mizuno racquet, with a prominent trailing shuttlecock and multiple cascading racquets. Surrounding the central figure is an intricate stroboscopic multi-exposure effect, displaying at least five motion-blurred, layered \'ghost\' figures of the same player (matching your features) in various stages of the swing, before and after the central moment. The scene is bathed in an intense, dramatic, red-purple studio wash, with a powerful, bursting light flare originating from the upper-right corner. Multiple Mizuno-branded racquets and one shuttlecock are floating around the player. The background is dark, red-purple, with a subtle hexagonal mesh pattern texture. Text \'MIZUNO\' is clear on the central racquet face. Sharp focus on the new central face and racquet, with dramatic motion blur on all other elements.','Badminton','dcc527472d78.jpg',1,0,2,'Harris','2026-09-01 20:46:58',0);
+INSERT INTO `ai_prompts` VALUES (2,'Badminton woman','A photorealistic studio portrait, captured from a high-angle overhead perspective, that replaces the central subject\'s face and identity with those from [Your Portrait Image] while maintaining the exact composition and complex multi-exposure badminton smash pose. The central figure, now matching your features, is in a dynamic, full-extension badminton smash, body arched back, holding a Mizuno racquet, with a prominent trailing shuttlecock and multiple cascading racquets. Surrounding the central figure is an intricate stroboscopic multi-exposure effect, displaying at least five motion-blurred, layered \'ghost\' figures of the same player (matching your features) in various stages of the swing, before and after the central moment. The scene is bathed in an intense, dramatic, red-purple studio wash, with a powerful, bursting light flare originating from the upper-right corner. Multiple Mizuno-branded racquets and one shuttlecock are floating around the player. The background is dark, red-purple, with a subtle hexagonal mesh pattern texture. Text \'MIZUNO\' is clear on the central racquet face. Sharp focus on the new central face and racquet, with dramatic motion blur on all other elements.','Badminton','dcc527472d78.jpg',1,0,3,'Harris','2026-09-01 20:46:58',0);
 /*!40000 ALTER TABLE `ai_prompts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -471,7 +472,7 @@ CREATE TABLE `app_notifications` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `idx_user` (`user_id`,`is_read`,`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -522,6 +523,11 @@ INSERT INTO `app_notifications` VALUES (44,1,'leave_new','Đơn nghỉ mới: Ph
 INSERT INTO `app_notifications` VALUES (45,14,'leave_approved','Đã duyệt: Phép năm — Hoàng Been','Harris đã duyệt đơn nghỉ 27/08/2026 (buổi chiều) của bạn.','/leave.html?id=16','Harris',0,'2026-08-27 05:43:45');
 INSERT INTO `app_notifications` VALUES (46,1,'project_closed','Đã đóng dự án 26082026-154','Harris vừa đóng dự án “TSS-Media-Go-Supermarket”. Từ giờ không ai sửa được cho tới khi Admin mở lại.','https://app.apsa.agency/quotation.html?q=26082026-154','Harris',1,'2026-08-29 06:14:19');
 INSERT INTO `app_notifications` VALUES (47,1,'project_closed','Đã đóng dự án 30072026-136','Harris vừa đóng dự án “AZ-ONCO-KOSELUGO-LAUNCHING”. Từ giờ không ai sửa được cho tới khi Admin mở lại.','https://app.apsa.agency/quotation.html?q=30072026-136','Harris',1,'2026-08-30 02:42:26');
+INSERT INTO `app_notifications` VALUES (48,1,'review_request','Harris mời bạn review báo giá 03092026-158 · AZ-RI-Synagis-Booth-0509','Anh xem giúp e nha','./quotation.html?q=03092026-158&tab=quote#thaoluan','Harris',1,'2026-09-03 06:41:52');
+INSERT INTO `app_notifications` VALUES (49,14,'mention','Harris nhắc tên bạn trong báo giá 03092026-158 · AZ-RI-Synagis-Booth-0509','Nhờ chị @Trang Đỗ mua giúp em nước suối và cà phê giao cho @Hoàng Been nha.','./quotation.html?q=03092026-158&tab=quote#thaoluan','Harris',0,'2026-09-03 06:42:41');
+INSERT INTO `app_notifications` VALUES (50,4,'mention','Harris nhắc tên bạn trong báo giá 03092026-158 · AZ-RI-Synagis-Booth-0509','Nhờ chị @Trang Đỗ mua giúp em nước suối và cà phê giao cho @Hoàng Been nha.','./quotation.html?q=03092026-158&tab=quote#thaoluan','Harris',1,'2026-09-03 06:42:41');
+INSERT INTO `app_notifications` VALUES (51,1,'reply','Trang Đỗ trả lời trong báo giá 03092026-158 · AZ-RI-Synagis-Booth-0509','em nhận thông tin nhé Sếp!','./quotation.html?q=03092026-158&tab=quote#thaoluan','Trang Đỗ',1,'2026-09-03 06:53:52');
+INSERT INTO `app_notifications` VALUES (52,7,'mention','Harris nhắc tên bạn trong báo giá 03092026-158 · AZ-RI-Synagis-Booth-0509','@Anh Thư coi giúp anh cái này nha','./quotation.html?q=03092026-158&tab=quote#thaoluan','Harris',1,'2026-09-03 07:17:23');
 /*!40000 ALTER TABLE `app_notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -579,20 +585,20 @@ CREATE TABLE `app_user_prefs` (
 LOCK TABLES `app_user_prefs` WRITE;
 /*!40000 ALTER TABLE `app_user_prefs` DISABLE KEYS */;
 INSERT INTO `app_user_prefs` VALUES (1,'home','{\"order\":[32,33,30,29,26,31,97,95,27,98,1,90,23,24,100,101,25,35,17,18,91,96,99,34,92,28],\"hidden\":[28],\"custom\":[],\"pinned\":[32,30,29,26,31,97,95,27],\"cats\":[]}','2026-09-01 16:10:14');
-INSERT INTO `app_user_prefs` VALUES (1,'quo_recent','[{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1788406281327},{\"id\":5,\"code\":\"17082026-145\",\"title\":\"AZ-R&I-NEXIUM-BOOTH\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-17\",\"at\":1788243281525},{\"id\":293,\"code\":\"28082026-156\",\"title\":\"APSA-NỘI-BỘ\",\"client\":\"APSA\",\"date\":\"2026-08-28\",\"at\":1788243172276},{\"id\":14,\"code\":\"30072026-136\",\"title\":\"AZ-ONCO-KOSELUGO-LAUNCHING\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-30\",\"at\":1788104816286},{\"id\":11,\"code\":\"04082026-139\",\"title\":\"AZ-CVRM-VAE-DESIGN\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-04\",\"at\":1788057852298},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787995803644},{\"id\":291,\"code\":\"26082026-154\",\"title\":\"TSS-Media-Go-Supermarket\",\"client\":\"CÔNG TY CỔ PHẦN TONA SYNTEGRA SOLAR\",\"date\":\"2026-08-26\",\"at\":1787994106291},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787910070056},{\"id\":37,\"code\":\"09072026-113\",\"title\":\"AZ-CVRM-Registration\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-09\",\"at\":1787885783331},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787756785549}]','2026-09-03 03:31:22');
+INSERT INTO `app_user_prefs` VALUES (1,'quo_recent','[{\"id\":282,\"code\":\"25022026-150\",\"title\":\"AZ-R&I-RESPI-SUMMIT\",\"client\":\"AstraZeneca\",\"date\":\"2026-02-25\",\"at\":1788420098909},{\"id\":291,\"code\":\"26082026-154\",\"title\":\"TSS-Media-Go-Supermarket\",\"client\":\"CÔNG TY CỔ PHẦN TONA SYNTEGRA SOLAR\",\"date\":\"2026-08-26\",\"at\":1788420044109},{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1788419924665},{\"id\":295,\"code\":\"03092026-158\",\"title\":\"AZ-RI-Synagis-Booth-0509\",\"client\":\"AstraZeneca\",\"date\":\"2026-09-03\",\"at\":1788419863293},{\"id\":5,\"code\":\"17082026-145\",\"title\":\"AZ-R&I-NEXIUM-BOOTH\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-17\",\"at\":1788243281525},{\"id\":293,\"code\":\"28082026-156\",\"title\":\"APSA-NỘI-BỘ\",\"client\":\"APSA\",\"date\":\"2026-08-28\",\"at\":1788243172276},{\"id\":14,\"code\":\"30072026-136\",\"title\":\"AZ-ONCO-KOSELUGO-LAUNCHING\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-30\",\"at\":1788104816286},{\"id\":11,\"code\":\"04082026-139\",\"title\":\"AZ-CVRM-VAE-DESIGN\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-04\",\"at\":1788057852298},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787995803644},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787910070056}]','2026-09-03 07:21:39');
 INSERT INTO `app_user_prefs` VALUES (1,'ui','{\"font_size\":\"md\"}','2026-08-26 07:23:53');
 INSERT INTO `app_user_prefs` VALUES (3,'home','{\"order\":[32,26,30,1,17,18,90,23,24,25,27,28,29,35,34,31],\"hidden\":[28],\"custom\":[]}','2026-08-24 02:48:51');
 INSERT INTO `app_user_prefs` VALUES (3,'quo_recent','[{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1787914239122},{\"id\":106,\"code\":\"26032026-44\",\"title\":\"OGN-HoiDuocHoc-NhaTrang\",\"client\":\"Organon\",\"date\":\"2026-03-26\",\"at\":1787812919618},{\"id\":8,\"code\":\"12082026-142\",\"title\":\"AZ-ONCO-PEAKSharing-VietDuc-25Aug\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-12\",\"at\":1787802284452},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787799999075},{\"id\":44,\"code\":\"02072026-106\",\"title\":\"AZ-MSD-ONCO-ImAE-ExpertMeeting\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-02\",\"at\":1787713497617},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787565621783},{\"id\":30,\"code\":\"19072026-120\",\"title\":\"AZ-ONCO-PEAKSharing-175\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-19\",\"at\":1787540605254},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787539299199}]','2026-08-28 10:50:39');
 INSERT INTO `app_user_prefs` VALUES (3,'ui','{\"font_size\":\"md\"}','2026-08-26 03:12:49');
 INSERT INTO `app_user_prefs` VALUES (4,'home','{\"order\":[32,95,96,1,17,18,90,23,24,25,26,35,27,34,31,29,30,28,92,91,100,101,97,98,99],\"hidden\":[],\"custom\":[],\"pinned\":[32,95,96,27],\"cats\":[]}','2026-09-03 02:24:45');
-INSERT INTO `app_user_prefs` VALUES (4,'quo_recent','[{\"id\":293,\"code\":\"28082026-156\",\"title\":\"APSA-NỘI-BỘ\",\"client\":\"APSA\",\"date\":\"2026-08-28\",\"at\":1788407439234},{\"id\":2,\"code\":\"20082026-148\",\"title\":\"AZ-CVRM-TRANING-2508\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-20\",\"at\":1787887877435},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787887862041},{\"id\":71,\"code\":\"26052026-79\",\"title\":\"AZ-ONCO-PEAKSharing-Huế-11Jun\",\"client\":\"AstraZeneca\",\"date\":\"2026-05-26\",\"at\":1787827855968},{\"id\":10,\"code\":\"05082026-140\",\"title\":\"AZ-R&I-COPD Forum Đà Nẵng-2026\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-05\",\"at\":1787815158605},{\"id\":34,\"code\":\"13072026-116\",\"title\":\"AZ-CVRM-GalaDinner midyear 2026\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-13\",\"at\":1787815122918},{\"id\":56,\"code\":\"17062026-94\",\"title\":\"AZ-KACD-FM RIGI\",\"client\":\"AstraZeneca\",\"date\":\"2026-06-17\",\"at\":1787814737146},{\"id\":46,\"code\":\"01072026-104\",\"title\":\"AZ-R&I-Breztri-NSM-Midyear-0708\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-01\",\"at\":1787814483935},{\"id\":35,\"code\":\"13072026-115\",\"title\":\"AZ-R&I-Satellite-DaNang-2507\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-13\",\"at\":1787814172499},{\"id\":33,\"code\":\"15072026-117\",\"title\":\"OGN-Minisympo-2026-Session-2\",\"client\":\"Organon\",\"date\":\"2026-07-15\",\"at\":1787814068781}]','2026-09-03 03:50:32');
+INSERT INTO `app_user_prefs` VALUES (4,'quo_recent','[{\"id\":295,\"code\":\"03092026-158\",\"title\":\"AZ-RI-Synagis-Booth-0509\",\"client\":\"AstraZeneca\",\"date\":\"2026-09-03\",\"at\":1788418459894},{\"id\":293,\"code\":\"28082026-156\",\"title\":\"APSA-NỘI-BỘ\",\"client\":\"APSA\",\"date\":\"2026-08-28\",\"at\":1788414585770},{\"id\":2,\"code\":\"20082026-148\",\"title\":\"AZ-CVRM-TRANING-2508\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-20\",\"at\":1787887877435},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787887862041},{\"id\":71,\"code\":\"26052026-79\",\"title\":\"AZ-ONCO-PEAKSharing-Huế-11Jun\",\"client\":\"AstraZeneca\",\"date\":\"2026-05-26\",\"at\":1787827855968},{\"id\":10,\"code\":\"05082026-140\",\"title\":\"AZ-R&I-COPD Forum Đà Nẵng-2026\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-05\",\"at\":1787815158605},{\"id\":34,\"code\":\"13072026-116\",\"title\":\"AZ-CVRM-GalaDinner midyear 2026\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-13\",\"at\":1787815122918},{\"id\":56,\"code\":\"17062026-94\",\"title\":\"AZ-KACD-FM RIGI\",\"client\":\"AstraZeneca\",\"date\":\"2026-06-17\",\"at\":1787814737146},{\"id\":46,\"code\":\"01072026-104\",\"title\":\"AZ-R&I-Breztri-NSM-Midyear-0708\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-01\",\"at\":1787814483935},{\"id\":35,\"code\":\"13072026-115\",\"title\":\"AZ-R&I-Satellite-DaNang-2507\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-13\",\"at\":1787814172499}]','2026-09-03 06:54:12');
 INSERT INTO `app_user_prefs` VALUES (5,'home','{\"order\":[32,26,30,29,1,91,27,17,18,90,23,24,25,28,35,34,31,92],\"hidden\":[],\"custom\":[],\"pinned\":[]}','2026-08-26 06:01:17');
 INSERT INTO `app_user_prefs` VALUES (5,'quo_recent','[{\"id\":4,\"code\":\"18082026-146\",\"title\":\"OGN-MKT-HOIDUOCHOC-CANTHO\",\"client\":\"Organon\",\"date\":\"2026-08-18\",\"at\":1787816878997},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787816868468},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787557635740},{\"id\":65,\"code\":\"03062026-85\",\"title\":\"AZ-ONCO-aHUS speaker tour-GS. Rostaing\",\"client\":\"AstraZeneca\",\"date\":\"2026-06-03\",\"at\":1787540468281},{\"id\":2,\"code\":\"20082026-148\",\"title\":\"AZ-CVRM-TRANING-2508\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-20\",\"at\":1787540368897}]','2026-08-27 07:47:59');
 INSERT INTO `app_user_prefs` VALUES (5,'ui','{\"font_size\":\"xl\"}','2026-08-26 03:12:53');
 INSERT INTO `app_user_prefs` VALUES (6,'quo_recent','[{\"id\":7,\"code\":\"12082026-143\",\"title\":\"AZ-ONCO-GI-SOTAYBENHNHAN\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-12\",\"at\":1787714099126}]','2026-08-26 03:14:59');
 INSERT INTO `app_user_prefs` VALUES (6,'ui','{\"font_size\":\"xl\"}','2026-08-26 03:12:53');
 INSERT INTO `app_user_prefs` VALUES (7,'home','{\"order\":[32,1,17,18,90,23,24,25,26,35,27,34,31,29,30,28],\"hidden\":[34,31,28],\"custom\":[]}','2026-08-24 03:59:09');
-INSERT INTO `app_user_prefs` VALUES (7,'quo_recent','[{\"id\":4,\"code\":\"18082026-146\",\"title\":\"OGN-MKT-HOIDUOCHOC-CANTHO\",\"client\":\"Organon\",\"date\":\"2026-08-18\",\"at\":1788408240348},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787568241648},{\"id\":33,\"code\":\"15072026-117\",\"title\":\"OGN-Minisympo-2026-Session-2\",\"client\":\"Organon\",\"date\":\"2026-07-15\",\"at\":1787558968374},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787543976353}]','2026-09-03 04:04:01');
+INSERT INTO `app_user_prefs` VALUES (7,'quo_recent','[{\"id\":295,\"code\":\"03092026-158\",\"title\":\"AZ-RI-Synagis-Booth-0509\",\"client\":\"AstraZeneca\",\"date\":\"2026-09-03\",\"at\":1788419855919},{\"id\":4,\"code\":\"18082026-146\",\"title\":\"OGN-MKT-HOIDUOCHOC-CANTHO\",\"client\":\"Organon\",\"date\":\"2026-08-18\",\"at\":1788408240348},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787568241648},{\"id\":33,\"code\":\"15072026-117\",\"title\":\"OGN-Minisympo-2026-Session-2\",\"client\":\"Organon\",\"date\":\"2026-07-15\",\"at\":1787558968374},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787543976353}]','2026-09-03 07:17:36');
 INSERT INTO `app_user_prefs` VALUES (7,'ui','{\"font_size\":\"xl\"}','2026-08-24 07:46:16');
 INSERT INTO `app_user_prefs` VALUES (8,'ui','{\"font_size\":\"xl\"}','2026-08-25 06:03:41');
 INSERT INTO `app_user_prefs` VALUES (9,'home','{\"order\":[1,90,91,17,18,23,24,25,26,35,27,34,32,31,29,30,28,92,95,96,97],\"hidden\":[],\"custom\":[],\"pinned\":[1,90,91]}','2026-08-28 09:39:23');
@@ -650,7 +656,7 @@ CREATE TABLE `app_users` (
 LOCK TABLES `app_users` WRITE;
 /*!40000 ALTER TABLE `app_users` DISABLE KEYS */;
 INSERT INTO `app_users` VALUES (1,'admin','$2y$10$tgjxDVP41TkZC7QgOnnIbuaB8HFuMpI8iZCJQTqih1BFPVh6ksnU2','Harris','admin',1,'2026-08-05 16:47:25','2026-09-03 04:25:43','2026-09-03 04:25:43','account','inhouse',1,'0939399755','','','4a984eea65a98cf7d5b8','Harris Vo','2026-08-26 11:54:06',NULL,NULL,'Võ Kim Hoàn','Techcombank','390317301221','VO KIM HOAN','',NULL);
-INSERT INTO `app_users` VALUES (3,'thaoly','$2y$10$apwNXhmb03WC5brdnZnV2unSiF6fKbehZHlK2/lojsPd4MtBAB3LS','Thảo Lý','member',1,'2026-08-11 04:37:01','2026-08-29 08:49:40','2026-08-28 09:25:43','account','inhouse',1,'0359151858‬','','','639651dd5d97b4c9ed86','Nguyên Thảo','2026-08-26 12:00:43',NULL,NULL,'Lý Nguyễn Nguyên Thảo','VietinBank','0359151858','LY NGUYEN NGUYEN THAO','',NULL);
+INSERT INTO `app_users` VALUES (3,'thaoly','$2y$10$apwNXhmb03WC5brdnZnV2unSiF6fKbehZHlK2/lojsPd4MtBAB3LS','Thảo Lý','member',1,'2026-08-11 04:37:01','2026-09-03 06:53:39','2026-09-03 06:53:39','account','inhouse',1,'0359151858‬','','','639651dd5d97b4c9ed86','Nguyên Thảo','2026-08-26 12:00:43',NULL,NULL,'Lý Nguyễn Nguyên Thảo','VietinBank','0359151858','LY NGUYEN NGUYEN THAO','',NULL);
 INSERT INTO `app_users` VALUES (4,'trangdo','$2y$10$1Dj1IZCt0H6BNWX/DmN0LulFIoMya7pYPc0PedQJmsleIOSfIFfni','Trang Đỗ','member',1,'2026-08-11 04:37:51','2026-09-03 02:20:42','2026-09-03 02:20:42','admin','inhouse',1,'0899144286','','','4235f4df0980e0deb991','Trang','2026-08-26 12:08:03',NULL,NULL,'Đỗ Thảo Trang','Vietcombank','0071001172146','DO THAO TRANG','',NULL);
 INSERT INTO `app_users` VALUES (5,'nhattan','$2y$10$W8tp/Ef.JYD/V.XURuNJseFsfThk2KGlZM71rxdupY6chvGTv9Ep.','Nhật Tân','member',1,'2026-08-11 04:38:13','2026-09-03 02:46:01','2026-09-03 02:46:01','account','inhouse',1,'0901975356‬','','','61f88bb9bff556ab0fe4','Nhật Tân','2026-08-26 12:00:09',NULL,NULL,'Nguyễn Nhật Tân','TPBank','0901975356','NGUYEN NHAT TAN','',NULL);
 INSERT INTO `app_users` VALUES (6,'cankim','$2y$10$02p2Ljt1T7pbjDC5aFZ.T.H90nY52ggV0V8iYRxCIyc2FmQuAnbA.','Can Kim','member',1,'2026-08-11 04:39:10','2026-08-29 08:49:53','2026-08-26 03:11:08','account','inhouse',1,'0705131256','','','c622f49807d1ee8fb7c0','Can Kim','2026-08-26 12:06:47',NULL,NULL,'Phan Lê Anh Kim','Techcombank','19036371573017','PHAN LE ANH KIM','',NULL);
@@ -878,7 +884,7 @@ CREATE TABLE `brand_log` (
   `root` varchar(20) NOT NULL DEFAULT 'brand',
   PRIMARY KEY (`id`),
   KEY `k_time` (`created_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=137 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -958,6 +964,69 @@ INSERT INTO `brand_log` VALUES (70,4,'Trang Đỗ','mkdir','THÀNH ĐẠT','','2
 INSERT INTO `brand_log` VALUES (71,4,'Trang Đỗ','mkdir','PROSHOW','','2026-09-03 11:45:40','contracts');
 INSERT INTO `brand_log` VALUES (72,4,'Trang Đỗ','upload','BBNT FOCUS MEETING 2507.pdf','6.1 MB','2026-09-03 11:46:15','contracts');
 INSERT INTO `brand_log` VALUES (73,4,'Trang Đỗ','upload','BBNT HOPE.pdf','2.3 MB','2026-09-03 11:46:21','contracts');
+INSERT INTO `brand_log` VALUES (74,4,'Trang Đỗ','upload','BBTL AZ LAUNCH EXCELLENCE 1609.pdf','8.2 MB','2026-09-03 11:46:33','contracts');
+INSERT INTO `brand_log` VALUES (75,4,'Trang Đỗ','upload','BBTL COPD FORUM HCM.pdf','5.7 MB','2026-09-03 11:46:40','contracts');
+INSERT INTO `brand_log` VALUES (76,4,'Trang Đỗ','upload','BBTL FM 1010 HCM.pdf','3.9 MB','2026-09-03 11:46:47','contracts');
+INSERT INTO `brand_log` VALUES (77,4,'Trang Đỗ','upload','BBTL FM2609 HCM.pdf','5.2 MB','2026-09-03 11:46:54','contracts');
+INSERT INTO `brand_log` VALUES (78,4,'Trang Đỗ','upload','BBTL Focus Meeting Thái Nguyên.pdf','4.6 MB','2026-09-03 11:47:02','contracts');
+INSERT INTO `brand_log` VALUES (79,4,'Trang Đỗ','upload','BBTL Himalaya Launch HN-HCM.pdf','5.2 MB','2026-09-03 11:47:09','contracts');
+INSERT INTO `brand_log` VALUES (80,4,'Trang Đỗ','upload','BBTL HOPERIGI 0505 - HCM.pdf','2.7 MB','2026-09-03 11:47:15','contracts');
+INSERT INTO `brand_log` VALUES (81,4,'Trang Đỗ','upload','BBTL Imfinzi Launching .pdf','5.9 MB','2026-09-03 11:47:22','contracts');
+INSERT INTO `brand_log` VALUES (82,4,'Trang Đỗ','upload','BBTL Launch Excellence 0112.pdf','4.6 MB','2026-09-03 11:47:30','contracts');
+INSERT INTO `brand_log` VALUES (83,4,'Trang Đỗ','upload','BBTL RO HẢI PHÒNG T11.pdf','7.2 MB','2026-09-03 11:47:39','contracts');
+INSERT INTO `brand_log` VALUES (84,4,'Trang Đỗ','upload','Expert Meeting 22122024 HN.pdf','4.9 MB','2026-09-03 11:47:46','contracts');
+INSERT INTO `brand_log` VALUES (85,4,'Trang Đỗ','upload','FM 2711-HCM.pdf','6.2 MB','2026-09-03 11:47:54','contracts');
+INSERT INTO `brand_log` VALUES (86,4,'Trang Đỗ','upload','FM2009-DN.pdf','5.1 MB','2026-09-03 11:48:02','contracts');
+INSERT INTO `brand_log` VALUES (87,4,'Trang Đỗ','upload','NC2026-OBU-RDU-BBTL.pdf','8.2 MB','2026-09-03 11:48:12','contracts');
+INSERT INTO `brand_log` VALUES (88,4,'Trang Đỗ','upload','Scan2026-01-02_102503.pdf','5.1 MB','2026-09-03 11:48:20','contracts');
+INSERT INTO `brand_log` VALUES (89,4,'Trang Đỗ','upload','2403.26- APSA X DECATHLON.pdf','24.1 MB','2026-09-03 11:48:38','contracts');
+INSERT INTO `brand_log` VALUES (90,4,'Trang Đỗ','mkdir','Giấy ATVSTP - Teabreak','','2026-09-03 11:49:48','contracts');
+INSERT INTO `brand_log` VALUES (91,4,'Trang Đỗ','upload','bếp 24h.jpg','0.1 MB','2026-09-03 11:50:17','contracts');
+INSERT INTO `brand_log` VALUES (92,4,'Trang Đỗ','upload','Bep nho.pdf','1 MB','2026-09-03 11:50:22','contracts');
+INSERT INTO `brand_log` VALUES (93,4,'Trang Đỗ','upload','Foodchoicea.pdf','0.3 MB','2026-09-03 11:50:27','contracts');
+INSERT INTO `brand_log` VALUES (94,4,'Trang Đỗ','upload','Lam Lam.pdf','0.5 MB','2026-09-03 11:50:32','contracts');
+INSERT INTO `brand_log` VALUES (95,4,'Trang Đỗ','upload','Sugary Teabreak.pdf','0.6 MB','2026-09-03 11:50:37','contracts');
+INSERT INTO `brand_log` VALUES (96,4,'Trang Đỗ','upload','MAL - APSA NC OBU RDU .pdf','7.1 MB','2026-09-03 11:54:28','contracts');
+INSERT INTO `brand_log` VALUES (97,4,'Trang Đỗ','upload','MAL - AZ - FM 2009 DN.pdf','5.1 MB','2026-09-03 11:54:36','contracts');
+INSERT INTO `brand_log` VALUES (98,4,'Trang Đỗ','upload','MAL - FM 2411.25.pdf','6.1 MB','2026-09-03 11:54:44','contracts');
+INSERT INTO `brand_log` VALUES (99,4,'Trang Đỗ','upload','MAL - LAUNCH EXCELLENCE 1609.25.pdf','9 MB','2026-09-03 11:54:54','contracts');
+INSERT INTO `brand_log` VALUES (100,4,'Trang Đỗ','upload','MAL - RO NINH BÌNH.pdf','12.6 MB','2026-09-03 11:55:07','contracts');
+INSERT INTO `brand_log` VALUES (101,4,'Trang Đỗ','rename','FOCUS MEETING 2609.pdf','tu: NC2026-OBU-RDU-BBTL.pdf','2026-09-03 11:55:16','contracts');
+INSERT INTO `brand_log` VALUES (102,4,'Trang Đỗ','upload','MAL-FM 0912.pdf','6.9 MB','2026-09-03 11:55:16','contracts');
+INSERT INTO `brand_log` VALUES (103,4,'Trang Đỗ','delete','FOCUS MEETING 2609.pdf','file','2026-09-03 11:57:18','contracts');
+INSERT INTO `brand_log` VALUES (104,4,'Trang Đỗ','rename','MAL- FM 2609.25.pdf','tu: Scan2026-01-02_102503.pdf','2026-09-03 11:58:15','contracts');
+INSERT INTO `brand_log` VALUES (105,4,'Trang Đỗ','mkdir','HOP DONG','','2026-09-03 11:59:03','contracts');
+INSERT INTO `brand_log` VALUES (106,4,'Trang Đỗ','mkdir','BIEN BAN THANH LY','','2026-09-03 11:59:13','contracts');
+INSERT INTO `brand_log` VALUES (107,4,'Trang Đỗ','upload','Familk-MILKBAR.pdf','0.5 MB','2026-09-03 12:01:31','contracts');
+INSERT INTO `brand_log` VALUES (108,4,'Trang Đỗ','upload','NGUYEN CAO AN X APSA - MC HOANG VINH.pdf','6 MB','2026-09-03 13:03:23','contracts');
+INSERT INTO `brand_log` VALUES (109,4,'Trang Đỗ','upload','0901.2026-PHYTOPHARMA.pdf','10 MB','2026-09-03 13:04:53','contracts');
+INSERT INTO `brand_log` VALUES (110,4,'Trang Đỗ','upload','BBNT 0901.26A - PHYTOPHARMA.pdf','6.7 MB','2026-09-03 13:05:38','contracts');
+INSERT INTO `brand_log` VALUES (111,4,'Trang Đỗ','upload','2007.26-APSA X PHYTOPHARMA.pdf','14.8 MB','2026-09-03 13:06:47','contracts');
+INSERT INTO `brand_log` VALUES (112,4,'Trang Đỗ','upload','MSA - Expert Meeting ImAE .pdf','18.8 MB','2026-09-03 13:07:31','contracts');
+INSERT INTO `brand_log` VALUES (113,4,'Trang Đỗ','upload','MSA-aHUS 2507.pdf','61.9 MB','2026-09-03 13:09:01','contracts');
+INSERT INTO `brand_log` VALUES (114,4,'Trang Đỗ','upload','[SCAN]-MSA-APSA COMEX-YESAIDO.pdf','36 MB','2026-09-03 13:09:35','contracts');
+INSERT INTO `brand_log` VALUES (115,4,'Trang Đỗ','upload','APSA X NOVARTIS - HOI THAO VAY NEN 3005.pdf','6.6 MB','2026-09-03 13:09:59','contracts');
+INSERT INTO `brand_log` VALUES (116,4,'Trang Đỗ','upload','20096-NOVARTIS.pdf','7.2 MB','2026-09-03 13:10:12','contracts');
+INSERT INTO `brand_log` VALUES (117,4,'Trang Đỗ','upload','BBNT-0104.26-NOVARTIS.pdf','6.6 MB','2026-09-03 13:10:24','contracts');
+INSERT INTO `brand_log` VALUES (118,4,'Trang Đỗ','upload','HĐ MC HAO NHIEN - 150326 -.pdf','3.9 MB','2026-09-03 13:10:58','contracts');
+INSERT INTO `brand_log` VALUES (119,4,'Trang Đỗ','upload','MC NHAT HAO - 0204 - OGN.pdf','7.5 MB','2026-09-03 13:11:07','contracts');
+INSERT INTO `brand_log` VALUES (120,4,'Trang Đỗ','upload','Service Contract_Ozempic_Standee & Mockup Production for HN.pdf','0.6 MB','2026-09-03 13:12:10','contracts');
+INSERT INTO `brand_log` VALUES (121,4,'Trang Đỗ','upload','Service Contract - Mockup Ryzodeg Production.pdf','0.6 MB','2026-09-03 13:12:16','contracts');
+INSERT INTO `brand_log` VALUES (122,4,'Trang Đỗ','delete','[HDDV]1511-2024.pdf','file','2026-09-03 13:26:48','contracts');
+INSERT INTO `brand_log` VALUES (123,4,'Trang Đỗ','delete','BBNT ĐỢT 2 số 1001A của HDDV số 10-2024.pdf','file','2026-09-03 13:26:59','contracts');
+INSERT INTO `brand_log` VALUES (124,4,'Trang Đỗ','delete','BBNT ĐỢT 3 số 1001A-2025 của HDDV 10-2024.pdf','file','2026-09-03 13:27:06','contracts');
+INSERT INTO `brand_log` VALUES (125,4,'Trang Đỗ','delete','BBNT số 0402A-2025 của HDDV 02-2025.pdf','file','2026-09-03 13:28:01','contracts');
+INSERT INTO `brand_log` VALUES (126,4,'Trang Đỗ','delete','BBNT số 0601-2025 của HDDV 1511-2024.pdf','file','2026-09-03 13:28:09','contracts');
+INSERT INTO `brand_log` VALUES (127,4,'Trang Đỗ','delete','BBNT số 0701B-2025 của HDDV 2406-2024.pdf','file','2026-09-03 13:28:56','contracts');
+INSERT INTO `brand_log` VALUES (128,4,'Trang Đỗ','delete','HDDV 02-2025.pdf','file','2026-09-03 13:29:03','contracts');
+INSERT INTO `brand_log` VALUES (129,4,'Trang Đỗ','delete','HDDV 2406-2024.pdf','file','2026-09-03 13:29:09','contracts');
+INSERT INTO `brand_log` VALUES (130,4,'Trang Đỗ','upload','[HDDV]1511-2024.pdf','11.7 MB','2026-09-03 13:29:34','contracts');
+INSERT INTO `brand_log` VALUES (131,4,'Trang Đỗ','upload','HDDV 2406-2024.pdf','10.4 MB','2026-09-03 13:29:44','contracts');
+INSERT INTO `brand_log` VALUES (132,4,'Trang Đỗ','upload','HDDV 02-2025.pdf','9.6 MB','2026-09-03 13:29:53','contracts');
+INSERT INTO `brand_log` VALUES (133,4,'Trang Đỗ','upload','BBNT ĐỢT 2 số 1001A của HDDV số 10-2024.pdf','12.6 MB','2026-09-03 13:33:06','contracts');
+INSERT INTO `brand_log` VALUES (134,4,'Trang Đỗ','upload','BBNT ĐỢT 3 số 1001A-2025 của HDDV 10-2024.pdf','7.3 MB','2026-09-03 13:33:15','contracts');
+INSERT INTO `brand_log` VALUES (135,4,'Trang Đỗ','upload','BBNT số 0402A-2025 của HDDV 02-2025.pdf','4.9 MB','2026-09-03 13:33:23','contracts');
+INSERT INTO `brand_log` VALUES (136,4,'Trang Đỗ','upload','BBNT số 0601-2025 của HDDV 1511-2024.pdf','4.7 MB','2026-09-03 13:33:30','contracts');
 /*!40000 ALTER TABLE `brand_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2687,7 +2756,7 @@ CREATE TABLE `quotation_comments` (
   PRIMARY KEY (`id`),
   KEY `idx_q` (`quotation_id`,`scope`,`id`),
   KEY `idx_parent` (`parent_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2696,6 +2765,9 @@ CREATE TABLE `quotation_comments` (
 
 LOCK TABLES `quotation_comments` WRITE;
 /*!40000 ALTER TABLE `quotation_comments` DISABLE KEYS */;
+INSERT INTO `quotation_comments` VALUES (1,295,'quote',NULL,1,'Harris','Nhờ chị @Trang Đỗ mua giúp em nước suối và cà phê giao cho @Hoàng Been nha.','14,4','2026-09-03 06:42:41',NULL);
+INSERT INTO `quotation_comments` VALUES (2,295,'quote',1,4,'Trang Đỗ','em nhận thông tin nhé Sếp!',NULL,'2026-09-03 06:53:52',NULL);
+INSERT INTO `quotation_comments` VALUES (3,295,'quote',NULL,1,'Harris','@Anh Thư  coi giúp anh cái này nha','7','2026-09-03 07:17:23',NULL);
 /*!40000 ALTER TABLE `quotation_comments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2739,7 +2811,7 @@ CREATE TABLE `quotation_expenses` (
   PRIMARY KEY (`id`),
   KEY `idx_quo` (`quotation_id`),
   KEY `idx_sort` (`quotation_id`,`sort_order`)
-) ENGINE=InnoDB AUTO_INCREMENT=720 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=723 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3293,6 +3365,8 @@ INSERT INTO `quotation_expenses` VALUES (715,293,'item','MEDIA','Nam Foto HCM','
 INSERT INTO `quotation_expenses` VALUES (717,293,'group','VẬN CHUYỂN','VẬN CHUYỂN','',0.00,'',0.00,0.00,4,NULL,'2026-09-03 02:35:39','2026-09-03 02:35:39',0,NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `quotation_expenses` VALUES (718,293,'item','VẬN CHUYỂN','Cước phí tháng 8/2026','247 Express',1.00,'Gói',3931763.00,8.00,5,NULL,'2026-09-03 02:35:39','2026-09-03 02:36:34',0,NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `quotation_expenses` VALUES (719,294,'item','','','',1.00,'Gói',0.00,8.00,0,NULL,'2026-09-03 03:25:06','2026-09-03 03:25:06',0,NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `quotation_expenses` VALUES (721,295,'item','','Mua cafe','highladn ',100.00,'Lon',16100.00,8.00,0,NULL,'2026-09-03 06:52:59','2026-09-03 07:16:04',0,'sup',72,'Vy Phương','ACB','66190569','CTY TNHH VY PHUONG',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'2026-09-03');
+INSERT INTO `quotation_expenses` VALUES (722,295,'item','','','',1.00,'Gói',500000.00,0.00,1,NULL,'2026-09-03 07:15:16','2026-09-03 07:16:04',0,'user',33,'NGUYỄN VĂN NAM','Techcombank','19035260196013','NGUYỄN VĂN NAM',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'2026-09-05');
 /*!40000 ALTER TABLE `quotation_expenses` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3323,7 +3397,7 @@ CREATE TABLE `quotation_items` (
   `act_file_name` varchar(200) DEFAULT NULL COMMENT 'Tên file gốc',
   PRIMARY KEY (`id`),
   KEY `idx_quotation` (`quotation_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7655 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7860 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -6658,6 +6732,16 @@ INSERT INTO `quotation_items` VALUES (7640,11,'section','Coding VAE','',0.00,'',
 INSERT INTO `quotation_items` VALUES (7641,11,'item','Coding VAE','VAE + MASS',55.00,'Gói',1800000.00,'',1,55.00,'Gói',1700000.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (7651,293,'section','','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (7654,294,'section','','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7850,295,'section','Thi cong booth','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7851,295,'item','Vách','Ván MDF cắt CNC dán decal cán mờ theo thiết kế (2mWx2,5mH)',5.00,'m2',550000.00,'',1,5.40,'m2',550000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7852,295,'item','Sàn','Ván MDF dán decal chống trầy theo thiết kế (2mWx1,5mD)',3.00,'m2',550000.00,'',2,3.24,'m2',550000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7853,295,'item','Đèn ống bơ','',2.00,'Cái',350000.00,'',3,2.00,'Cái',350000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7854,295,'item','Bục treo TV','Ván MDF dán decal cán mờ theo thiết kế (Tạm tính 80cmWx1,5mH)',1.00,'Cái',2500000.00,'',4,1.00,'Cái',2500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7855,295,'item','TV 55inch','giá trong 1 ngày',1.00,'Cái',2500000.00,'',5,1.00,'Cái',2500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7856,295,'item','Vận chuyển lắp đặt, tháo dỡ','',1.00,'Gói',4500000.00,'',6,1.00,'Gói',4500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7857,295,'item','Nước suối','',100.00,'Chai',5500.00,'',7,100.00,'Chai',4074.00,407407.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7858,295,'item','Cafe lon','',100.00,'Lon',16000.00,'',8,100.00,'Lon',14682.00,1468182.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (7859,295,'item','Support','8H',1.00,'Người',800000.00,'',9,1.00,'Người',800000.00,0.00,'',NULL,NULL);
 /*!40000 ALTER TABLE `quotation_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -6716,7 +6800,7 @@ CREATE TABLE `quotation_reviews` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_rev` (`quotation_id`,`scope`,`reviewer_id`),
   KEY `idx_reviewer` (`reviewer_id`,`status`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -6730,6 +6814,7 @@ INSERT INTO `quotation_reviews` VALUES (2,2,'quote',1,'Harris','Harris','approve
 INSERT INTO `quotation_reviews` VALUES (3,284,'quote',1,'Harris','Nhật Tân','pending','hhii','2026-08-26 03:02:40',NULL);
 INSERT INTO `quotation_reviews` VALUES (5,284,'quote',3,'Thảo Lý','Nhật Tân','pending','dô iiii','2026-08-26 03:02:52',NULL);
 INSERT INTO `quotation_reviews` VALUES (6,291,'quote',1,'Harris','Harris','rejected','dự án đóng','2026-08-26 08:07:11','2026-08-29 13:14:12');
+INSERT INTO `quotation_reviews` VALUES (8,295,'quote',1,'Harris','Harris','approved','oke e','2026-09-03 06:41:52','2026-09-03 13:42:09');
 /*!40000 ALTER TABLE `quotation_reviews` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -6858,7 +6943,7 @@ CREATE TABLE `quotations` (
   KEY `idx_kind` (`kind`),
   KEY `idx_status` (`status`),
   KEY `idx_manage_id` (`manage_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=295 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=296 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -7156,6 +7241,7 @@ INSERT INTO `quotations` VALUES (291,'media','26082026-154','TSS-Media-Go-Superm
 INSERT INTO `quotations` VALUES (292,'event','28082026-155','AZ-ONCO-Blood Cancer Awareness Day',1,71,'AstraZeneca Việt Nam','','0315158696','Tầng 18, Tòa nhà AB, Số 76, Đường Lê Lai, Phường Bến Thành, Thành phố Hồ Chí Minh, Việt Nam','2026-08-28','28/09/2026','VND',10.00,8.00,1,1,'','Thảo Lý',NULL,'2026-08-28 09:26:53','2026-08-28 09:29:53',0,NULL,'request','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `quotations` VALUES (293,'other','28082026-156','APSA-NỘI-BỘ',4,8,'APSA','','0317301221','23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh, Việt Nam.','2026-08-28','','VND',10.00,8.00,0,1,'','Harris',NULL,'2026-08-28 14:58:15','2026-08-28 14:58:15',0,NULL,'request','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `quotations` VALUES (294,'event','03092026-157','abccc',13,NULL,'Everon Vietnam','','0109900023','Căn biệt thự TT4C-11, Khu đô thị mới Đại Kim, đường Nguyễn Xiển, Phường Đại Kim, Quận Hoàng Mai, Thành phố Hà Nội, Việt Nam','2026-09-03','','VND',10.00,8.00,1,1,'','Trần Mai Hiền','2026-09-03 10:25:11','2026-09-03 03:21:26','2026-09-03 03:25:11',0,NULL,'request','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `quotations` VALUES (295,'event','03092026-158','AZ-RI-Synagis-Booth-0509',1,65,'AstraZeneca','thanhlong.khong@astrazeneca.com','0315158696','76 Lê Lai, Phường Bến Thành, Tp. HCM, Việt Nam','2026-09-03','','VND',10.00,8.00,1,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Nhận yêu cầu','Harris',NULL,'2026-09-03 06:36:22','2026-09-03 07:12:11',0,NULL,'quote','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `quotations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -7511,9 +7597,10 @@ CREATE TABLE `ratecard_suppliers` (
   `bank_account` varchar(50) DEFAULT NULL COMMENT 'So tai khoan',
   `bank_holder` varchar(200) DEFAULT NULL COMMENT 'Chu tai khoan',
   `region` varchar(10) DEFAULT NULL COMMENT 'bac|trung|nam|tay',
+  `kind` varchar(10) NOT NULL DEFAULT 'company' COMMENT 'company = cong ty | person = ca nhan',
   PRIMARY KEY (`id`),
   UNIQUE KEY `u_name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -7522,77 +7609,77 @@ CREATE TABLE `ratecard_suppliers` (
 
 LOCK TABLES `ratecard_suppliers` WRITE;
 /*!40000 ALTER TABLE `ratecard_suppliers` DISABLE KEYS */;
-INSERT INTO `ratecard_suppliers` VALUES (3,'Mixbook','Hùng','',1,'2026-08-27 15:45:44','','','','','','Harris','2026-08-28 07:01:10','ACB','','201303449','CTY TNHH MIXBOOK','');
-INSERT INTO `ratecard_suppliers` VALUES (4,'Thanh Ngan','Phụng','',1,'2026-08-27 15:45:53',NULL,NULL,NULL,NULL,NULL,NULL,'2026-08-28 04:29:17',NULL,NULL,NULL,NULL,NULL);
-INSERT INTO `ratecard_suppliers` VALUES (5,'Song Khánh','Ngọc Ánh',NULL,1,'2026-08-28 04:29:31','p304 tòa M2 Mipec Kiến Hưng, Hà Đông, Hà Nội','0976 572 459','',NULL,NULL,'Import Excel','2026-08-28 05:01:54',NULL,NULL,NULL,NULL,'bac');
-INSERT INTO `ratecard_suppliers` VALUES (6,'Nam Khánh','Ms Vân',NULL,1,'2026-08-28 04:29:31','584/11F Lê Trọng Tấn, phường Tây Thạnh','0909 525 590','0909 794 400',NULL,NULL,'Import Excel','2026-08-28 05:01:54',NULL,NULL,NULL,NULL,'nam');
-INSERT INTO `ratecard_suppliers` VALUES (7,'Beside','Ms Trang','',1,'2026-08-28 04:29:31','89 Bưng Ông Thoàn, phường Phú Hữu','0908 769 182','','','','Harris','2026-08-28 07:01:10','ACB','','220516','CONG TY TNHH QUANG CAO THUONG MAI BESIDE','nam');
-INSERT INTO `ratecard_suppliers` VALUES (8,'Âu Lạc','Ms Khuê','',1,'2026-08-28 04:29:31','220/54/123 Âu Cơ, phường Tân Hòa','0903 235 239','','','','Harris','2026-08-28 05:02:41','','','','','nam');
-INSERT INTO `ratecard_suppliers` VALUES (9,'Carpe Diem','Diễm My','',1,'2026-08-28 04:29:31','31/19/26 Huỳnh Thiện Lộc, phường Hòa Thạnh','','','','','Harris','2026-08-28 07:01:10','ACB','','191256','CONG TY TNHH TRUYEN THONG VA SU KIEN CARPE DIEM','nam');
-INSERT INTO `ratecard_suppliers` VALUES (10,'Hòa Bình','Ms Trang',NULL,1,'2026-08-28 04:29:31','29 Đoàn Thị Điểm, Quốc Tử Giám, Đống Đa, Hà Nội','0987 955 169','',NULL,NULL,'Import Excel','2026-08-28 05:01:54',NULL,NULL,NULL,NULL,'bac');
-INSERT INTO `ratecard_suppliers` VALUES (11,'Thành Đạt','Chinh Lê','',1,'2026-08-28 04:29:31','Lô 16-TT3, khu nhà ở CT, VP và nhà ở TT, số 89 phố Thịnh Liệt, Phường Hoàng Mai, Hà Nội','0976 318 186','','','','Harris','2026-08-28 07:01:10','ACB','','976318186','CONG TY TNHH HIEU UNG SU KIEN THANH DAT','bac');
-INSERT INTO `ratecard_suppliers` VALUES (12,'Safe Production','Lương Lê Hằng',NULL,1,'2026-08-28 04:29:31','43 Phước Lý 16, Phường Liên Chiểu, tp Đà Nẵng','0988 073 560','',NULL,NULL,'Import Excel','2026-08-28 05:01:54',NULL,NULL,NULL,NULL,'trung');
-INSERT INTO `ratecard_suppliers` VALUES (13,'Phyto Pharma','Ms Nhung',NULL,1,'2026-08-28 04:29:31','Tháp Hawaii I số 1 đường Trần Qúy Kiên, phường Bình Trưng, thành phố Hồ Chí Minh','0982 029 776','',NULL,NULL,'Import Excel','2026-08-28 05:01:54',NULL,NULL,NULL,NULL,'nam');
-INSERT INTO `ratecard_suppliers` VALUES (14,'Proshow','Ms Phúc',NULL,1,'2026-08-28 04:29:31','54 Trường Sơn, Hòa Cẩm, Cẩm Lệ, Đà Nẵng (bên cf Mai)','0906 304 731','',NULL,NULL,'Import Excel','2026-08-28 05:01:54',NULL,NULL,NULL,NULL,'trung');
-INSERT INTO `ratecard_suppliers` VALUES (15,'Cửu Vân Long HCM','Ms Ngân',NULL,1,'2026-08-28 04:29:31','497 Hòa Hảo, phường Diên Hồng, Tp Hồ Chí Minh','0986 810 431','',NULL,NULL,'Import Excel','2026-08-28 05:01:54',NULL,NULL,NULL,NULL,'nam');
-INSERT INTO `ratecard_suppliers` VALUES (16,'AT - AS Hoàng Long','',NULL,1,'2026-08-28 04:29:31','02-04 Hàn Thuyên, phường Hòa Cường, Đà Nẵng','','',NULL,NULL,'Import Excel','2026-08-28 05:01:54',NULL,NULL,NULL,NULL,'trung');
-INSERT INTO `ratecard_suppliers` VALUES (17,'Star Martrix','Nguyễn Thành Đạt','',1,'2026-08-28 04:29:31','231/79 T2, Dương Bá Trạc, Phường Chánh Hưng, TP.HCM, Việt Nam.','096 866 1417','','','','Harris','2026-08-28 07:01:10','ACB','','1417688','CONG TY TNHH DICH VU STAR MATRIX','nam');
-INSERT INTO `ratecard_suppliers` VALUES (18,'KYLASER','Minh Kỷ','',1,'2026-08-28 04:29:31','Số 14 đường số 3, phường Tam Bình, Tp.Hồ Chí Minh','0909 956 915','','','','Harris','2026-08-28 07:25:26','Vietcombank','','1159536868','','nam');
-INSERT INTO `ratecard_suppliers` VALUES (19,'Hình ảnh Việt','Lê Thảo',NULL,1,'2026-08-28 04:29:31','Số 8A, ngõ 8 Phố Dịch Vọng, Cầu Giấy, Hà Nội','0975 251 292','',NULL,NULL,'Import Excel','2026-08-28 05:01:54',NULL,NULL,NULL,NULL,'bac');
-INSERT INTO `ratecard_suppliers` VALUES (20,'MISA','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','55556666','CONG TY CO PHAN MISA','');
-INSERT INTO `ratecard_suppliers` VALUES (21,'Quảng cáo Thành Phong','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','280295888888','CONG TY TNHH - SX - DV - QUANG CAO THANH PHONG','');
-INSERT INTO `ratecard_suppliers` VALUES (22,'ADAVI','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','4101867','CONG TY TNHH ADAVI','');
-INSERT INTO `ratecard_suppliers` VALUES (23,'Bích Vân Handmade','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','6855738','CONG TY TNHH BICH VAN HANDMADE','');
-INSERT INTO `ratecard_suppliers` VALUES (24,'Công nghệ Việt Giang','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','55559886','CONG TY TNHH CONG NGHE VIET GIANG','');
-INSERT INTO `ratecard_suppliers` VALUES (25,'Savitel','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','737336668','CONG TY TNHH DAU TU CONG NGHE SAVITEL','');
-INSERT INTO `ratecard_suppliers` VALUES (26,'Truyền thông CND','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','9711055056','CONG TY TNHH DICH VU TRUYEN THONG CND','');
-INSERT INTO `ratecard_suppliers` VALUES (27,'Du lịch Vận tải Nguyên Hưng','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','5532343638','CONG TY TNHH DU LICH VAN TAI NGUYEN HUNG','');
-INSERT INTO `ratecard_suppliers` VALUES (28,'Giải pháp Sự kiện Trường Thành','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','2473658668','CONG TY TNHH GIAI PHAP SU KIEN TRUONG THANH','');
-INSERT INTO `ratecard_suppliers` VALUES (29,'Ocany Việt Nam','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','1912189988','CONG TY TNHH LIEN DOANH OCANY VIET NAM','');
-INSERT INTO `ratecard_suppliers` VALUES (30,'Vận tải Toàn Lâm','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','Vietcombank','','1900127777','CONG TY TNHH QUOC TE THUONG MAI VA DICH VU VAN TAI TOAN LAM','');
-INSERT INTO `ratecard_suppliers` VALUES (31,'Lá Cờ Việt','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','68685556868','CONG TY TNHH SAN XUAT THUONG MAI LA CO VIET','');
-INSERT INTO `ratecard_suppliers` VALUES (32,'Skyjet','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','384969888','CONG TY TNHH SKYJET','');
-INSERT INTO `ratecard_suppliers` VALUES (33,'Tuyết Nhung Chipas','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','99989268','CONG TY TNHH SX TM DV DU LICH TUYET NHUNG CHIPAS','');
-INSERT INTO `ratecard_suppliers` VALUES (34,'Quà tặng Lê Gia','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','9992296','CONG TY TNHH SXTM QUA TANG LE GIA','');
-INSERT INTO `ratecard_suppliers` VALUES (35,'Nhân Phát','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','12338688','CONG TY TNHH THIET BI VA CONG NGHE NHAN PHAT','');
-INSERT INTO `ratecard_suppliers` VALUES (36,'3D Coretech','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','1601568','CONG TY TNHH THUONG MAI DICH VU 3D CORETECH','');
-INSERT INTO `ratecard_suppliers` VALUES (37,'Tinh Khôi Studio','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','2673687','CONG TY TNHH TINH KHOI STUDIO','');
-INSERT INTO `ratecard_suppliers` VALUES (38,'Công nghệ & Truyền thông 247','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','224763666','CONG TY TNHH TM CONG NGHE VA TRUYEN THONG 247','');
-INSERT INTO `ratecard_suppliers` VALUES (39,'Nam Thái Dương','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','21198468','CONG TY TNHH TRUYEN THONG NAM THAI DUONG','');
-INSERT INTO `ratecard_suppliers` VALUES (40,'Đồ cúng Tâm Linh','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','152205689','CTY CO PHAN DICH VU DO CUNG TAM LINH','');
-INSERT INTO `ratecard_suppliers` VALUES (41,'Tân Việt','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','121766659','CTY CP TAN VIET','');
-INSERT INTO `ratecard_suppliers` VALUES (42,'Anh Khoa','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','362779968','CTY TNHH ANH KHOA','');
-INSERT INTO `ratecard_suppliers` VALUES (43,'Beyond Media','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','318976668','CTY TNHH BEYOND MEDIA','');
-INSERT INTO `ratecard_suppliers` VALUES (44,'Ca cao Xuân Ron Chợ Gạo','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','170590979','CTY TNHH CA CAO XUAN RON CHO GAO','');
-INSERT INTO `ratecard_suppliers` VALUES (45,'Phúc An','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','63361168','CTY TNHH CHO THUE THIET BI SU KIEN PHUC AN','');
-INSERT INTO `ratecard_suppliers` VALUES (46,'Chữ ký số Win-CA','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','762447','CTY TNHH CHU KY SO WIN - CA','');
-INSERT INTO `ratecard_suppliers` VALUES (47,'D&M Group Việt Nam','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','33369888888','CTY TNHH D&M GROUP VIET NAM','');
-INSERT INTO `ratecard_suppliers` VALUES (48,'Kế toán Ưu Việt','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','66598999','CTY TNHH DAI LY THUE TAI CHINH KE TOAN UU VIET','');
-INSERT INTO `ratecard_suppliers` VALUES (49,'Dart Chocolate','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','185585869','CTY TNHH DART CHOCOLATE','');
-INSERT INTO `ratecard_suppliers` VALUES (50,'DK Entertainment Media','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','222228299','CTY TNHH DK ENTERTAINMENT MEDIA','');
-INSERT INTO `ratecard_suppliers` VALUES (51,'Mộc Lan Viên','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','176438279','CTY TNHH DT TM DV MOC LAN VIEN','');
-INSERT INTO `ratecard_suppliers` VALUES (52,'Hoàng Sa Việt','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','1340668','CTY TNHH DT VA PT HOANG SA VIET','');
-INSERT INTO `ratecard_suppliers` VALUES (53,'Vật tư Thiết bị Số','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','255489869','CTY TNHH DV CUNG UNG VAT TU THIET BI SO','');
-INSERT INTO `ratecard_suppliers` VALUES (54,'In nhanh Lam Sơn','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','9843139','CTY TNHH IN NHANH LAM SON','');
-INSERT INTO `ratecard_suppliers` VALUES (55,'Thu âm Nguyên Bầu','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','199561079','CTY TNHH MTV THU AM NGUYEN BAU','');
-INSERT INTO `ratecard_suppliers` VALUES (56,'Line Production','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','6385868','CTY TNHH MTV TM DICH VU QUANG CAO LINE PRODUCTION','');
-INSERT INTO `ratecard_suppliers` VALUES (57,'Nhật Ly','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','23356159','CTY TNHH NHAT LY','');
-INSERT INTO `ratecard_suppliers` VALUES (58,'NV Logistics Việt Nam','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','18000578','CTY TNHH NV LOGISTICS VIET NAM','');
-INSERT INTO `ratecard_suppliers` VALUES (59,'P.A Việt Nam','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','35144929','CTY TNHH P.A VIET NAM','');
-INSERT INTO `ratecard_suppliers` VALUES (60,'Quà Bao La','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','22052068','CTY TNHH QUA BAO LA','');
-INSERT INTO `ratecard_suppliers` VALUES (61,'Thanh Vi Paper','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','1915957788','CTY TNHH SX TM DV THANH VI PAPER','');
-INSERT INTO `ratecard_suppliers` VALUES (62,'Vua Sự Kiện','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','789595566','CTY TNHH TC SU KIEN VA TRUYEN THONG VUA SU KIEN','');
-INSERT INTO `ratecard_suppliers` VALUES (63,'Quảng cáo & Truyền thông 247','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','39876886','CTY TNHH THUONG MAI QUANG CAO VA TRUYEN THONG 247','');
-INSERT INTO `ratecard_suppliers` VALUES (64,'Công nghệ Đông Nam','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','4828888','CTY TNHH TM CONG NGHE DONG NAM','');
-INSERT INTO `ratecard_suppliers` VALUES (65,'In ấn Cánh Sen','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','233995669','CTY TNHH TM DV IN AN CANH SEN','');
-INSERT INTO `ratecard_suppliers` VALUES (66,'Minh Tú Cát Tường','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','142306439','CTY TNHH TM DV THIET BI SU KIEN MINH TU CAT TUONG','');
-INSERT INTO `ratecard_suppliers` VALUES (67,'Công nghệ Lê Minh','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','156246139','CTY TNHH TM VA DV PT CONG NGHE LE MINH','');
-INSERT INTO `ratecard_suppliers` VALUES (68,'DZ','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','63631988','CTY TNHH TMDV DZ','');
-INSERT INTO `ratecard_suppliers` VALUES (69,'Tương Minh','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','56668866','CTY TNHH TRUYEN THONG QUOC TE TUONG MINH','');
-INSERT INTO `ratecard_suppliers` VALUES (70,'DK-Cons','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','8884431888','CTY TNHH TVTK & XAY DUNG DK-CONS','');
-INSERT INTO `ratecard_suppliers` VALUES (71,'Việt Nam Moving','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','124233539','CTY TNHH VIET NAM MOVING','');
-INSERT INTO `ratecard_suppliers` VALUES (72,'Vy Phương','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','66190569','CTY TNHH VY PHUONG','');
-INSERT INTO `ratecard_suppliers` VALUES (73,'Win Tech Solution','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','68968888','CTY TNHH WIN TECH SOLUTION','');
+INSERT INTO `ratecard_suppliers` VALUES (3,'Mixbook','Hùng','',1,'2026-08-27 15:45:44','','','','','','Harris','2026-08-28 07:01:10','ACB','','201303449','CTY TNHH MIXBOOK','','company');
+INSERT INTO `ratecard_suppliers` VALUES (4,'Thanh Ngan','Phụng','',1,'2026-08-27 15:45:53',NULL,NULL,NULL,NULL,NULL,NULL,'2026-08-28 04:29:17',NULL,NULL,NULL,NULL,NULL,'company');
+INSERT INTO `ratecard_suppliers` VALUES (5,'Song Khánh','Ngọc Ánh',NULL,1,'2026-08-28 04:29:31','p304 tòa M2 Mipec Kiến Hưng, Hà Đông, Hà Nội','0976 572 459','',NULL,NULL,'Import Excel','2026-08-28 05:01:54',NULL,NULL,NULL,NULL,'bac','company');
+INSERT INTO `ratecard_suppliers` VALUES (6,'Nam Khánh','Ms Vân',NULL,1,'2026-08-28 04:29:31','584/11F Lê Trọng Tấn, phường Tây Thạnh','0909 525 590','0909 794 400',NULL,NULL,'Import Excel','2026-08-28 05:01:54',NULL,NULL,NULL,NULL,'nam','company');
+INSERT INTO `ratecard_suppliers` VALUES (7,'Beside','Ms Trang','',1,'2026-08-28 04:29:31','89 Bưng Ông Thoàn, phường Phú Hữu','0908 769 182','','','','Harris','2026-08-28 07:01:10','ACB','','220516','CONG TY TNHH QUANG CAO THUONG MAI BESIDE','nam','company');
+INSERT INTO `ratecard_suppliers` VALUES (8,'Âu Lạc','Ms Khuê','',1,'2026-08-28 04:29:31','220/54/123 Âu Cơ, phường Tân Hòa','0903 235 239','','','','Harris','2026-08-28 05:02:41','','','','','nam','company');
+INSERT INTO `ratecard_suppliers` VALUES (9,'Carpe Diem','Diễm My','',1,'2026-08-28 04:29:31','31/19/26 Huỳnh Thiện Lộc, phường Hòa Thạnh','','','','','Harris','2026-08-28 07:01:10','ACB','','191256','CONG TY TNHH TRUYEN THONG VA SU KIEN CARPE DIEM','nam','company');
+INSERT INTO `ratecard_suppliers` VALUES (10,'Hòa Bình','Ms Trang',NULL,1,'2026-08-28 04:29:31','29 Đoàn Thị Điểm, Quốc Tử Giám, Đống Đa, Hà Nội','0987 955 169','',NULL,NULL,'Import Excel','2026-08-28 05:01:54',NULL,NULL,NULL,NULL,'bac','company');
+INSERT INTO `ratecard_suppliers` VALUES (11,'Thành Đạt','Chinh Lê','',1,'2026-08-28 04:29:31','Lô 16-TT3, khu nhà ở CT, VP và nhà ở TT, số 89 phố Thịnh Liệt, Phường Hoàng Mai, Hà Nội','0976 318 186','','','','Harris','2026-08-28 07:01:10','ACB','','976318186','CONG TY TNHH HIEU UNG SU KIEN THANH DAT','bac','company');
+INSERT INTO `ratecard_suppliers` VALUES (12,'Safe Production','Lương Lê Hằng',NULL,1,'2026-08-28 04:29:31','43 Phước Lý 16, Phường Liên Chiểu, tp Đà Nẵng','0988 073 560','',NULL,NULL,'Import Excel','2026-08-28 05:01:54',NULL,NULL,NULL,NULL,'trung','company');
+INSERT INTO `ratecard_suppliers` VALUES (13,'Phyto Pharma','Ms Nhung',NULL,1,'2026-08-28 04:29:31','Tháp Hawaii I số 1 đường Trần Qúy Kiên, phường Bình Trưng, thành phố Hồ Chí Minh','0982 029 776','',NULL,NULL,'Import Excel','2026-08-28 05:01:54',NULL,NULL,NULL,NULL,'nam','company');
+INSERT INTO `ratecard_suppliers` VALUES (14,'Proshow','Ms Phúc',NULL,1,'2026-08-28 04:29:31','54 Trường Sơn, Hòa Cẩm, Cẩm Lệ, Đà Nẵng (bên cf Mai)','0906 304 731','',NULL,NULL,'Import Excel','2026-08-28 05:01:54',NULL,NULL,NULL,NULL,'trung','company');
+INSERT INTO `ratecard_suppliers` VALUES (15,'Cửu Vân Long HCM','Ms Ngân',NULL,1,'2026-08-28 04:29:31','497 Hòa Hảo, phường Diên Hồng, Tp Hồ Chí Minh','0986 810 431','',NULL,NULL,'Import Excel','2026-08-28 05:01:54',NULL,NULL,NULL,NULL,'nam','company');
+INSERT INTO `ratecard_suppliers` VALUES (16,'AT - AS Hoàng Long','',NULL,1,'2026-08-28 04:29:31','02-04 Hàn Thuyên, phường Hòa Cường, Đà Nẵng','','',NULL,NULL,'Import Excel','2026-08-28 05:01:54',NULL,NULL,NULL,NULL,'trung','company');
+INSERT INTO `ratecard_suppliers` VALUES (17,'Star Martrix','Nguyễn Thành Đạt','',1,'2026-08-28 04:29:31','231/79 T2, Dương Bá Trạc, Phường Chánh Hưng, TP.HCM, Việt Nam.','096 866 1417','','','','Harris','2026-08-28 07:01:10','ACB','','1417688','CONG TY TNHH DICH VU STAR MATRIX','nam','company');
+INSERT INTO `ratecard_suppliers` VALUES (18,'KYLASER','Minh Kỷ','',1,'2026-08-28 04:29:31','Số 14 đường số 3, phường Tam Bình, Tp.Hồ Chí Minh','0909 956 915','','','','Harris','2026-08-28 07:25:26','Vietcombank','','1159536868','','nam','company');
+INSERT INTO `ratecard_suppliers` VALUES (19,'Hình ảnh Việt','Lê Thảo',NULL,1,'2026-08-28 04:29:31','Số 8A, ngõ 8 Phố Dịch Vọng, Cầu Giấy, Hà Nội','0975 251 292','',NULL,NULL,'Import Excel','2026-08-28 05:01:54',NULL,NULL,NULL,NULL,'bac','company');
+INSERT INTO `ratecard_suppliers` VALUES (20,'MISA','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','55556666','CONG TY CO PHAN MISA','','company');
+INSERT INTO `ratecard_suppliers` VALUES (21,'Quảng cáo Thành Phong','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','280295888888','CONG TY TNHH - SX - DV - QUANG CAO THANH PHONG','','company');
+INSERT INTO `ratecard_suppliers` VALUES (22,'ADAVI','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','4101867','CONG TY TNHH ADAVI','','company');
+INSERT INTO `ratecard_suppliers` VALUES (23,'Bích Vân Handmade','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','6855738','CONG TY TNHH BICH VAN HANDMADE','','company');
+INSERT INTO `ratecard_suppliers` VALUES (24,'Công nghệ Việt Giang','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','55559886','CONG TY TNHH CONG NGHE VIET GIANG','','company');
+INSERT INTO `ratecard_suppliers` VALUES (25,'Savitel','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','737336668','CONG TY TNHH DAU TU CONG NGHE SAVITEL','','company');
+INSERT INTO `ratecard_suppliers` VALUES (26,'Truyền thông CND','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','9711055056','CONG TY TNHH DICH VU TRUYEN THONG CND','','company');
+INSERT INTO `ratecard_suppliers` VALUES (27,'Du lịch Vận tải Nguyên Hưng','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','5532343638','CONG TY TNHH DU LICH VAN TAI NGUYEN HUNG','','company');
+INSERT INTO `ratecard_suppliers` VALUES (28,'Giải pháp Sự kiện Trường Thành','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','2473658668','CONG TY TNHH GIAI PHAP SU KIEN TRUONG THANH','','company');
+INSERT INTO `ratecard_suppliers` VALUES (29,'Ocany Việt Nam','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','1912189988','CONG TY TNHH LIEN DOANH OCANY VIET NAM','','company');
+INSERT INTO `ratecard_suppliers` VALUES (30,'Vận tải Toàn Lâm','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','Vietcombank','','1900127777','CONG TY TNHH QUOC TE THUONG MAI VA DICH VU VAN TAI TOAN LAM','','company');
+INSERT INTO `ratecard_suppliers` VALUES (31,'Lá Cờ Việt','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','68685556868','CONG TY TNHH SAN XUAT THUONG MAI LA CO VIET','','company');
+INSERT INTO `ratecard_suppliers` VALUES (32,'Skyjet','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','384969888','CONG TY TNHH SKYJET','','company');
+INSERT INTO `ratecard_suppliers` VALUES (33,'Tuyết Nhung Chipas','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','99989268','CONG TY TNHH SX TM DV DU LICH TUYET NHUNG CHIPAS','','company');
+INSERT INTO `ratecard_suppliers` VALUES (34,'Quà tặng Lê Gia','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','9992296','CONG TY TNHH SXTM QUA TANG LE GIA','','company');
+INSERT INTO `ratecard_suppliers` VALUES (35,'Nhân Phát','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','12338688','CONG TY TNHH THIET BI VA CONG NGHE NHAN PHAT','','company');
+INSERT INTO `ratecard_suppliers` VALUES (36,'3D Coretech','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','1601568','CONG TY TNHH THUONG MAI DICH VU 3D CORETECH','','company');
+INSERT INTO `ratecard_suppliers` VALUES (37,'Tinh Khôi Studio','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','2673687','CONG TY TNHH TINH KHOI STUDIO','','company');
+INSERT INTO `ratecard_suppliers` VALUES (38,'Công nghệ & Truyền thông 247','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','224763666','CONG TY TNHH TM CONG NGHE VA TRUYEN THONG 247','','company');
+INSERT INTO `ratecard_suppliers` VALUES (39,'Nam Thái Dương','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','21198468','CONG TY TNHH TRUYEN THONG NAM THAI DUONG','','company');
+INSERT INTO `ratecard_suppliers` VALUES (40,'Đồ cúng Tâm Linh','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','152205689','CTY CO PHAN DICH VU DO CUNG TAM LINH','','company');
+INSERT INTO `ratecard_suppliers` VALUES (41,'Tân Việt','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','121766659','CTY CP TAN VIET','','company');
+INSERT INTO `ratecard_suppliers` VALUES (42,'Anh Khoa','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','362779968','CTY TNHH ANH KHOA','','company');
+INSERT INTO `ratecard_suppliers` VALUES (43,'Beyond Media','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','318976668','CTY TNHH BEYOND MEDIA','','company');
+INSERT INTO `ratecard_suppliers` VALUES (44,'Ca cao Xuân Ron Chợ Gạo','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','170590979','CTY TNHH CA CAO XUAN RON CHO GAO','','company');
+INSERT INTO `ratecard_suppliers` VALUES (45,'Phúc An','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','63361168','CTY TNHH CHO THUE THIET BI SU KIEN PHUC AN','','company');
+INSERT INTO `ratecard_suppliers` VALUES (46,'Chữ ký số Win-CA','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','762447','CTY TNHH CHU KY SO WIN - CA','','company');
+INSERT INTO `ratecard_suppliers` VALUES (47,'D&M Group Việt Nam','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','33369888888','CTY TNHH D&M GROUP VIET NAM','','company');
+INSERT INTO `ratecard_suppliers` VALUES (48,'Kế toán Ưu Việt','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','66598999','CTY TNHH DAI LY THUE TAI CHINH KE TOAN UU VIET','','company');
+INSERT INTO `ratecard_suppliers` VALUES (49,'Dart Chocolate','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','185585869','CTY TNHH DART CHOCOLATE','','company');
+INSERT INTO `ratecard_suppliers` VALUES (50,'DK Entertainment Media','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:43','','','','','','Harris','2026-08-28 07:07:43','ACB','','222228299','CTY TNHH DK ENTERTAINMENT MEDIA','','company');
+INSERT INTO `ratecard_suppliers` VALUES (51,'Mộc Lan Viên','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','176438279','CTY TNHH DT TM DV MOC LAN VIEN','','company');
+INSERT INTO `ratecard_suppliers` VALUES (52,'Hoàng Sa Việt','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','1340668','CTY TNHH DT VA PT HOANG SA VIET','','company');
+INSERT INTO `ratecard_suppliers` VALUES (53,'Vật tư Thiết bị Số','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','255489869','CTY TNHH DV CUNG UNG VAT TU THIET BI SO','','company');
+INSERT INTO `ratecard_suppliers` VALUES (54,'In nhanh Lam Sơn','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','9843139','CTY TNHH IN NHANH LAM SON','','company');
+INSERT INTO `ratecard_suppliers` VALUES (55,'Thu âm Nguyên Bầu','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','199561079','CTY TNHH MTV THU AM NGUYEN BAU','','company');
+INSERT INTO `ratecard_suppliers` VALUES (56,'Line Production','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','6385868','CTY TNHH MTV TM DICH VU QUANG CAO LINE PRODUCTION','','company');
+INSERT INTO `ratecard_suppliers` VALUES (57,'Nhật Ly','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','23356159','CTY TNHH NHAT LY','','company');
+INSERT INTO `ratecard_suppliers` VALUES (58,'NV Logistics Việt Nam','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','18000578','CTY TNHH NV LOGISTICS VIET NAM','','company');
+INSERT INTO `ratecard_suppliers` VALUES (59,'P.A Việt Nam','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','35144929','CTY TNHH P.A VIET NAM','','company');
+INSERT INTO `ratecard_suppliers` VALUES (60,'Quà Bao La','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','22052068','CTY TNHH QUA BAO LA','','company');
+INSERT INTO `ratecard_suppliers` VALUES (61,'Thanh Vi Paper','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','1915957788','CTY TNHH SX TM DV THANH VI PAPER','','company');
+INSERT INTO `ratecard_suppliers` VALUES (62,'Vua Sự Kiện','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','789595566','CTY TNHH TC SU KIEN VA TRUYEN THONG VUA SU KIEN','','company');
+INSERT INTO `ratecard_suppliers` VALUES (63,'Quảng cáo & Truyền thông 247','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','39876886','CTY TNHH THUONG MAI QUANG CAO VA TRUYEN THONG 247','','company');
+INSERT INTO `ratecard_suppliers` VALUES (64,'Công nghệ Đông Nam','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','4828888','CTY TNHH TM CONG NGHE DONG NAM','','company');
+INSERT INTO `ratecard_suppliers` VALUES (65,'In ấn Cánh Sen','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','233995669','CTY TNHH TM DV IN AN CANH SEN','','company');
+INSERT INTO `ratecard_suppliers` VALUES (66,'Minh Tú Cát Tường','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','142306439','CTY TNHH TM DV THIET BI SU KIEN MINH TU CAT TUONG','','company');
+INSERT INTO `ratecard_suppliers` VALUES (67,'Công nghệ Lê Minh','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','156246139','CTY TNHH TM VA DV PT CONG NGHE LE MINH','','company');
+INSERT INTO `ratecard_suppliers` VALUES (68,'DZ','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','63631988','CTY TNHH TMDV DZ','','company');
+INSERT INTO `ratecard_suppliers` VALUES (69,'Tương Minh','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','56668866','CTY TNHH TRUYEN THONG QUOC TE TUONG MINH','','company');
+INSERT INTO `ratecard_suppliers` VALUES (70,'DK-Cons','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','8884431888','CTY TNHH TVTK & XAY DUNG DK-CONS','','company');
+INSERT INTO `ratecard_suppliers` VALUES (71,'Việt Nam Moving','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','124233539','CTY TNHH VIET NAM MOVING','','company');
+INSERT INTO `ratecard_suppliers` VALUES (72,'Vy Phương','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','66190569','CTY TNHH VY PHUONG','','company');
+INSERT INTO `ratecard_suppliers` VALUES (73,'Win Tech Solution','','Nhap tu danh ba nguoi thu huong ACB',1,'2026-08-28 07:07:44','','','','','','Harris','2026-08-28 07:07:44','ACB','','68968888','CTY TNHH WIN TECH SOLUTION','','company');
 /*!40000 ALTER TABLE `ratecard_suppliers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -7734,7 +7821,6 @@ CREATE TABLE `video_comments` (
 
 LOCK TABLES `video_comments` WRITE;
 /*!40000 ALTER TABLE `video_comments` DISABLE KEYS */;
-INSERT INTO `video_comments` VALUES (4,4,20487,'Nhật Tân','test thui ạ','4/3f3dc81b4fc4fcde4d5b.jpg',0,'2026-09-03 03:15:53');
 /*!40000 ALTER TABLE `video_comments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -7761,7 +7847,7 @@ CREATE TABLE `video_reviews` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_token` (`token`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -7770,7 +7856,7 @@ CREATE TABLE `video_reviews` (
 
 LOCK TABLES `video_reviews` WRITE;
 /*!40000 ALTER TABLE `video_reviews` DISABLE KEYS */;
-INSERT INTO `video_reviews` VALUES (4,'54e25c7f8a27719594072f95f6959c00','Scene_BSLuan_Bai2_Ver1_29.8','','b!e4unr15XWkyaVG8edY6MkfZmAYHtCUBDugOk42Ie06yPpJHpQ4j6SpiGKdrEhZ21','01UTW2SKOYF5GNASIXX5GIBA5FZFQGPRW5','Scene_BSLuan_Bai2_Ver1_29.8.mp4',825266668,'https://apsaagency.sharepoint.com/_layouts/15/download.aspx?UniqueId=d04c2fd8-1749-4cbf-8083-a5c96067c6dd&Translate=false&tempauth=v1.eyJzaXRlaWQiOiJhZmE3OGI3Yi01NzVlLTRjNWEtOWE1NC02ZjFlNzU4ZThjOTEiLCJhcHBfZGlzcGxheW5hbWUiOiJBUFNBIEludGVybmFsIEFwcCIsIm5hbWVpZCI6IjIxZWEwNWIxLTA4YTYtNDI3Yi1iMzlkLTJlYjk5OTE1ZmIzMUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvYXBzYWFnZW5jeS5zaGFyZXBvaW50LmNvbUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJleHAiOiIxNzg4NDA4ODY3In0.CkAKDGVudHJhX2NsYWltcxIwQ09iSjQ5UUdFQUFhRm1ORmIxSkpjVU50WWtVeVpHVXRkSGh0VkVwc1FVRXFBQT09CjIKCmFjdG9yYXBwaWQSJDAwMDAwMDAzLTAwMDAtMDAwMC1jMDAwLTAwMDAwMDAwMDAwMAoKCgRzbmlkEgI2NBILCJDC9erv3MQ_EAUaDTIwLjE5MC4xNjMuMjkqLFFUQ1BtZ1lBY1ZEenJTdS9Sd3hXVWZ6SXJQUzZTME9yck1Ud0lzOHhiODA9MHk4AUIQojd2-SiwAICCD5O1SXUwMUoQaGFzaGVkcHJvb2Z0b2tlbnoBMboBcHNlbGVjdGVkc2l0ZXMgYWxsc2l0ZXMucmVhZCBhbGxzaXRlcy53cml0ZSBhbGxzaXRlcy5tYW5hZ2UgYWxsc2l0ZXMuYXJjaGl2ZSBhbGxzaXRlcy5jcmVhdGUgYWxsc2l0ZXMuZnVsbGNvbnRyb2zIAQE.VJ5ezYn9yP-5MRr2M_kLPT_CQj1Urz7Yun4ZT3qXr_Y&ApiVersion=2.0',1788408267,1,'Harris','2026-08-31 04:46:29');
+INSERT INTO `video_reviews` VALUES (4,'54e25c7f8a27719594072f95f6959c00','Scene_BSLuan_Bai2_Ver1_29.8','','b!e4unr15XWkyaVG8edY6MkfZmAYHtCUBDugOk42Ie06yPpJHpQ4j6SpiGKdrEhZ21','01UTW2SKOYF5GNASIXX5GIBA5FZFQGPRW5','Scene_BSLuan_Bai2_Ver1_29.8.mp4',825266668,'https://apsaagency.sharepoint.com/_layouts/15/download.aspx?UniqueId=d04c2fd8-1749-4cbf-8083-a5c96067c6dd&Translate=false&tempauth=v1.eyJzaXRlaWQiOiJhZmE3OGI3Yi01NzVlLTRjNWEtOWE1NC02ZjFlNzU4ZThjOTEiLCJhcHBfZGlzcGxheW5hbWUiOiJBUFNBIEludGVybmFsIEFwcCIsIm5hbWVpZCI6IjIxZWEwNWIxLTA4YTYtNDI3Yi1iMzlkLTJlYjk5OTE1ZmIzMUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvYXBzYWFnZW5jeS5zaGFyZXBvaW50LmNvbUA4NTM5ZTJmYS05YjFhLTQxOTgtODAzNi0wNTZhZDY1NjNkNDUiLCJleHAiOiIxNzg4NDIwODEwIn0.CkAKDGVudHJhX2NsYWltcxIwQ0plVjVOUUdFQUFhRm10cGIzQkJTbFE0TFd0aE9YUmxjRlpyWDBVMlFVRXFBQT09CjIKCmFjdG9yYXBwaWQSJDAwMDAwMDAzLTAwMDAtMDAwMC1jMDAwLTAwMDAwMDAwMDAwMAoKCgRzbmlkEgI2NBILCPrc_dHp48Q_EAUaDTIwLjE5MC4xNjMuMjkqLFFUQ1BtZ1lBY1ZEenJTdS9Sd3hXVWZ6SXJQUzZTME9yck1Ud0lzOHhiODA9MHk4AUIQojeCXORwAICPHuD4d-Qkk0oQaGFzaGVkcHJvb2Z0b2tlbnoBMboBcHNlbGVjdGVkc2l0ZXMgYWxsc2l0ZXMucmVhZCBhbGxzaXRlcy53cml0ZSBhbGxzaXRlcy5tYW5hZ2UgYWxsc2l0ZXMuYXJjaGl2ZSBhbGxzaXRlcy5jcmVhdGUgYWxsc2l0ZXMuZnVsbGNvbnRyb2zIAQE.13s8IbcaYLShIsHzd-RaMKiADAe024JNbZArjKfejsU&ApiVersion=2.0',1788420210,1,'Harris','2026-08-31 04:46:29');
 /*!40000 ALTER TABLE `video_reviews` ENABLE KEYS */;
 UNLOCK TABLES;
 
