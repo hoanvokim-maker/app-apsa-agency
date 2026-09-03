@@ -79,6 +79,20 @@ function vf_me()
 
 function vf_is_admin() { $m = vf_me(); return strcasecmp($m['role'], 'admin') === 0; }
 function vf_need_admin() { if (!vf_is_admin()) vf_fail('Chi Admin moi xem/sua duoc phan nay.', 403); }
+/** Quyen chi tiet theo module. $what: view|add|edit|del */
+function vf_need_cap($mid, $what)
+{
+    require_once __DIR__ . '/perm.php';
+    $ok = false;
+    if (function_exists('pm_can')) { pm_init(); $ok = pm_can($mid, $what); }
+    if ($ok) return;
+    $m  = function_exists('pm_mod') ? pm_mod($mid) : null;
+    $lb = array('view' => 'xem', 'add' => 'thêm', 'edit' => 'sửa', 'del' => 'xoá');
+    $w  = isset($lb[$what]) ? $lb[$what] : $what;
+    vf_fail('Bạn không có quyền ' . $w . ' trong mục '
+        . ($m ? $m['name'] : 'này') . '. Liên hệ Admin để được cấp quyền.', 403);
+}
+
 
 /* ------------------------------------------------------------------ *
  *  Tao bang / cot (chay 1 lan)
@@ -163,9 +177,9 @@ case 'suppliers':
     break;
 
 case 'supplier-save':
-    vf_need_admin();
     $b  = vf_body();
     $id = isset($b['id']) ? (int) $b['id'] : 0;
+    vf_need_cap(95, $id > 0 ? 'edit' : 'add');
     $nm = vf_s(isset($b['name']) ? $b['name'] : '', 200);
     if ($nm === '') vf_fail('Nhap ten nha cung cap.');
     $ct = vf_s(isset($b['contact']) ? $b['contact'] : '', 200);
@@ -190,7 +204,7 @@ case 'supplier-save':
     break;
 
 case 'supplier-delete':
-    vf_need_admin();
+    vf_need_cap(95, 'del');
     $b  = vf_body();
     $id = isset($b['id']) ? (int) $b['id'] : 0;
     if (!$id) vf_fail('Thieu id.');
@@ -205,7 +219,7 @@ case 'supplier-delete':
     break;
 
 case 'supply':
-    vf_need_admin();
+    vf_need_cap(26, 'view');
     $iid = isset($_GET['item_id']) ? (int) $_GET['item_id'] : 0;
     if ($iid > 0) {
         $st = $pdo->prepare('SELECT s.*, p.name AS supplier_name FROM ratecard_item_supply s
@@ -237,7 +251,7 @@ case 'supply':
     break;
 
 case 'supply-save':
-    vf_need_admin();
+    vf_need_cap(26, 'edit');
     $b   = vf_body();
     $iid = isset($b['item_id']) ? (int) $b['item_id'] : 0;
     if (!$iid) vf_fail('Thieu item_id.');

@@ -862,7 +862,7 @@ CREATE TABLE `brand_log` (
   `root` varchar(20) NOT NULL DEFAULT 'brand',
   PRIMARY KEY (`id`),
   KEY `k_time` (`created_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=137 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=142 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1005,6 +1005,11 @@ INSERT INTO `brand_log` VALUES (133,4,'Trang Đỗ','upload','BBNT ĐỢT 2 số
 INSERT INTO `brand_log` VALUES (134,4,'Trang Đỗ','upload','BBNT ĐỢT 3 số 1001A-2025 của HDDV 10-2024.pdf','7.3 MB','2026-09-03 13:33:15','contracts');
 INSERT INTO `brand_log` VALUES (135,4,'Trang Đỗ','upload','BBNT số 0402A-2025 của HDDV 02-2025.pdf','4.9 MB','2026-09-03 13:33:23','contracts');
 INSERT INTO `brand_log` VALUES (136,4,'Trang Đỗ','upload','BBNT số 0601-2025 của HDDV 1511-2024.pdf','4.7 MB','2026-09-03 13:33:30','contracts');
+INSERT INTO `brand_log` VALUES (137,4,'Trang Đỗ','delete','MAL - AZ - FM 2009 DN.pdf','file','2026-09-03 16:09:55','contracts');
+INSERT INTO `brand_log` VALUES (138,4,'Trang Đỗ','delete','BBTL FM2609 HCM.pdf','file','2026-09-03 16:10:35','contracts');
+INSERT INTO `brand_log` VALUES (139,4,'Trang Đỗ','upload','MAL-EXTERNAL SAPHNELO (1).pdf','5.8 MB','2026-09-03 16:13:51','contracts');
+INSERT INTO `brand_log` VALUES (140,4,'Trang Đỗ','upload','MAL-FFMWS Yes AI Do.pdf','4.3 MB','2026-09-03 16:14:52','contracts');
+INSERT INTO `brand_log` VALUES (141,4,'Trang Đỗ','upload','BBTL FOCUS MEETING hn2706.pdf','5.6 MB','2026-09-03 16:16:27','contracts');
 /*!40000 ALTER TABLE `brand_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2525,7 +2530,7 @@ CREATE TABLE `perm_rules` (
   `caps` tinyint(4) NOT NULL DEFAULT 0 COMMENT '1=xem 2=them 4=sua 8=xoa',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_rule` (`scope`,`scope_key`,`grp`)
-) ENGINE=InnoDB AUTO_INCREMENT=83 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=113 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2542,6 +2547,36 @@ INSERT INTO `perm_rules` VALUES (79,'pos','account','m:18',2,'2026-09-03 08:51:2
 INSERT INTO `perm_rules` VALUES (80,'pos','account','m:25',2,'2026-09-03 08:51:23',15);
 INSERT INTO `perm_rules` VALUES (81,'pos','account','m:100',2,'2026-09-03 08:51:23',15);
 INSERT INTO `perm_rules` VALUES (82,'pos','account','m:101',2,'2026-09-03 08:51:23',15);
+INSERT INTO `perm_rules` VALUES (83,'pos','admin','m:29',2,'2026-09-03 09:10:00',15);
+INSERT INTO `perm_rules` VALUES (84,'pos','admin','m:31',2,'2026-09-03 09:10:00',15);
+INSERT INTO `perm_rules` VALUES (85,'pos','admin','m:95',2,'2026-09-03 09:10:00',15);
+INSERT INTO `perm_rules` VALUES (86,'pos','account','m:97',0,'2026-09-03 09:16:50',0);
+INSERT INTO `perm_rules` VALUES (87,'pos','account','m:94',1,'2026-09-03 09:16:50',1);
+INSERT INTO `perm_rules` VALUES (88,'pos','account','m:26',1,'2026-09-03 09:16:50',1);
+INSERT INTO `perm_rules` VALUES (89,'pos','admin','m:97',0,'2026-09-03 09:16:50',0);
+INSERT INTO `perm_rules` VALUES (90,'pos','admin','m:94',1,'2026-09-03 09:16:50',1);
+INSERT INTO `perm_rules` VALUES (91,'pos','admin','m:26',1,'2026-09-03 09:16:50',1);
+INSERT INTO `perm_rules` VALUES (92,'pos','designer','m:97',0,'2026-09-03 09:16:50',0);
+INSERT INTO `perm_rules` VALUES (93,'pos','designer','m:94',1,'2026-09-03 09:16:50',1);
+INSERT INTO `perm_rules` VALUES (94,'pos','designer','m:26',1,'2026-09-03 09:16:50',1);
+INSERT INTO `perm_rules` VALUES (95,'pos','editor','m:97',0,'2026-09-03 09:16:50',0);
+INSERT INTO `perm_rules` VALUES (96,'pos','editor','m:94',1,'2026-09-03 09:16:50',1);
+INSERT INTO `perm_rules` VALUES (97,'pos','editor','m:26',1,'2026-09-03 09:16:50',1);
+INSERT INTO `perm_rules` VALUES (98,'pos','production','m:97',0,'2026-09-03 09:16:50',0);
+INSERT INTO `perm_rules` VALUES (99,'pos','production','m:94',1,'2026-09-03 09:16:50',1);
+INSERT INTO `perm_rules` VALUES (100,'pos','production','m:26',1,'2026-09-03 09:16:50',1);
+INSERT INTO `perm_rules` VALUES (101,'pos','photographer','m:97',0,'2026-09-03 09:16:50',0);
+INSERT INTO `perm_rules` VALUES (102,'pos','photographer','m:94',1,'2026-09-03 09:16:50',1);
+INSERT INTO `perm_rules` VALUES (103,'pos','photographer','m:26',1,'2026-09-03 09:16:50',1);
+INSERT INTO `perm_rules` VALUES (104,'pos','escort','m:97',0,'2026-09-03 09:16:50',0);
+INSERT INTO `perm_rules` VALUES (105,'pos','escort','m:94',1,'2026-09-03 09:16:50',1);
+INSERT INTO `perm_rules` VALUES (106,'pos','escort','m:26',1,'2026-09-03 09:16:50',1);
+INSERT INTO `perm_rules` VALUES (107,'pos','designer_leader','m:97',0,'2026-09-03 09:16:50',0);
+INSERT INTO `perm_rules` VALUES (108,'pos','designer_leader','m:94',1,'2026-09-03 09:16:50',1);
+INSERT INTO `perm_rules` VALUES (109,'pos','designer_leader','m:26',1,'2026-09-03 09:16:50',1);
+INSERT INTO `perm_rules` VALUES (110,'pos','-','m:97',0,'2026-09-03 09:16:50',0);
+INSERT INTO `perm_rules` VALUES (111,'pos','-','m:94',1,'2026-09-03 09:16:50',1);
+INSERT INTO `perm_rules` VALUES (112,'pos','-','m:26',1,'2026-09-03 09:16:50',1);
 /*!40000 ALTER TABLE `perm_rules` ENABLE KEYS */;
 UNLOCK TABLES;
 

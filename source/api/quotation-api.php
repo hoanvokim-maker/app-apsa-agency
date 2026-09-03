@@ -1778,7 +1778,7 @@ case 'assign-status': {
 // Danh sach nguoi nhan tien: nha cung cap (cong ty) + nhan su/freelancer (ca nhan)
 // ===== Trang Chi phi thuc te toan cong ty (chi Admin) =====
 case 'exp-all': {
-    q_needAdmin($pdo);
+    q_need_cap(97, 'view');
     $st = $pdo->query("SELECT e.*, q.code, q.title, q.client_name, q.quotation_date, q.status
         FROM `quotation_expenses` e
         JOIN `quotations` q ON q.id = e.quotation_id
@@ -1789,14 +1789,14 @@ case 'exp-all': {
 }
 
 case 'quo-lite': {
-    q_needAdmin($pdo);
+    q_need_cap(32, 'view');
     $st = $pdo->query("SELECT id, code, title, client_name FROM `quotations`
         WHERE deleted_at IS NULL ORDER BY id DESC LIMIT 800");
     q_ok(array('rows' => $st->fetchAll()));
 }
 
 case 'exp-row-save': {
-    q_needAdmin($pdo);
+    q_need_cap(97, 'edit');
     $id = (int) ($B['id'] ?? 0);
     if ($id > 0) {
             $q_ph = $pdo->prepare("SELECT paid FROM `quotation_expenses` WHERE id = ?");
@@ -1856,7 +1856,7 @@ case 'exp-row-save': {
 }
 
 case 'exp-row-del': {
-    q_needAdmin($pdo);
+    q_need_cap(97, 'del');
     $id = (int) ($B['id'] ?? 0);
     if ($id <= 0) q_fail('Thieu id');
     $pdo->prepare("DELETE FROM `quotation_expenses` WHERE id = ?")->execute([$id]);
@@ -3411,6 +3411,20 @@ function q_payeeList(PDO $pdo) {
         }
     } catch (PDOException $e) { /* bang chua co */ }
     return $out;
+}
+
+/** Quyen chi tiet theo module. $what: view|add|edit|del */
+function q_need_cap($mid, $what)
+{
+    require_once __DIR__ . '/perm.php';
+    $ok = false;
+    if (function_exists('pm_can')) { pm_init(); $ok = pm_can($mid, $what); }
+    if ($ok) return;
+    $m  = function_exists('pm_mod') ? pm_mod($mid) : null;
+    $lb = array('view' => 'xem', 'add' => 'thêm', 'edit' => 'sửa', 'del' => 'xoá');
+    $w  = isset($lb[$what]) ? $lb[$what] : $what;
+    q_fail('Bạn không có quyền ' . $w . ' trong mục '
+        . ($m ? $m['name'] : 'này') . '. Liên hệ Admin để được cấp quyền.', 403);
 }
 
 function q_needAdmin(PDO $pdo) {

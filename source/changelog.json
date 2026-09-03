@@ -1,5 +1,5 @@
 {
-    "version": "1.7.8",
+    "version": "1.7.9",
     "updated": "2026-09-03",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-03",
             "note": "Phiên bản 1.7",
             "items": [
+                {
+                    "d": "2026-09-03",
+                    "v": "1.7.9",
+                    "t": "Dot 3: mo phan quyen Xem/Them/Sua/Xoa cho Policy, Rate Card supply, Chi phi thuc te, Bao gia lite; them xac nhan truoc khi ghi de phan quyen",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-03",
                     "v": "1.7.8",

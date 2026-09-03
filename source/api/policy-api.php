@@ -78,6 +78,20 @@ function po_me()
 
 function po_is_admin()  { $m = po_me(); return strcasecmp($m['role'], 'admin') === 0; }
 function po_need_admin(){ if (!po_is_admin()) po_fail('Chỉ Admin mới sửa được tài liệu Policy.', 403); }
+/** Quyen chi tiet theo module. $what: view|add|edit|del */
+function po_need_cap($mid, $what)
+{
+    require_once __DIR__ . '/perm.php';
+    $ok = false;
+    if (function_exists('pm_can')) { pm_init(); $ok = pm_can($mid, $what); }
+    if ($ok) return;
+    $m  = function_exists('pm_mod') ? pm_mod($mid) : null;
+    $lb = array('view' => 'xem', 'add' => 'thêm', 'edit' => 'sửa', 'del' => 'xoá');
+    $w  = isset($lb[$what]) ? $lb[$what] : $what;
+    po_fail('Bạn không có quyền ' . $w . ' trong mục '
+        . ($m ? $m['name'] : 'này') . '. Liên hệ Admin để được cấp quyền.', 403);
+}
+
 
 /** Lọc HTML người soạn dán vào: bỏ script/style/iframe, bỏ mọi on*, chặn javascript: */
 function po_clean_html($html)
@@ -305,8 +319,8 @@ case 'search':
 
 /* ---------------- Admin: lưu bài ---------------- */
 case 'doc-save':
-    po_need_admin();
     $id      = isset($B['id'])         ? (int) $B['id'] : 0;
+    po_need_cap(94, $id > 0 ? 'edit' : 'add');
     $sid     = isset($B['section_id']) ? (int) $B['section_id'] : 0;
     $title   = isset($B['title'])      ? trim((string) $B['title']) : '';
     $summary = isset($B['summary'])    ? trim((string) $B['summary']) : '';
@@ -337,7 +351,7 @@ case 'doc-save':
 
 /* ---------------- Admin: xoá bài ---------------- */
 case 'doc-delete':
-    po_need_admin();
+    po_need_cap(94, 'del');
     $id = isset($B['id']) ? (int) $B['id'] : 0;
     if ($id <= 0) po_fail('Thiếu bài viết.');
     po_pdo()->prepare('DELETE FROM policy_docs WHERE id = ?')->execute(array($id));
@@ -346,8 +360,8 @@ case 'doc-delete':
 
 /* ---------------- Admin: lưu mục ---------------- */
 case 'section-save':
-    po_need_admin();
     $id     = isset($B['id'])     ? (int) $B['id'] : 0;
+    po_need_cap(94, $id > 0 ? 'edit' : 'add');
     $name   = isset($B['name'])   ? trim((string) $B['name']) : '';
     $blurb  = isset($B['blurb'])  ? trim((string) $B['blurb']) : '';
     $sort   = isset($B['sort'])   ? (int) $B['sort'] : 0;
@@ -370,7 +384,7 @@ case 'section-save':
 
 /* ---------------- Admin: xoá mục (phải trống) ---------------- */
 case 'section-delete':
-    po_need_admin();
+    po_need_cap(94, 'del');
     $id = isset($B['id']) ? (int) $B['id'] : 0;
     if ($id <= 0) po_fail('Thiếu mục.');
     $st = po_pdo()->prepare('SELECT COUNT(*) FROM policy_docs WHERE section_id = ?');

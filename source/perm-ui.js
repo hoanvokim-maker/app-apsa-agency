@@ -235,10 +235,60 @@
     render();
   };
 
+  /* ---- hop xac nhan truoc khi ghi de ---- */
+  function pmConfirm(title, msg) {
+    return new Promise(function (done) {
+      var ov = document.createElement('div');
+      ov.className = 'pmcf-ov';
+      ov.innerHTML =
+          '<div class="pmcf"><h3>' + esc(title) + '</h3>'
+        + '<p>' + msg + '</p>'
+        + '<div class="pmcf-a"><button class="btn" data-v="0">Huỷ</button>'
+        + '<button class="btn dg" data-v="1">Vẫn lưu</button></div></div>';
+      ov.addEventListener('click', function (e) {
+        if (e.target === ov) { document.body.removeChild(ov); done(false); return; }
+        var b = e.target.closest('button[data-v]');
+        if (!b) return;
+        document.body.removeChild(ov);
+        done(b.getAttribute('data-v') === '1');
+      });
+      document.body.appendChild(ov);
+    });
+  }
+  (function () {
+    if (document.getElementById('pmcf-css')) return;
+    var st = document.createElement('style');
+    st.id = 'pmcf-css';
+    st.textContent =
+        '.pmcf-ov{position:fixed;inset:0;z-index:10050;background:rgba(0,0,0,.6);'
+      + 'display:flex;align-items:center;justify-content:center;padding:20px}'
+      + '.pmcf{width:100%;max-width:460px;background:#14161a;border:1px solid #333;'
+      + 'border-radius:14px;padding:20px 22px;box-shadow:0 20px 60px rgba(0,0,0,.55)}'
+      + '.pmcf h3{margin:0 0 10px;font-size:16px}'
+      + '.pmcf p{margin:0 0 18px;font-size:13px;line-height:1.6;opacity:.85}'
+      + '.pmcf b{color:#ffd27a}'
+      + '.pmcf-a{display:flex;gap:10px;justify-content:flex-end}';
+    document.head.appendChild(st);
+  })();
+
+  /* ---- canh bao neu luu se bo bot thiet lap rieng dang co ---- */
+  async function pmOkToSave(scope, skey, vals, what) {
+    var was = countRules(scope, skey);
+    var now = 0, k;
+    for (k in vals) if (Object.prototype.hasOwnProperty.call(vals, k)) now++;
+    if (was === 0 || now >= was) return true;
+    return await pmConfirm('Sẽ bỏ bớt thiết lập riêng',
+        what + ' đang có <b>' + was + '</b> thiết lập riêng, nhưng lần lưu này chỉ ghi <b>' + now + '</b>.<br>'
+      + '<b>' + (was - now) + '</b> mục sẽ bị xoá và quay về quyền mặc định của nhóm.<br><br>'
+      + 'Nếu anh không cố ý bỏ, hãy bấm Huỷ rồi tick lại các ô cần giữ.');
+  }
+
   window.pmSavePos = async function () {
     if (!CURPOS) return;
+    var vals = collect('pos', CURPOS);
+    if (!await pmOkToSave('pos', CURPOS, vals, 'Vị trí này')) return;
     try {
-      await call('perm-save', { scope: 'pos', key: CURPOS, vals: collect('pos', CURPOS) });
+      await call('perm-save', { scope: 'pos', key: CURPOS, vals: vals });
       say('Đã lưu phân quyền cho vị trí này', 'ok');
       await load(true);
     } catch (e) { say('Không lưu được: ' + e.message, 'err'); }
@@ -247,8 +297,10 @@
   window.pmSaveUser = async function () {
     var id = el('pmUser').value;
     if (!id) return;
+    var vals = collect('user', id);
+    if (!await pmOkToSave('user', id, vals, 'Người này')) return;
     try {
-      await call('perm-save', { scope: 'user', key: id, vals: collect('user', id) });
+      await call('perm-save', { scope: 'user', key: id, vals: vals });
       say('Đã lưu quyền riêng cho người này', 'ok');
       await load(true);
     } catch (e) { say('Không lưu được: ' + e.message, 'err'); }
