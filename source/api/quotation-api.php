@@ -404,6 +404,12 @@ if (!q_hasColumn($pdo, 'quotations', 'event_from')) {
         }
     } catch (PDOException $e) { }
 }
+if (!q_hasColumn($pdo, 'quotations', 'noti_confirmed')) {
+    q_mig($pdo, "ALTER TABLE `quotations`
+        ADD COLUMN `noti_confirmed` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Da bao Zalo khi xac nhan bao gia'");
+    /* Cac bao gia da ton tai: danh dau da bao de khong spam nguoi dung */
+    try { $pdo->exec("UPDATE `quotations` SET `noti_confirmed` = 1"); } catch (PDOException $e) { }
+}
 if (!q_hasColumn($pdo, 'quotations', 'cal_event_id')) {
     q_mig($pdo, "ALTER TABLE `quotations`
         ADD COLUMN `cal_event_id` VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'ID su kien Outlook',
@@ -761,6 +767,52 @@ function loadItems($pdo, $qid) {
     }
     unset($r);
     return $rows;
+}
+
+/**
+ * Bao Zalo + chuong trong app cho nhung nguoi thuc hien du an
+ * khi bao gia lan dau chuyen sang trang thai 'confirmed' (Xac nhan bao gia).
+ * Chi gui DUNG MOT LAN cho moi bao gia (cot noti_confirmed).
+ */
+function q_notifyConfirmed(PDO $pdo, $id, $actorId = 0, $actorName = '')
+{
+    try {
+        $id = (int) $id;
+        if ($id <= 0) return;
+
+        $st = $pdo->prepare("SELECT id, code, title, status, client_name, noti_confirmed
+                             FROM quotations WHERE id = ?");
+        $st->execute(array($id));
+        $q = $st->fetch(PDO::FETCH_ASSOC);
+        if (!$q) return;
+        if ((string) $q['status'] !== 'confirmed') return;
+        if ((int) $q['noti_confirmed'] === 1) return;
+
+        $as = $pdo->prepare("SELECT DISTINCT user_id FROM quotation_assignees
+                             WHERE quotation_id = ? AND user_id > 0");
+        $as->execute(array($id));
+        $ids = array();
+        foreach ($as->fetchAll(PDO::FETCH_COLUMN) as $u) $ids[(int) $u] = true;
+        unset($ids[(int) $actorId]);
+
+        /* Danh dau truoc: neu Zalo loi giua chung cung khong gui trung lan sau */
+        $pdo->prepare("UPDATE quotations SET noti_confirmed = 1 WHERE id = ?")->execute(array($id));
+
+        if (!$ids) return;
+
+        $code  = trim((string) $q['code']);
+        $title = 'Đã xác nhận báo giá' . ($code !== '' ? ' · ' . $code : '');
+        $body  = trim((string) $q['title']);
+        $cli   = trim((string) $q['client_name']);
+        if ($cli !== '') $body .= ($body !== '' ? "\n" : '') . 'Khách hàng: ' . $cli;
+        $url = 'https://app.apsa.agency/quotation.html?id=' . $id;
+
+        foreach (array_keys($ids) as $uid) {
+            qr_notify($pdo, $uid, 'quo_confirmed', $title, $body, $url, (string) $actorName);
+        }
+    } catch (Exception $e) {
+        /* im lang: thong bao khong duoc lam hong luong luu bao gia */
+    }
 }
 
 /** Cac trang thai duoc phep dua len lich Outlook. */
@@ -2492,6 +2544,7 @@ case 'save': {
     }
 
     q_calSync($pdo, $id);
+    q_notifyConfirmed($pdo, $id, (int) $ME['id'], (string) $ME['display_name']);
 
     $q = loadQuotation($pdo, $id);
     $its = loadItems($pdo, $id);
@@ -3363,6 +3416,7 @@ case 'set-status': {
     $st = $pdo->prepare("UPDATE quotations SET status = ? WHERE id = ?");
     $st->execute([$stt, $id]);
     q_calSync($pdo, $id);
+    q_notifyConfirmed($pdo, $id, (int) $ME['id'], (string) $ME['display_name']);
     q_ok(['id' => $id, 'status' => $stt, 'status_label' => $Q_STATUS[$stt], 'message' => 'Đã đổi trạng thái: ' . $Q_STATUS[$stt]]);
 }
 

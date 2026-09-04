@@ -73,7 +73,8 @@ function zb_kinds()
         'leave_approved',
         'pay_due',          // chi phi den han thanh toan   // đơn nghỉ được duyệt
         'leave_rejected',   // đơn nghỉ bị từ chối
-        'reopen_request',   // xin mở lại dự án đã đóng (Admin)
+        'reopen_request',
+        'quo_confirmed',   // bao gia da duoc xac nhan (chot don)   // xin mở lại dự án đã đóng (Admin)
     );
 }
 
@@ -92,6 +93,7 @@ function zb_icon($kind)
         'leave_approved' => '🌴',
         'leave_rejected' => '🌴',
         'reopen_request' => '🔓',
+        'quo_confirmed' => '🤝',
     );
     return isset($m[$kind]) ? $m[$kind] : '🔔';
 }

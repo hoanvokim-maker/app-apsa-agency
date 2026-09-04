@@ -1871,6 +1871,22 @@ function toggleExp(force){
   try { localStorage.setItem('quo_exp_open', EXP_OPEN ? '1' : '0'); } catch(e){}
 }
 
+/* Thanh tien 1 dong chi phi = SL x Don gia + VAT cua dong do */
+function expRowAmt(r){
+  const base = (Number(r.qty)||0) * (Number(r.price)||0);
+  return base * (1 + (Number(r.vat_percent)||0) / 100);
+}
+/* Cap nhat ngay o "Thanh tien" cua 1 dong ma khong render lai ca bang (giu con tro) */
+function expSyncAmt(i){
+  const r = EXP[i];
+  if (!r || r.kind === 'group') return;
+  const rows = document.querySelectorAll('.exptbl > tbody > tr');
+  const tr = rows[i];
+  if (!tr) return;
+  const td = tr.querySelector('.exp-amt');
+  if (td) td.textContent = fmt(Math.round(expRowAmt(r)));
+}
+
 function expTotals(){
   let sub = 0, vat = 0;
   EXP.forEach(r => {
@@ -1887,7 +1903,7 @@ function expSet(i, k, v){
   if (k === 'qty' || k === 'price' || k === 'vat_percent') EXP[i][k] = parseMoney(v);
   else EXP[i][k] = v;
   markDirty();
-  if (k === 'qty' || k === 'price' || k === 'vat_percent') renderExpTotals();
+  if (k === 'qty' || k === 'price' || k === 'vat_percent') { expSyncAmt(i); renderExpTotals(); }
 }
 
 function expAddGroup(){
@@ -1921,7 +1937,7 @@ function renderExp(){
       '<td><input class="num" value="' + fmt(Math.round(Number(r.price)||0)) + '" ' +
         'oninput="expSet(' + i + ',\'price\',this.value)" onblur="renderExp()" /></td>' +
       '<td><input class="num" value="' + (Number(r.vat_percent)||0) + '" oninput="expSet(' + i + ',\'vat_percent\',this.value)" /></td>' +
-      '<td class="exp-amt">' + fmt(Math.round(amt)) + '</td>' +
+      '<td class="exp-amt">' + fmt(Math.round(expRowAmt(r))) + '</td>' +
       '<td class="exp-payee">' + expPayeeCell(r, i) + '</td>' +
       '<td class="exp-dayc">' + (window.expDayCell ? window.expDayCell(r, i) : '') + '</td>' +
       '<td class="exp-paidc">' + expPaidCell(r, i) + (window.expUncCell ? window.expUncCell(r, i) : '') + '</td>' +
@@ -1935,7 +1951,7 @@ function renderExp(){
     '<col style="width:150px"><col style="width:126px"><col style="width:96px"><col style="width:64px"></colgroup>' +
     '<thead><tr><th>Hạng mục</th><th>Mô tả</th><th>SL</th><th>ĐVT</th>' +
     '<th style="text-align:right">Đơn giá</th><th style="text-align:right">VAT %</th>' +
-    '<th style="text-align:right">Thành tiền</th><th>Người nhận</th><th>Ngày TT</th><th>Trạng thái</th><th></th></tr></thead>' +
+    '<th style="text-align:right">Thành tiền<br><span style="font-weight:400;font-size:10px;opacity:.6">đã gồm VAT</span></th><th>Người nhận</th><th>Ngày TT</th><th>Trạng thái</th><th></th></tr></thead>' +
     '<tbody>' + rows + '</tbody></table>';
   renderExpTotals();
 }

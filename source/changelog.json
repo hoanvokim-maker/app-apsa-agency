@@ -1,5 +1,5 @@
 {
-    "version": "1.7.25",
+    "version": "1.7.26",
     "updated": "2026-09-04",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-03",
             "note": "Phiên bản 1.7",
             "items": [
+                {
+                    "d": "2026-09-04",
+                    "v": "1.7.26",
+                    "t": "Sua Thanh tien chi phi thuc te da gom VAT + cap nhat ngay khi go; Zalo bao nguoi thuc hien khi bao gia duoc xac nhan",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-04",
                     "v": "1.7.25",
