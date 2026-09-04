@@ -1,5 +1,5 @@
 {
-    "version": "1.7.22",
+    "version": "1.7.23",
     "updated": "2026-09-04",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-03",
             "note": "Phiên bản 1.7",
             "items": [
+                {
+                    "d": "2026-09-04",
+                    "v": "1.7.23",
+                    "t": "Bao gia: them nut Nhap Excel - nap bang hang muc + nghiem thu tu file .xlsx",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-04",
                     "v": "1.7.22",
