@@ -977,7 +977,8 @@ select#fStatus option{background:#141414;color:#f2f2f2;font-weight:600;text-shad
 
         <div class="fg"><label>MST khách hàng</label><input type="text" id="fTax" /></div>
         <div class="fg span2"><label>Địa chỉ khách hàng</label><input type="text" id="fAddr" /></div>
-        <div class="fg"><label>Event Date</label><input type="text" id="fEvent" placeholder="VD: 25/09/2026" /></div>
+        <div class="fg"><label>Ngày dự án — Từ ngày</label><input type="date" id="fEventFrom" onchange="qEvFix()" /></div>
+        <div class="fg"><label>Đến ngày</label><input type="date" id="fEventTo" onchange="qEvFix()" /><a id="calLink" href="#" target="_blank" rel="noopener" style="display:none;font-size:11px;color:#2563eb;text-decoration:none;margin-top:4px" title="Mở sự kiện trên lịch Outlook">📅 Đã tạo lịch Outlook ↗</a></div>
 
         <div class="fg"><label>Đơn vị tiền</label><input type="text" id="fCur" value="VND" /></div>
         <div class="fg">
@@ -1662,7 +1663,7 @@ function blankQuote(){
   const kf = (document.getElementById('fltKind') || {}).value || TYPE || 'event';
   return { id: 0, kind: kf, code: '', title: '', company_id: '', customer_id: '',
     client_name: '', client_email: '', client_tax: '', client_address: '',
-    quotation_date: today(), event_date: '', currency: 'VND',
+    quotation_date: today(), event_date: '', event_from: '', event_to: '', currency: 'VND',
     ma_percent: 10, vat_percent: 8, show_ma: 1, show_vat: 1, note: '',
     status: 'request', src_link: '', po_file: '', po_name: '', has_liquidation: 0,
     items: [ blankItem('section') ] };
@@ -1678,7 +1679,14 @@ function fillForm(q){
   document.getElementById('fEmail').value  = q.client_email || '';
   document.getElementById('fTax').value    = q.client_tax || '';
   document.getElementById('fAddr').value   = q.client_address || '';
-  document.getElementById('fEvent').value  = q.event_date || '';
+  document.getElementById('fEventFrom').value = String(q.event_from || '').substr(0, 10);
+  document.getElementById('fEventTo').value   = String(q.event_to   || '').substr(0, 10);
+  (function () {
+    var a = document.getElementById('calLink');
+    if (!a) return;
+    if (q.cal_web_link) { a.href = q.cal_web_link; a.style.display = ''; }
+    else { a.removeAttribute('href'); a.style.display = 'none'; }
+  })();
   document.getElementById('fCur').value    = q.currency || 'VND';
   document.getElementById('fMa').value     = q.ma_percent;
   document.getElementById('fVat').value    = q.vat_percent;
@@ -2985,7 +2993,8 @@ function collect(){
     client_tax:     document.getElementById('fTax').value.trim(),
     client_address: document.getElementById('fAddr').value.trim(),
     quotation_date: document.getElementById('fDate').value,
-    event_date:     document.getElementById('fEvent').value.trim(),
+    event_from:     document.getElementById('fEventFrom').value,
+    event_to:       document.getElementById('fEventTo').value,
     currency:       document.getElementById('fCur').value.trim() || 'VND',
     ma_percent:     Number(document.getElementById('fMa').value) || 0,
     vat_percent:    Number(document.getElementById('fVat').value) || 0,
@@ -3328,6 +3337,22 @@ function asState(kind, extra){
   el.textContent = txt;
 }
 
+/* ── Ngay du an: 2 o ngay + link lich Outlook ── */
+function qEvFix() {
+  var a = document.getElementById('fEventFrom'), b = document.getElementById('fEventTo');
+  if (!a || !b) return;
+  if (a.value && (!b.value || b.value < a.value)) b.value = a.value;
+  if (b.value && !a.value) a.value = b.value;
+  try { markDirty(); } catch (e) {}
+}
+function qEvSetText(t) {
+  var el = document.getElementById('fEventFrom');
+  if (!el) return;
+  var m = String(t || '').match(/(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);
+  el.value = m ? (m[3] + '-' + ('0' + m[2]).slice(-2) + '-' + ('0' + m[1]).slice(-2)) : '';
+  qEvFix();
+}
+
 function markDirty(){
   if (!EDIT) return;
   AS_dirty = true;
@@ -3490,7 +3515,7 @@ function applyImport(){
     const m = IMP.meta;
     const set = (id, v) => { if (v !== undefined && v !== '') { const el = document.getElementById(id); if (el) el.value = v; } };
     set('fTitle', m.title); set('fClient', m.client_name); set('fEmail', m.client_email);
-    set('fTax', m.client_tax); set('fAddr', m.client_address); set('fEvent', m.event_date);
+    set('fTax', m.client_tax); set('fAddr', m.client_address); qEvSetText(m.event_date);
     set('fCur', m.currency); set('fDate', m.quotation_date);
     if (m.title) EDIT.title = m.title;
   }

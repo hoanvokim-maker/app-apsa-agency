@@ -159,6 +159,66 @@ function mg_token(&$error)
  * ------------------------------------------------------------------ */
 
 /**
+ * Cap nhat mot su kien da tao (PATCH). Tham so $ev giong mg_create_event().
+ * Tra ve array('ok','id','web_link','error').
+ */
+function mg_update_event($eventId, $ev)
+{
+    $fail = array('ok' => false, 'id' => '', 'web_link' => '', 'error' => '');
+    $eventId = trim((string) $eventId);
+    if ($eventId === '') { $fail['error'] = 'Thieu eventId.'; return $fail; }
+
+    if (!mg_enabled()) {
+        $fail['error'] = 'Chua cau hinh Microsoft Graph (api/msgraph-config.php).';
+        return $fail;
+    }
+
+    $err   = '';
+    $token = mg_token($err);
+    if ($token === '') { $fail['error'] = $err; return $fail; }
+
+    $c  = mg_config();
+    $tz = $c['timezone'];
+
+    $payload = array(
+        'subject'   => isset($ev['subject']) ? $ev['subject'] : 'Du an',
+        'body'      => array(
+            'contentType' => 'HTML',
+            'content'     => isset($ev['body']) ? $ev['body'] : '',
+        ),
+        'isAllDay'  => !empty($ev['all_day']),
+        'start'     => array('dateTime' => $ev['start'], 'timeZone' => $tz),
+        'end'       => array('dateTime' => $ev['end'],   'timeZone' => $tz),
+        'showAs'    => isset($ev['show_as']) ? $ev['show_as'] : 'oof',
+        'categories'=> isset($ev['categories']) && is_array($ev['categories']) ? $ev['categories'] : array('Nghi phep'),
+    );
+
+    if (!empty($ev['all_day'])) {
+        $payload['start']['dateTime'] = substr($ev['start'], 0, 10) . 'T00:00:00';
+        $payload['end']['dateTime']   = substr($ev['end'],   0, 10) . 'T00:00:00';
+    }
+
+    $url  = 'https://graph.microsoft.com/v1.0/users/' . rawurlencode($c['mailbox']) . '/events/' . rawurlencode($eventId);
+    $code = 0;
+    $res  = mg_http('PATCH', $url, array(
+        'Authorization: Bearer ' . $token,
+        'Content-Type: application/json',
+    ), json_encode($payload, JSON_UNESCAPED_UNICODE), $code);
+
+    if ($code === 200 && !empty($res['id'])) {
+        return array(
+            'ok'       => true,
+            'id'       => $res['id'],
+            'web_link' => isset($res['webLink']) ? $res['webLink'] : '',
+            'error'    => '',
+        );
+    }
+
+    $fail['error'] = mg_err($res, $code, 'Cap nhat su kien that bai');
+    return $fail;
+}
+
+/**
  * $ev = array(
  *   'subject'   => 'Nghi phep - Nguyen Van A',
  *   'body'      => 'html',
@@ -193,8 +253,8 @@ function mg_create_event($ev)
         'isAllDay'  => !empty($ev['all_day']),
         'start'     => array('dateTime' => $ev['start'], 'timeZone' => $tz),
         'end'       => array('dateTime' => $ev['end'],   'timeZone' => $tz),
-        'showAs'    => 'oof',
-        'categories'=> array('Nghi phep'),
+        'showAs'    => isset($ev['show_as']) ? $ev['show_as'] : 'oof',
+        'categories'=> isset($ev['categories']) && is_array($ev['categories']) ? $ev['categories'] : array('Nghi phep'),
     );
 
     if (!empty($ev['all_day'])) {

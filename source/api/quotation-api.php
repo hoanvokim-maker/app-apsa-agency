@@ -326,6 +326,28 @@ q_mig($pdo, "CREATE TABLE IF NOT EXISTS `quotation_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
 // ── Nâng cấp: cột `kind` (event | media | other) ─────────────
+/** Doc ngay tu payload, chap nhan yyyy-mm-dd hoac dd/mm/yyyy. NULL neu khong hop le. */
+function q_evDate($B, $k)
+{
+    $v = trim((string) (isset($B[$k]) ? $B[$k] : ''));
+    if ($v === '') return null;
+    if (preg_match('#^(\\d{4})-(\\d{1,2})-(\\d{1,2})$#', $v, $m)) return sprintf('%04d-%02d-%02d', $m[1], $m[2], $m[3]);
+    if (preg_match('#^(\\d{1,2})[/-](\\d{1,2})[/-](\\d{4})$#', $v, $m)) return sprintf('%04d-%02d-%02d', $m[3], $m[2], $m[1]);
+    return null;
+}
+
+/** Chuoi hien thi cho cot event_date cu: 'dd/mm/yyyy' hoac 'dd/mm/yyyy - dd/mm/yyyy'. */
+function q_evLabel($B)
+{
+    $a = q_evDate($B, 'event_from');
+    $b = q_evDate($B, 'event_to');
+    if ($a === null && $b === null) return s(isset($B['event_date']) ? $B['event_date'] : '', 120);
+    if ($a === null) { $a = $b; $b = null; }
+    $one = date('d/m/Y', strtotime($a));
+    if ($b === null || $b === $a) return $one;
+    return $one . ' - ' . date('d/m/Y', strtotime($b));
+}
+
 function q_hasColumn($pdo, $table, $col) {
     global $DO_MIGRATE;
     if (!$DO_MIGRATE) return true;          // đã migrate rồi, coi như cột đã có
@@ -365,6 +387,28 @@ if (!q_hasColumn($pdo, 'quotations', 'manage_id')) {
     q_mig($pdo, "ALTER TABLE `quotations`
         ADD COLUMN `manage_id` VARCHAR(40) DEFAULT NULL COMMENT 'ID dự án bên manage.apsa.agency',
         ADD KEY `idx_manage_id` (`manage_id`)");
+}
+if (!q_hasColumn($pdo, 'quotations', 'event_from')) {
+    q_mig($pdo, "ALTER TABLE `quotations`
+        ADD COLUMN `event_from` DATE DEFAULT NULL COMMENT 'Ngay du an - tu ngay',
+        ADD COLUMN `event_to`   DATE DEFAULT NULL COMMENT 'Ngay du an - den ngay',
+        ADD KEY `idx_event_from` (`event_from`)");
+    /* chuyen du lieu cu dang dd/mm/yyyy sang cot ngay that */
+    try {
+        $st = $pdo->query("SELECT id, event_date FROM `quotations` WHERE event_date <> ''");
+        $up = $pdo->prepare("UPDATE `quotations` SET event_from = ? WHERE id = ?");
+        foreach ($st->fetchAll() as $r) {
+            if (preg_match('#^\s*(\d{1,2})[/-](\d{1,2})[/-](\d{4})\s*$#', (string) $r['event_date'], $m)) {
+                $up->execute(array(sprintf('%04d-%02d-%02d', $m[3], $m[2], $m[1]), (int) $r['id']));
+            }
+        }
+    } catch (PDOException $e) { }
+}
+if (!q_hasColumn($pdo, 'quotations', 'cal_event_id')) {
+    q_mig($pdo, "ALTER TABLE `quotations`
+        ADD COLUMN `cal_event_id` VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'ID su kien Outlook',
+        ADD COLUMN `cal_web_link` VARCHAR(600) NOT NULL DEFAULT '' COMMENT 'Link mo su kien',
+        ADD COLUMN `cal_sig`      VARCHAR(64)  NOT NULL DEFAULT '' COMMENT 'Dau van tay de biet co can cap nhat lich'");
 }
 if (!q_hasColumn($pdo, 'quotations', 'src_link')) {
     q_mig($pdo, "ALTER TABLE `quotations`
@@ -717,6 +761,84 @@ function loadItems($pdo, $qid) {
     }
     unset($r);
     return $rows;
+}
+
+/** Cac trang thai duoc phep dua len lich Outlook. */
+function q_calStatuses()
+{
+    return array('confirmed', 'running', 'service_done', 'liq_sent', 'done', 'paid');
+}
+
+/**
+ * Dong bo bao gia -> su kien ca ngay tren lich Outlook cua mailbox cong ty.
+ * Tao moi lan dau, PATCH khi noi dung doi. Khong bao gio xoa su kien tu dong.
+ * Loi cua Graph khong duoc lam hong luong luu bao gia.
+ */
+function q_calSync(PDO $pdo, $id)
+{
+    try {
+        $id = (int) $id;
+        if ($id <= 0) return;
+        $f = __DIR__ . '/msgraph.php';
+        if (!is_file($f)) return;
+        require_once $f;
+        if (!function_exists('mg_enabled') || !mg_enabled()) return;
+
+        $st = $pdo->prepare("SELECT id, code, title, status, event_from, event_to, client_name,
+                                    cal_event_id, cal_web_link, cal_sig
+                             FROM quotations WHERE id = ?");
+        $st->execute(array($id));
+        $q = $st->fetch(PDO::FETCH_ASSOC);
+        if (!$q) return;
+
+        $on = in_array((string) $q['status'], q_calStatuses(), true) && !empty($q['event_from']);
+        if (!$on) return;
+
+        $from = substr((string) $q['event_from'], 0, 10);
+        $to   = !empty($q['event_to']) ? substr((string) $q['event_to'], 0, 10) : $from;
+        if ($to < $from) $to = $from;
+
+        $code    = trim((string) $q['code']);
+        $title   = trim((string) $q['title']);
+        $subject = trim(($code !== '' ? $code . ' - ' : '') . ($title !== '' ? $title : 'Du an'));
+        $sig     = md5($subject . '|' . $from . '|' . $to . '|' . (string) $q['client_name']);
+
+        if ($sig === (string) $q['cal_sig'] && (string) $q['cal_event_id'] !== '') return;
+
+        $link = 'https://app.apsa.agency/quotation.html?id=' . $id;
+        $body = '<p><b>' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '</b></p>'
+              . '<p>Ma bao gia: ' . htmlspecialchars($code, ENT_QUOTES, 'UTF-8') . '</p>'
+              . '<p>Khach hang: ' . htmlspecialchars((string) $q['client_name'], ENT_QUOTES, 'UTF-8') . '</p>'
+              . '<p><a href="' . $link . '">Mo bao gia tren APSA Tools</a></p>';
+
+        $ev = array(
+            'subject'    => $subject,
+            'body'       => $body,
+            'all_day'    => true,
+            'start'      => $from,
+            'end'        => date('Y-m-d', strtotime($to . ' +1 day')),
+            'show_as'    => 'busy',
+            'categories' => array('Du an'),
+        );
+
+        if ((string) $q['cal_event_id'] !== '' && function_exists('mg_update_event')) {
+            $r = mg_update_event((string) $q['cal_event_id'], $ev);
+            if (!empty($r['ok'])) {
+                $wl = (string) $r['web_link'] !== '' ? (string) $r['web_link'] : (string) $q['cal_web_link'];
+                $pdo->prepare("UPDATE quotations SET cal_web_link = ?, cal_sig = ? WHERE id = ?")
+                    ->execute(array($wl, $sig, $id));
+                return;
+            }
+        }
+
+        $r = mg_create_event($ev);
+        if (!empty($r['ok'])) {
+            $pdo->prepare("UPDATE quotations SET cal_event_id = ?, cal_web_link = ?, cal_sig = ? WHERE id = ?")
+                ->execute(array((string) $r['id'], (string) $r['web_link'], $sig, $id));
+        }
+    } catch (Exception $e) {
+        /* im lang: lich khong duoc lam hong viec luu bao gia */
+    }
 }
 
 function loadQuotation($pdo, $id) {
@@ -1532,6 +1654,9 @@ case 'share-view': {
             'kind'           => (string) (isset($q['kind']) ? $q['kind'] : ''),
             'quotation_date' => (string) $q['quotation_date'],
             'event_date'     => (string) $q['event_date'],
+            'event_from'     => (string) $q['event_from'],
+            'event_to'     => (string) $q['event_to'],
+            'cal_web_link'     => (string) $q['cal_web_link'],
             'liq_date'       => (string) (isset($q['liq_date']) ? $q['liq_date'] : ''),
             'currency'       => (string) $q['currency'],
             'ma_percent'     => (float) $q['ma_percent'],
@@ -2278,7 +2403,9 @@ case 'save': {
         'client_tax'     => s($B['client_tax'] ?? '', 60),
         'client_address' => s($B['client_address'] ?? '', 500),
         'quotation_date' => dateOrNull($B['quotation_date'] ?? '') ?: date('Y-m-d'),
-        'event_date'     => s($B['event_date'] ?? '', 120),
+        'event_date'     => q_evLabel($B),
+        'event_from'     => q_evDate($B, 'event_from'),
+        'event_to'     => q_evDate($B, 'event_to'),
         'currency'       => s($B['currency'] ?? 'VND', 10) ?: 'VND',
         'ma_percent'     => num($B['ma_percent'] ?? 10),
         'vat_percent'    => num($B['vat_percent'] ?? 8),
@@ -2307,14 +2434,14 @@ case 'save': {
     try {
         if ($id) {
             $st = $pdo->prepare("UPDATE quotations SET kind=?, code=?, title=?, company_id=?, customer_id=?, client_name=?, client_email=?,
-                                   client_tax=?, client_address=?, quotation_date=?, event_date=?, currency=?, ma_percent=?,
+                                   client_tax=?, client_address=?, quotation_date=?, event_date=?, event_from=?, event_to=?, currency=?, ma_percent=?,
                                    vat_percent=?, show_ma=?, show_vat=?, note=?, status=?, src_link=?, has_liquidation=?, liq_date=? WHERE id=?");
             $st->execute(array_merge(array_values($data), [$id]));
         } else {
             $st = $pdo->prepare("INSERT INTO quotations (kind, code, title, company_id, customer_id, client_name, client_email,
-                                   client_tax, client_address, quotation_date, event_date, currency, ma_percent,
+                                   client_tax, client_address, quotation_date, event_date, event_from, event_to, currency, ma_percent,
                                    vat_percent, show_ma, show_vat, note, status, src_link, has_liquidation, liq_date, created_by)
-                                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             $st->execute(array_merge(array_values($data), [$WHO]));
             $id = (int)$pdo->lastInsertId();
         }
@@ -2363,6 +2490,8 @@ case 'save': {
         $pdo->rollBack();
         q_fail('Không lưu được: ' . $e->getMessage(), 500);
     }
+
+    q_calSync($pdo, $id);
 
     $q = loadQuotation($pdo, $id);
     $its = loadItems($pdo, $id);
@@ -2772,12 +2901,12 @@ case 'duplicate': {
     $q = loadQuotation($pdo, $id);
     if (!$q) q_fail('Không tìm thấy báo giá', 404);
     $st = $pdo->prepare("INSERT INTO quotations (kind, code, title, company_id, customer_id, client_name, client_email,
-                           client_tax, client_address, quotation_date, event_date, currency, ma_percent,
+                           client_tax, client_address, quotation_date, event_date, event_from, event_to, currency, ma_percent,
                            vat_percent, show_ma, show_vat, note, status, src_link, has_liquidation, liq_date, created_by)
-                         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
     $newCode = q_uniqueCode($pdo, '', 0, date('Y-m-d'));
     $st->execute([$q['kind'] ?? 'media', $newCode, $q['title'] . ' (bản sao)', $q['company_id'], $q['customer_id'], $q['client_name'],
-                  $q['client_email'], $q['client_tax'], $q['client_address'], date('Y-m-d'), $q['event_date'],
+                  $q['client_email'], $q['client_tax'], $q['client_address'], date('Y-m-d'), $q['event_date'], $q['event_from'], $q['event_to'],
                   $q['currency'], $q['ma_percent'], $q['vat_percent'], $q['show_ma'], $q['show_vat'], $q['note'],
                   'request', $q['src_link'] ?? null, $q['has_liquidation'] ?? 0, $q['liq_date'], $WHO]);
     $newId = (int)$pdo->lastInsertId();
@@ -3233,6 +3362,7 @@ case 'set-status': {
     $stt = q_status($B['status'] ?? '');
     $st = $pdo->prepare("UPDATE quotations SET status = ? WHERE id = ?");
     $st->execute([$stt, $id]);
+    q_calSync($pdo, $id);
     q_ok(['id' => $id, 'status' => $stt, 'status_label' => $Q_STATUS[$stt], 'message' => 'Đã đổi trạng thái: ' . $Q_STATUS[$stt]]);
 }
 
