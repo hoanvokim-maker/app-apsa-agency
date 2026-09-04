@@ -778,7 +778,7 @@ select#fStatus option{background:#141414;color:#f2f2f2;font-weight:600;text-shad
 .hbtn svg{vertical-align:-2px;margin-right:5px}
 /* Thu gon nhom + mau nen theo nhom */
 .seccol{display:inline-flex;align-items:center;justify-content:center;cursor:pointer;line-height:0;
-  width:17px;height:17px;margin-right:4px;vertical-align:-4px;border-radius:3px;flex:0 0 auto;
+  width:17px;height:17px;margin-right:4px;vertical-align:middle;border-radius:3px;flex:0 0 auto;
   border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.30);color:var(--accent,#dff20d)}
 .seccol:hover{border-color:var(--accent,#dff20d);background:rgba(223,242,13,.14)}
 table.q tbody tr.sec td.c{white-space:nowrap}
@@ -789,7 +789,8 @@ table.q tbody tr.sec td.secnm input{padding-right:36px}
 table.q tbody tr.sec td.secnm .secn{position:absolute;right:7px;top:50%;transform:translateY(-50%);margin:0;pointer-events:none}
 /* Cot STT rong hon de chua nut thu gon + so La Ma + badge, khong de bi tran sang cot ten */
 /* Chua tay keo o ben trai, noi dung bat dau sau no de khong bi de len */
-table.q tbody tr.sec td.dragh{ padding-left:17px }
+table.q tbody tr.sec td.dragh{ padding-left:15px; text-align:left }
+table.q tbody tr.sec td.dragh .secno{display:inline-block;min-width:26px;text-align:left;vertical-align:middle;letter-spacing:.5px}
 table.q tbody tr.g0>td{background:rgba(255,255,255,.020)}
 table.q tbody tr.g1>td{background:rgba(223,242,13,.042)}
 table.q tbody tr.g2>td{background:rgba(90,160,255,.055)}
@@ -802,6 +803,21 @@ table.q tbody tr.g0>td:first-child{border-left:3px solid rgba(255,255,255,.20)}
 table.q tbody tr.g1>td:first-child{border-left:3px solid #dff20d}
 table.q tbody tr.g2>td:first-child{border-left:3px solid #5aa0ff}
 table.q tbody tr.g3>td:first-child{border-left:3px solid #ff9f0a}
+.exptbl .expgw{display:flex;align-items:center;gap:6px}
+.exptbl .expgw>input{flex:1 1 auto;min-width:0}
+.exptbl .expgw .secn{margin:0;flex:0 0 auto}
+table.exptbl tbody tr.eg0>td{background:rgba(255,255,255,.020)}
+table.exptbl tbody tr.eg1>td{background:rgba(223,242,13,.042)}
+table.exptbl tbody tr.eg2>td{background:rgba(90,160,255,.055)}
+table.exptbl tbody tr.eg3>td{background:rgba(255,159,10,.048)}
+table.exptbl tbody tr.gr.eg0>td{background:#1f1f1f}
+table.exptbl tbody tr.gr.eg1>td{background:#25290f}
+table.exptbl tbody tr.gr.eg2>td{background:#161d2b}
+table.exptbl tbody tr.gr.eg3>td{background:#2b2113}
+table.exptbl tbody tr.eg0>td:first-child{border-left:3px solid rgba(255,255,255,.20)}
+table.exptbl tbody tr.eg1>td:first-child{border-left:3px solid #dff20d}
+table.exptbl tbody tr.eg2>td:first-child{border-left:3px solid #5aa0ff}
+table.exptbl tbody tr.eg3>td:first-child{border-left:3px solid #ff9f0a}
 .exp-grip{width:26px;text-align:center;padding-left:2px!important;padding-right:0!important}
 .grip{display:inline-flex;cursor:grab;color:var(--text3,#5e5e5e);opacity:.62;padding:4px 2px;line-height:0;transition:.12s}
 .grip:hover{opacity:1;color:var(--text2,#9a9a9a)}
@@ -1114,7 +1130,7 @@ tr.pinned>td:first-child{box-shadow:inset 2px 0 0 var(--accent,#dff20d)}
       <table class="q" id="qtable">
         <thead>
           <tr>
-            <th style="width:46px">No</th>
+            <th style="width:74px">No</th>
             <th id="thName" style="width:190px">Name</th>
             <th id="thDesc" style="width:240px">Description</th>
             <th style="width:68px">Qty</th>
@@ -2132,6 +2148,37 @@ function expMoveBlock(from, to){
   markDirty();
 }
 
+var EXP_COLLAPSED = {};
+var EXP_FOR = null;
+function expStore(){ return 'apsa_qexp_' + ((typeof EDIT !== 'undefined' && EDIT && EDIT.id) ? EDIT.id : 0); }
+function expEnsure(){
+  const id = (typeof EDIT !== 'undefined' && EDIT && EDIT.id) ? EDIT.id : 0;
+  if (EXP_FOR === id) return;
+  EXP_FOR = id;
+  try { EXP_COLLAPSED = JSON.parse(localStorage.getItem(expStore()) || '{}') || {}; }
+  catch (e) { EXP_COLLAPSED = {}; }
+}
+function expPersist(){
+  try {
+    const o = {};
+    Object.keys(EXP_COLLAPSED).forEach(function(k){ if (EXP_COLLAPSED[k]) o[k] = 1; });
+    localStorage.setItem(expStore(), JSON.stringify(o));
+  } catch (e) {}
+}
+function expKeys(){
+  let n = 0;
+  EXP.forEach(function(r){ if (r.kind === 'group'){ n++; r._gkey = r.id ? ('i' + r.id) : ('n' + n); } });
+}
+function expToggle(key, ev){
+  if (ev){ ev.preventDefault(); ev.stopPropagation(); }
+  EXP_COLLAPSED[key] = !EXP_COLLAPSED[key];
+  expPersist(); renderExp();
+}
+function expAll(open){
+  expEnsure(); expKeys();
+  EXP.forEach(function(r){ if (r.kind === 'group') EXP_COLLAPSED[r._gkey] = !open; });
+  expPersist(); renderExp();
+}
 function renderExp(){
   const box = document.getElementById('expWrap');
   if (!box) return;
@@ -2140,17 +2187,25 @@ function renderExp(){
     renderExpTotals();
     return;
   }
+  expEnsure(); expKeys();
+  let gIdx = -1, gKey = '', gHide = false;
   const rows = EXP.map((r, i) => {
     if (r.kind === 'group'){
-      return '<tr class="gr"' + ' data-ei="' + i + '" ondragover="expDragOver(event,' + i + ')" ondragleave="expDragLeave(event)" ondrop="expDrop(event,' + i + ')">' +
+      gIdx++; gKey = r._gkey; gHide = !!EXP_COLLAPSED[gKey];
+      return '<tr class="gr eg' + (gIdx % 4) + '"' + ' data-ei="' + i + '" ondragover="expDragOver(event,' + i + ')" ondragleave="expDragLeave(event)" ondrop="expDrop(event,' + i + ')">' +
           '<td class="exp-grip"><span class="grip" draggable="true" title="Kéo để sắp xếp" ondragstart="expDragStart(event,' + i + ')" ondragend="expDragEnd()"><svg class=\"ic\" viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M9 5h.01M9 12h.01M9 19h.01M15 5h.01M15 12h.01M15 19h.01\"/></svg></span></td>' +
-          '<td colspan="10">' +
+          '<td colspan="10"><span class="expgw">' +
+        '<button type="button" class="seccol" onclick="expToggle(\'' + gKey + '\', event)" title="' +
+          (gHide ? 'Mở nhóm' : 'Thu gọn nhóm') + '">' +
+          svgIco(gHide ? ICO.right : ICO.down, 13) + '</button>' +
         '<input value="' + esc(r.name) + '" placeholder="Tên nhóm (VD: In ấn, Nhân sự, Teabreak…)" ' +
-        'oninput="expSet(' + i + ',\'name\',this.value)" /></td>' +
+        'oninput="expSet(' + i + ',\'name\',this.value)" />' +
+        (gHide ? '<span class="secn">' + Math.max(0, expBlockLen(i) - 1) + '</span>' : '') +
+        '</span></td>' +
         '<td style="text-align:right"><button class="exp-x" onclick="expDel(' + i + ')" title="Xoá nhóm"><svg class="ic" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></td></tr>';
     }
     const amt = (Number(r.qty)||0) * (Number(r.price)||0);
-    return '<tr class="' + expRowCls(r) + '"' + ' data-ei="' + i + '" ondragover="expDragOver(event,' + i + ')" ondragleave="expDragLeave(event)" ondrop="expDrop(event,' + i + ')">' +
+    return '<tr class="' + expRowCls(r) + (gIdx >= 0 ? ' eg' + (gIdx % 4) : '') + '"' + (gHide ? ' style="display:none"' : '') + ' data-ei="' + i + '" ondragover="expDragOver(event,' + i + ')" ondragleave="expDragLeave(event)" ondrop="expDrop(event,' + i + ')">' +
         '<td class="exp-grip"><span class="grip" draggable="true" title="Kéo để sắp xếp" ondragstart="expDragStart(event,' + i + ')" ondragend="expDragEnd()"><svg class=\"ic\" viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M9 5h.01M9 12h.01M9 19h.01M15 5h.01M15 12h.01M15 19h.01\"/></svg></span></td>' +
       '<td><input value="' + esc(r.name) + '" placeholder="Hạng mục" oninput="expSet(' + i + ',\'name\',this.value)" /></td>' +
       '<td><input value="' + esc(r.description) + '" placeholder="Mô tả / nhà cung cấp" oninput="expSet(' + i + ',\'description\',this.value)" /></td>' +
@@ -2568,9 +2623,9 @@ function renderRows(){
           ? '<button type="button" class="seccol" onclick="toggleSec(\'' + it._skey + '\', event)" title="' +
             (SEC_COLLAPSED[it._skey] ? 'Mở nhóm' : 'Thu gọn nhóm') + '">' +
             svgIco(SEC_COLLAPSED[it._skey] ? ICO.right : ICO.down, 13) + '</button>'
-          : '') +
-        label +
-      '</td>' +
+                      : '') +
+          (isSec ? '<span class="secno">' + label + '</span>' : label) +
+        '</td>' +
       '<td' + (isSec ? ' class="secnm"' : '') + '><input value="' + esc(it.name) + '" placeholder="' + (isSec ? 'Tên nhóm (VD: Chụp ảnh)' : 'Tên hạng mục') + '" oninput="upd(' + i + ',\'name\',this.value);queueFit()" />' + (isSec && SEC_COLLAPSED[it._skey] ? '<span class="secn">' + (SEC_N[it._skey] || 0) + '</span>' : '') + '</td>' +
       '<td><textarea rows="1" placeholder="' + (isSec ? '' : 'Mô tả / thời gian / địa điểm — Enter để xuống dòng') + '" ' +
         'oninput="upd(' + i + ',\'description\',this.value);grow(this);queueFit()">' + esc(it.description) + '</textarea></td>' +
