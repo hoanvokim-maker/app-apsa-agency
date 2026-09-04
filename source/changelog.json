@@ -1,5 +1,5 @@
 {
-    "version": "1.7.35",
+    "version": "1.7.36",
     "updated": "2026-09-04",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-03",
             "note": "Phiên bản 1.7",
             "items": [
+                {
+                    "d": "2026-09-04",
+                    "v": "1.7.36",
+                    "t": "Moi o ngay trong bao gia/nghiem thu hien theo dd/mm/yyyy (go tay tu chen dau /, van co nut lich); chip loai bao gia: San xuat mau cam, Media mau xanh duong",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-04",
                     "v": "1.7.35",

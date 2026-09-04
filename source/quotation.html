@@ -803,6 +803,16 @@ table.q tbody tr.g0>td:first-child{border-left:3px solid rgba(255,255,255,.20)}
 table.q tbody tr.g1>td:first-child{border-left:3px solid #dff20d}
 table.q tbody tr.g2>td:first-child{border-left:3px solid #5aa0ff}
 table.q tbody tr.g3>td:first-child{border-left:3px solid #ff9f0a}
+.chip.kd-media{border-color:rgba(90,160,255,.55)!important;background:rgba(90,160,255,.14)!important;color:#7fb4ff!important}
+.chip.kd-production{border-color:rgba(255,159,10,.60)!important;background:rgba(255,159,10,.15)!important;color:#ffb043!important}
+.dmy{position:relative;display:block;width:100%}
+.dmy>input.dmy-t{width:100%;padding-right:26px}
+.dmy>input.dmy-h{position:absolute!important;right:0;top:0;height:100%;width:26px!important;
+  min-width:0!important;opacity:0;padding:0!important;margin:0!important;border:0!important;
+  background:transparent!important;cursor:pointer;z-index:2}
+.dmy>.dmy-b{position:absolute;right:6px;top:50%;transform:translateY(-50%);line-height:0;
+  pointer-events:none;color:var(--text3,#5e5e5e);z-index:1}
+.dmy:hover>.dmy-b{color:var(--accent,#dff20d)}
 table.dlvtbl{margin-top:0}
 table.dlvtbl td.c{text-align:center;color:var(--text3,#5e5e5e)}
 .dlvst{display:inline-flex;align-items:center;gap:5px;cursor:pointer;padding:3px 9px;border-radius:999px;
@@ -1741,7 +1751,7 @@ function renderRows2(){
         '<button class="act del" title="Xoá" onclick="delQuote(' + r.id + ')"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-trash"/></svg></button>';
     return '<tr class="inv' + (Number(r.pinned) ? ' pinned' : '') + '">' +
       pinCell(r) +
-      '<td class="sm"><span class="chip ' + (r.kind === 'event' ? 'partial' : 'ok') + '">' + esc(KIND_LABEL[r.kind] || r.kind || '—') + '</span></td>' +
+      '<td class="sm"><span class="chip ' + (r.kind === 'event' ? 'partial' : 'ok') + ' kd-' + esc(r.kind || 'other') + '">' + esc(KIND_LABEL[r.kind] || r.kind || '—') + '</span></td>' +
       prioCell(r) +
       '<td class="nm" onclick="openQuote(' + r.id + ')" style="cursor:pointer">' + esc(r.code || '—') + '</td>' +
       '<td class="sm" onclick="openQuote(' + r.id + ')" style="cursor:pointer">' + esc(r.title || '') + '</td>' +
@@ -4359,6 +4369,119 @@ function downloadQr(){
   }, 'image/png');
 }
 
+
+/* ---- Hien thi moi o ngay theo dd/mm/yyyy ---- */
+var DMY_PAIRS = [];
+function dmyFromIso(v){
+  var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(v || ''));
+  return m ? (m[3] + '/' + m[2] + '/' + m[1]) : '';
+}
+function dmyToIso(v){
+  var s = String(v || '').trim().replace(/[.\-\s]/g, '/');
+  var m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(s);
+  if (!m) return '';
+  var d = +m[1], mo = +m[2], y = +m[3];
+  if (d < 1 || d > 31 || mo < 1 || mo > 12 || y < 1900 || y > 2999) return '';
+  return y + '-' + ('0' + mo).slice(-2) + '-' + ('0' + d).slice(-2);
+}
+function dmySync(){
+  for (var i = 0; i < DMY_PAIRS.length; i++){
+    var p = DMY_PAIRS[i];
+    if (!p.el.isConnected){ DMY_PAIRS.splice(i--, 1); continue; }
+    if (document.activeElement === p.txt) continue;
+    var want = dmyFromIso(p.el.value);
+    if (p.txt.value !== want) p.txt.value = want;
+  }
+}
+function dmyUpgrade(root){
+  var list = (root || document).querySelectorAll('input[type="date"]');
+  for (var i = 0; i < list.length; i++){
+    var el = list[i];
+    if (el.getAttribute('data-dmy')) continue;
+    el.setAttribute('data-dmy', '1');
+
+    var wrap = document.createElement('span');
+    wrap.className = 'dmy';
+    el.parentNode.insertBefore(wrap, el);
+
+    var txt = document.createElement('input');
+    txt.type = 'text';
+    txt.className = 'dmy-t';
+    txt.placeholder = 'dd/mm/yyyy';
+    txt.setAttribute('maxlength', '10');
+    txt.setAttribute('inputmode', 'numeric');
+    if (el.disabled) txt.disabled = true;
+    if (el.title) txt.title = el.title;
+
+    var ico = document.createElement('span');
+    ico.className = 'dmy-b';
+    ico.innerHTML = svgIco(ICO.cal, 13);
+
+    wrap.appendChild(txt);
+    wrap.appendChild(el);
+    wrap.appendChild(ico);
+    el.className = (el.className ? el.className + ' ' : '') + 'dmy-h';
+    txt.value = dmyFromIso(el.value);
+
+    (function (el, txt){
+      var proto = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+      try {
+        Object.defineProperty(el, 'value', {
+          configurable: true,
+          get: function (){ return proto.get.call(el); },
+          set: function (v){
+            proto.set.call(el, v);
+            if (document.activeElement !== txt) txt.value = dmyFromIso(proto.get.call(el));
+          }
+        });
+      } catch (e) {}
+
+      function fire(){
+        el.dispatchEvent(new Event('input',  { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      el.addEventListener('change', function (){
+        if (document.activeElement !== txt) txt.value = dmyFromIso(proto.get.call(el));
+      });
+      txt.addEventListener('input', function (){
+        var raw = txt.value.replace(/[^0-9\/]/g, '');
+        if (/^\d{2}$/.test(raw) || /^\d{2}\/\d{2}$/.test(raw)) raw += '/';
+        if (raw !== txt.value) txt.value = raw;
+        var iso = dmyToIso(raw);
+        if (iso){
+          if (proto.get.call(el) !== iso){ proto.set.call(el, iso); fire(); }
+        } else if (raw === ''){
+          if (proto.get.call(el) !== ''){ proto.set.call(el, ''); fire(); }
+        }
+      });
+      txt.addEventListener('blur', function (){
+        txt.value = dmyFromIso(proto.get.call(el));
+      });
+      el.addEventListener('mousedown', function (ev){
+        if (el.disabled) return;
+        ev.preventDefault();
+        try { el.showPicker(); } catch (e) { txt.focus(); }
+      });
+      DMY_PAIRS.push({ el: el, txt: txt });
+    })(el, txt);
+  }
+}
+(function (){
+  function boot(){
+    dmyUpgrade(document);
+    try {
+      var mo = new MutationObserver(function (){
+        if (window.__dmyT) return;
+        window.__dmyT = setTimeout(function (){
+          window.__dmyT = 0; dmyUpgrade(document); dmySync();
+        }, 60);
+      });
+      mo.observe(document.documentElement, { childList: true, subtree: true });
+    } catch (e) {}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
 
 /* ---- Lich giao hang (loai bao gia: San xuat) ---- */
 var DELIV = [];
