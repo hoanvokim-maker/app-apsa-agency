@@ -776,6 +776,14 @@ select#fStatus option{background:#141414;color:#f2f2f2;font-weight:600;text-shad
 .pinbtn.on{color:var(--accent,#dff20d);opacity:1}
 .apx-ic svg{display:block}
 .hbtn svg{vertical-align:-2px;margin-right:5px}
+.exp-grip{width:26px;text-align:center;padding-left:2px!important;padding-right:0!important}
+.grip{display:inline-flex;cursor:grab;color:var(--text3,#5e5e5e);opacity:.62;padding:4px 2px;line-height:0;transition:.12s}
+.grip:hover{opacity:1;color:var(--text2,#9a9a9a)}
+.grip:active{cursor:grabbing}
+.exptbl tr:hover .grip{opacity:.85}
+.exptbl tr.dragging{opacity:.35}
+.exptbl tr.dropbefore>td{box-shadow:inset 0 2px 0 var(--accent,#dff20d)}
+.exptbl tr.dropafter>td{box-shadow:inset 0 -2px 0 var(--accent,#dff20d)}
 .ic{vertical-align:-2px;flex:0 0 auto}
 button.x .ic,.rowbtn .ic,.asgrow-x .ic,.exp-x .ic{vertical-align:-1px;margin:0}
 .qchev .ic,.expchev .ic{vertical-align:-2px;margin-right:3px}
@@ -2042,6 +2050,59 @@ function expAddGroup(){
 function expAddItem(){ EXP.push(expBlank()); toggleExp(true); renderExp(); markDirty(); }
 function expDel(i){ EXP.splice(i, 1); renderExp(); markDirty(); }
 
+/* ── Keo tha sap xep dong chi phi thuc te ── */
+var EXP_DRAG = -1;
+/* Dong nhom keo ca khoi (nhom + cac dong ben duoi no); dong le keo mot minh. */
+function expBlockLen(i){
+  if (!EXP[i]) return 1;
+  if (EXP[i].kind !== 'group') return 1;
+  let n = 1;
+  while (i + n < EXP.length && EXP[i + n].kind !== 'group') n++;
+  return n;
+}
+function expClearMarks(){
+  document.querySelectorAll('.exptbl tr').forEach(x =>
+    x.classList.remove('dragging', 'dropbefore', 'dropafter'));
+}
+function expDragStart(e, i){
+  EXP_DRAG = i;
+  try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', String(i)); } catch (x) {}
+  const tr = e.target.closest('tr');
+  if (tr) setTimeout(() => tr.classList.add('dragging'), 0);
+}
+function expDragEnd(){ EXP_DRAG = -1; expClearMarks(); }
+function expDragLeave(e){ e.currentTarget.classList.remove('dropbefore', 'dropafter'); }
+function expDropBelow(e, tr){
+  const rc = tr.getBoundingClientRect();
+  return (e.clientY - rc.top) > rc.height / 2;
+}
+function expDragOver(e, i){
+  if (EXP_DRAG < 0) return;
+  e.preventDefault();
+  try { e.dataTransfer.dropEffect = 'move'; } catch (x) {}
+  const tr = e.currentTarget;
+  document.querySelectorAll('.exptbl tr.dropbefore,.exptbl tr.dropafter')
+    .forEach(x => x.classList.remove('dropbefore', 'dropafter'));
+  tr.classList.add(expDropBelow(e, tr) ? 'dropafter' : 'dropbefore');
+}
+function expDrop(e, i){
+  e.preventDefault();
+  const from = EXP_DRAG;
+  const below = expDropBelow(e, e.currentTarget);
+  expDragEnd();
+  if (from < 0) return;
+  expMoveBlock(from, below ? i + expBlockLen(i) : i);
+}
+function expMoveBlock(from, to){
+  const n = expBlockLen(from);
+  if (to >= from && to <= from + n) return;   /* tha lai cho cu */
+  const part = EXP.splice(from, n);
+  const at = to > from ? to - n : to;
+  EXP.splice(at, 0, ...part);
+  renderExp();
+  markDirty();
+}
+
 function renderExp(){
   const box = document.getElementById('expWrap');
   if (!box) return;
@@ -2052,13 +2113,16 @@ function renderExp(){
   }
   const rows = EXP.map((r, i) => {
     if (r.kind === 'group'){
-      return '<tr class="gr"><td colspan="10">' +
+      return '<tr class="gr"' + ' data-ei="' + i + '" ondragover="expDragOver(event,' + i + ')" ondragleave="expDragLeave(event)" ondrop="expDrop(event,' + i + ')">' +
+          '<td class="exp-grip"><span class="grip" draggable="true" title="Kéo để sắp xếp" ondragstart="expDragStart(event,' + i + ')" ondragend="expDragEnd()"><svg class=\"ic\" viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M9 5h.01M9 12h.01M9 19h.01M15 5h.01M15 12h.01M15 19h.01\"/></svg></span></td>' +
+          '<td colspan="10">' +
         '<input value="' + esc(r.name) + '" placeholder="Tên nhóm (VD: In ấn, Nhân sự, Teabreak…)" ' +
         'oninput="expSet(' + i + ',\'name\',this.value)" /></td>' +
         '<td style="text-align:right"><button class="exp-x" onclick="expDel(' + i + ')" title="Xoá nhóm"><svg class="ic" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></td></tr>';
     }
     const amt = (Number(r.qty)||0) * (Number(r.price)||0);
-    return '<tr class="' + expRowCls(r) + '">' +
+    return '<tr class="' + expRowCls(r) + '"' + ' data-ei="' + i + '" ondragover="expDragOver(event,' + i + ')" ondragleave="expDragLeave(event)" ondrop="expDrop(event,' + i + ')">' +
+        '<td class="exp-grip"><span class="grip" draggable="true" title="Kéo để sắp xếp" ondragstart="expDragStart(event,' + i + ')" ondragend="expDragEnd()"><svg class=\"ic\" viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M9 5h.01M9 12h.01M9 19h.01M15 5h.01M15 12h.01M15 19h.01\"/></svg></span></td>' +
       '<td><input value="' + esc(r.name) + '" placeholder="Hạng mục" oninput="expSet(' + i + ',\'name\',this.value)" /></td>' +
       '<td><input value="' + esc(r.description) + '" placeholder="Mô tả / nhà cung cấp" oninput="expSet(' + i + ',\'description\',this.value)" /></td>' +
       '<td><input class="num" value="' + (Number(r.qty)||0) + '" oninput="expSet(' + i + ',\'qty\',this.value)" /></td>' +
@@ -2075,10 +2139,10 @@ function renderExp(){
   }).join('');
   box.innerHTML =
     '<table class="exptbl">' +
-    '<colgroup><col style="width:22%"><col><col style="width:66px"><col style="width:78px">' +
+    '<colgroup><col style="width:26px"><col style="width:22%"><col><col style="width:66px"><col style="width:78px">' +
     '<col style="width:120px"><col style="width:62px"><col style="width:126px">' +
     '<col style="width:150px"><col style="width:126px"><col style="width:96px"><col style="width:64px"></colgroup>' +
-    '<thead><tr><th>Hạng mục</th><th>Mô tả</th><th>SL</th><th>ĐVT</th>' +
+    '<thead><tr><th class="exp-grip"></th><th>Hạng mục</th><th>Mô tả</th><th>SL</th><th>ĐVT</th>' +
     '<th style="text-align:right">Đơn giá</th><th style="text-align:right">VAT %</th>' +
     '<th style="text-align:right">Thành tiền<br><span style="font-weight:400;font-size:10px;opacity:.6">đã gồm VAT</span></th><th>Người nhận</th><th>Ngày TT</th><th>Trạng thái</th><th></th></tr></thead>' +
     '<tbody>' + rows + '</tbody></table>';
