@@ -2602,7 +2602,11 @@ async function sendReply(pid){
 }
 
 async function delComment(id){
-  if (!confirm('Xoá bình luận này?')) return;
+  if (!await apxConfirm({
+    title: 'Xoá bình luận', icon: '✕', tone: 'danger',
+    message: 'Xoá bình luận này? Thao tác không khôi phục lại được.',
+    ok: 'Xoá', cancel: 'Giữ lại'
+  })) return;
   try{
     const j = await api(API, 'comment-delete', { body: { id: id } });
     DSC = j; renderDsc(); toast('Đã xoá', 'ok');
@@ -2611,7 +2615,18 @@ async function delComment(id){
 
 async function decide(status){
   const word = status === 'approved' ? 'DUYỆT' : 'TỪ CHỐI';
-  const note = prompt(word + ' ' + (DSC_SCOPE === 'liq' ? 'nghiệm thu' : 'báo giá') + ' này?\nGhi chú (không bắt buộc):', '');
+  const kindTxt = DSC_SCOPE === 'liq' ? 'nghiệm thu' : 'báo giá';
+  const isOk = status === 'approved';
+  const note = await apxPrompt({
+    title:       (isOk ? 'Duyệt ' : 'Từ chối ') + kindTxt,
+    icon:        isOk ? '✓' : '!',
+    tone:        isOk ? 'ok' : 'danger',
+    message:     'Bạn sắp <b>' + word + '</b> ' + kindTxt + (typeof EDIT !== 'undefined' && EDIT && EDIT.code ? ' <b>' + esc(EDIT.code) + '</b>' : '') + '.',
+    label:       'Ghi chú (không bắt buộc)',
+    placeholder: isOk ? 'VD: OK, triển khai nhé' : 'VD: Giá cao hơn ngân sách, cần chỉnh lại',
+    ok:          isOk ? 'Duyệt' : 'Từ chối',
+    cancel:      'Huỷ'
+  });
   if (note === null) return;
   try{
     const j = await api(API, 'review-decide', { body: {
@@ -2650,7 +2665,11 @@ async function sendReq(){
 }
 
 async function cancelReq(rid){
-  if (!confirm('Gỡ người này khỏi danh sách review?')) return;
+  if (!await apxConfirm({
+    title: 'Gỡ người review', icon: '✕', tone: 'danger',
+    message: 'Gỡ người này khỏi danh sách review?',
+    ok: 'Gỡ', cancel: 'Huỷ'
+  })) return;
   try{
     const j = await api(API, 'review-cancel', { body: {
       quotation_id: EDIT.id, scope: DSC_SCOPE, reviewer_id: rid } });
@@ -3368,6 +3387,97 @@ function qEvSetText(t) {
   el.value = m ? (m[3] + '-' + ('0' + m[2]).slice(-2) + '-' + ('0' + m[1]).slice(-2)) : '';
   qEvFix();
 }
+
+/* ── Hop thoai trong app, thay cho prompt()/confirm() cua trinh duyet ── */
+var APX_CSS_DONE = false;
+function apxCss(){
+  if (APX_CSS_DONE) return;
+  APX_CSS_DONE = true;
+  var st = document.createElement('style');
+  st.id = 'apx-style';
+  st.textContent = `.apx-ov{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);padding:20px;animation:apxIn .13s ease-out}
+.apx-ov.out{animation:apxOut .12s ease-in forwards}
+@keyframes apxIn{from{opacity:0}to{opacity:1}}
+@keyframes apxOut{to{opacity:0}}
+.apx-bx{width:100%;max-width:440px;background:var(--bg2,#0b0b0b);border:1px solid var(--border,rgba(255,255,255,.10));border-radius:var(--radius,4px);box-shadow:0 24px 60px rgba(0,0,0,.65);overflow:hidden;font-family:var(--font-body);animation:apxUp .16s cubic-bezier(.2,.9,.3,1)}
+@keyframes apxUp{from{transform:translateY(10px) scale(.985)}to{transform:none}}
+.apx-hd{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border,rgba(255,255,255,.10));font-family:var(--font-display);font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text,#fff)}
+.apx-ic{width:24px;height:24px;flex:0 0 24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;line-height:1;background:rgba(255,255,255,.09);color:var(--text,#fff)}
+.apx-bx.ok .apx-hd{border-bottom-color:rgba(223,242,13,.28)}
+.apx-bx.ok .apx-ic{background:var(--accent,#dff20d);color:#000}
+.apx-bx.danger .apx-hd{border-bottom-color:rgba(255,77,79,.32)}
+.apx-bx.danger .apx-ic{background:var(--red,#ff4d4f);color:#fff}
+.apx-bd{padding:16px 18px}
+.apx-msg{font-size:13px;line-height:1.6;color:var(--text2,#9a9a9a)}
+.apx-msg b{color:var(--text,#fff);font-weight:600}
+.apx-lb{margin:14px 0 6px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3,#5e5e5e)}
+.apx-in{width:100%;box-sizing:border-box;background:var(--bg,#000);color:var(--text,#fff);border:1px solid var(--border,rgba(255,255,255,.10));border-radius:var(--radius,4px);padding:9px 11px;font-family:var(--font-body);font-size:13px;line-height:1.5;resize:vertical;outline:none}
+.apx-in:focus{border-color:var(--accent,#dff20d)}
+.apx-in::placeholder{color:var(--text3,#5e5e5e)}
+.apx-ft{display:flex;justify-content:flex-end;gap:8px;padding:4px 18px 16px}
+.apx-b{cursor:pointer;border-radius:var(--radius,4px);padding:8px 18px;font-family:var(--font-body);font-size:12.5px;font-weight:600;border:1px solid var(--border,rgba(255,255,255,.10));background:transparent;color:var(--text2,#9a9a9a);transition:all .12s}
+.apx-b:hover{border-color:var(--border-hover,rgba(223,242,13,.55));color:var(--text,#fff)}
+.apx-b.pr{background:var(--accent,#dff20d);border-color:var(--accent,#dff20d);color:#000}
+.apx-b.pr:hover{filter:brightness(1.08);color:#000}
+.apx-bx.danger .apx-b.pr{background:var(--red,#ff4d4f);border-color:var(--red,#ff4d4f);color:#fff}
+.apx-bx.danger .apx-b.pr:hover{color:#fff}
+.apx-kb{padding:0 18px 14px;font-size:10px;color:var(--text3,#5e5e5e)}
+@media(max-width:480px){.apx-ft{flex-direction:column-reverse}.apx-b{width:100%}}`;
+  document.head.appendChild(st);
+}
+function apxDlg(o){
+  o = o || {};
+  return new Promise(function(resolve){
+    apxCss();
+    var tone = o.tone === 'danger' ? ' danger' : (o.tone === 'ok' ? ' ok' : '');
+    var ov = document.createElement('div');
+    ov.className = 'apx-ov';
+    ov.innerHTML =
+      '<div class="apx-bx' + tone + '" role="dialog" aria-modal="true">' +
+        '<div class="apx-hd"><span class="apx-ic">' + esc(o.icon || '?') + '</span>' + esc(o.title || '') + '</div>' +
+        '<div class="apx-bd">' +
+          (o.message ? '<div class="apx-msg">' + o.message + '</div>' : '') +
+          (o.input ? '<div class="apx-lb">' + esc(o.label || 'Ghi ch\u00fa') + '</div>' +
+                     '<textarea class="apx-in" rows="3" placeholder="' + esc(o.placeholder || '') + '"></textarea>' : '') +
+        '</div>' +
+        '<div class="apx-ft">' +
+          '<button type="button" class="apx-b" data-x="0">' + esc(o.cancel || 'Hu\u1ef7') + '</button>' +
+          '<button type="button" class="apx-b pr" data-x="1">' + esc(o.ok || '\u0110\u1ed3ng \u00fd') + '</button>' +
+        '</div>' +
+        '<div class="apx-kb">Esc \u0111\u1ec3 hu\u1ef7' + (o.input ? ' \u00b7 Ctrl/Cmd + Enter \u0111\u1ec3 x\u00e1c nh\u1eadn' : ' \u00b7 Enter \u0111\u1ec3 x\u00e1c nh\u1eadn') + '</div>' +
+      '</div>';
+    document.body.appendChild(ov);
+
+    var ta = ov.querySelector('.apx-in');
+    var no = o.input ? null : false;
+    var closed = false;
+
+    function end(v){
+      if (closed) return;
+      closed = true;
+      document.removeEventListener('keydown', onKey, true);
+      ov.classList.add('out');
+      setTimeout(function(){ if (ov.parentNode) ov.parentNode.removeChild(ov); }, 140);
+      resolve(v);
+    }
+    function yes(){ return o.input ? (ta ? ta.value.trim() : '') : true; }
+    function onKey(e){
+      if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); end(no); }
+      else if (e.key === 'Enter' && (!o.input || e.ctrlKey || e.metaKey)){ e.preventDefault(); e.stopPropagation(); end(yes()); }
+    }
+    ov.addEventListener('mousedown', function(e){ if (e.target === ov) end(no); });
+    ov.addEventListener('click', function(e){
+      var b = e.target && e.target.closest ? e.target.closest('.apx-b') : null;
+      if (b) end(b.getAttribute('data-x') === '1' ? yes() : no);
+    });
+    document.addEventListener('keydown', onKey, true);
+    setTimeout(function(){ var f = ta || ov.querySelector('.apx-b.pr'); if (f) f.focus(); }, 40);
+  });
+}
+/* Tra ve true / false */
+function apxConfirm(o){ o = o || {}; o.input = false; return apxDlg(o); }
+/* Tra ve chuoi ghi chu, hoac null neu bam Huy */
+function apxPrompt(o){ o = o || {}; o.input = true; return apxDlg(o); }
 
 function markDirty(){
   if (!EDIT) return;
@@ -4143,7 +4253,11 @@ function qcCloseBtn(show) {
 // ── Hành động ────────────────────────────────────────
 async function qcClose() {
   if (!QC.id) { qcToast('Lưu dự án trước đã nhé', true); return; }
-  if (!confirm('Đóng dự án này?\n\nSau khi đóng, không ai nhập hay sửa được nữa.\nMuốn sửa lại phải gửi yêu cầu cho Admin mở.')) return;
+  if (!await apxConfirm({
+    title: 'Đóng dự án', icon: '!', tone: 'danger',
+    message: 'Đóng dự án này?<br><br>Sau khi đóng, <b>không ai nhập hay sửa được nữa</b>.<br>Muốn sửa lại phải gửi yêu cầu cho Admin mở.',
+    ok: 'Đóng dự án', cancel: 'Huỷ'
+  })) return;
   try {
     if (typeof saveQuote === 'function') { try { await saveQuote(true, true); } catch (e) {} }
     await qcApi('project-close', { id: QC.id });
@@ -4153,7 +4267,11 @@ async function qcClose() {
 }
 
 async function qcReopen() {
-  if (!confirm('Mở lại dự án này để chỉnh sửa?')) return;
+  if (!await apxConfirm({
+    title: 'Mở lại dự án', icon: '✓', tone: 'ok',
+    message: 'Mở lại dự án này để chỉnh sửa?',
+    ok: 'Mở lại', cancel: 'Huỷ'
+  })) return;
   try {
     await qcApi('project-reopen', { id: QC.id });
     QC.mySent = false;
@@ -4209,8 +4327,24 @@ async function qcAskSend() {
 }
 
 async function qcDecide(reqId, approve) {
-  const note = approve ? '' : (prompt('Lý do từ chối (có thể bỏ trống):') || '');
-  if (!approve && note === null) return;
+  let note = '';
+  if (approve) {
+    if (!await apxConfirm({
+      title: 'Duyệt yêu cầu mở lại', icon: '✓', tone: 'ok',
+      message: 'Đồng ý mở lại dự án này để người yêu cầu chỉnh sửa?',
+      ok: 'Mở lại', cancel: 'Huỷ'
+    })) return;
+  } else {
+    const r = await apxPrompt({
+      title: 'Từ chối yêu cầu', icon: '!', tone: 'danger',
+      message: 'Từ chối yêu cầu mở lại dự án này?',
+      label: 'Lý do (không bắt buộc)',
+      placeholder: 'VD: Dự án đã quyết toán xong',
+      ok: 'Từ chối', cancel: 'Huỷ'
+    });
+    if (r === null) return;
+    note = r;
+  }
   try {
     await qcApi('reopen-decide', { req_id: reqId, approve: !!approve, note });
     await qcRefresh();

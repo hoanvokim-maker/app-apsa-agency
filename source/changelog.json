@@ -1,5 +1,5 @@
 {
-    "version": "1.7.26",
+    "version": "1.7.27",
     "updated": "2026-09-04",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-03",
             "note": "Phiên bản 1.7",
             "items": [
+                {
+                    "d": "2026-09-04",
+                    "v": "1.7.27",
+                    "t": "Thay hop thoai prompt/confirm cua trinh duyet bang hop thoai trong app theo dung theme (duyet, tu choi, xoa binh luan, go review, dong/mo lai du an)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-04",
                     "v": "1.7.26",
