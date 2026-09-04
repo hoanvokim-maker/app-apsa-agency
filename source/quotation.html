@@ -804,15 +804,18 @@ select#fStatus option{background:#141414;color:#f2f2f2;font-weight:600;text-shad
     <span class="hmeta"><span id="editHint">Báo giá mới</span><span class="savestate" id="saveState"></span></span>
     <span class="hsep"></span>
     <button class="hbtn" id="btnLiq" onclick="toggleLiq()"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-invoice"/></svg> Nghiệm thu</button>
-    <button class="hbtn" id="btnImpXlsx" onclick="document.getElementById('impXlsxFile').click()" title="Nạp bảng hạng mục từ file Excel báo giá / nghiệm thu"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-upload"/></svg> Nhập Excel</button>
-    <input type="file" id="impXlsxFile" accept=".xlsx,.zip" style="display:none" onchange="impXlsx(this)" />
-    <button class="hbtn" onclick="exportXlsx()" title="Xuất file Excel báo giá"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-download"/></svg> Xuất BG</button>
-    <button class="hbtn" id="btnExpLiq" onclick="exportLiq()" style="display:none" title="Xuất file Excel nghiệm thu (kèm PDF nếu có)"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-download"/></svg> Xuất NT</button>
 
+    <div class="hmore" id="xlWrap">
+      <button class="hbtn" id="btnXl" onclick="toggleXl(event)" title="Nhập / xuất file Excel"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-doc"/></svg> Excel</button>
+      <div class="hmenu" id="xlMenu">
+        <button type="button" onclick="pickImport(); closeXl()"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-upload"/></svg> Nạp file Excel</button>
+        <button type="button" onclick="exportXlsx(); closeXl()"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-download"/></svg> Xuất Excel báo giá</button>
+        <button type="button" id="btnExpLiq" onclick="exportLiq(); closeXl()" style="display:none"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-download"/></svg> Xuất Excel nghiệm thu</button>
+      </div>
+    </div>
     <div class="hmore" id="moreWrap">
       <button class="hbtn" id="btnMore" onclick="toggleMore(event)" title="Thao tác khác">⋯</button>
       <div class="hmenu" id="moreMenu">
-        <button type="button" onclick="pickImport(); closeMore()"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-upload"/></svg> Nạp file Excel</button>
         <button type="button" onclick="copyQuoteLink(); closeMore()"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-link"/></svg> Chép link báo giá</button>
         <button type="button" id="btnMail" onclick="openMail(); closeMore()"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-mail"/></svg> Gửi mail cho khách</button>
       </div>
@@ -3272,9 +3275,25 @@ function removePo(){
 /* Menu ⋯ trên navigation */
 function toggleMore(e){
   if (e) e.stopPropagation();
+  closeXl();
   const m = document.getElementById('moreMenu');
   if (m) m.classList.toggle('open');
 }
+function toggleXl(e){
+  if (e) e.stopPropagation();
+  closeMore();
+  const m = document.getElementById('xlMenu');
+  if (m) m.classList.toggle('open');
+}
+function closeXl(){
+  const m = document.getElementById('xlMenu');
+  if (m) m.classList.remove('open');
+}
+document.addEventListener('click', e => {
+  const w = document.getElementById('xlWrap');
+  if (w && !w.contains(e.target)) closeXl();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeXl(); });
 function closeMore(){
   const m = document.getElementById('moreMenu');
   if (m) m.classList.remove('open');
@@ -3307,93 +3326,6 @@ function asState(kind, extra){
   const [cls, txt] = map[kind] || map.clean;
   el.className = 'savestate' + (cls ? ' ' + cls : '');
   el.textContent = txt;
-}
-
-/* ── Nập bảng hạng mục từ file Excel ── */
-function impCss(){
-  if (document.getElementById('imp-css')) return;
-  const st = document.createElement('style');
-  st.id = 'imp-css';
-  st.textContent =
-    '.imp-ov{position:fixed;inset:0;background:rgba(0,0,0,.62);display:flex;align-items:center;'+
-    'justify-content:center;z-index:9999;padding:16px}'+
-    '.imp-bx{background:#161a20;border:1px solid #2b3138;border-radius:14px;padding:18px 20px;'+
-    'width:min(560px,100%);max-height:86vh;display:flex;flex-direction:column;color:#e6e8ea}'+
-    '.imp-bx h3{margin:0 0 4px;font-size:14px;text-transform:uppercase;letter-spacing:.04em}'+
-    '.imp-fn{font-size:12px;color:#9aa0a6;margin-bottom:12px;word-break:break-all}'+
-    '.imp-g{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}'+
-    '.imp-c{border:1px solid #262b33;border-radius:9px;padding:8px 10px;background:#0f1216}'+
-    '.imp-c b{display:block;font-size:16px;color:#d7f205}'+
-    '.imp-c span{font-size:11px;color:#9aa0a6;text-transform:uppercase;letter-spacing:.05em}'+
-    '.imp-w{border:1px solid #6b5a12;background:#221d07;border-radius:9px;padding:8px 10px;'+
-    'font-size:12px;color:#e8d98a;margin-bottom:10px;overflow:auto;max-height:150px}'+
-    '.imp-note{font-size:12px;color:#9aa0a6;margin-bottom:4px}'+
-    '.imp-ft{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}'+
-    '.imp-ft button{font:inherit;font-size:12.5px;padding:7px 16px;border-radius:8px;cursor:pointer;'+
-    'border:1px solid rgba(255,255,255,.16);background:transparent;color:#9aa0a6}'+
-    '.imp-ft button.ok{border-color:#d7f205;background:#d7f205;color:#0d0f12;font-weight:700}';
-  document.head.appendChild(st);
-}
-
-async function impXlsx(inp){
-  const f = inp.files && inp.files[0];
-  inp.value = '';
-  if (!f) return;
-  let d;
-  try {
-    const fd = new FormData();
-    fd.append('file', f, f.name);
-    const r = await fetch(API + '?action=import-xlsx', { method:'POST', body: fd, credentials:'same-origin' });
-    const j = await r.json();
-    if (!j.ok) throw new Error(j.error || 'Không đọc được file');
-    d = j.data;
-  } catch (e) { toast(e.message || 'Không đọc được file'); return; }
-  impPreview(d);
-}
-
-function impPreview(d){
-  impCss();
-  const su = d.summary || {};
-  const ws = d.warnings || [];
-  const ov = document.createElement('div');
-  ov.className = 'imp-ov';
-  ov.innerHTML =
-    '<div class="imp-bx"><h3>Nạp bảng từ Excel</h3>'+
-    '<div class="imp-fn">'+esc(d.file || '')+'</div>'+
-    '<div class="imp-g">'+
-      '<div class="imp-c"><b>'+(su.items||0)+'</b><span>Hạng mục</span></div>'+
-      '<div class="imp-c"><b>'+(su.sections||0)+'</b><span>Nhóm</span></div>'+
-      '<div class="imp-c"><b>'+fmt(su.subtotal||0)+'</b><span>Tạm tính báo giá</span></div>'+
-      '<div class="imp-c"><b>'+(d.liq ? fmt(su.liq_subtotal||0) : '—')+'</b><span>Tạm tính nghiệm thu</span></div>'+
-    '</div>'+
-    (ws.length ? '<div class="imp-w">'+ws.map(w=>'• '+esc(w)).join('<br>')+'</div>' : '')+
-    '<div class="imp-note">'+(d.liq
-      ? 'File có cột nghiệm thu — sẽ tự bật phần Nghiệm thu.'
-      : 'File chỉ có cột báo giá.')+'</div>'+
-    '<div class="imp-note">Toàn bộ bảng hạng mục hiện tại sẽ bị thay thế. Chưa lưu — anh xem lại rồi bấm Lưu.</div>'+
-    '<div class="imp-ft"><button class="no">Huỷ</button><button class="ok">Thay bảng hiện tại</button></div></div>';
-  document.body.appendChild(ov);
-  const close = () => { if (ov.parentNode) ov.parentNode.removeChild(ov); };
-  ov.onclick = e => { if (e.target === ov) close(); };
-  ov.querySelector('.no').onclick = close;
-  ov.querySelector('.ok').onclick = () => { close(); impApply(d); };
-}
-
-function impApply(d){
-  const src = d.items || [];
-  if (!src.length) { toast('File không có dòng nào để nạp'); return; }
-  EDIT.items = src.map(it => {
-    const k = (it.kind === 'section') ? 'section' : 'item';
-    const row = Object.assign(blankItem(k), it);
-    row.kind = k;
-    delete row.id;
-    return row;
-  });
-  if (d.liq) { try { setLiq(true); } catch(e){} }
-  renderRows();
-  markDirty();
-  try { fitCols(); } catch(e){}
-  toast('Đã nạp ' + src.length + ' dòng từ Excel — kiểm tra rồi bấm Lưu');
 }
 
 function markDirty(){

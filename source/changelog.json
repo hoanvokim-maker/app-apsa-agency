@@ -1,5 +1,5 @@
 {
-    "version": "1.7.23",
+    "version": "1.7.24",
     "updated": "2026-09-04",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-03",
             "note": "Phiên bản 1.7",
             "items": [
+                {
+                    "d": "2026-09-04",
+                    "v": "1.7.24",
+                    "t": "Bao gia: gop 4 nut nhap/xuat vao 1 menu Excel, bo nut trung lap",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-04",
                     "v": "1.7.23",
