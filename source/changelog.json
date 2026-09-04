@@ -1,12 +1,18 @@
 {
-    "version": "1.7.20",
-    "updated": "2026-09-03",
+    "version": "1.7.21",
+    "updated": "2026-09-04",
     "releases": [
         {
             "v": "1.7",
             "date": "2026-09-03",
             "note": "Phiên bản 1.7",
             "items": [
+                {
+                    "d": "2026-09-04",
+                    "v": "1.7.21",
+                    "t": "Trang thai du an: bo 'Dat hang' (chuyen sang Xac nhan bao gia), them 'Dong va Da Thanh Toan'",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-03",
                     "v": "1.7.20",

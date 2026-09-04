@@ -378,7 +378,7 @@ if (!q_hasColumn($pdo, 'quotations', 'status')) {
     $backfill = [
         'Nhận yêu cầu'       => 'request',
         'Báo giá'            => 'quote',
-        'Đặt hàng'           => 'order',
+        'Đặt hàng'                  => 'confirmed',
         'Xác nhận báo giá'   => 'confirmed',
         'Đang thực hiện'     => 'running',
         'Gửi nghiệm thu'     => 'liq_sent',

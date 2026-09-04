@@ -1249,19 +1249,19 @@ let SORT = { key: 'date', dir: -1 };
   const STATUS_FALLBACK = {
     request:      'Nhận yêu cầu',
     quote:        'Báo giá',
-    order:        'Đặt hàng',
     confirmed:    'Xác nhận báo giá',
     running:      'Đang thực hiện',
     service_done: 'Hoàn thành dịch vụ',
     liq_sent:     'Gửi nghiệm thu',
     done:         'Đóng và chờ thanh toán',
+    paid:         'Đóng và Đã Thanh Toán',
     lost:         'Trượt Bidding'
   };
   const STATUS = (window.__APSA_ST && window.__APSA_ST.labels) || STATUS_FALLBACK;
 const STATUS_ORDER = Object.keys(STATUS);
-const DONE_SET = ['done','service_done'];
+const DONE_SET = ['done','paid','service_done'];
 /* Chưa nghiệm thu = chưa tới bước "Gửi nghiệm thu" (và không phải dự án trượt) */
-const PENDING_LIQ_SET = ['request','quote','order','confirmed','running'];
+const PENDING_LIQ_SET = ['request','quote','confirmed','running'];
 /* Gộp chung Event + Media vào một trang; ?type= chỉ dùng làm bộ lọc mặc định (giữ tương thích link cũ) */
 const TYPE = (new URLSearchParams(location.search).get('type') || '').toLowerCase();   // event | media | ''
 const KIND_LABEL = { event: 'Event', media: 'Media', other: 'Khác' };

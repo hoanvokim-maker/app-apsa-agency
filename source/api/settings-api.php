@@ -44,13 +44,13 @@ function st_seed_statuses()
     return array(
         array('request',      'Nhận yêu cầu',            '#FFE066', 1, 7, 0, 1, 1),
         array('quote',        'Báo giá',                 '#FFD23F', 2, 6, 0, 1, 0),
-        array('order',        'Đặt hàng',                '#FF9F45', 3, 2, 1, 1, 0),
         array('confirmed',    'Xác nhận báo giá',        '#3BC9FF', 4, 3, 1, 1, 0),
         array('running',      'Đang thực hiện',          '#7C9CFF', 5, 1, 1, 1, 0),
         array('service_done', 'Hoàn thành dịch vụ',      '#FF6BAA', 6, 4, 1, 1, 0),
         array('liq_sent',     'Gửi nghiệm thu',          '#C77DFF', 7, 5, 1, 1, 0),
         array('done',         'Đóng và chờ thanh toán',  '#39FF88', 8, 0, 0, 0, 0),
-        array('lost',         'Trượt Bidding',           '#FF4D6D', 9, 0, 0, 0, 0),
+        array('paid',         'Đóng và Đã Thanh Toán',        '#22C55E', 9, 0, 0, 0, 0),
+        array('lost',         'Trượt Bidding',           '#FF4D6D', 10, 0, 0, 0, 0),
     );
 }
 

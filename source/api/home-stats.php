@@ -69,11 +69,11 @@ if (pm_level('project') < 1) {
 }
 
 /* Trang thai coi la "da nhan du an" — tu buoc Dat hang tro di. */
-$WON  = array('order', 'confirmed', 'running', 'service_done', 'liq_sent', 'done', 'dong_du_an');
+$WON  = array('confirmed', 'running', 'service_done', 'liq_sent', 'done', 'paid', 'dong_du_an');
 /* Con dang chao gia — chua chot. */
 $PEND = array('request', 'quote');
 /* Dang chay that su — can co ngay dien ra de xep lich. */
-$RUN  = array('order', 'confirmed', 'running', 'service_done', 'liq_sent');
+$RUN  = array('confirmed', 'running', 'service_done', 'liq_sent');
 
 /* --- Moc thoi gian --- */
 $p0 = date('Y-m-01', strtotime('first day of last month'));
