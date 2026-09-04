@@ -803,6 +803,15 @@ table.q tbody tr.g0>td:first-child{border-left:3px solid rgba(255,255,255,.20)}
 table.q tbody tr.g1>td:first-child{border-left:3px solid #dff20d}
 table.q tbody tr.g2>td:first-child{border-left:3px solid #5aa0ff}
 table.q tbody tr.g3>td:first-child{border-left:3px solid #ff9f0a}
+table.dlvtbl{margin-top:0}
+table.dlvtbl td.c{text-align:center;color:var(--text3,#5e5e5e)}
+.dlvst{display:inline-flex;align-items:center;gap:5px;cursor:pointer;padding:3px 9px;border-radius:999px;
+  font-size:10px;font-weight:700;letter-spacing:.4px;white-space:nowrap;
+  border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.25);color:var(--text2,#9a9a9a)}
+.dlvst:hover{border-color:var(--accent,#dff20d)}
+.dlvst.on{border-color:rgba(223,242,13,.55);background:rgba(223,242,13,.14);color:var(--accent,#dff20d)}
+table.dlvtbl tr.dlv-done>td{background:rgba(223,242,13,.05)}
+table.dlvtbl tr.dlv-done>td:first-child{border-left:3px solid #dff20d}
 .exptbl .expgw{display:flex;align-items:center;gap:6px}
 .exptbl .expgw>input{flex:1 1 auto;min-width:0}
 .exptbl .expgw .secn{margin:0;flex:0 0 auto}
@@ -948,6 +957,7 @@ tr.pinned>td:first-child{box-shadow:inset 2px 0 0 var(--accent,#dff20d)}
           <option value="">Tất cả loại</option>
           <option value="event"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-tent"/></svg> Event</option>
           <option value="media"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-video"/></svg> Media</option>
+          <option value="production">Sản xuất</option>
           <option value="other">Khác</option>
         </select>
       </div>
@@ -1044,6 +1054,7 @@ tr.pinned>td:first-child{box-shadow:inset 2px 0 0 var(--accent,#dff20d)}
           <select id="fKind" onchange="onKindChange()">
             <option value="event">Event</option>
             <option value="media">Media</option>
+            <option value="production">Sản xuất</option>
             <option value="other">Khác</option>
           </select>
         </div>
@@ -1070,8 +1081,8 @@ tr.pinned>td:first-child{box-shadow:inset 2px 0 0 var(--accent,#dff20d)}
 
         <div class="fg"><label>MST khách hàng</label><input type="text" id="fTax" /></div>
         <div class="fg span2"><label>Địa chỉ khách hàng</label><input type="text" id="fAddr" /></div>
-        <div class="fg"><label>Ngày dự án — Từ ngày</label><input type="date" id="fEventFrom" onchange="qEvFix()" /></div>
-        <div class="fg"><label>Đến ngày</label><input type="date" id="fEventTo" onchange="qEvFix()" /><a id="calLink" href="#" target="_blank" rel="noopener" style="display:none;font-size:11px;color:#2563eb;text-decoration:none;margin-top:4px" title="Mở sự kiện trên lịch Outlook"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Đã tạo lịch Outlook ↗</a></div>
+        <div class="fg" id="fgEvFrom"><label>Ngày dự án — Từ ngày</label><input type="date" id="fEventFrom" onchange="qEvFix()" /></div>
+        <div class="fg" id="fgEvTo"><label>Đến ngày</label><input type="date" id="fEventTo" onchange="qEvFix()" /><a id="calLink" href="#" target="_blank" rel="noopener" style="display:none;font-size:11px;color:#2563eb;text-decoration:none;margin-top:4px" title="Mở sự kiện trên lịch Outlook"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Đã tạo lịch Outlook ↗</a></div>
 
         <div class="fg"><label>Đơn vị tiền</label><input type="text" id="fCur" value="VND" /></div>
         <div class="fg">
@@ -1093,6 +1104,11 @@ tr.pinned>td:first-child{box-shadow:inset 2px 0 0 var(--accent,#dff20d)}
           </div>
         </div>
         <div class="fg"><label>Ghi chú nội bộ</label><input type="text" id="fNote" placeholder="Không xuất ra Excel" /></div>
+        <div class="fg pofg" id="fgDeliv" style="display:none">
+          <label>Lịch giao hàng <span class="xs" style="text-transform:none;letter-spacing:0;color:var(--text3)">· mỗi đợt giao sẽ tự tạo 1 sự kiện cả ngày trên lịch Outlook khi dự án đã xác nhận</span></label>
+          <div id="delivWrap"></div>
+          <div style="margin-top:8px"><button class="hbtn" type="button" onclick="delivAdd()">+  Thêm đợt giao</button></div>
+        </div>
         <div class="fg pofg">
           <label>Người thực hiện <span class="xs" style="text-transform:none;letter-spacing:0;color:var(--text3)">· gán nhân viên / freelancer phụ trách dự án này</span></label>
           <div id="asgWrap"></div>
@@ -1363,7 +1379,7 @@ const DONE_SET = ['done','paid','service_done'];
 const PENDING_LIQ_SET = ['request','quote','confirmed','running'];
 /* Gộp chung Event + Media vào một trang; ?type= chỉ dùng làm bộ lọc mặc định (giữ tương thích link cũ) */
 const TYPE = (new URLSearchParams(location.search).get('type') || '').toLowerCase();   // event | media | ''
-const KIND_LABEL = { event: 'Event', media: 'Media', other: 'Khác' };
+const KIND_LABEL = { event: 'Event', media: 'Media', production: 'Sản xuất', other: 'Khác' };
 let EDIT = null;      // {id, items:[...]}
 const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
 
@@ -1848,7 +1864,7 @@ function blankQuote(){
     quotation_date: today(), event_date: '', event_from: '', event_to: '', currency: 'VND',
     ma_percent: 10, vat_percent: 8, show_ma: 1, show_vat: 1, note: '',
     status: 'request', src_link: '', po_file: '', po_name: '', has_liquidation: 0,
-    items: [ blankItem('section') ] };
+    items: [ blankItem('section') ], deliveries: [] };
 }
 
 function fillForm(q){
@@ -1863,6 +1879,8 @@ function fillForm(q){
   document.getElementById('fAddr').value   = q.client_address || '';
   document.getElementById('fEventFrom').value = String(q.event_from || '').substr(0, 10);
   document.getElementById('fEventTo').value   = String(q.event_to   || '').substr(0, 10);
+  DELIV = Array.isArray(q.deliveries) ? q.deliveries : [];
+  renderDeliv(); applyKindUI();
   (function () {
     var a = document.getElementById('calLink');
     if (!a) return;
@@ -3371,8 +3389,10 @@ function collect(){
     client_tax:     document.getElementById('fTax').value.trim(),
     client_address: document.getElementById('fAddr').value.trim(),
     quotation_date: document.getElementById('fDate').value,
-    event_from:     document.getElementById('fEventFrom').value,
-    event_to:       document.getElementById('fEventTo').value,
+          event_from:     (document.getElementById('fKind').value === 'production')
+                        ? '' : document.getElementById('fEventFrom').value,
+      event_to:       (document.getElementById('fKind').value === 'production')
+                        ? '' : document.getElementById('fEventTo').value,
     currency:       document.getElementById('fCur').value.trim() || 'VND',
     ma_percent:     Number(document.getElementById('fMa').value) || 0,
     vat_percent:    Number(document.getElementById('fVat').value) || 0,
@@ -3382,7 +3402,9 @@ function collect(){
     src_link:       srcUrl(),
     status:         document.getElementById('fStatus').value || 'request',
     has_liquidation: LIQ ? 1 : 0,
-    items:          EDIT.items
+          items:          EDIT.items,
+      deliveries:     DELIV
+
   };
 }
 
@@ -4337,7 +4359,76 @@ function downloadQr(){
   }, 'image/png');
 }
 
+
+/* ---- Lich giao hang (loai bao gia: San xuat) ---- */
+var DELIV = [];
+function applyKindUI(){
+  const sel = document.getElementById('fKind');
+  const prod = !!sel && sel.value === 'production';
+  const a = document.getElementById('fgEvFrom');
+  const b = document.getElementById('fgEvTo');
+  const d = document.getElementById('fgDeliv');
+  if (a) a.style.display = prod ? 'none' : '';
+  if (b) b.style.display = prod ? 'none' : '';
+  if (d) d.style.display = prod ? '' : 'none';
+}
+function renderDeliv(){
+  const box = document.getElementById('delivWrap');
+  if (!box) return;
+  if (!DELIV.length){
+    box.innerHTML = '<div class="expempty">Chưa có đợt giao nào — bấm “+  Thêm đợt giao”.</div>';
+    return;
+  }
+  box.innerHTML =
+    '<table class="exptbl dlvtbl">' +
+    '<colgroup><col style="width:34px"><col style="width:150px"><col>' +
+    '<col style="width:76px"><col style="width:80px"><col style="width:210px">' +
+    '<col style="width:118px"><col style="width:36px"></colgroup>' +
+    '<thead><tr><th class="c">#</th><th>Ngày giao</th><th>Nội dung giao</th><th>SL</th><th>ĐVT</th>' +
+    '<th>Địa điểm giao</th><th>Trạng thái</th><th></th></tr></thead><tbody>' +
+    DELIV.map(function(r, i){
+      const done = Number(r.done) ? 1 : 0;
+      return '<tr' + (done ? ' class="dlv-done"' : '') + '>' +
+        '<td class="c">' + (i + 1) + '</td>' +
+        '<td><input type="date" value="' + esc(String(r.due_date || '').substr(0, 10)) +
+          '" onchange="delivSet(' + i + ',\'due_date\',this.value)" /></td>' +
+        '<td><input value="' + esc(r.content || '') + '" placeholder="VD: Giao 500 backdrop" ' +
+          'oninput="delivSet(' + i + ',\'content\',this.value)" /></td>' +
+        '<td><input class="num" value="' + (Number(r.qty) || 0) +
+          '" oninput="delivSet(' + i + ',\'qty\',this.value)" /></td>' +
+        '<td><input value="' + esc(r.unit || '') + '" placeholder="Cái" ' +
+          'oninput="delivSet(' + i + ',\'unit\',this.value)" /></td>' +
+        '<td><input value="' + esc(r.place || '') + '" placeholder="Kho / địa chỉ nhận" ' +
+          'oninput="delivSet(' + i + ',\'place\',this.value)" /></td>' +
+        '<td><button type="button" class="dlvst' + (done ? ' on' : '') +
+          '" onclick="delivToggle(' + i + ')">' +
+          svgIco(done ? ICO.check : ICO.dot, 12) + (done ? 'Đã giao' : 'Chưa giao') + '</button></td>' +
+        '<td style="text-align:right"><button class="exp-x" onclick="delivDel(' + i +
+          ')" title="Xoá đợt giao">' + svgIco(ICO.x, 13) + '</button></td>' +
+      '</tr>';
+    }).join('') +
+    '</tbody></table>';
+}
+function delivAdd(){
+  DELIV.push({ id: 0, due_date: '', content: '', qty: 0, unit: '', place: '', done: 0 });
+  renderDeliv(); markDirty();
+}
+function delivSet(i, k, v){
+  if (!DELIV[i]) return;
+  DELIV[i][k] = (k === 'qty') ? (Number(String(v).replace(/[^\d.\-]/g, '')) || 0) : v;
+  markDirty();
+}
+function delivToggle(i){
+  if (!DELIV[i]) return;
+  DELIV[i].done = Number(DELIV[i].done) ? 0 : 1;
+  renderDeliv(); markDirty();
+}
+function delivDel(i){
+  if (!DELIV[i]) return;
+  DELIV.splice(i, 1); renderDeliv(); markDirty();
+}
 function onKindChange(){
+  applyKindUI();
   const k = document.getElementById('fKind').value;
   const sel = document.getElementById('rcSheet');
   if (sel && (k === 'event' || k === 'media')) sel.value = k;

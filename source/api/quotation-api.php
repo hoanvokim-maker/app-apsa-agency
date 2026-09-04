@@ -409,6 +409,23 @@ if (!q_hasColumn($pdo, 'quotations', 'priority')) {
         ADD COLUMN `priority` TINYINT NOT NULL DEFAULT 0 COMMENT '0=chua danh dau, 1=Binh thuong, 2=Quan trong, 3=Khan',
         ADD KEY `idx_priority` (`priority`)");
 }
+q_mig($pdo, "CREATE TABLE IF NOT EXISTS `quotation_deliveries` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `quotation_id` INT UNSIGNED NOT NULL,
+    `sort_order` INT NOT NULL DEFAULT 0,
+    `due_date` DATE DEFAULT NULL,
+    `content` VARCHAR(500) NOT NULL DEFAULT '',
+    `qty` DECIMAL(14,2) NOT NULL DEFAULT 0,
+    `unit` VARCHAR(50) NOT NULL DEFAULT '',
+    `place` VARCHAR(300) NOT NULL DEFAULT '',
+    `done` TINYINT(1) NOT NULL DEFAULT 0,
+    `cal_event_id` VARCHAR(255) NOT NULL DEFAULT '',
+    `cal_sig` VARCHAR(64) NOT NULL DEFAULT '',
+    PRIMARY KEY (`id`),
+    KEY `idx_q` (`quotation_id`),
+    KEY `idx_due` (`due_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
 q_mig($pdo, "CREATE TABLE IF NOT EXISTS `quotation_pins` (
     `user_id`      INT UNSIGNED NOT NULL,
     `quotation_id` INT UNSIGNED NOT NULL,
@@ -497,7 +514,7 @@ if (!q_hasColumn($pdo, 'quotation_expenses', 'paid')) {
 
 function q_kind($v) {
     $v = strtolower(trim((string)$v));
-    return in_array($v, ['event','media','other'], true) ? $v : 'media';
+    return in_array($v, ['event','media','production','other'], true) ? $v : 'media';
 }
 
 /* ── Review & thảo luận trong báo giá ─────────────────────────
@@ -839,6 +856,155 @@ function q_calStatuses()
  * Tao moi lan dau, PATCH khi noi dung doi. Khong bao gio xoa su kien tu dong.
  * Loi cua Graph khong duoc lam hong luong luu bao gia.
  */
+/* ---- Lich giao hang (loai bao gia: San xuat) ---- */
+function q_delivRows(PDO $pdo, $id) {
+    try {
+        $st = $pdo->prepare("SELECT id, due_date, content, qty, unit, place, done
+                             FROM `quotation_deliveries`
+                             WHERE quotation_id = ? ORDER BY sort_order ASC, id ASC");
+        $st->execute(array((int) $id));
+        $out = array();
+        foreach ($st->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            $out[] = array(
+                'id'       => (int) $r['id'],
+                'due_date' => (string) (isset($r['due_date']) ? $r['due_date'] : ''),
+                'content'  => (string) $r['content'],
+                'qty'      => (float) $r['qty'],
+                'unit'     => (string) $r['unit'],
+                'place'    => (string) $r['place'],
+                'done'     => (int) $r['done'],
+            );
+        }
+        return $out;
+    } catch (PDOException $e) {
+        return array();
+    }
+}
+
+function q_delivSave(PDO $pdo, $id, $rows) {
+    $id = (int) $id;
+    if ($id <= 0 || !is_array($rows)) return;
+    try {
+        $up = $pdo->prepare("UPDATE `quotation_deliveries`
+            SET sort_order = ?, due_date = ?, content = ?, qty = ?, unit = ?, place = ?, done = ?
+            WHERE id = ? AND quotation_id = ?");
+        $ins = $pdo->prepare("INSERT INTO `quotation_deliveries`
+            (quotation_id, sort_order, due_date, content, qty, unit, place, done)
+            VALUES (?,?,?,?,?,?,?,?)");
+        $keep = array();
+        $n = 0;
+        foreach ($rows as $r) {
+            if (!is_array($r)) continue;
+            $d = q_evDate($r, 'due_date');
+            $c = trim((string) (isset($r['content']) ? $r['content'] : ''));
+            if ($d === null && $c === '') continue;
+            $n++;
+            $vals = array(
+                $n,
+                $d,
+                mb_substr($c, 0, 500),
+                (float) (isset($r['qty']) ? $r['qty'] : 0),
+                mb_substr(trim((string) (isset($r['unit']) ? $r['unit'] : '')), 0, 50),
+                mb_substr(trim((string) (isset($r['place']) ? $r['place'] : '')), 0, 300),
+                empty($r['done']) ? 0 : 1,
+            );
+            $rid = (int) (isset($r['id']) ? $r['id'] : 0);
+            if ($rid > 0) {
+                $up->execute(array_merge($vals, array($rid, $id)));
+                $keep[] = $rid;
+            } else {
+                $ins->execute(array_merge(array($id), $vals));
+                $keep[] = (int) $pdo->lastInsertId();
+            }
+        }
+        if (count($keep)) {
+            $in = implode(',', array_map('intval', $keep));
+            $pdo->prepare("DELETE FROM `quotation_deliveries`
+                           WHERE quotation_id = ? AND id NOT IN ($in)")->execute(array($id));
+        } else {
+            $pdo->prepare("DELETE FROM `quotation_deliveries` WHERE quotation_id = ?")->execute(array($id));
+        }
+    } catch (PDOException $e) {
+        /* im lang: khong de loi lich giao hang lam hong viec luu bao gia */
+    }
+}
+
+function q_calSyncDeliv(PDO $pdo, $id) {
+    try {
+        $id = (int) $id;
+        if ($id <= 0) return;
+        $f = __DIR__ . '/msgraph.php';
+        if (!is_file($f)) return;
+        require_once $f;
+        if (!function_exists('mg_enabled') || !mg_enabled()) return;
+
+        $st = $pdo->prepare("SELECT id, code, title, status FROM quotations WHERE id = ?");
+        $st->execute(array($id));
+        $q = $st->fetch(PDO::FETCH_ASSOC);
+        if (!$q) return;
+        if (!in_array((string) $q['status'], q_calStatuses(), true)) return;
+
+        $ds = $pdo->prepare("SELECT id, due_date, content, qty, unit, place, cal_event_id, cal_sig
+                             FROM `quotation_deliveries`
+                             WHERE quotation_id = ? AND due_date IS NOT NULL
+                             ORDER BY sort_order ASC, id ASC");
+        $ds->execute(array($id));
+        $rows = $ds->fetchAll(PDO::FETCH_ASSOC);
+        if (!$rows) return;
+
+        $code  = trim((string) $q['code']);
+        $title = trim((string) $q['title']);
+        $link  = 'https://app.apsa.agency/quotation.html?id=' . $id;
+        $upd   = $pdo->prepare("UPDATE `quotation_deliveries` SET cal_event_id = ?, cal_sig = ? WHERE id = ?");
+
+        foreach ($rows as $r) {
+            $day = substr((string) $r['due_date'], 0, 10);
+            if ($day === '') continue;
+            $what  = trim((string) $r['content']);
+            $qty   = (float) $r['qty'];
+            $unit  = trim((string) $r['unit']);
+            $place = trim((string) $r['place']);
+
+            $subject = ($code !== '' ? $code . ' - ' : '') . 'Giao hang'
+                     . ($what !== '' ? ': ' . $what : '');
+            $sig = md5($subject . '|' . $day . '|' . $qty . '|' . $unit . '|' . $place);
+            if ($sig === (string) $r['cal_sig'] && (string) $r['cal_event_id'] !== '') continue;
+
+            $body = '<p><b>' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '</b></p>'
+                  . '<p>Ma bao gia: ' . htmlspecialchars($code, ENT_QUOTES, 'UTF-8') . '</p>';
+            if ($what !== '')  $body .= '<p>Hang muc: ' . htmlspecialchars($what, ENT_QUOTES, 'UTF-8') . '</p>';
+            if ($qty > 0)      $body .= '<p>So luong: ' . rtrim(rtrim(number_format($qty, 2, '.', ''), '0'), '.')
+                                      . ' ' . htmlspecialchars($unit, ENT_QUOTES, 'UTF-8') . '</p>';
+            if ($place !== '') $body .= '<p>Dia diem: ' . htmlspecialchars($place, ENT_QUOTES, 'UTF-8') . '</p>';
+            $body .= '<p><a href="' . $link . '">Mo bao gia</a></p>';
+
+            $ev = array(
+                'subject'    => $subject,
+                'body'       => $body,
+                'all_day'    => true,
+                'start'      => $day,
+                'end'        => date('Y-m-d', strtotime($day . ' +1 day')),
+                'show_as'    => 'free',
+                'categories' => array('Giao hang'),
+            );
+
+            if ((string) $r['cal_event_id'] !== '' && function_exists('mg_update_event')) {
+                $res = mg_update_event((string) $r['cal_event_id'], $ev);
+                if (!empty($res['ok'])) {
+                    $upd->execute(array((string) $r['cal_event_id'], $sig, (int) $r['id']));
+                    continue;
+                }
+            }
+            $res = mg_create_event($ev);
+            if (!empty($res['ok'])) {
+                $upd->execute(array((string) $res['id'], $sig, (int) $r['id']));
+            }
+        }
+    } catch (Exception $e) {
+        /* im lang: lich khong duoc lam hong viec luu bao gia */
+    }
+}
+
 function q_calSync(PDO $pdo, $id)
 {
     try {
@@ -849,12 +1015,13 @@ function q_calSync(PDO $pdo, $id)
         require_once $f;
         if (!function_exists('mg_enabled') || !mg_enabled()) return;
 
-        $st = $pdo->prepare("SELECT id, code, title, status, event_from, event_to, client_name,
+        $st = $pdo->prepare("SELECT id, code, title, kind, status, event_from, event_to, client_name,
                                     cal_event_id, cal_web_link, cal_sig
                              FROM quotations WHERE id = ?");
         $st->execute(array($id));
         $q = $st->fetch(PDO::FETCH_ASSOC);
         if (!$q) return;
+        if ((string) $q['kind'] === 'production') return;
 
         $on = in_array((string) $q['status'], q_calStatuses(), true) && !empty($q['event_from']);
         if (!$on) return;
@@ -1890,6 +2057,7 @@ case 'get': {
     $q = loadQuotation($pdo, $id);
     if (!$q) q_fail('Không tìm thấy báo giá', 404);
     $items = loadItems($pdo, $id);
+    $q['deliveries'] = q_delivRows($pdo, $id);
     q_ok(['quotation' => $q, 'items' => $items, 'totals' => calcTotals($q, $items),
           'liq_totals' => calcLiqTotals($q, $items),
           'assignees' => loadAssignees($pdo, $id),
@@ -2561,7 +2729,11 @@ case 'save': {
         q_fail('Không lưu được: ' . $e->getMessage(), 500);
     }
 
+    if (isset($B) && is_array($B) && array_key_exists('deliveries', $B)) {
+        q_delivSave($pdo, $id, $B['deliveries']);
+    }
     q_calSync($pdo, $id);
+    q_calSyncDeliv($pdo, $id);
     q_notifyConfirmed($pdo, $id, (int) $ME['id'], (string) $ME['display_name']);
 
     $q = loadQuotation($pdo, $id);
@@ -3433,7 +3605,11 @@ case 'set-status': {
     $stt = q_status($B['status'] ?? '');
     $st = $pdo->prepare("UPDATE quotations SET status = ? WHERE id = ?");
     $st->execute([$stt, $id]);
+    if (isset($B) && is_array($B) && array_key_exists('deliveries', $B)) {
+        q_delivSave($pdo, $id, $B['deliveries']);
+    }
     q_calSync($pdo, $id);
+    q_calSyncDeliv($pdo, $id);
     q_notifyConfirmed($pdo, $id, (int) $ME['id'], (string) $ME['display_name']);
     q_ok(['id' => $id, 'status' => $stt, 'status_label' => $Q_STATUS[$stt], 'message' => 'Đã đổi trạng thái: ' . $Q_STATUS[$stt]]);
 }

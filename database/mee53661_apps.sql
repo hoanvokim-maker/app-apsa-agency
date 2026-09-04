@@ -590,7 +590,7 @@ CREATE TABLE `app_user_prefs` (
 LOCK TABLES `app_user_prefs` WRITE;
 /*!40000 ALTER TABLE `app_user_prefs` DISABLE KEYS */;
 INSERT INTO `app_user_prefs` VALUES (1,'home','{\"order\":[32,33,30,29,26,31,97,95,27,98,1,90,23,24,100,101,25,35,17,18,91,96,99,34,92,28],\"hidden\":[28],\"custom\":[],\"pinned\":[32,30,29,26,31,97,95,27],\"cats\":[]}','2026-09-01 16:10:14');
-INSERT INTO `app_user_prefs` VALUES (1,'quo_recent','[{\"id\":114,\"code\":\"07032026-37\",\"title\":\"OGN-Symposium 2026\",\"client\":\"Organon\",\"date\":\"2026-03-07\",\"at\":1788542815561},{\"id\":296,\"code\":\"04092026-159\",\"title\":\"AZ-CVRM-Webcast CKM 360 buổi số 4\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-04\",\"at\":1788542373081},{\"id\":301,\"code\":\"04092026-164\",\"title\":\"ZZ TEST NHOM MAU\",\"client\":\"ZZ\",\"date\":\"2026-09-04\",\"at\":1788541293393},{\"id\":228,\"code\":\"03092025-189\",\"title\":\"AZ-KACD FOCUS MEETING DANANG\",\"client\":\"Quyền KACD\",\"date\":\"2025-09-03\",\"at\":1788540604719},{\"id\":30,\"code\":\"19072026-120\",\"title\":\"AZ-ONCO-PEAKSharing-175\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-19\",\"at\":1788536552493},{\"id\":10,\"code\":\"05082026-140\",\"title\":\"AZ-R&I-COPD Forum Đà Nẵng-2026\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-05\",\"at\":1788536503999},{\"id\":300,\"code\":\"04092026-163\",\"title\":\"VFR-Panel Sample\",\"client\":\"VFR\",\"date\":\"2026-09-04\",\"at\":1788536325777},{\"id\":298,\"code\":\"04092026-161\",\"title\":\"OGN-MKT-PRODUCT-PORTFOLIO-PRODUCTION\",\"client\":\"Organon\",\"date\":\"2026-09-04\",\"at\":1788532945264},{\"id\":295,\"code\":\"03092026-158\",\"title\":\"AZ-RI-Synagis-Booth-0509\",\"client\":\"AstraZeneca\",\"date\":\"2026-09-03\",\"at\":1788532935870},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1788524162609}]','2026-09-04 17:27:04');
+INSERT INTO `app_user_prefs` VALUES (1,'quo_recent','[{\"id\":302,\"code\":\"05092026-165\",\"title\":\"ZZ TEST SAN XUAT - lich giao hang\",\"client\":\"\",\"date\":\"2026-09-05\",\"at\":1788543776088},{\"id\":300,\"code\":\"04092026-163\",\"title\":\"VFR-Panel Sample\",\"client\":\"VFR\",\"date\":\"2026-09-04\",\"at\":1788543004798},{\"id\":114,\"code\":\"07032026-37\",\"title\":\"OGN-Symposium 2026\",\"client\":\"Organon\",\"date\":\"2026-03-07\",\"at\":1788542959055},{\"id\":296,\"code\":\"04092026-159\",\"title\":\"AZ-CVRM-Webcast CKM 360 buổi số 4\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-04\",\"at\":1788542373081},{\"id\":301,\"code\":\"04092026-164\",\"title\":\"ZZ TEST NHOM MAU\",\"client\":\"ZZ\",\"date\":\"2026-09-04\",\"at\":1788541293393},{\"id\":228,\"code\":\"03092025-189\",\"title\":\"AZ-KACD FOCUS MEETING DANANG\",\"client\":\"Quyền KACD\",\"date\":\"2025-09-03\",\"at\":1788540604719},{\"id\":30,\"code\":\"19072026-120\",\"title\":\"AZ-ONCO-PEAKSharing-175\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-19\",\"at\":1788536552493},{\"id\":10,\"code\":\"05082026-140\",\"title\":\"AZ-R&I-COPD Forum Đà Nẵng-2026\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-05\",\"at\":1788536503999},{\"id\":298,\"code\":\"04092026-161\",\"title\":\"OGN-MKT-PRODUCT-PORTFOLIO-PRODUCTION\",\"client\":\"Organon\",\"date\":\"2026-09-04\",\"at\":1788532945264},{\"id\":295,\"code\":\"03092026-158\",\"title\":\"AZ-RI-Synagis-Booth-0509\",\"client\":\"AstraZeneca\",\"date\":\"2026-09-03\",\"at\":1788532935870}]','2026-09-04 17:42:57');
 INSERT INTO `app_user_prefs` VALUES (1,'ui','{\"font_size\":\"md\"}','2026-08-26 07:23:53');
 INSERT INTO `app_user_prefs` VALUES (3,'home','{\"order\":[32,26,30,1,17,18,90,23,24,25,27,28,29,35,34,31],\"hidden\":[28],\"custom\":[]}','2026-08-24 02:48:51');
 INSERT INTO `app_user_prefs` VALUES (3,'quo_recent','[{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1787914239122},{\"id\":106,\"code\":\"26032026-44\",\"title\":\"OGN-HoiDuocHoc-NhaTrang\",\"client\":\"Organon\",\"date\":\"2026-03-26\",\"at\":1787812919618},{\"id\":8,\"code\":\"12082026-142\",\"title\":\"AZ-ONCO-PEAKSharing-VietDuc-25Aug\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-12\",\"at\":1787802284452},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787799999075},{\"id\":44,\"code\":\"02072026-106\",\"title\":\"AZ-MSD-ONCO-ImAE-ExpertMeeting\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-02\",\"at\":1787713497617},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787565621783},{\"id\":30,\"code\":\"19072026-120\",\"title\":\"AZ-ONCO-PEAKSharing-175\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-19\",\"at\":1787540605254},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787539299199}]','2026-08-28 10:50:39');
@@ -2930,7 +2930,7 @@ CREATE TABLE `quotation_assignees` (
   KEY `idx_user` (`user_id`),
   KEY `idx_stat` (`status`),
   KEY `idx_due` (`due_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2949,7 +2949,7 @@ INSERT INTO `quotation_assignees` VALUES (58,296,4,'admin','Order teabeak',NULL,
 INSERT INTO `quotation_assignees` VALUES (60,37,1,'account','Làm hết',NULL,'done',0,'Harris','2026-09-04 07:04:49','2026-09-04 07:04:49',NULL);
 INSERT INTO `quotation_assignees` VALUES (93,284,4,'admin','Liên hệ với chị Nga và làm việc menu','2026-08-25','done',0,'Harris','2026-09-04 12:16:02','2026-09-04 12:16:02',NULL);
 INSERT INTO `quotation_assignees` VALUES (94,284,9,'designer','G',NULL,'todo',1,'Harris','2026-09-04 12:16:02','2026-09-04 12:16:02',NULL);
-INSERT INTO `quotation_assignees` VALUES (95,300,1,'account','',NULL,'doing',0,'Harris','2026-09-04 15:38:45','2026-09-04 15:38:45',NULL);
+INSERT INTO `quotation_assignees` VALUES (96,300,1,'account','',NULL,'doing',0,'Harris','2026-09-04 17:30:04','2026-09-04 17:30:04',NULL);
 /*!40000 ALTER TABLE `quotation_assignees` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2989,6 +2989,42 @@ INSERT INTO `quotation_comments` VALUES (3,295,'quote',NULL,1,'Harris','@Anh Th�
 INSERT INTO `quotation_comments` VALUES (4,284,'quote',NULL,4,'Trang Đỗ','Teabreak + lunch box chị Nga đã chốt được Vendor. Nhờ anh @Harris thêm chi phí escort và gửi báo giá cho chị Nga giúp e nha. Thông tin giá teabreak và lunch em đã điều chỉnh. Thanks anh!','1','2026-09-04 10:37:01',NULL);
 INSERT INTO `quotation_comments` VALUES (5,284,'quote',4,1,'Harris','Anh thêm rồi em nhé! Giờ a gửi cho mail cho khách luôn hen em! @trang',NULL,'2026-09-04 12:15:03',NULL);
 /*!40000 ALTER TABLE `quotation_comments` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `quotation_deliveries`
+--
+
+DROP TABLE IF EXISTS `quotation_deliveries`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `quotation_deliveries` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `quotation_id` int(10) unsigned NOT NULL,
+  `sort_order` int(11) NOT NULL DEFAULT 0,
+  `due_date` date DEFAULT NULL,
+  `content` varchar(500) NOT NULL DEFAULT '',
+  `qty` decimal(14,2) NOT NULL DEFAULT 0.00,
+  `unit` varchar(50) NOT NULL DEFAULT '',
+  `place` varchar(300) NOT NULL DEFAULT '',
+  `done` tinyint(1) NOT NULL DEFAULT 0,
+  `cal_event_id` varchar(255) NOT NULL DEFAULT '',
+  `cal_sig` varchar(64) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `idx_q` (`quotation_id`),
+  KEY `idx_due` (`due_date`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `quotation_deliveries`
+--
+
+LOCK TABLES `quotation_deliveries` WRITE;
+/*!40000 ALTER TABLE `quotation_deliveries` DISABLE KEYS */;
+INSERT INTO `quotation_deliveries` VALUES (1,302,1,'2026-10-20','Giao 500 backdrop',500.00,'Cai','Kho HCM',1,'AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABRZgUUAAA=','42d0197e3ed67a427e1eab6fde99a73b');
+INSERT INTO `quotation_deliveries` VALUES (2,302,2,'2026-10-25','Giao 200 standee',200.00,'Cai','Kho HN',0,'AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABRZgUVAAA=','083d54420ea6df25dd1d4ea2b2535594');
+/*!40000 ALTER TABLE `quotation_deliveries` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -3625,7 +3661,7 @@ CREATE TABLE `quotation_items` (
   `act_file_name` varchar(200) DEFAULT NULL COMMENT 'Tên file gốc',
   PRIMARY KEY (`id`),
   KEY `idx_quotation` (`quotation_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9468 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9797 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -6808,13 +6844,6 @@ INSERT INTO `quotation_items` VALUES (8470,295,'item','Vận chuyển lắp đ�
 INSERT INTO `quotation_items` VALUES (8471,295,'item','Nước suối','',100.00,'Chai',5500.00,'',7,100.00,'Chai',4074.00,407407.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (8472,295,'item','Cafe lon','',100.00,'Lon',16000.00,'',8,100.00,'Lon',14682.00,1468182.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (8473,295,'item','Support','8H',1.00,'Người',800000.00,'',9,1.00,'Người',800000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (8474,300,'section','In Ấn Sticker','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (8475,300,'item','HERITAGE PORTFOLIO Book','264 x 65 x\n320mm',200.00,'Pc',387000.00,'',1,200.00,'Pc',13000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (8476,300,'item','CASUAL PORTFOLIO Book','264 x 65 x\n320mm',200.00,'Pc',387000.00,'',2,200.00,'Pc',14000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (8477,300,'item','TERRAIN PORTFOLIO Book','264 x 65 x\n320mm',200.00,'Gói',387000.00,'',3,200.00,'Gói',13000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (8478,300,'item','MODERN PORTFOLIO Book','264 x 65 x\n320mm',200.00,'Gói',387000.00,'',4,200.00,'Gói',14000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (8479,300,'item','WATER PORTFOLIO Book','264 x 65 x\n320mm',200.00,'Gói',387000.00,'',5,200.00,'Gói',31800.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (8480,300,'item','WILLIAM YEOWARD Book','264 x 65 x\n320mm',200.00,'Gói',387000.00,'',6,200.00,'Gói',36300.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (8481,30,'section','Webinar','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (8482,30,'item','Livestream','Gồm: \n- 2 cameras, 1 cam cận 1 cam toàn \n- Thiết bị livestream \n- Kỹ thuật livestream',1.00,'Gói',11000000.00,'',1,1.00,'Gói',11000000.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (8483,30,'item','Internet','150mbs',1.00,'Gói',5000000.00,'',2,0.00,'Gói',5000000.00,0.00,'',NULL,NULL);
@@ -6826,166 +6855,6 @@ INSERT INTO `quotation_items` VALUES (8488,30,'item','In standee','',2.00,'Cái'
 INSERT INTO `quotation_items` VALUES (8489,30,'item','Phí vận chuyển','',1.00,'Gói',1000000.00,'',8,1.00,'Gói',1000000.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (9296,228,'section','Total','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (9297,228,'item','Total','',1.00,'Cái',215882828.00,'',1,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9298,114,'section','Creative','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9299,114,'item','Design KV','',1.00,'Pack',15000000.00,'',1,1.00,'Pack',15000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9300,114,'item','Design dynamic KV','',1.00,'Pack',5000000.00,'',2,1.00,'Pack',5000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9301,114,'item','Package design 2D','',1.00,'Pack',35000000.00,'',3,1.00,'Pack',35000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9302,114,'item','Package design 3D','',1.00,'Pack',25000000.00,'',4,1.00,'Pack',25000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9303,114,'item','Account followup project','',3.00,'Person',20000000.00,'',5,3.00,'Person',20000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9304,114,'item','Travel fee for project team','',4.00,'Pack',4000000.00,'',6,4.00,'Pack',4000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9305,114,'section','Video Opening | Duration 2mins','',0.00,'',0.00,'',7,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9306,114,'item','Storyboard','',15.00,'scene',400000.00,'',8,15.00,'scene',400000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9307,114,'item','Animation','',15.00,'scene',1000000.00,'',9,15.00,'scene',1000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9308,114,'item','Voice talent','',1.00,'Pack',15000000.00,'',10,1.00,'Pack',15000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9309,114,'item','Video editor','',1.00,'Pack',3000000.00,'',11,1.00,'Pack',3000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9310,114,'item','Sound effects & music','',1.00,'Pack',4000000.00,'',12,1.00,'Pack',4000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9311,114,'item','Recording video','',1.00,'Pack',5000000.00,'',13,1.00,'Pack',5000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9312,114,'section','Video Keymoment | Duration 2p','',0.00,'',0.00,'',14,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9313,114,'item','Storyboard','',12.00,'scene',400000.00,'',15,12.00,'scene',400000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9314,114,'item','Animation','',12.00,'scene',1500000.00,'',16,12.00,'scene',1500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9315,114,'item','Video editor','',1.00,'Pack',3000000.00,'',17,1.00,'Pack',3000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9316,114,'item','Sound effects & music','',1.00,'Pack',4000000.00,'',18,1.00,'Pack',4000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9317,114,'section','Printing','',0.00,'',0.00,'',19,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9318,114,'item','Invitation','for 4 sites HCM, HN, ĐN and CT',770.00,'Pc',120000.00,'',20,770.00,'Pc',120000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9319,114,'item','Name Lanyard','for 4 sites HCM, HN, ĐN and CT',700.00,'Pc',45000.00,'',21,700.00,'Pc',45000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9320,114,'item','Speaker nametag','for 4 sites HCM, HN, ĐN and CT',40.00,'Pc',20000.00,'',22,40.00,'Pc',20000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9321,114,'item','Standee','for 4 sites HCM, HN, ĐN and CT',8.00,'Pc',600000.00,'',23,8.00,'Pc',600000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9322,114,'item','Podium','for 4 sites HCM, HN, ĐN and CT',0.00,'Pc',800000.00,'',24,0.00,'Pc',800000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9323,114,'item','Hashtag','for 4 sites HCM, HN, ĐN and CT',20.00,'Pc',150000.00,'',25,20.00,'Pc',150000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9324,114,'item','Sổ OGN','for 4 sites HCM, HN, ĐN and CT',800.00,'Pc',115000.00,'',26,800.00,'Pc',115000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9325,114,'item','Tờ portfolio product','for 4 sites HCM, HN, ĐN and CT',800.00,'Pc',55000.00,'',27,800.00,'Pc',55000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9326,114,'item','Quyển Profile','',800.00,'Pc',44000.00,'',28,800.00,'Pc',44000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9327,114,'item','Tia laser','for 4 sites HCM, HN, ĐN and CT',500.00,'Pc',32000.00,'',29,500.00,'Pc',32000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9328,114,'item','Bìa MC','',0.00,'Pc',15000.00,'',30,0.00,'Pc',15000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9329,114,'section','HCM','',0.00,'',0.00,'',31,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9330,114,'item','Photo booth','Wall with diecut',15.00,'m2',650000.00,'',32,15.00,'m2',650000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9331,114,'item','Sản phẩm mới','Diecut 2 vòng',2.00,'Pc',5000000.00,'',33,2.00,'Pc',5000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9332,114,'item','Sản phẩm mới','Diecut LOGO OGN',1.00,'Pc',4000000.00,'',34,1.00,'Pc',4000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9333,114,'item','Sản phẩm mới','Light leds for diecut elements',15.00,'m',200000.00,'',35,15.00,'m',200000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9334,114,'item','Sản phẩm mới','Floor photobooth decal chống trầy',10.00,'m2',500000.00,'',36,10.00,'m2',500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9335,114,'item','Sản phẩm mới','Diecut Nổi tên event',1.00,'Pc',6000000.00,'',37,1.00,'Pc',6000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9336,114,'item','Photobooth AI','Trụ ipad',6.00,'pc',2000000.00,'',38,6.00,'pc',2000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9337,114,'item','Sản phẩm mới','Hệ thống AI tạo ảnh dùng chung',1.00,'Pc',8000000.00,'',39,1.00,'Pc',8000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9338,114,'item','Sản phẩm mới','Photobooth AI (cam, tablet, lisence, phần mềm, chi phí in ảnh)',6.00,'Pc',4500000.00,'',40,6.00,'Pc',4500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9339,114,'item','Đèn Chiếu không gian foyer','',5.00,'Pc',400000.00,'',41,5.00,'Pc',400000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9340,114,'item','Logo name','Chữ vào hộp để cao có đèn LOGO OGN + HỘI',2.00,'Pc',3000000.00,'',42,2.00,'Pc',3000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9341,114,'item','Led 12m* 3m','Led P2,5 mới + mịn + sáng',36.00,'m2',1300000.00,'',43,36.00,'m2',1300000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9342,114,'item','Stage floor 12m * 3m','',36.00,'m2',350000.00,'',44,36.00,'m2',350000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9343,114,'item','Bộ tam cấp','',2.00,'Pc',3000000.00,'',45,2.00,'Pc',3000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9344,114,'item','Décor sân khấu 2 bên','',1.00,'Pc',35000000.00,'',46,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9345,114,'item','Hộ đèn trong décor dưới sân khấu','',0.00,'Pc',14000000.00,'',47,0.00,'Pc',14000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9346,114,'item','Sound systems','',1.00,'Pc',20000000.00,'',48,1.00,'Pc',20000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9347,114,'item','Light systems','',1.00,'Pc',30000000.00,'',49,1.00,'Pc',30000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9348,114,'item','Hệ thống laser','',1.00,'Pc',40000000.00,'',50,1.00,'Pc',40000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9349,114,'item','Cool smoke','',6.00,'Pc',2500000.00,'',51,6.00,'Pc',2500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9350,114,'item','TV 60\"','',1.00,'Pc',2500000.00,'',52,1.00,'Pc',2500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9351,114,'item','Màn sao','',70.00,'Pc',350000.00,'',53,70.00,'Pc',350000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9352,114,'item','Transportation round trip','Item for setup',1.00,'Pc',35000000.00,'',54,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9353,114,'item','Setup and uninstallation','',1.00,'Pc',35000000.00,'',55,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9354,114,'item','Confetti','FOC 2 máy',0.00,'Pc',3500000.00,'',56,0.00,'Pc',3500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9355,114,'item','Laptop for slides','',2.00,'Pc',300000.00,'',57,2.00,'Pc',300000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9356,114,'item','Laser pointer','',0.00,'Pc',300000.00,'',58,0.00,'Pc',300000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9357,114,'item','Technicals','LED, LIGHT, SOUND, LASER, SLIDE',1.00,'Pc',6000000.00,'',59,1.00,'Pc',6000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9358,114,'item','Escort onsite','',7.00,'Person',500000.00,'',60,7.00,'Person',500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9359,114,'item','Photographer','Scan QR code and event',2.00,'Person',2500000.00,'',61,2.00,'Person',2500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9360,114,'item','Filming','2 Cam, 1 wide 1 tele',2.00,'Pc',3500000.00,'',62,2.00,'Pc',3500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9361,114,'item','Miscellaneous','',1.00,'Pc',10000000.00,'',63,1.00,'Pc',10000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9362,114,'section','HN','',0.00,'',0.00,'',64,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9363,114,'item','Photo booth','Wall with diecut',15.00,'m2',650000.00,'',65,15.00,'m2',650000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9364,114,'item','Sản phẩm mới','Diecut 2 vòng',2.00,'Pc',5000000.00,'',66,2.00,'Pc',5000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9365,114,'item','Sản phẩm mới','Diecut LOGO OGN',1.00,'Pc',4000000.00,'',67,1.00,'Pc',4000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9366,114,'item','Sản phẩm mới','Light leds for diecut elements',15.00,'m',200000.00,'',68,15.00,'m',200000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9367,114,'item','Sản phẩm mới','Floor photobooth decal chống trầy',10.00,'m2',500000.00,'',69,10.00,'m2',500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9368,114,'item','Sản phẩm mới','Diecut Nổi tên event',1.00,'Pc',6000000.00,'',70,1.00,'Pc',6000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9369,114,'item','Photobooth AI','Trụ ipad',6.00,'pc',2000000.00,'',71,6.00,'pc',2000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9370,114,'item','Sản phẩm mới','Photobooth AI (cam, tablet, lisence, phần mềm, chi phí in ảnh)',6.00,'Pc',4500000.00,'',72,6.00,'Pc',4500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9371,114,'item','Đèn Chiếu không gian foyer','',5.00,'Pc',400000.00,'',73,5.00,'Pc',400000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9372,114,'item','Logo name','Chữ vào hộp để cao có đèn LOGO OGN + HỘI',2.00,'Pc',3000000.00,'',74,2.00,'Pc',3000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9373,114,'item','Led 12m* 3m','Led P2,5 mới + mịn + sáng',36.00,'m2',1300000.00,'',75,36.00,'m2',1300000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9374,114,'item','Stage floor 12m * 3m','',36.00,'m2',350000.00,'',76,36.00,'m2',350000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9375,114,'item','Bộ tam cấp','',2.00,'Pc',3000000.00,'',77,2.00,'Pc',3000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9376,114,'item','Décor sân khấu 2 bên','',1.00,'Pc',35000000.00,'',78,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9377,114,'item','Hộ đèn trong décor dưới sân khấu','',0.00,'Pc',14000000.00,'',79,0.00,'Pc',14000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9378,114,'item','Sound systems','',1.00,'Pc',20000000.00,'',80,1.00,'Pc',20000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9379,114,'item','Light systems','',1.00,'Pc',30000000.00,'',81,1.00,'Pc',30000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9380,114,'item','Hệ thống laser','',1.00,'Pc',40000000.00,'',82,1.00,'Pc',40000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9381,114,'item','Cool smoke','',6.00,'Pc',2500000.00,'',83,6.00,'Pc',2500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9382,114,'item','TV 60\"','',1.00,'Pc',2500000.00,'',84,1.00,'Pc',2500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9383,114,'item','Màn sao','',70.00,'Pc',350000.00,'',85,70.00,'Pc',350000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9384,114,'item','Transportation round trip','Item for setup',1.00,'Pc',35000000.00,'',86,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9385,114,'item','Setup and uninstallation','',1.00,'Pc',35000000.00,'',87,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9386,114,'item','Confetti','FOC 2 máy',0.00,'Pc',3500000.00,'',88,0.00,'Pc',3500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9387,114,'item','Laptop for slides','',2.00,'Pc',300000.00,'',89,2.00,'Pc',300000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9388,114,'item','Laser pointer','',0.00,'Pc',300000.00,'',90,0.00,'Pc',300000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9389,114,'item','Technicals','LED, LIGHT, SOUND, LASER, SLIDE',1.00,'Pc',6000000.00,'',91,1.00,'Pc',6000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9390,114,'item','Escort onsite','',7.00,'Person',500000.00,'',92,7.00,'Person',500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9391,114,'item','Photographer','Scan QR code and event',2.00,'Person',2500000.00,'',93,2.00,'Person',2500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9392,114,'item','Filming','2 Cam, 1 wide 1 tele',2.00,'Pc',3500000.00,'',94,2.00,'Pc',3500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9393,114,'item','Miscellaneous','',1.00,'Pc',10000000.00,'',95,1.00,'Pc',10000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9394,114,'section','DN','',0.00,'',0.00,'',96,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9395,114,'item','Photo booth','Wall with diecut',15.00,'m2',650000.00,'',97,15.00,'m2',650000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9396,114,'item','Sản phẩm mới','Diecut 2 vòng',2.00,'Pc',5000000.00,'',98,2.00,'Pc',5000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9397,114,'item','Sản phẩm mới','Diecut LOGO OGN',1.00,'Pc',4000000.00,'',99,1.00,'Pc',4000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9398,114,'item','Sản phẩm mới','Light leds for diecut elements',15.00,'m',200000.00,'',100,15.00,'m',200000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9399,114,'item','Sản phẩm mới','Floor photobooth decal chống trầy',10.00,'m2',500000.00,'',101,10.00,'m2',500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9400,114,'item','Sản phẩm mới','Diecut Nổi tên event',1.00,'Pc',6000000.00,'',102,1.00,'Pc',6000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9401,114,'item','Photobooth AI','Trụ ipad',3.00,'pc',2000000.00,'',103,3.00,'pc',2000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9402,114,'item','Sản phẩm mới','Photobooth AI (cam, tablet, lisence, phần mềm, chi phí in ảnh)',3.00,'Pc',4500000.00,'',104,3.00,'Pc',4500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9403,114,'item','Đèn Chiếu không gian foyer','',5.00,'Pc',400000.00,'',105,5.00,'Pc',400000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9404,114,'item','Logo name','Chữ vào hộp để cao có đèn LOGO OGN + HỘI',2.00,'Pc',3000000.00,'',106,2.00,'Pc',3000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9405,114,'item','Led 12m* 3m','Led P2,5 mới + mịn + sáng',36.00,'m2',1300000.00,'',107,36.00,'m2',1300000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9406,114,'item','Stage floor 12m * 3m','',36.00,'m2',350000.00,'',108,36.00,'m2',350000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9407,114,'item','Bộ tam cấp','',2.00,'Pc',3000000.00,'',109,2.00,'Pc',3000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9408,114,'item','Décor sân khấu 2 bên','',1.00,'Pc',35000000.00,'',110,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9409,114,'item','Hộ đèn trong décor dưới sân khấu','',0.00,'Pc',14000000.00,'',111,0.00,'Pc',14000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9410,114,'item','Sound systems','',1.00,'Pc',20000000.00,'',112,1.00,'Pc',20000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9411,114,'item','Light systems','',1.00,'Pc',25000000.00,'',113,1.00,'Pc',25000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9412,114,'item','Hệ thống laser','',1.00,'Pc',40000000.00,'',114,1.00,'Pc',40000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9413,114,'item','Cool smoke','',6.00,'Pc',2500000.00,'',115,6.00,'Pc',2500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9414,114,'item','TV 60\"','',1.00,'Pc',2500000.00,'',116,1.00,'Pc',2500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9415,114,'item','Màn sao','',70.00,'Pc',350000.00,'',117,70.00,'Pc',350000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9416,114,'item','Transportation round trip','Item for setup',1.00,'Pc',35000000.00,'',118,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9417,114,'item','Setup and uninstallation','',1.00,'Pc',35000000.00,'',119,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9418,114,'item','Confetti','FOC 2 máy',0.00,'Pc',3500000.00,'',120,0.00,'Pc',3500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9419,114,'item','Laptop for slides','',2.00,'Pc',300000.00,'',121,2.00,'Pc',300000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9420,114,'item','Laser pointer','',0.00,'Pc',300000.00,'',122,0.00,'Pc',300000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9421,114,'item','Technicals','LED, LIGHT, SOUND, LASER, SLIDE',1.00,'Pc',6000000.00,'',123,1.00,'Pc',6000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9422,114,'item','Escort onsite','',7.00,'Person',500000.00,'',124,7.00,'Person',500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9423,114,'item','Photographer','Scan QR code and event',2.00,'Person',2500000.00,'',125,2.00,'Person',2500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9424,114,'item','Filming','2 Cam, 1 wide 1 tele',2.00,'Pc',3500000.00,'',126,2.00,'Pc',3500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9425,114,'item','Miscellaneous','',1.00,'Pc',10000000.00,'',127,1.00,'Pc',10000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9426,114,'section','CANTHO','',0.00,'',0.00,'',128,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9427,114,'item','Photo booth','Wall with diecut',15.00,'m2',650000.00,'',129,15.00,'m2',650000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9428,114,'item','Sản phẩm mới','Diecut 2 vòng',2.00,'Pc',5000000.00,'',130,2.00,'Pc',5000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9429,114,'item','Sản phẩm mới','Diecut LOGO OGN',1.00,'Pc',4000000.00,'',131,1.00,'Pc',4000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9430,114,'item','Sản phẩm mới','Light leds for diecut elements',15.00,'m',200000.00,'',132,15.00,'m',200000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9431,114,'item','Sản phẩm mới','Floor photobooth decal chống trầy',10.00,'m2',500000.00,'',133,10.00,'m2',500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9432,114,'item','Sản phẩm mới','Diecut Nổi tên event',1.00,'Pc',6000000.00,'',134,1.00,'Pc',6000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9433,114,'item','Photobooth AI','Trụ ipad',4.00,'pc',2000000.00,'',135,4.00,'pc',2000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9434,114,'item','Sản phẩm mới','Photobooth AI (cam, tablet, lisence, phần mềm, chi phí in ảnh)',4.00,'Pc',4500000.00,'',136,4.00,'Pc',4500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9435,114,'item','Đèn Chiếu không gian foyer','',5.00,'Pc',400000.00,'',137,5.00,'Pc',400000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9436,114,'item','Logo name','Chữ vào hộp để cao có đèn LOGO OGN + HỘI',2.00,'Pc',3000000.00,'',138,2.00,'Pc',3000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9437,114,'item','Led 12m* 3m','Led P2,5 mới + mịn + sáng',36.00,'m2',1300000.00,'',139,36.00,'m2',1300000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9438,114,'item','Stage floor 12m * 3m','',36.00,'m2',350000.00,'',140,36.00,'m2',350000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9439,114,'item','Bộ tam cấp','',2.00,'Pc',3000000.00,'',141,2.00,'Pc',3000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9440,114,'item','Décor sân khấu 2 bên','',1.00,'Pc',35000000.00,'',142,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9441,114,'item','Hộ đèn trong décor dưới sân khấu','',0.00,'Pc',14000000.00,'',143,0.00,'Pc',14000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9442,114,'item','Sound systems','',1.00,'Pc',20000000.00,'',144,1.00,'Pc',20000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9443,114,'item','Light systems','',1.00,'Pc',25000000.00,'',145,1.00,'Pc',25000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9444,114,'item','Hệ thống laser','',1.00,'Pc',40000000.00,'',146,1.00,'Pc',40000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9445,114,'item','Cool smoke','',6.00,'Pc',2500000.00,'',147,6.00,'Pc',2500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9446,114,'item','TV 60\"','',1.00,'Pc',2500000.00,'',148,1.00,'Pc',2500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9447,114,'item','Màn sao','',70.00,'Pc',350000.00,'',149,70.00,'Pc',350000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9448,114,'item','Transportation round trip','Item for setup',1.00,'Pc',35000000.00,'',150,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9449,114,'item','Setup and uninstallation','',1.00,'Pc',35000000.00,'',151,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9450,114,'item','Confetti','FOC 2 máy',0.00,'Pc',3500000.00,'',152,0.00,'Pc',3500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9451,114,'item','Laptop for slides','',2.00,'Pc',300000.00,'',153,2.00,'Pc',300000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9452,114,'item','Laser pointer','',0.00,'Pc',300000.00,'',154,0.00,'Pc',300000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9453,114,'item','Technicals','LED, LIGHT, SOUND, LASER, SLIDE',1.00,'Pc',6000000.00,'',155,1.00,'Pc',6000000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9454,114,'item','Escort onsite','',7.00,'Person',500000.00,'',156,7.00,'Person',500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9455,114,'item','Photographer','Scan QR code and event',2.00,'Person',2500000.00,'',157,2.00,'Person',2500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9456,114,'item','Filming','2 Cam, 1 wide 1 tele',2.00,'Pc',3500000.00,'',158,2.00,'Pc',3500000.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (9457,114,'item','Miscellaneous','',1.00,'Pc',10000000.00,'',159,1.00,'Pc',10000000.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (9458,301,'section','NHÓM A','',0.00,'Gói',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (9459,301,'item','A1','',1.00,'Gói',1000000.00,'',1,0.00,'',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (9460,301,'item','A2','',1.00,'Gói',2000000.00,'',2,0.00,'',0.00,0.00,'',NULL,NULL);
@@ -6996,6 +6865,174 @@ INSERT INTO `quotation_items` VALUES (9464,301,'section','NHÓM C','',0.00,'Gói
 INSERT INTO `quotation_items` VALUES (9465,301,'item','C1','',1.00,'Gói',5000000.00,'',7,0.00,'',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (9466,301,'section','NHÓM D','',0.00,'Gói',0.00,'',8,0.00,'',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (9467,301,'item','D1','',1.00,'Gói',6000000.00,'',9,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9628,114,'section','Creative','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9629,114,'item','Design KV','',1.00,'Pack',15000000.00,'',1,1.00,'Pack',15000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9630,114,'item','Design dynamic KV','',1.00,'Pack',5000000.00,'',2,1.00,'Pack',5000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9631,114,'item','Package design 2D','',1.00,'Pack',35000000.00,'',3,1.00,'Pack',35000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9632,114,'item','Package design 3D','',1.00,'Pack',25000000.00,'',4,1.00,'Pack',25000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9633,114,'item','Account followup project','',3.00,'Person',20000000.00,'',5,3.00,'Person',20000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9634,114,'item','Travel fee for project team','',4.00,'Pack',4000000.00,'',6,4.00,'Pack',4000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9635,114,'section','Video Opening | Duration 2mins','',0.00,'',0.00,'',7,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9636,114,'item','Storyboard','',15.00,'scene',400000.00,'',8,15.00,'scene',400000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9637,114,'item','Animation','',15.00,'scene',1000000.00,'',9,15.00,'scene',1000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9638,114,'item','Voice talent','',1.00,'Pack',15000000.00,'',10,1.00,'Pack',15000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9639,114,'item','Video editor','',1.00,'Pack',3000000.00,'',11,1.00,'Pack',3000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9640,114,'item','Sound effects & music','',1.00,'Pack',4000000.00,'',12,1.00,'Pack',4000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9641,114,'item','Recording video','',1.00,'Pack',5000000.00,'',13,1.00,'Pack',5000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9642,114,'section','Video Keymoment | Duration 2p','',0.00,'',0.00,'',14,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9643,114,'item','Storyboard','',12.00,'scene',400000.00,'',15,12.00,'scene',400000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9644,114,'item','Animation','',12.00,'scene',1500000.00,'',16,12.00,'scene',1500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9645,114,'item','Video editor','',1.00,'Pack',3000000.00,'',17,1.00,'Pack',3000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9646,114,'item','Sound effects & music','',1.00,'Pack',4000000.00,'',18,1.00,'Pack',4000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9647,114,'section','Printing','',0.00,'',0.00,'',19,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9648,114,'item','Invitation','for 4 sites HCM, HN, ĐN and CT',770.00,'Pc',120000.00,'',20,770.00,'Pc',120000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9649,114,'item','Name Lanyard','for 4 sites HCM, HN, ĐN and CT',700.00,'Pc',45000.00,'',21,700.00,'Pc',45000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9650,114,'item','Speaker nametag','for 4 sites HCM, HN, ĐN and CT',40.00,'Pc',20000.00,'',22,40.00,'Pc',20000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9651,114,'item','Standee','for 4 sites HCM, HN, ĐN and CT',8.00,'Pc',600000.00,'',23,8.00,'Pc',600000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9652,114,'item','Podium','for 4 sites HCM, HN, ĐN and CT',0.00,'Pc',800000.00,'',24,0.00,'Pc',800000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9653,114,'item','Hashtag','for 4 sites HCM, HN, ĐN and CT',20.00,'Pc',150000.00,'',25,20.00,'Pc',150000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9654,114,'item','Sổ OGN','for 4 sites HCM, HN, ĐN and CT',800.00,'Pc',115000.00,'',26,800.00,'Pc',115000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9655,114,'item','Tờ portfolio product','for 4 sites HCM, HN, ĐN and CT',800.00,'Pc',55000.00,'',27,800.00,'Pc',55000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9656,114,'item','Quyển Profile','',800.00,'Pc',44000.00,'',28,800.00,'Pc',44000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9657,114,'item','Tia laser','for 4 sites HCM, HN, ĐN and CT',500.00,'Pc',32000.00,'',29,500.00,'Pc',32000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9658,114,'item','Bìa MC','',0.00,'Pc',15000.00,'',30,0.00,'Pc',15000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9659,114,'section','HCM','',0.00,'',0.00,'',31,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9660,114,'item','Photo booth','Wall with diecut',15.00,'m2',650000.00,'',32,15.00,'m2',650000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9661,114,'item','Sản phẩm mới','Diecut 2 vòng',2.00,'Pc',5000000.00,'',33,2.00,'Pc',5000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9662,114,'item','Sản phẩm mới','Diecut LOGO OGN',1.00,'Pc',4000000.00,'',34,1.00,'Pc',4000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9663,114,'item','Sản phẩm mới','Light leds for diecut elements',15.00,'m',200000.00,'',35,15.00,'m',200000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9664,114,'item','Sản phẩm mới','Floor photobooth decal chống trầy',10.00,'m2',500000.00,'',36,10.00,'m2',500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9665,114,'item','Sản phẩm mới','Diecut Nổi tên event',1.00,'Pc',6000000.00,'',37,1.00,'Pc',6000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9666,114,'item','Photobooth AI','Trụ ipad',6.00,'pc',2000000.00,'',38,6.00,'pc',2000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9667,114,'item','Sản phẩm mới','Hệ thống AI tạo ảnh dùng chung',1.00,'Pc',8000000.00,'',39,1.00,'Pc',8000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9668,114,'item','Sản phẩm mới','Photobooth AI (cam, tablet, lisence, phần mềm, chi phí in ảnh)',6.00,'Pc',4500000.00,'',40,6.00,'Pc',4500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9669,114,'item','Đèn Chiếu không gian foyer','',5.00,'Pc',400000.00,'',41,5.00,'Pc',400000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9670,114,'item','Logo name','Chữ vào hộp để cao có đèn LOGO OGN + HỘI',2.00,'Pc',3000000.00,'',42,2.00,'Pc',3000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9671,114,'item','Led 12m* 3m','Led P2,5 mới + mịn + sáng',36.00,'m2',1300000.00,'',43,36.00,'m2',1300000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9672,114,'item','Stage floor 12m * 3m','',36.00,'m2',350000.00,'',44,36.00,'m2',350000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9673,114,'item','Bộ tam cấp','',2.00,'Pc',3000000.00,'',45,2.00,'Pc',3000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9674,114,'item','Décor sân khấu 2 bên','',1.00,'Pc',35000000.00,'',46,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9675,114,'item','Hộ đèn trong décor dưới sân khấu','',0.00,'Pc',14000000.00,'',47,0.00,'Pc',14000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9676,114,'item','Sound systems','',1.00,'Pc',20000000.00,'',48,1.00,'Pc',20000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9677,114,'item','Light systems','',1.00,'Pc',30000000.00,'',49,1.00,'Pc',30000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9678,114,'item','Hệ thống laser','',1.00,'Pc',40000000.00,'',50,1.00,'Pc',40000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9679,114,'item','Cool smoke','',6.00,'Pc',2500000.00,'',51,6.00,'Pc',2500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9680,114,'item','TV 60\"','',1.00,'Pc',2500000.00,'',52,1.00,'Pc',2500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9681,114,'item','Màn sao','',70.00,'Pc',350000.00,'',53,70.00,'Pc',350000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9682,114,'item','Transportation round trip','Item for setup',1.00,'Pc',35000000.00,'',54,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9683,114,'item','Setup and uninstallation','',1.00,'Pc',35000000.00,'',55,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9684,114,'item','Confetti','FOC 2 máy',0.00,'Pc',3500000.00,'',56,0.00,'Pc',3500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9685,114,'item','Laptop for slides','',2.00,'Pc',300000.00,'',57,2.00,'Pc',300000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9686,114,'item','Laser pointer','',0.00,'Pc',300000.00,'',58,0.00,'Pc',300000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9687,114,'item','Technicals','LED, LIGHT, SOUND, LASER, SLIDE',1.00,'Pc',6000000.00,'',59,1.00,'Pc',6000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9688,114,'item','Escort onsite','',7.00,'Person',500000.00,'',60,7.00,'Person',500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9689,114,'item','Photographer','Scan QR code and event',2.00,'Person',2500000.00,'',61,2.00,'Person',2500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9690,114,'item','Filming','2 Cam, 1 wide 1 tele',2.00,'Pc',3500000.00,'',62,2.00,'Pc',3500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9691,114,'item','Miscellaneous','',1.00,'Pc',10000000.00,'',63,1.00,'Pc',10000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9692,114,'section','HN','',0.00,'',0.00,'',64,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9693,114,'item','Photo booth','Wall with diecut',15.00,'m2',650000.00,'',65,15.00,'m2',650000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9694,114,'item','Sản phẩm mới','Diecut 2 vòng',2.00,'Pc',5000000.00,'',66,2.00,'Pc',5000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9695,114,'item','Sản phẩm mới','Diecut LOGO OGN',1.00,'Pc',4000000.00,'',67,1.00,'Pc',4000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9696,114,'item','Sản phẩm mới','Light leds for diecut elements',15.00,'m',200000.00,'',68,15.00,'m',200000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9697,114,'item','Sản phẩm mới','Floor photobooth decal chống trầy',10.00,'m2',500000.00,'',69,10.00,'m2',500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9698,114,'item','Sản phẩm mới','Diecut Nổi tên event',1.00,'Pc',6000000.00,'',70,1.00,'Pc',6000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9699,114,'item','Photobooth AI','Trụ ipad',6.00,'pc',2000000.00,'',71,6.00,'pc',2000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9700,114,'item','Sản phẩm mới','Photobooth AI (cam, tablet, lisence, phần mềm, chi phí in ảnh)',6.00,'Pc',4500000.00,'',72,6.00,'Pc',4500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9701,114,'item','Đèn Chiếu không gian foyer','',5.00,'Pc',400000.00,'',73,5.00,'Pc',400000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9702,114,'item','Logo name','Chữ vào hộp để cao có đèn LOGO OGN + HỘI',2.00,'Pc',3000000.00,'',74,2.00,'Pc',3000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9703,114,'item','Led 12m* 3m','Led P2,5 mới + mịn + sáng',36.00,'m2',1300000.00,'',75,36.00,'m2',1300000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9704,114,'item','Stage floor 12m * 3m','',36.00,'m2',350000.00,'',76,36.00,'m2',350000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9705,114,'item','Bộ tam cấp','',2.00,'Pc',3000000.00,'',77,2.00,'Pc',3000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9706,114,'item','Décor sân khấu 2 bên','',1.00,'Pc',35000000.00,'',78,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9707,114,'item','Hộ đèn trong décor dưới sân khấu','',0.00,'Pc',14000000.00,'',79,0.00,'Pc',14000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9708,114,'item','Sound systems','',1.00,'Pc',20000000.00,'',80,1.00,'Pc',20000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9709,114,'item','Light systems','',1.00,'Pc',30000000.00,'',81,1.00,'Pc',30000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9710,114,'item','Hệ thống laser','',1.00,'Pc',40000000.00,'',82,1.00,'Pc',40000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9711,114,'item','Cool smoke','',6.00,'Pc',2500000.00,'',83,6.00,'Pc',2500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9712,114,'item','TV 60\"','',1.00,'Pc',2500000.00,'',84,1.00,'Pc',2500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9713,114,'item','Màn sao','',70.00,'Pc',350000.00,'',85,70.00,'Pc',350000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9714,114,'item','Transportation round trip','Item for setup',1.00,'Pc',35000000.00,'',86,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9715,114,'item','Setup and uninstallation','',1.00,'Pc',35000000.00,'',87,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9716,114,'item','Confetti','FOC 2 máy',0.00,'Pc',3500000.00,'',88,0.00,'Pc',3500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9717,114,'item','Laptop for slides','',2.00,'Pc',300000.00,'',89,2.00,'Pc',300000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9718,114,'item','Laser pointer','',0.00,'Pc',300000.00,'',90,0.00,'Pc',300000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9719,114,'item','Technicals','LED, LIGHT, SOUND, LASER, SLIDE',1.00,'Pc',6000000.00,'',91,1.00,'Pc',6000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9720,114,'item','Escort onsite','',7.00,'Person',500000.00,'',92,7.00,'Person',500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9721,114,'item','Photographer','Scan QR code and event',2.00,'Person',2500000.00,'',93,2.00,'Person',2500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9722,114,'item','Filming','2 Cam, 1 wide 1 tele',2.00,'Pc',3500000.00,'',94,2.00,'Pc',3500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9723,114,'item','Miscellaneous','',1.00,'Pc',10000000.00,'',95,1.00,'Pc',10000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9724,114,'section','DN','',0.00,'',0.00,'',96,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9725,114,'item','Photo booth','Wall with diecut',15.00,'m2',650000.00,'',97,15.00,'m2',650000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9726,114,'item','Sản phẩm mới','Diecut 2 vòng',2.00,'Pc',5000000.00,'',98,2.00,'Pc',5000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9727,114,'item','Sản phẩm mới','Diecut LOGO OGN',1.00,'Pc',4000000.00,'',99,1.00,'Pc',4000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9728,114,'item','Sản phẩm mới','Light leds for diecut elements',15.00,'m',200000.00,'',100,15.00,'m',200000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9729,114,'item','Sản phẩm mới','Floor photobooth decal chống trầy',10.00,'m2',500000.00,'',101,10.00,'m2',500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9730,114,'item','Sản phẩm mới','Diecut Nổi tên event',1.00,'Pc',6000000.00,'',102,1.00,'Pc',6000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9731,114,'item','Photobooth AI','Trụ ipad',3.00,'pc',2000000.00,'',103,3.00,'pc',2000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9732,114,'item','Sản phẩm mới','Photobooth AI (cam, tablet, lisence, phần mềm, chi phí in ảnh)',3.00,'Pc',4500000.00,'',104,3.00,'Pc',4500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9733,114,'item','Đèn Chiếu không gian foyer','',5.00,'Pc',400000.00,'',105,5.00,'Pc',400000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9734,114,'item','Logo name','Chữ vào hộp để cao có đèn LOGO OGN + HỘI',2.00,'Pc',3000000.00,'',106,2.00,'Pc',3000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9735,114,'item','Led 12m* 3m','Led P2,5 mới + mịn + sáng',36.00,'m2',1300000.00,'',107,36.00,'m2',1300000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9736,114,'item','Stage floor 12m * 3m','',36.00,'m2',350000.00,'',108,36.00,'m2',350000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9737,114,'item','Bộ tam cấp','',2.00,'Pc',3000000.00,'',109,2.00,'Pc',3000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9738,114,'item','Décor sân khấu 2 bên','',1.00,'Pc',35000000.00,'',110,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9739,114,'item','Hộ đèn trong décor dưới sân khấu','',0.00,'Pc',14000000.00,'',111,0.00,'Pc',14000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9740,114,'item','Sound systems','',1.00,'Pc',20000000.00,'',112,1.00,'Pc',20000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9741,114,'item','Light systems','',1.00,'Pc',25000000.00,'',113,1.00,'Pc',25000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9742,114,'item','Hệ thống laser','',1.00,'Pc',40000000.00,'',114,1.00,'Pc',40000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9743,114,'item','Cool smoke','',6.00,'Pc',2500000.00,'',115,6.00,'Pc',2500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9744,114,'item','TV 60\"','',1.00,'Pc',2500000.00,'',116,1.00,'Pc',2500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9745,114,'item','Màn sao','',70.00,'Pc',350000.00,'',117,70.00,'Pc',350000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9746,114,'item','Transportation round trip','Item for setup',1.00,'Pc',35000000.00,'',118,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9747,114,'item','Setup and uninstallation','',1.00,'Pc',35000000.00,'',119,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9748,114,'item','Confetti','FOC 2 máy',0.00,'Pc',3500000.00,'',120,0.00,'Pc',3500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9749,114,'item','Laptop for slides','',2.00,'Pc',300000.00,'',121,2.00,'Pc',300000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9750,114,'item','Laser pointer','',0.00,'Pc',300000.00,'',122,0.00,'Pc',300000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9751,114,'item','Technicals','LED, LIGHT, SOUND, LASER, SLIDE',1.00,'Pc',6000000.00,'',123,1.00,'Pc',6000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9752,114,'item','Escort onsite','',7.00,'Person',500000.00,'',124,7.00,'Person',500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9753,114,'item','Photographer','Scan QR code and event',2.00,'Person',2500000.00,'',125,2.00,'Person',2500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9754,114,'item','Filming','2 Cam, 1 wide 1 tele',2.00,'Pc',3500000.00,'',126,2.00,'Pc',3500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9755,114,'item','Miscellaneous','',1.00,'Pc',10000000.00,'',127,1.00,'Pc',10000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9756,114,'section','CANTHO','',0.00,'',0.00,'',128,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9757,114,'item','Photo booth','Wall with diecut',15.00,'m2',650000.00,'',129,15.00,'m2',650000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9758,114,'item','Sản phẩm mới','Diecut 2 vòng',2.00,'Pc',5000000.00,'',130,2.00,'Pc',5000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9759,114,'item','Sản phẩm mới','Diecut LOGO OGN',1.00,'Pc',4000000.00,'',131,1.00,'Pc',4000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9760,114,'item','Sản phẩm mới','Light leds for diecut elements',15.00,'m',200000.00,'',132,15.00,'m',200000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9761,114,'item','Sản phẩm mới','Floor photobooth decal chống trầy',10.00,'m2',500000.00,'',133,10.00,'m2',500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9762,114,'item','Sản phẩm mới','Diecut Nổi tên event',1.00,'Pc',6000000.00,'',134,1.00,'Pc',6000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9763,114,'item','Photobooth AI','Trụ ipad',4.00,'pc',2000000.00,'',135,4.00,'pc',2000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9764,114,'item','Sản phẩm mới','Photobooth AI (cam, tablet, lisence, phần mềm, chi phí in ảnh)',4.00,'Pc',4500000.00,'',136,4.00,'Pc',4500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9765,114,'item','Đèn Chiếu không gian foyer','',5.00,'Pc',400000.00,'',137,5.00,'Pc',400000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9766,114,'item','Logo name','Chữ vào hộp để cao có đèn LOGO OGN + HỘI',2.00,'Pc',3000000.00,'',138,2.00,'Pc',3000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9767,114,'item','Led 12m* 3m','Led P2,5 mới + mịn + sáng',36.00,'m2',1300000.00,'',139,36.00,'m2',1300000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9768,114,'item','Stage floor 12m * 3m','',36.00,'m2',350000.00,'',140,36.00,'m2',350000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9769,114,'item','Bộ tam cấp','',2.00,'Pc',3000000.00,'',141,2.00,'Pc',3000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9770,114,'item','Décor sân khấu 2 bên','',1.00,'Pc',35000000.00,'',142,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9771,114,'item','Hộ đèn trong décor dưới sân khấu','',0.00,'Pc',14000000.00,'',143,0.00,'Pc',14000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9772,114,'item','Sound systems','',1.00,'Pc',20000000.00,'',144,1.00,'Pc',20000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9773,114,'item','Light systems','',1.00,'Pc',25000000.00,'',145,1.00,'Pc',25000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9774,114,'item','Hệ thống laser','',1.00,'Pc',40000000.00,'',146,1.00,'Pc',40000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9775,114,'item','Cool smoke','',6.00,'Pc',2500000.00,'',147,6.00,'Pc',2500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9776,114,'item','TV 60\"','',1.00,'Pc',2500000.00,'',148,1.00,'Pc',2500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9777,114,'item','Màn sao','',70.00,'Pc',350000.00,'',149,70.00,'Pc',350000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9778,114,'item','Transportation round trip','Item for setup',1.00,'Pc',35000000.00,'',150,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9779,114,'item','Setup and uninstallation','',1.00,'Pc',35000000.00,'',151,1.00,'Pc',35000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9780,114,'item','Confetti','FOC 2 máy',0.00,'Pc',3500000.00,'',152,0.00,'Pc',3500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9781,114,'item','Laptop for slides','',2.00,'Pc',300000.00,'',153,2.00,'Pc',300000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9782,114,'item','Laser pointer','',0.00,'Pc',300000.00,'',154,0.00,'Pc',300000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9783,114,'item','Technicals','LED, LIGHT, SOUND, LASER, SLIDE',1.00,'Pc',6000000.00,'',155,1.00,'Pc',6000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9784,114,'item','Escort onsite','',7.00,'Person',500000.00,'',156,7.00,'Person',500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9785,114,'item','Photographer','Scan QR code and event',2.00,'Person',2500000.00,'',157,2.00,'Person',2500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9786,114,'item','Filming','2 Cam, 1 wide 1 tele',2.00,'Pc',3500000.00,'',158,2.00,'Pc',3500000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9787,114,'item','Miscellaneous','',1.00,'Pc',10000000.00,'',159,1.00,'Pc',10000000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9788,300,'section','In Ấn Sticker','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9789,300,'item','HERITAGE PORTFOLIO Book','264 x 65 x\n320mm',200.00,'Pc',387000.00,'',1,200.00,'Pc',13000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9790,300,'item','CASUAL PORTFOLIO Book','264 x 65 x\n320mm',200.00,'Pc',387000.00,'',2,200.00,'Pc',14000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9791,300,'item','TERRAIN PORTFOLIO Book','264 x 65 x\n320mm',200.00,'Gói',387000.00,'',3,200.00,'Gói',13000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9792,300,'item','MODERN PORTFOLIO Book','264 x 65 x\n320mm',200.00,'Gói',387000.00,'',4,200.00,'Gói',14000.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9793,300,'item','WATER PORTFOLIO Book','264 x 65 x\n320mm',200.00,'Gói',387000.00,'',5,200.00,'Gói',31800.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9794,300,'item','WILLIAM YEOWARD Book','264 x 65 x\n320mm',200.00,'Gói',387000.00,'',6,200.00,'Gói',36300.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (9796,302,'section','','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
 /*!40000 ALTER TABLE `quotation_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -7021,6 +7058,7 @@ CREATE TABLE `quotation_pins` (
 
 LOCK TABLES `quotation_pins` WRITE;
 /*!40000 ALTER TABLE `quotation_pins` DISABLE KEYS */;
+INSERT INTO `quotation_pins` VALUES (1,300,'2026-09-04 17:29:24');
 /*!40000 ALTER TABLE `quotation_pins` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -7238,7 +7276,7 @@ CREATE TABLE `quotations` (
   KEY `idx_manage_id` (`manage_id`),
   KEY `idx_event_from` (`event_from`),
   KEY `idx_priority` (`priority`)
-) ENGINE=InnoDB AUTO_INCREMENT=302 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=303 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -7541,8 +7579,9 @@ INSERT INTO `quotations` VALUES (296,'event','04092026-159','AZ-CVRM-Webcast CKM
 INSERT INTO `quotations` VALUES (297,'other','04092026-160','ZZ TEST NGAY DU AN (doi ngay)',NULL,NULL,'ZZ Test','','','','2026-09-04','15/10/2026 - 18/10/2026','VND',0.00,0.00,0,0,'','Harris','2026-09-04 14:07:35','2026-09-04 03:16:21','2026-09-04 07:07:35',0,NULL,'confirmed','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'2026-10-15','2026-10-18','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABRZgURAAA=','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABRZgURAAA%3D&exvsurl=1&path=/calendar/item','f8e3192e1d1218dd3bb95d81ec09544c',1,0);
 INSERT INTO `quotations` VALUES (298,'event','04092026-161','OGN-MKT-PRODUCT-PORTFOLIO-PRODUCTION',5,9,'Organon','thi.lan.anh.thi.lan.anh@organon.com','0317975100','Phòng 03-135, Tầng 3, Lim Tower 3, 29A Nguyễn Đình Chiểu, Phường Sài Gòn, Thành phố Hồ Chí Minh, Việt Nam','2026-09-04','','VND',10.00,8.00,1,1,'','Anh Thư',NULL,'2026-09-04 03:57:32','2026-09-04 16:41:51',0,NULL,'running','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'','','',1,0);
 INSERT INTO `quotations` VALUES (299,'other','04092026-162','ZZ TEST ZALO XAC NHAN',NULL,NULL,'ZZ Test Client','','','','2026-09-04','','VND',0.00,0.00,0,0,'','Harris','2026-09-04 14:07:35','2026-09-04 07:06:13','2026-09-04 07:07:35',0,NULL,'confirmed','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'','','',1,0);
-INSERT INTO `quotations` VALUES (300,'other','04092026-163','VFR-Panel Sample',3,32,'VFR','','3702289042','47/4, DT 743 Street, Binh Phuoc B Area, An Phu Ward, Ho Chi Minh City, Vietnam','2026-09-04','15/10/2026','VND',0.00,8.00,0,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Báo giá','Harris',NULL,'2026-09-04 07:18:19','2026-09-04 16:41:51',0,NULL,'running','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'2026-10-15','2026-10-15','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABRZgUTAAA=','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABRZgUTAAA%3D&exvsurl=1&path=/calendar/item','570df4b70b8b1367ce4855c467533ba2',0,0);
+INSERT INTO `quotations` VALUES (300,'media','04092026-163','VFR-Panel Sample',3,32,'VFR','','3702289042','47/4, DT 743 Street, Binh Phuoc B Area, An Phu Ward, Ho Chi Minh City, Vietnam','2026-09-04','15/10/2026','VND',0.00,8.00,0,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Báo giá','Harris',NULL,'2026-09-04 07:18:19','2026-09-04 17:30:04',0,NULL,'running','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'2026-10-15','2026-10-15','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABRZgUTAAA=','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABRZgUTAAA%3D&exvsurl=1&path=/calendar/item','570df4b70b8b1367ce4855c467533ba2',0,0);
 INSERT INTO `quotations` VALUES (301,'other','04092026-164','ZZ TEST NHOM MAU',NULL,NULL,'ZZ','','','','2026-09-04','','VND',0.00,0.00,0,0,'','Harris','2026-09-05 00:02:07','2026-09-04 16:57:48','2026-09-04 17:02:07',0,NULL,'request','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'','','',0,0);
+INSERT INTO `quotations` VALUES (302,'production','05092026-165','ZZ TEST SAN XUAT - lich giao hang',NULL,NULL,'','','','','2026-09-05','','VND',10.00,8.00,1,1,'','Harris','2026-09-05 00:44:16','2026-09-04 17:40:04','2026-09-04 17:44:16',0,NULL,'confirmed','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'','','',1,0);
 /*!40000 ALTER TABLE `quotations` ENABLE KEYS */;
 UNLOCK TABLES;
 

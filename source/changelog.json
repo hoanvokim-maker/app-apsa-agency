@@ -1,5 +1,5 @@
 {
-    "version": "1.7.34",
+    "version": "1.7.35",
     "updated": "2026-09-04",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-03",
             "note": "Phiên bản 1.7",
             "items": [
+                {
+                    "d": "2026-09-04",
+                    "v": "1.7.35",
+                    "t": "Them loai bao gia San xuat: an Ngay du an, thay bang bang Lich giao hang (ngay giao, noi dung, SL, DVT, dia diem, trang thai da/chua giao); moi dot giao tu tao 1 su kien ca ngay tren lich Outlook khi du an da xac nhan",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-04",
                     "v": "1.7.34",
