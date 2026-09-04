@@ -776,6 +776,26 @@ select#fStatus option{background:#141414;color:#f2f2f2;font-weight:600;text-shad
 .pinbtn.on{color:var(--accent,#dff20d);opacity:1}
 .apx-ic svg{display:block}
 .hbtn svg{vertical-align:-2px;margin-right:5px}
+/* Thu gon nhom + mau nen theo nhom */
+.seccol{display:inline-flex;align-items:center;justify-content:center;cursor:pointer;line-height:0;
+  width:18px;height:18px;margin-right:5px;vertical-align:-4px;border-radius:3px;
+  border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.30);color:var(--accent,#dff20d)}
+.seccol:hover{border-color:var(--accent,#dff20d);background:rgba(223,242,13,.14)}
+table.q tbody tr.sec td.c{white-space:nowrap}
+.secn{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:999px;font-size:9.5px;font-weight:700;
+  background:rgba(255,255,255,.10);color:var(--text2,#9a9a9a)}
+table.q tbody tr.g0>td{background:rgba(255,255,255,.020)}
+table.q tbody tr.g1>td{background:rgba(223,242,13,.042)}
+table.q tbody tr.g2>td{background:rgba(90,160,255,.055)}
+table.q tbody tr.g3>td{background:rgba(255,159,10,.048)}
+table.q tbody tr.sec.g0 td{background:#1f1f1f !important}
+table.q tbody tr.sec.g1 td{background:#25290f !important}
+table.q tbody tr.sec.g2 td{background:#161d2b !important}
+table.q tbody tr.sec.g3 td{background:#2b2113 !important}
+table.q tbody tr.g0>td:first-child{border-left:3px solid rgba(255,255,255,.20)}
+table.q tbody tr.g1>td:first-child{border-left:3px solid #dff20d}
+table.q tbody tr.g2>td:first-child{border-left:3px solid #5aa0ff}
+table.q tbody tr.g3>td:first-child{border-left:3px solid #ff9f0a}
 .exp-grip{width:26px;text-align:center;padding-left:2px!important;padding-right:0!important}
 .grip{display:inline-flex;cursor:grab;color:var(--text3,#5e5e5e);opacity:.62;padding:4px 2px;line-height:0;transition:.12s}
 .grip:hover{opacity:1;color:var(--text2,#9a9a9a)}
@@ -1531,6 +1551,9 @@ var ICO = {
   check: '<path d="M20 6 9 17l-5-5"/>',
   alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
   x:     '<path d="M18 6 6 18M6 6l12 12"/>',
+  down:  '<path d="m6 9 6 6 6-6"/>',
+  up:    '<path d="m18 15-6-6-6 6"/>',
+  right: '<path d="m9 18 6-6-6-6"/>',
   flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
   star:  '<path d="m12 2.6 2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.44 6.19 20.5l1.11-6.47L2.6 9.45l6.5-.95z"/>',
   dot:   '<circle cx="12" cy="12" r="8.5"/><path d="M8.5 12h7"/>',
@@ -2415,7 +2438,8 @@ function dupRow(i){
     const c = Object.assign(blankItem(it.kind), it);
     delete c.id;
     delete c.act_file_name;
-    delete c.act_file_url;
+          delete c.act_file_url;
+      delete c._uid;
     return c;
   });
   if (src.kind === 'section' && copy[0]) {
@@ -2466,16 +2490,57 @@ function sectionSums(actual){
   return sums;
 }
 
+/* ── Thu gon / mo nhom hang muc ── */
+var SEC_COLLAPSED = {};
+var SEC_UIDN = 0;
+function secUids(){
+  EDIT.items.forEach(it => { if (!it._uid) it._uid = 'u' + (++SEC_UIDN); });
+}
+function secCounts(){
+  const out = {}; let cur = null;
+  EDIT.items.forEach(it => {
+    if (it.kind === 'section') { cur = it._uid; out[cur] = 0; }
+    else if (cur) out[cur]++;
+  });
+  return out;
+}
+function toggleSec(uid, ev){
+  if (ev) { ev.stopPropagation(); ev.preventDefault(); }
+  SEC_COLLAPSED[uid] = !SEC_COLLAPSED[uid];
+  renderRows();
+}
+function secAll(open){
+  secUids();
+  EDIT.items.forEach(it => { if (it.kind === 'section') SEC_COLLAPSED[it._uid] = !open; });
+  renderRows();
+}
+
 function renderRows(){
+  secUids();
+  const SEC_N = secCounts();
+  let curSec = '', secHidden = false;
   let secIdx = 0, itemNo = 0;
   const rows = EDIT.items.map((it, i) => {
-    if (it.kind === 'section') { itemNo = 0; secIdx++; }
-    else itemNo++;
+    if (it.kind === 'section') {
+      itemNo = 0; secIdx++;
+      curSec = it._uid;
+      secHidden = !!SEC_COLLAPSED[curSec];
+    } else itemNo++;
     const isSec = it.kind === 'section';
     const label = isSec ? (ROMAN[secIdx-1] || secIdx) : itemNo;
     const dis = isSec ? ' disabled style="opacity:.35"' : '';
-    return '<tr class="' + (isSec ? 'sec' : '') + (LIQ && itemChanged(it) ? ' chg' : '') + '">' +
-      '<td class="c dragh" title="Kéo để đổi thứ tự"><span class="grip"></span>' + label + '</td>' +
+    const gcls = ' g' + (secIdx % 4);
+    const hideRow = (!isSec && secHidden) ? ' style="display:none"' : '';
+    return '<tr class="' + (isSec ? 'sec' : '') + gcls + (LIQ && itemChanged(it) ? ' chg' : '') + '"' + hideRow + '>' +
+      '<td class="c dragh" title="Kéo để đổi thứ tự"><span class="grip"></span>' +
+        (isSec
+          ? '<button type="button" class="seccol" onclick="toggleSec(\'' + it._uid + '\', event)" title="' +
+            (SEC_COLLAPSED[it._uid] ? 'Mở nhóm' : 'Thu gọn nhóm') + '">' +
+            svgIco(SEC_COLLAPSED[it._uid] ? ICO.right : ICO.down, 13) + '</button>'
+          : '') +
+        label +
+        (isSec && SEC_COLLAPSED[it._uid] ? '<span class="secn">' + (SEC_N[it._uid] || 0) + '</span>' : '') +
+      '</td>' +
       '<td><input value="' + esc(it.name) + '" placeholder="' + (isSec ? 'Tên nhóm (VD: Chụp ảnh)' : 'Tên hạng mục') + '" oninput="upd(' + i + ',\'name\',this.value);queueFit()" /></td>' +
       '<td><textarea rows="1" placeholder="' + (isSec ? '' : 'Mô tả / thời gian / địa điểm — Enter để xuống dòng') + '" ' +
         'oninput="upd(' + i + ',\'description\',this.value);grow(this);queueFit()">' + esc(it.description) + '</textarea></td>' +
