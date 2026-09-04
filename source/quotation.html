@@ -778,12 +778,18 @@ select#fStatus option{background:#141414;color:#f2f2f2;font-weight:600;text-shad
 .hbtn svg{vertical-align:-2px;margin-right:5px}
 /* Thu gon nhom + mau nen theo nhom */
 .seccol{display:inline-flex;align-items:center;justify-content:center;cursor:pointer;line-height:0;
-  width:18px;height:18px;margin-right:5px;vertical-align:-4px;border-radius:3px;
+  width:17px;height:17px;margin-right:4px;vertical-align:-4px;border-radius:3px;flex:0 0 auto;
   border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.30);color:var(--accent,#dff20d)}
 .seccol:hover{border-color:var(--accent,#dff20d);background:rgba(223,242,13,.14)}
 table.q tbody tr.sec td.c{white-space:nowrap}
-.secn{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:999px;font-size:9.5px;font-weight:700;
-  background:rgba(255,255,255,.10);color:var(--text2,#9a9a9a)}
+.secn{display:inline-block;margin-left:5px;padding:0 5px;border-radius:999px;font-size:9px;font-weight:700;
+  line-height:14px;background:rgba(255,255,255,.12);color:var(--text2,#9a9a9a)}
+table.q tbody tr.sec td.secnm{position:relative}
+table.q tbody tr.sec td.secnm input{padding-right:36px}
+table.q tbody tr.sec td.secnm .secn{position:absolute;right:7px;top:50%;transform:translateY(-50%);margin:0;pointer-events:none}
+/* Cot STT rong hon de chua nut thu gon + so La Ma + badge, khong de bi tran sang cot ten */
+/* Chua tay keo o ben trai, noi dung bat dau sau no de khong bi de len */
+table.q tbody tr.sec td.dragh{ padding-left:17px }
 table.q tbody tr.g0>td{background:rgba(255,255,255,.020)}
 table.q tbody tr.g1>td{background:rgba(223,242,13,.042)}
 table.q tbody tr.g2>td{background:rgba(90,160,255,.055)}
@@ -2493,29 +2499,54 @@ function sectionSums(actual){
 /* ── Thu gon / mo nhom hang muc ── */
 var SEC_COLLAPSED = {};
 var SEC_UIDN = 0;
+var SEC_FOR = null;
+/* Khoa ben vung: dung id that neu da luu, chua luu thi dung thu tu nhom */
+function secKey(it, n){ return it.id ? ('i' + it.id) : ('n' + n); }
+function secStore(){ return 'apsa_qsec_' + ((typeof EDIT !== 'undefined' && EDIT && EDIT.id) ? EDIT.id : 0); }
+function secEnsure(){
+  const qid = (typeof EDIT !== 'undefined' && EDIT && EDIT.id) ? EDIT.id : 0;
+  if (SEC_FOR === qid) return;
+  SEC_FOR = qid;
+  try { SEC_COLLAPSED = JSON.parse(localStorage.getItem(secStore()) || '{}') || {}; }
+  catch (e) { SEC_COLLAPSED = {}; }
+}
+function secPersist(){
+  try {
+    const keep = {};
+    Object.keys(SEC_COLLAPSED).forEach(k => { if (SEC_COLLAPSED[k]) keep[k] = 1; });
+    localStorage.setItem(secStore(), JSON.stringify(keep));
+  } catch (e) {}
+}
 function secUids(){
-  EDIT.items.forEach(it => { if (!it._uid) it._uid = 'u' + (++SEC_UIDN); });
+  let n = 0;
+  EDIT.items.forEach(it => {
+    if (!it._uid) it._uid = 'u' + (++SEC_UIDN);
+    if (it.kind === 'section') { n++; it._skey = secKey(it, n); }
+  });
 }
 function secCounts(){
   const out = {}; let cur = null;
   EDIT.items.forEach(it => {
-    if (it.kind === 'section') { cur = it._uid; out[cur] = 0; }
+    if (it.kind === 'section') { cur = it._skey; out[cur] = 0; }
     else if (cur) out[cur]++;
   });
   return out;
 }
-function toggleSec(uid, ev){
+function toggleSec(key, ev){
   if (ev) { ev.stopPropagation(); ev.preventDefault(); }
-  SEC_COLLAPSED[uid] = !SEC_COLLAPSED[uid];
+  SEC_COLLAPSED[key] = !SEC_COLLAPSED[key];
+  secPersist();
   renderRows();
 }
 function secAll(open){
-  secUids();
-  EDIT.items.forEach(it => { if (it.kind === 'section') SEC_COLLAPSED[it._uid] = !open; });
+  secEnsure(); secUids();
+  EDIT.items.forEach(it => { if (it.kind === 'section') SEC_COLLAPSED[it._skey] = !open; });
+  secPersist();
   renderRows();
 }
 
 function renderRows(){
+  secEnsure();
   secUids();
   const SEC_N = secCounts();
   let curSec = '', secHidden = false;
@@ -2523,7 +2554,7 @@ function renderRows(){
   const rows = EDIT.items.map((it, i) => {
     if (it.kind === 'section') {
       itemNo = 0; secIdx++;
-      curSec = it._uid;
+      curSec = it._skey;
       secHidden = !!SEC_COLLAPSED[curSec];
     } else itemNo++;
     const isSec = it.kind === 'section';
@@ -2534,14 +2565,13 @@ function renderRows(){
     return '<tr class="' + (isSec ? 'sec' : '') + gcls + (LIQ && itemChanged(it) ? ' chg' : '') + '"' + hideRow + '>' +
       '<td class="c dragh" title="Kéo để đổi thứ tự"><span class="grip"></span>' +
         (isSec
-          ? '<button type="button" class="seccol" onclick="toggleSec(\'' + it._uid + '\', event)" title="' +
-            (SEC_COLLAPSED[it._uid] ? 'Mở nhóm' : 'Thu gọn nhóm') + '">' +
-            svgIco(SEC_COLLAPSED[it._uid] ? ICO.right : ICO.down, 13) + '</button>'
+          ? '<button type="button" class="seccol" onclick="toggleSec(\'' + it._skey + '\', event)" title="' +
+            (SEC_COLLAPSED[it._skey] ? 'Mở nhóm' : 'Thu gọn nhóm') + '">' +
+            svgIco(SEC_COLLAPSED[it._skey] ? ICO.right : ICO.down, 13) + '</button>'
           : '') +
         label +
-        (isSec && SEC_COLLAPSED[it._uid] ? '<span class="secn">' + (SEC_N[it._uid] || 0) + '</span>' : '') +
       '</td>' +
-      '<td><input value="' + esc(it.name) + '" placeholder="' + (isSec ? 'Tên nhóm (VD: Chụp ảnh)' : 'Tên hạng mục') + '" oninput="upd(' + i + ',\'name\',this.value);queueFit()" /></td>' +
+      '<td' + (isSec ? ' class="secnm"' : '') + '><input value="' + esc(it.name) + '" placeholder="' + (isSec ? 'Tên nhóm (VD: Chụp ảnh)' : 'Tên hạng mục') + '" oninput="upd(' + i + ',\'name\',this.value);queueFit()" />' + (isSec && SEC_COLLAPSED[it._skey] ? '<span class="secn">' + (SEC_N[it._skey] || 0) + '</span>' : '') + '</td>' +
       '<td><textarea rows="1" placeholder="' + (isSec ? '' : 'Mô tả / thời gian / địa điểm — Enter để xuống dòng') + '" ' +
         'oninput="upd(' + i + ',\'description\',this.value);grow(this);queueFit()">' + esc(it.description) + '</textarea></td>' +
       '<td><input class="c" value="' + (isSec ? '' : (Number(it.qty)||0)) + '"' + dis + ' oninput="upd(' + i + ',\'qty\',this.value)" onblur="normalizeOnBlur(' + i + ',\'qty\',this)" /></td>' +

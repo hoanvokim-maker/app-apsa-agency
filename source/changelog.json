@@ -1,5 +1,5 @@
 {
-    "version": "1.7.32",
+    "version": "1.7.33",
     "updated": "2026-09-04",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-03",
             "note": "Phiên bản 1.7",
             "items": [
+                {
+                    "d": "2026-09-04",
+                    "v": "1.7.33",
+                    "t": "Bao gia/Nghiem thu: nho dem dong chuyen sang cot Ten, khong con de len tile; nut keo khong con de len icon collapse; luu trang thai thu gon nhom theo tung bao gia",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-04",
                     "v": "1.7.32",
