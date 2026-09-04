@@ -2445,8 +2445,12 @@ function renderDsc(){
   }).join('');
 
   const can = !!DSC.can_decide;
-  document.getElementById('btnAppr').style.display = can ? '' : 'none';
-  document.getElementById('btnRej').style.display  = can ? '' : 'none';
+  /* Da bam roi thi an nut do di, chi con nut doi y kien nguoc lai */
+  const meId = Number((DSC.me || {}).id || 0);
+  const myRev = (DSC.reviews || []).filter(r => Number(r.reviewer_id) === meId)[0];
+  const myVote = myRev ? String(myRev.status || '') : '';
+  document.getElementById('btnAppr').style.display = (can && myVote !== 'approved') ? '' : 'none';
+  document.getElementById('btnRej').style.display  = (can && myVote !== 'rejected') ? '' : 'none';
 
   const list = DSC.comments || [];
   const roots = list.filter(c => !c.parent_id);
