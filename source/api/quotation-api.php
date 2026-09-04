@@ -404,6 +404,19 @@ if (!q_hasColumn($pdo, 'quotations', 'event_from')) {
         }
     } catch (PDOException $e) { }
 }
+if (!q_hasColumn($pdo, 'quotations', 'priority')) {
+    q_mig($pdo, "ALTER TABLE `quotations`
+        ADD COLUMN `priority` TINYINT NOT NULL DEFAULT 0 COMMENT '0=chua danh dau, 1=Binh thuong, 2=Quan trong, 3=Khan',
+        ADD KEY `idx_priority` (`priority`)");
+}
+q_mig($pdo, "CREATE TABLE IF NOT EXISTS `quotation_pins` (
+    `user_id`      INT UNSIGNED NOT NULL,
+    `quotation_id` INT UNSIGNED NOT NULL,
+    `created_at`   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`user_id`, `quotation_id`),
+    KEY `idx_quo` (`quotation_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
 if (!q_hasColumn($pdo, 'quotations', 'noti_confirmed')) {
     q_mig($pdo, "ALTER TABLE `quotations`
         ADD COLUMN `noti_confirmed` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Da bao Zalo khi xac nhan bao gia'");
@@ -1706,6 +1719,7 @@ case 'share-view': {
             'kind'           => (string) (isset($q['kind']) ? $q['kind'] : ''),
             'quotation_date' => (string) $q['quotation_date'],
             'event_date'     => (string) $q['event_date'],
+            'priority'     => (int) $q['priority'],
             'event_from'     => (string) $q['event_from'],
             'event_to'     => (string) $q['event_to'],
             'cal_web_link'     => (string) $q['cal_web_link'],
@@ -2337,13 +2351,17 @@ case 'project-board': {
         $params[] = q_asgPos($_GET['pos']);
     }
 
+    $meIdPin = (is_array($ME) && isset($ME['id'])) ? (int) $ME['id'] : 0;
     $sql = "SELECT q.id, q.code, q.title, q.kind, q.status, q.quotation_date, q.event_date,
+                   q.priority,
+                   (SELECT 1 FROM `quotation_pins` pn
+                     WHERE pn.quotation_id = q.id AND pn.user_id = " . $meIdPin . ") AS pinned,
                    q.client_name, q.company_id, q.src_link, q.has_liquidation,
                    c.name AS company_name
               FROM `quotations` q
          LEFT JOIN `crm_companies` c ON c.id = q.company_id
              WHERE " . implode(' AND ', $where) . "
-          ORDER BY FIELD(q.status,{$Q_PRIO_SQL}) ASC,
+          ORDER BY pinned DESC, FIELD(q.status,{$Q_PRIO_SQL}) ASC,
                    q.quotation_date DESC, q.id DESC";
     $st = $pdo->prepare($sql);
     $st->execute($params);
@@ -3418,6 +3436,38 @@ case 'set-status': {
     q_calSync($pdo, $id);
     q_notifyConfirmed($pdo, $id, (int) $ME['id'], (string) $ME['display_name']);
     q_ok(['id' => $id, 'status' => $stt, 'status_label' => $Q_STATUS[$stt], 'message' => 'Đã đổi trạng thái: ' . $Q_STATUS[$stt]]);
+}
+
+case 'pin-toggle': {
+    global $ME;
+    $id  = (int)($B['id'] ?? 0);
+    $uid = (is_array($ME) && isset($ME['id'])) ? (int) $ME['id'] : 0;
+    if (!$id)  q_fail('id is required');
+    if (!$uid) q_fail('Chưa đăng nhập', 401);
+
+    $has = $pdo->prepare("SELECT 1 FROM `quotation_pins` WHERE user_id = ? AND quotation_id = ?");
+    $has->execute([$uid, $id]);
+    $on = !$has->fetchColumn();
+
+    if ($on) {
+        $pdo->prepare("INSERT IGNORE INTO `quotation_pins` (user_id, quotation_id) VALUES (?,?)")
+            ->execute([$uid, $id]);
+    } else {
+        $pdo->prepare("DELETE FROM `quotation_pins` WHERE user_id = ? AND quotation_id = ?")
+            ->execute([$uid, $id]);
+    }
+    q_ok(['id' => $id, 'pinned' => $on ? 1 : 0,
+          'message' => $on ? 'Đã ghim báo giá' : 'Đã bỏ ghim']);
+}
+
+case 'set-priority': {
+    $id = (int)($B['id'] ?? 0);
+    $p  = (int)($B['priority'] ?? 0);
+    if (!$id) q_fail('id is required');
+    if ($p < 0 || $p > 3) q_fail('Mức ưu tiên không hợp lệ');
+    $pdo->prepare("UPDATE `quotations` SET priority = ? WHERE id = ?")->execute([$p, $id]);
+    $L = [0 => 'Bỏ đánh dấu', 1 => 'Bình thường', 2 => 'Quan trọng', 3 => 'Khẩn'];
+    q_ok(['id' => $id, 'priority' => $p, 'message' => 'Mức ưu tiên: ' . $L[$p]]);
 }
 
 case 'next-code': {
