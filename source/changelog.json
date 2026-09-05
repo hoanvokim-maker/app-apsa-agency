@@ -1,5 +1,5 @@
 {
-    "version": "1.8.12",
+    "version": "1.8.13",
     "updated": "2026-09-05",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-05",
             "note": "Phiên bản 1.8",
             "items": [
+                {
+                    "d": "2026-09-05",
+                    "v": "1.8.13",
+                    "t": "fix o ngay bi lo input an; thanh tien do neon dua len dau checklist",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-05",
                     "v": "1.8.12",
