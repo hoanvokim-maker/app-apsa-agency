@@ -94,14 +94,20 @@ q_mig($pdo, "CREATE TABLE IF NOT EXISTS `quotation_assignees` (
   INDEX `idx_quo`  (`quotation_id`),
   INDEX `idx_user` (`user_id`),
   INDEX `idx_stat` (`status`),
-  INDEX `idx_due`  (`due_date`)
+      INDEX `idx_due`   (`due_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
+/* APSA180: checklist du an - cot kind phan biet dong nhom / dong cong viec */
+if (!q_hasColumn($pdo, 'quotation_assignees', 'kind')) {
+    q_mig($pdo, "ALTER TABLE `quotation_assignees`
+        ADD COLUMN `kind` VARCHAR(8) NOT NULL DEFAULT 'item' COMMENT 'group|item' AFTER `quotation_id`");
+}
+
 $ASSIGN_STATUS = [
-    'todo'   => 'Chưa làm',
+    'todo'   => 'Chưa giao',
     'doing'  => 'Đang làm',
-    'review' => 'Chờ duyệt',
-    'done'   => 'Xong',
+    'review' => 'Đang review',
+    'done'   => 'Đã hoàn thành',
 ];
 require_once __DIR__ . '/settings-api.php';
 /* Danh sach vi tri lay tu trang Cai dat he thong */
@@ -110,6 +116,34 @@ function q_asgStatus($v) { global $ASSIGN_STATUS; $v = strtolower(trim((string)$
 function q_asgPos($v)    { global $ASSIGN_POS;    $v = strtolower(trim((string)$v)); return isset($ASSIGN_POS[$v]) ? $v : null; }
 
 /** Danh sách người thực hiện của 1 báo giá (kèm tên + vị trí hiện tại của user). */
+function q_chkRows(PDO $pdo, $qid) {
+    global $ASSIGN_STATUS;
+    $out = array();
+    try {
+        $st = $pdo->prepare("SELECT a.id, a.kind, a.user_id, a.task, a.due_date, a.status, a.sort_order,
+                                    u.display_name
+                               FROM `quotation_assignees` a
+                          LEFT JOIN `app_users` u ON u.id = a.user_id
+                              WHERE a.quotation_id = ?
+                           ORDER BY a.sort_order ASC, a.id ASC");
+        $st->execute(array((int) $qid));
+        foreach ($st->fetchAll() as $r) {
+            $kd  = ((string) $r['kind'] === 'group') ? 'group' : 'item';
+            $stt = (string) $r['status'];
+            $out[] = array(
+                'id'        => (int) $r['id'],
+                'kind'      => $kd,
+                'user_id'   => (int) $r['user_id'],
+                'user_name' => isset($r['display_name']) ? (string) $r['display_name'] : '',
+                'name'      => (string) $r['task'],
+                'due_date'  => $r['due_date'] ? (string) $r['due_date'] : '',
+                'status'    => isset($ASSIGN_STATUS[$stt]) ? $stt : 'todo',
+            );
+        }
+    } catch (PDOException $e) { }
+    return $out;
+}
+
 function loadAssignees(PDO $pdo, $qid) {
     $st = $pdo->prepare("SELECT a.*, u.display_name, u.staff_type, u.position AS user_position,
                                 u.phone, u.email, u.active
@@ -2105,6 +2139,7 @@ case 'get': {
     q_ok(['quotation' => $q, 'items' => $items, 'totals' => calcTotals($q, $items),
           'liq_totals' => calcLiqTotals($q, $items),
           'assignees' => loadAssignees($pdo, $id),
+            'checklist' => q_chkRows($pdo, $id),
         'expenses'  => loadExpenses($pdo, $id)]);
 }
 
@@ -2135,20 +2170,23 @@ case 'assignees-save': {
         try {
             $stOldAsg = $pdo->prepare("SELECT user_id, task FROM `quotation_assignees` WHERE quotation_id = ?");
             $stOldAsg->execute([$qid]);
-            foreach ($stOldAsg->fetchAll() as $roAsg) $qOldAsg[(int)$roAsg['user_id']] = (string)$roAsg['task'];
+            foreach ($stOldAsg->fetchAll() as $roAsg) $qOldAsg[(int)$roAsg['user_id'] . '|' . (string)$roAsg['task']] = 1;
         } catch (Exception $eAsg) { $qOldAsg = []; }
         $pdo->beginTransaction();
     try {
         $pdo->prepare("DELETE FROM `quotation_assignees` WHERE quotation_id = ?")->execute([$qid]);
         $ins = $pdo->prepare("INSERT INTO `quotation_assignees`
-            (quotation_id, user_id, position, task, due_date, status, sort_order, assigned_by)
-            VALUES (?,?,?,?,?,?,?,?)");
+            (quotation_id, kind, user_id, position, task, due_date, status, sort_order, assigned_by)
+            VALUES (?,?,?,?,?,?,?,?,?)");
         $n = 0;
         foreach ($list as $i => $a) {
+            $kd  = (isset($a['kind']) && (string) $a['kind'] === 'group') ? 'group' : 'item';
             $uid = (int)($a['user_id'] ?? 0);
-            if (!$uid) continue;
-            $ins->execute([$qid, $uid, q_asgPos($a['position'] ?? ''),
-                           s($a['task'] ?? '', 300), dateOrNull($a['due_date'] ?? ''),
+            $nm  = s((string)($a['name'] ?? ($a['task'] ?? '')), 300);
+            if ($kd === 'group') { $uid = 0; }
+            if (trim($nm) === '' && !$uid) continue;
+            $ins->execute([$qid, $kd, $uid, q_asgPos($a['position'] ?? ''),
+                           $nm, dateOrNull($a['due_date'] ?? ''),
                            q_asgStatus($a['status'] ?? 'todo'), $i, $WHO]);
             $n++;
         }
@@ -2163,7 +2201,7 @@ case 'assignees-save': {
                     $uidAsg = (int)$rowAsg['user_id'];
                     if ($uidAsg <= 0 || $uidAsg === $meAsg) continue;
                     $taskAsg = (string)($rowAsg['task'] ?? '');
-                    if (array_key_exists($uidAsg, $qOldAsg) && $qOldAsg[$uidAsg] === $taskAsg) continue;
+                    if (array_key_exists($uidAsg . '|' . $taskAsg, $qOldAsg)) continue;
                     $actsAsg = array(
                         array('kind' => 'task_done', 'id' => (int) $rowAsg['id'], 'label' => 'Đã hoàn thành'),
                         array('kind' => 'open', 'label' => 'Mở trong app', 'url' => $lnkAsg),
@@ -2173,7 +2211,7 @@ case 'assignees-save': {
                 }
             } catch (Exception $eNotiAsg) { /* thong bao hong thi thoi */ }
 
-        q_ok(['count' => $n, 'list' => loadAssignees($pdo, $qid), 'message' => 'Đã lưu phân công']);
+        q_ok(['count' => $n, 'list' => q_chkRows($pdo, $qid), 'message' => 'Đã lưu phân công']);
     } catch (Exception $e) { $pdo->rollBack(); q_fail('Lưu phân công thất bại: ' . $e->getMessage(), 500); }
 }
 
