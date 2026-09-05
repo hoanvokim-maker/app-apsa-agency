@@ -894,12 +894,29 @@ table.chktbl tr.it.done > td input, table.chktbl tr.it.done > td select{ opacity
 table.chktbl td.chk-x{ width:34px; text-align:center; }
 table.chktbl td.chk-p{ width:74px; text-align:center; }
 table.chktbl th:nth-last-child(2){ width:74px; }
-.asgprog{ display:flex; align-items:center; gap:10px; margin-top:10px; }
-.asgpbar{ position:relative; flex:1; height:6px; border-radius:99px; background:rgba(255,255,255,.09); overflow:hidden; }
-.asgpbar > i{ position:absolute; left:0; top:0; bottom:0; border-radius:99px; background:var(--accent,#dff20d); transition:width .25s ease; }
-.asgpbar.full > i{ background:#4ade80; }
-.asgpnum{ font-size:12.5px; font-weight:700; min-width:40px; text-align:right; }
-.asgpmeta{ font-size:11.5px; color:var(--text3); white-space:nowrap; }
+/* APSA1812: input date an cua bo chon ngay khong duoc an theo opacity cua dong */
+table.chktbl input.dmy-h{ opacity:0 !important; }
+.asgprog{ display:flex; align-items:center; gap:16px; margin:4px 0 12px; padding:11px 16px;
+          border:1px solid var(--border); border-radius:14px;
+          background:linear-gradient(90deg, rgba(223,242,13,.05), rgba(255,255,255,.015)); }
+.asgpnum{ min-width:82px; font-size:27px; font-weight:800; line-height:1; letter-spacing:-1px;
+          color:var(--accent,#dff20d);
+          text-shadow:0 0 12px rgba(223,242,13,.65), 0 0 30px rgba(223,242,13,.3); }
+.asgpnum small{ font-size:14px; font-weight:700; letter-spacing:0; margin-left:1px; }
+.asgprog.full .asgpnum{ color:#4ade80; text-shadow:0 0 12px rgba(74,222,128,.7), 0 0 30px rgba(74,222,128,.3); }
+.asgpwrap{ flex:1; min-width:0; }
+.asgpbar{ position:relative; height:10px; border-radius:99px; background:rgba(255,255,255,.06);
+          box-shadow:inset 0 0 0 1px rgba(255,255,255,.06); overflow:hidden; }
+.asgpbar > i{ position:absolute; left:0; top:0; bottom:0; border-radius:99px;
+          background:linear-gradient(90deg, rgba(223,242,13,.5), var(--accent,#dff20d));
+          box-shadow:0 0 10px rgba(223,242,13,.85), 0 0 22px rgba(223,242,13,.5), 0 0 42px rgba(223,242,13,.25);
+          transition:width .3s ease; }
+.asgprog.full .asgpbar > i{ background:linear-gradient(90deg,#22c55e,#4ade80);
+          box-shadow:0 0 10px rgba(74,222,128,.85), 0 0 24px rgba(74,222,128,.5), 0 0 42px rgba(74,222,128,.25); }
+.asgpmeta{ margin-top:8px; font-size:12px; color:var(--text3); }
+.asgpmeta b{ color:var(--text); font-size:14px; font-weight:800; }
+.asgpmeta .sl{ color:var(--text3); margin:0 1px; }
+.asgpmeta .dot{ margin:0 7px; opacity:.5; }
 table.chktbl td.chk-grip{ width:26px; text-align:center; padding-left:2px !important; padding-right:0 !important; }
 table.chktbl th.chk-grip{ width:26px; }
 table.chktbl td.chk-c{ width:30px; text-align:center; }
@@ -2166,21 +2183,32 @@ var ASG_W = { todo: 0, doing: 40, review: 75, done: 100 };
 function asgProg(){
   var rows = (ASG || []).filter(function(a){ return a.kind !== 'group'; });
   if (!rows.length) return null;
-  var w = 0, done = 0;
+  var w = 0, c = { todo: 0, doing: 0, review: 0, done: 0 };
   rows.forEach(function(a){
     var st = a.status || 'todo';
+    if (c[st] == null) st = 'todo';
+    c[st]++;
     w += (ASG_W[st] != null ? ASG_W[st] : 0);
-    if (st === 'done') done++;
   });
-  return { n: rows.length, done: done, pct: Math.round(w / rows.length) };
+  return { n: rows.length, done: c.done, c: c, pct: Math.round(w / rows.length) };
 }
 function asgProgHtml(){
   var p = asgProg();
   if (!p) return '';
-  return '<div class="asgprog" title="Chưa giao 0% · Đang làm 40% · Đang review 75% · Đã hoàn thành 100%">' +
-         '<div class="asgpbar' + (p.pct === 100 ? ' full' : '') + '"><i style="width:' + p.pct + '%"></i></div>' +
-         '<span class="asgpnum">' + p.pct + '%</span>' +
-         '<span class="asgpmeta">' + p.done + '/' + p.n + ' việc xong</span></div>';
+  var full = p.pct === 100 ? ' full' : '';
+  var bits = [];
+  if (p.c.doing)  bits.push(p.c.doing + ' đang làm');
+  if (p.c.review) bits.push(p.c.review + ' đang review');
+  if (p.c.todo)   bits.push(p.c.todo + ' chưa giao');
+  return '<div class="asgprog' + full + '" title="Chưa giao 0% · Đang làm 40% · Đang review 75% · Đã hoàn thành 100%">' +
+           '<div class="asgpnum">' + p.pct + '<small>%</small></div>' +
+           '<div class="asgpwrap">' +
+             '<div class="asgpbar"><i style="width:' + p.pct + '%"></i></div>' +
+             '<div class="asgpmeta"><b>' + p.done + '</b><span class="sl">/</span><b>' + p.n + '</b> việc xong' +
+             (bits.length ? '<span class="dot">·</span>' + bits.join('<span class="dot">·</span>') : '') +
+             '</div>' +
+           '</div>' +
+         '</div>';
 }
 function renderAsg(){
   const box = document.getElementById('asgWrap');
@@ -2212,12 +2240,11 @@ function renderAsg(){
       del + `</tr>`;
   }).join('');
 
-  box.innerHTML =
+  box.innerHTML = asgProgHtml() +
     (ASG.length
       ? `<table class="asgtbl chktbl"><thead><tr><th class="chk-grip"></th><th>Công việc</th><th>Người được giao</th><th>Hạn</th><th>Trạng thái</th><th>Ưu tiên</th><th colspan="2"></th></tr></thead><tbody>${rows}</tbody></table>`
       : `<div class="asgempty">Chưa có công việc nào — bấm “+ Thêm dòng”.</div>`) +
-    asgProgHtml() +
-      `<div class="asgadd">` +
+    `<div class="asgadd">` +
       `<button class="hbtn" type="button" onclick="asgAdd('group')">+ Thêm nhóm</button>` +
       `<button class="hbtn" type="button" onclick="asgAdd('item')">+ Thêm dòng</button>` +
       (ASG.length ? `<span class="xs" style="color:var(--text3)">Lưu báo giá là checklist được lưu theo.</span>` : '') +
