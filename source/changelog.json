@@ -1,5 +1,5 @@
 {
-    "version": "1.8.5",
+    "version": "1.8.6",
     "updated": "2026-09-05",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-05",
             "note": "Phiên bản 1.8",
             "items": [
+                {
+                    "d": "2026-09-05",
+                    "v": "1.8.6",
+                    "t": "Du an o trang thai da dong thi khoa moi thao tac ghi ben trong; chi Admin moi mo lai duoc (doi trang thai hoac nut Mo lai du an); dong bo co da dong theo trang thai + backfill 89 du an cu",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-05",
                     "v": "1.8.5",

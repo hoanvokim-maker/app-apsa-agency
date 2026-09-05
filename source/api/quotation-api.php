@@ -3638,6 +3638,9 @@ case 'project-reopen': {
 
     $pdo->prepare("UPDATE `quotations` SET closed_at = NULL, closed_by = NULL, closed_by_name = NULL WHERE id = ?")
         ->execute([$id]);
+    /* APSA186: neu trang thai van dang la "da dong" thi dua ve Dang thuc hien */
+    if (in_array((string) ($r['status'] ?? ''), array('done', 'paid', 'lost', 'dong_du_an'), true))
+        $pdo->prepare("UPDATE `quotations` SET status = 'running' WHERE id = ?")->execute([$id]);
 
     // Duyet luon moi yeu cau dang cho, va bao cho nguoi da xin
     global $ME;
@@ -3738,6 +3741,14 @@ case 'set-status': {
         q_fail('Tất cả các task trong checklist phải hoàn thành trước khi đóng dự án', 409);
     $st = $pdo->prepare("UPDATE quotations SET status = ? WHERE id = ?");
     $st->execute([$stt, $id]);
+    /* APSA186: dong bo co "da dong" theo trang thai du an */
+    if (in_array($stt, array('done', 'paid', 'lost', 'dong_du_an'), true)) {
+        $pdo->prepare("UPDATE `quotations` SET closed_at = COALESCE(closed_at, NOW()), closed_by = ?, closed_by_name = ? WHERE id = ?")
+            ->execute([(is_array($ME) && isset($ME['id'])) ? (int) $ME['id'] : null, qc_actor(), $id]);
+    } else {
+        $pdo->prepare("UPDATE `quotations` SET closed_at = NULL, closed_by = NULL, closed_by_name = NULL WHERE id = ?")
+            ->execute([$id]);
+    }
     if (isset($B) && is_array($B) && array_key_exists('deliveries', $B)) {
         q_delivSave($pdo, $id, $B['deliveries']);
     }
@@ -3834,7 +3845,7 @@ function qc_boot(PDO $pdo) {
 function qc_row(PDO $pdo, $id) {
     $id = (int)$id;
     if ($id <= 0) return null;
-    $st = $pdo->prepare("SELECT id, code, title, closed_at, closed_by, closed_by_name FROM `quotations` WHERE id = ?");
+    $st = $pdo->prepare("SELECT id, code, title, status, closed_at, closed_by, closed_by_name FROM `quotations` WHERE id = ?");
     $st->execute([$id]);
     return $st->fetch() ?: null;
 }
@@ -3852,12 +3863,18 @@ function qc_actor() {
 
 // Chan moi thao tac ghi khi du an da dong
 function qc_gate(PDO $pdo, $action, $B) {
-    static $LOCKED = ["save","set-status","delete","upload-file","delete-file","import-xlsx"];
-    if (!in_array($action, $LOCKED, true)) return;
+    /* APSA186: du an da dong -> khoa MOI thao tac ghi, tru cac viec sau */
+    static $ALLOW = ["project-close", "project-reopen", "reopen-request", "reopen-decide",
+                     "pin-toggle", "set-priority", "restore", "comment-add"];
+    if (in_array($action, $ALLOW, true)) return;
+    if (strtoupper($_SERVER["REQUEST_METHOD"] ?? "GET") !== "POST") return;
+    if ($action === "set-status" && qc_is_admin()) return;   // Admin doi trang thai de mo lai
     $id = (int)($B['id'] ?? $B['quotation_id'] ?? $_GET['id'] ?? 0);
     if ($id <= 0) return;                       // tao moi -> cho phep
     $r = qc_row($pdo, $id);
-    if (!$r || empty($r['closed_at'])) return;  // chua dong -> cho phep
+    if (!$r) return;
+    $CLOSED = array('done', 'paid', 'lost', 'dong_du_an');
+    if (empty($r['closed_at']) && !in_array((string) ($r['status'] ?? ''), $CLOSED, true)) return;  // chua dong -> cho phep
     q_fail('Dự án đã đóng bởi ' . ($r['closed_by_name'] ?: 'ai đó')
          . ' — cần Admin mở lại mới chỉnh sửa được.', 423);
 }
