@@ -1,5 +1,5 @@
 {
-    "version": "1.8.13",
+    "version": "1.8.14",
     "updated": "2026-09-05",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-05",
             "note": "Phiên bản 1.8",
             "items": [
+                {
+                    "d": "2026-09-05",
+                    "v": "1.8.14",
+                    "t": "tach Checklist va Bao gia/Nghiem thu thanh cum dong mo rieng nhu Chi phi thuc te",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-05",
                     "v": "1.8.13",

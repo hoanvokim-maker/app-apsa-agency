@@ -896,6 +896,9 @@ table.chktbl td.chk-p{ width:74px; text-align:center; }
 table.chktbl th:nth-last-child(2){ width:74px; }
 /* APSA1812: input date an cua bo chon ngay khong duoc an theo opacity cua dong */
 table.chktbl input.dmy-h{ opacity:0 !important; }
+.expsum .secpc{ color:var(--accent,#dff20d); font-weight:800; font-size:13px; text-shadow:0 0 10px rgba(223,242,13,.5); }
+.expsum .secpc.ok{ color:#4ade80; text-shadow:0 0 10px rgba(74,222,128,.5); }
+#chkSec .asgprog{ margin-top:14px; }
 .asgprog{ display:flex; align-items:center; gap:16px; margin:4px 0 12px; padding:11px 16px;
           border:1px solid var(--border); border-radius:14px;
           background:linear-gradient(90deg, rgba(223,242,13,.05), rgba(255,255,255,.015)); }
@@ -1172,10 +1175,7 @@ table.chktbl th:last-child{ width:34px; }
           <div id="delivWrap"></div>
           <div style="margin-top:8px"><button class="hbtn" type="button" onclick="delivAdd()">+  Thêm đợt giao</button></div>
         </div>
-        <div class="fg pofg">
-          <label>Checklist dự án <span class="xs" style="text-transform:none;letter-spacing:0;color:var(--text3)">· nhóm công việc, người được giao, hạn hoàn thành — trễ hạn nền đỏ, còn ≤ 2 ngày nền vàng</span></label>
-          <div id="asgWrap"></div>
-        </div>
+        
         <div class="fg pofg">
           <label>File PO của dự án <span class="xs" style="text-transform:none;letter-spacing:0;color:var(--text3)">· PDF, tối đa 20MB — sẽ được đóng gói kèm khi tải nghiệm thu</span></label>
           <div class="porow" id="poRow"></div>
@@ -1196,7 +1196,25 @@ table.chktbl th:last-child{ width:34px; }
       </div>
     </div>
 
-    <div class="toolbar">
+    <div class="expsec" id="chkSec">
+      <div class="exphead" onclick="apToggleSec('chk')" title="Nhóm công việc, người được giao, hạn hoàn thành — trễ hạn nền đỏ, còn ≤ 2 ngày nền vàng">
+        <svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-check"/></svg>
+        <span class="expttl">CHECKLIST DỰ ÁN</span>
+        <span class="expsum" id="chkSum"></span>
+        <span class="expchev"><svg class="ic" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+      </div>
+      <div class="expbody"><div id="asgWrap"></div></div>
+    </div>
+
+    <div class="expsec" id="quoSec">
+      <div class="exphead" onclick="apToggleSec('quo')">
+        <svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-invoice"/></svg>
+        <span class="expttl">BÁO GIÁ / NGHIỆM THU</span>
+        <span class="expsum" id="quoSum"></span>
+        <span class="expchev"><svg class="ic" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+      </div>
+      <div class="expbody">
+      <div class="toolbar">
       <button class="hbtn" onclick="addRow('section')">＋ Nhóm hạng mục</button>
       <button class="hbtn" onclick="addRow('item')">＋ Dòng hạng mục</button>
       <button class="hbtn" onclick="openRc()"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-copy"/></svg> Lấy từ Rate Card</button>
@@ -1228,6 +1246,9 @@ table.chktbl th:last-child{ width:34px; }
         </thead>
         <tbody id="qbody"></tbody>
       </table>
+    </div>
+
+    </div>
     </div>
 
     <div class="expsec" id="expSec">
@@ -2178,6 +2199,38 @@ function asgDup(i){
   renderAsg(); markDirty();
   try { toast(src.kind === 'group' ? ('Đã nhân đôi nhóm — ' + len + ' dòng') : 'Đã nhân đôi dòng', 'ok'); } catch (x) {}
 }
+/* APSA1813: cum dong/mo rieng cho Checklist va Bao gia */
+var AP_SEC_OPEN = { chk: true, quo: true };
+function apToggleSec(k, force){
+  AP_SEC_OPEN[k] = (force === undefined) ? !AP_SEC_OPEN[k] : !!force;
+  var el = document.getElementById(k === 'chk' ? 'chkSec' : 'quoSec');
+  if (el) el.classList.toggle('open', AP_SEC_OPEN[k]);
+  try { localStorage.setItem('quo_sec_' + k, AP_SEC_OPEN[k] ? '1' : '0'); } catch (e) {}
+}
+function apSecSum(){
+  var sm = document.getElementById('chkSum');
+  if (sm) {
+    var p = (typeof asgProg === 'function') ? asgProg() : null;
+    sm.innerHTML = p ? ('<b class="secpc' + (p.pct === 100 ? ' ok' : '') + '">' + p.pct + '%</b> · ' + p.done + '/' + p.n + ' việc xong')
+                     : 'chưa có công việc';
+  }
+  var qs = document.getElementById('quoSum');
+  if (qs) {
+    var n = 0;
+    try { n = EDIT.items.filter(function(x){ return x.kind !== 'section'; }).length; } catch (e) { n = 0; }
+    qs.textContent = n ? (n + ' hạng mục') : 'chưa có hạng mục';
+  }
+}
+function apSecInit(){
+  ['chk', 'quo'].forEach(function(k){
+    var v = null;
+    try { v = localStorage.getItem('quo_sec_' + k); } catch (e) {}
+    apToggleSec(k, v === null ? true : v === '1');
+  });
+  apSecSum();
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apSecInit);
+else apSecInit();
 /* APSA1811: tien do checklist */
 var ASG_W = { todo: 0, doing: 40, review: 75, done: 100 };
 function asgProg(){
@@ -2250,6 +2303,7 @@ function renderAsg(){
       (ASG.length ? `<span class="xs" style="color:var(--text3)">Lưu báo giá là checklist được lưu theo.</span>` : '') +
       `<a class="asglink" href="./assignments.html" target="_blank" rel="noopener">Trang làm việc</a>` +
     `</div>`;
+  apSecSum();
 }
 
 function asgSet(i, k, v){
@@ -2910,6 +2964,7 @@ function renderRows(){
   bindDrag();
   fitCols();
   renderAmounts();
+  apSecSum();
 }
 
 /* ══════════ KÉO-THẢ ĐỔI THỨ TỰ DÒNG ══════════
