@@ -657,7 +657,7 @@ table.q tbody tr.dragblock td{ background:rgba(223,242,13,.05); }
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/theme.css?v=22" />
-<script src="/apsa-ui.js?v=32"></script>
+<script src="/apsa-ui.js?v=34"></script>
   <script src="/perm-guard.js?v=3"></script>
 <script src="/exp-qr.js?v=10"></script>
 <script src="/exp-day.js?v=5"></script>
@@ -2039,7 +2039,8 @@ async function loadStaff(){
 
 function staffLabel(u){
   const pos = u.position && ASG_META.positions[u.position] ? ' · ' + ASG_META.positions[u.position] : '';
-  return u.display_name + pos + (u.staff_type === 'freelancer' ? ' (FL)' : '');
+  const av = window.APSA_AV ? window.APSA_AV.ch(window.APSA_AV.pick(u)[1]) + '  ' : '';
+  return av + u.display_name + pos + (u.staff_type === 'freelancer' ? ' (FL)' : '');
 }
 
 const CHK_X = '<svg class="ic" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';

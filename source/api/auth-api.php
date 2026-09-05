@@ -133,7 +133,7 @@ function fail($msg, $code=400) { http_response_code($code); echo json_encode(['o
 
 function currentUser($pdo) {
     if (empty($_SESSION['user_id'])) return null;
-    $st = $pdo->prepare("SELECT id, username, display_name, role, active FROM `app_users` WHERE id = ? AND active = 1");
+    $st = $pdo->prepare("SELECT id, username, display_name, role, active, avatar FROM `app_users` WHERE id = ? AND active = 1");
     $st->execute([$_SESSION['user_id']]);
     $u = $st->fetch();
     return $u ?: null;
@@ -296,11 +296,22 @@ switch ($action) {
         // Danh sách rút gọn cho mọi user đã đăng nhập (không cần quyền Admin) —
         // dùng để chọn "Nhân viên sử dụng" ở các trang như accounts.html.
         requireAuth($pdo);
-        $rows = $pdo->query("SELECT id, username, display_name, role, position, staff_type, can_login, phone, email
+        $rows = $pdo->query("SELECT id, username, display_name, role, position, staff_type, can_login, phone, email, avatar
                                FROM `app_users` WHERE active = 1
                               ORDER BY (staff_type='freelancer') ASC, display_name ASC")->fetchAll();
         ok($rows);
         break;
+
+    // -- Doi nhan vat avatar cua chinh minh --
+    case 'avatar-save': {
+        $u  = requireAuth($pdo);
+        $av = strtolower(trim((string)($body['avatar'] ?? '')));
+        $av = preg_replace('/[^a-z0-9_]/', '', $av);
+        $av = substr($av, 0, 24);
+        $pdo->prepare("UPDATE `app_users` SET avatar = ? WHERE id = ?")->execute([$av, (int)$u['id']]);
+        ok(['id' => (int)$u['id'], 'avatar' => $av]);
+        break;
+    }
 
     case 'create':
         requireAdmin($pdo);

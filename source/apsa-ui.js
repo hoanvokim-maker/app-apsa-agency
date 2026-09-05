@@ -1310,3 +1310,142 @@ function pullHome() {
 
   window.apsaModalLockOutside = true;
 })();
+
+/* ===== APSA 1.8.3 - Nhan vat dai dien (avatar) ===== */
+(function () {
+  var LIST = [
+    ['cat',0x1F431,'#ffd9e8'], ['dog',0x1F436,'#ffe6c9'], ['fox',0x1F98A,'#ffd8b5'],
+    ['panda',0x1F43C,'#ececec'], ['koala',0x1F428,'#dde8f2'], ['tiger',0x1F42F,'#ffe3a8'],
+    ['lion',0x1F981,'#ffecb8'], ['frog',0x1F438,'#d8f5d1'], ['monkey',0x1F435,'#f2dfc6'],
+    ['rabbit',0x1F430,'#ffe3ec'], ['bear',0x1F43B,'#e9dac9'], ['pig',0x1F437,'#ffe1ea'],
+    ['chick',0x1F425,'#fff2bd'], ['penguin',0x1F427,'#dbe8f4'], ['owl',0x1F989,'#e5ded2'],
+    ['unicorn',0x1F984,'#f2e0ff'], ['octopus',0x1F419,'#ffd8d8'], ['dino',0x1F996,'#d8f2db'],
+    ['turtle',0x1F422,'#daf2d3'], ['whale',0x1F433,'#d2e8ff'], ['butterfly',0x1F98B,'#e9dfff'],
+    ['bee',0x1F41D,'#fff2c7'], ['dolphin',0x1F42C,'#d2ecff'], ['hedgehog',0x1F994,'#eedfcd'],
+    ['ghost',0x1F47B,'#eaeaf7'], ['alien',0x1F47D,'#e2f2e7'], ['robot',0x1F916,'#e2e7ef'],
+    ['cactus',0x1F335,'#dcf1d5'], ['sloth',0x1F9A5,'#e7e0d3'], ['duck',0x1F986,'#fff0cc'],
+    ['crab',0x1F980,'#ffdcd6'], ['mouse',0x1F42D,'#e6e6e6']
+  ];
+  var IDX = {}; for (var i = 0; i < LIST.length; i++) IDX[LIST[i][0]] = LIST[i];
+  function ch(cp){ return String.fromCodePoint(cp); }
+  function pick(u){
+    u = u || {};
+    var k = String(u.avatar || '');
+    if (IDX[k]) return IDX[k];
+    var id = Number(u.id) || 0;
+    return LIST[Math.abs(id) % LIST.length];
+  }
+  function html(u, size){
+    var a = pick(u); size = size || 22;
+    return '<span class="apsa-av" style="width:' + size + 'px;height:' + size + 'px;background:' + a[2] +
+           ';font-size:' + Math.round(size * 0.62) + 'px">' + ch(a[1]) + '</span>';
+  }
+  window.APSA_AV = { list: LIST, pick: pick, html: html, ch: ch, open: openPicker };
+
+  function css(){
+    if (document.getElementById('apsaAvCss')) return;
+    var st = document.createElement('style'); st.id = 'apsaAvCss';
+    st.textContent =
+      '.apsa-av{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;line-height:1;vertical-align:middle;-webkit-user-select:none;user-select:none;flex:0 0 auto}' +
+      '.apsa-avhost{background:transparent!important;color:inherit!important;padding:0!important;border:0!important;overflow:visible!important;cursor:pointer}' +
+      '.apsa-avmodal{position:fixed;inset:0;background:rgba(0,0,0,.66);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px}' +
+      '.apsa-avbox{background:#0b0b0b;border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:18px;width:min(430px,94vw);box-shadow:0 18px 60px rgba(0,0,0,.6)}' +
+      '.apsa-avttl{font-size:13px;font-weight:700;color:#fff;letter-spacing:.3px}' +
+      '.apsa-avsub{font-size:11.5px;color:#8a8a8a;margin-top:3px}' +
+      '.apsa-avgrid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin:14px 0 12px}' +
+      '.apsa-avgrid button{background:none;border:1px solid transparent;border-radius:10px;padding:3px;cursor:pointer;display:flex;align-items:center;justify-content:center}' +
+      '.apsa-avgrid button:hover{border-color:rgba(255,255,255,.28)}' +
+      '.apsa-avgrid button.on{border-color:#dff20d;background:rgba(223,242,13,.12)}' +
+      '.apsa-avfoot{display:flex;justify-content:flex-end}' +
+      '.apsa-avclose{background:none;border:1px solid rgba(255,255,255,.16);color:#cfcfcf;border-radius:9px;padding:6px 14px;font-size:12px;cursor:pointer}' +
+      '.apsa-avclose:hover{border-color:rgba(255,255,255,.34);color:#fff}' +
+      '@media(max-width:520px){.apsa-avgrid{grid-template-columns:repeat(6,1fr)}}';
+    (document.head || document.documentElement).appendChild(st);
+  }
+
+  function openPicker(){
+    css();
+    var u = window.__APSA_USER || {};
+    var cur = pick(u)[0];
+    var g = '';
+    for (var j = 0; j < LIST.length; j++) {
+      var a = LIST[j];
+      g += '<button type="button" data-k="' + a[0] + '"' + (a[0] === cur ? ' class="on"' : '') + '>' +
+           '<span class="apsa-av" style="width:36px;height:36px;background:' + a[2] + ';font-size:23px">' + ch(a[1]) + '</span></button>';
+    }
+    var ov = document.createElement('div');
+    ov.className = 'apsa-avmodal';
+    ov.innerHTML = '<div class="apsa-avbox">' +
+      '<div class="apsa-avttl">Chọn nhân vật của bạn</div>' +
+      '<div class="apsa-avsub">Nhân vật này hiện ở góc phải và ở mọi nơi có tên bạn.</div>' +
+      '<div class="apsa-avgrid">' + g + '</div>' +
+      '<div class="apsa-avfoot"><button type="button" class="apsa-avclose">Đóng</button></div></div>';
+    document.body.appendChild(ov);
+    ov.addEventListener('click', function (e) {
+      if (e.target === ov || (e.target.closest && e.target.closest('.apsa-avclose'))) { ov.remove(); return; }
+      var b = e.target.closest ? e.target.closest('button[data-k]') : null;
+      if (!b) return;
+      var k = b.getAttribute('data-k');
+      if (window.__APSA_USER) window.__APSA_USER.avatar = k;
+      ov.remove();
+      repaint();
+      fetch('./api/auth-api.php?action=avatar-save', {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ avatar: k })
+      }).catch(function () {});
+      window.dispatchEvent(new Event('apsa-avatar-changed'));
+    });
+  }
+
+  function paintAv(){
+    var u = window.__APSA_USER; if (!u) return;
+    var el = document.getElementById('av'); if (!el) return;
+    var k = pick(u)[0];
+    if (el.getAttribute('data-apsa-av') === k && el.querySelector('.apsa-av')) return;
+    css();
+    el.setAttribute('data-apsa-av', k);
+    el.classList.add('apsa-avhost');
+    el.innerHTML = html(u, 24);
+    el.title = 'Đổi nhân vật';
+    if (!el.getAttribute('data-apsa-bound')) {
+      el.setAttribute('data-apsa-bound', '1');
+      el.addEventListener('click', function (e) { e.stopPropagation(); openPicker(); });
+    }
+  }
+
+  function injectMenu(){
+    var m = document.getElementById('apsaUserMenu');
+    if (!m || document.getElementById('apsaAvBtn')) return;
+    var u = window.__APSA_USER || {};
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'umlog'; b.id = 'apsaAvBtn';
+    b.innerHTML = '<span>Đổi nhân vật</span><em>' + ch(pick(u)[1]) + '</em>';
+    var sep = document.createElement('div'); sep.className = 'umsep';
+    m.insertBefore(sep, m.firstChild);
+    m.insertBefore(b, m.firstChild);
+    b.addEventListener('click', function (e) { e.stopPropagation(); openPicker(); });
+  }
+
+  function repaint(){
+    var el = document.getElementById('av');
+    if (el) el.removeAttribute('data-apsa-av');
+    var b = document.getElementById('apsaAvBtn');
+    if (b) b.remove();
+    paintAv(); injectMenu();
+  }
+
+  function tick(){ paintAv(); injectMenu(); }
+
+  function start(){
+    css(); tick();
+    try {
+      new MutationObserver(function () { tick(); })
+        .observe(document.documentElement, { childList: true, subtree: true });
+    } catch (e) {}
+    setInterval(tick, 1500);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+  window.addEventListener('apsa-auth-ready', repaint);
+})();

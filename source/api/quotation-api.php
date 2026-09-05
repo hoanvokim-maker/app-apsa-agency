@@ -2576,6 +2576,8 @@ case 'project-board': {
     global $Q_STATUS;
     // Nhóm trạng thái cho trang Làm việc
     $SCOPES = [
+            // Tat ca du an tu Bao gia tro di (bo Nhan yeu cau) - mac dinh
+            'all'     => array_values(array_diff(array_column(st_statuses(), 'key'), array('request'))),
         // Đã chốt và đang chạy — mặc định của trang Làm việc
         'active'  => st_status_keys('is_active'),
         // Chỉ đúng "Đang thực hiện"
@@ -2583,13 +2585,13 @@ case 'project-board': {
         // Chưa chốt: còn ở bước yêu cầu / báo giá
         'presale' => ['request','quote'],
         // Mọi dự án còn mở (bỏ Hoàn thành + Trượt Bidding)
-        'open'    => st_status_keys('is_open'),
+        'open'    => array_values(array_diff(st_status_keys('is_open'), array('dong_du_an'))),
     ];
     $stt   = trim((string)($_GET['status'] ?? ''));
     $scope = trim((string)($_GET['scope'] ?? ''));
     if ($stt !== '' && $stt !== 'all' && isset($Q_STATUS[$stt]))      $statuses = [$stt];
     elseif ($scope !== '' && isset($SCOPES[$scope]))                  $statuses = $SCOPES[$scope];
-    else                                                              $statuses = $SCOPES['active'];
+    else                                                              $statuses = $SCOPES['all'];
 
     $where  = ['q.deleted_at IS NULL'];
     $params = [];
@@ -2623,7 +2625,8 @@ case 'project-board': {
               FROM `quotations` q
          LEFT JOIN `crm_companies` c ON c.id = q.company_id
              WHERE " . implode(' AND ', $where) . "
-          ORDER BY pinned DESC, FIELD(q.status,{$Q_PRIO_SQL}) ASC,
+          ORDER BY (q.status IN ('done','paid','lost','dong_du_an')) ASC,
+                        pinned DESC, FIELD(q.status,{$Q_PRIO_SQL}) ASC,
                    q.quotation_date DESC, q.id DESC";
     $st = $pdo->prepare($sql);
     $st->execute($params);
@@ -2652,7 +2655,7 @@ case 'project-board': {
     $ids = array_map(fn($r) => (int)$r['id'], $rows);
     $in  = implode(',', array_fill(0, count($ids), '?'));
     $sa  = $pdo->prepare(
-        "SELECT a.*, u.display_name, u.staff_type, u.phone, u.email
+        "SELECT a.*, u.display_name, u.staff_type, u.phone, u.email, u.avatar
            FROM `quotation_assignees` a
            JOIN `app_users` u ON u.id = a.user_id
           WHERE a.quotation_id IN ($in)
@@ -2702,7 +2705,7 @@ case 'assign-board': {
         $like = '%' . $_GET['q'] . '%';
         array_push($params, $like, $like, $like, $like);
     }
-    $sql = "SELECT a.*, u.display_name, u.staff_type, u.phone, u.email,
+    $sql = "SELECT a.*, u.display_name, u.staff_type, u.phone, u.email, u.avatar,
                    q.code, q.title, q.kind, q.quotation_date, q.event_date, q.status AS quo_status,
                    c.name AS company_name
               FROM `quotation_assignees` a

@@ -382,7 +382,7 @@ table.asg col.c-stat{ width:132px; }
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/theme.css?v=22" />
-<script src="/apsa-ui.js?v=32"></script>
+<script src="/apsa-ui.js?v=34"></script>
   <script src="/perm-guard.js?v=3"></script>
 </head>
 <body>
@@ -441,7 +441,8 @@ const API      = './api/quotation-api.php';
 const AUTH_API = './api/auth-api.php';
 
 let ROWS = [], STAFF = [], META = { status:{}, positions:{}, quo:{} };
-let F = { scope:'active', status:'', kind:'', user:'', pos:'', q:'', view:'' };
+let MY_ID = '';
+let F = { scope:'all', status:'', kind:'', user:'', pos:'', q:'', view:'' };
 let PAGE = 40;
 let OPEN = new Set();
 let searchTimer = null;
@@ -520,7 +521,8 @@ function renderFilterOptions(){
   const sc = META.scopeCount || {};
   const n  = k => sc[k] != null ? ' (' + sc[k] + ')' : '';
   $('fScope').innerHTML =
-    opt('active',  'Đang triển khai' + n('active'),  F.scope) +
+    opt('all', 'Tất cả dự án' + n('all'), F.scope) +
+    opt('active', 'Đang triển khai' + n('active'), F.scope) +
     opt('running', 'Đang thực hiện'  + n('running'), F.scope) +
     opt('presale', 'Chưa chốt'       + n('presale'), F.scope) +
     opt('open',    'Tất cả còn mở'   + n('open'),    F.scope);
@@ -533,13 +535,13 @@ function renderFilterOptions(){
   $('fPos').innerHTML = opt('', 'Mọi vị trí', F.pos) +
     Object.keys(META.positions).map(k => opt(k, META.positions[k], F.pos)).join('');
   $('fKind').value = F.kind;
-  $('fScope').classList.toggle('on', F.scope !== 'active');
+  $('fScope').classList.toggle('on', F.scope !== 'all');
   ['fStt','fKind','fUser','fPos'].forEach(id => $(id).classList.toggle('on', !!$(id).value));
 }
 function setF(k, v){ F[k] = v; PAGE = 40; load(); }
 function setScope(v){ F.scope = v; F.status = ''; PAGE = 40; load(); }
 function clearF(){
-  F = { scope:'active', status:'', kind:'', user:'', pos:'', q:'', view:'' };
+  F = { scope:'all', status:'', kind:'', user:MY_ID, pos:'', q:'', view:'' };
   PAGE = 40;
   $('q').value = '';
   load();
@@ -633,6 +635,9 @@ function taskTable(r){
 }
 
 /* ─── project card ─── */
+function avOf(a){ return window.APSA_AV ? window.APSA_AV.pick({ id: a.user_id, avatar: a.avatar }) : null; }
+function avCh(a){ const x = avOf(a); return x ? window.APSA_AV.ch(x[1]) : esc(initial(a.display_name)); }
+function avBg(a){ const x = avOf(a); return x ? 'background:' + x[2] + ';font-size:15px;color:#000' : ''; }
 function teamHtml(r){
   if (!r.assignees.length) return '<span class="noteam">Chưa giao việc</span>';
   const seen = new Map();
@@ -640,9 +645,9 @@ function teamHtml(r){
   const list = [...seen.values()];
   const show = list.slice(0, 4);
   let h = '<div class="team">' + show.map(a =>
-    '<span class="av' + (a.staff_type === 'freelancer' ? ' fl' : '') + '" title="' +
+    '<span class="av' + (a.staff_type === 'freelancer' ? ' fl' : '') + '" style="' + avBg(a) + '" title="' +
       esc(a.display_name + (a.position_label ? ' · ' + a.position_label : '')) + '">' +
-      esc(initial(a.display_name)) + '</span>').join('');
+      avCh(a) + '</span>').join('');
   if (list.length > show.length) h += '<span class="av more">+' + (list.length - show.length) + '</span>';
   return h + '</div>';
 }
@@ -690,7 +695,7 @@ function cardHtml(r){
 function render(){
   const list = visible();
   if (!list.length){
-    const filtered = !!(F.status || F.kind || F.user || F.pos || F.q || F.view || F.scope !== 'active');
+    const filtered = !!(F.status || F.kind || F.pos || F.q || F.view || F.scope !== 'all' || String(F.user) !== String(MY_ID));
     $('wrap').innerHTML =
       '<div class="empty"><div class="ico"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#i-' +
         (filtered ? 'search' : 'doc') + '"/></svg></div>' +
@@ -774,10 +779,10 @@ async function boot(){
   loadOpen();
   $('q').addEventListener('input', onSearch);
   const p = new URLSearchParams(location.search);
-  /* APSA181: mac dinh chi hien du an co checklist giao cho chinh minh */
+  /* APSA183: mac dinh xem tat ca du an lien quan toi chinh minh */
   let meU = window.__APSA_USER;
   if (!meU || !meU.id) { try { meU = await api(AUTH_API, 'me'); } catch(e){} }
-  if (meU && meU.id) F.user = String(meU.id);
+  if (meU && meU.id) { MY_ID = String(meU.id); F.user = MY_ID; }
   if (p.get('user'))   F.user   = (p.get('user') === 'all' ? '' : p.get('user'));
   if (p.get('pos'))    F.pos    = p.get('pos');
   if (p.get('status')) F.status = p.get('status');

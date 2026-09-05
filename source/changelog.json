@@ -1,5 +1,5 @@
 {
-    "version": "1.8.2",
+    "version": "1.8.3",
     "updated": "2026-09-05",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-05",
             "note": "Phiên bản 1.8",
             "items": [
+                {
+                    "d": "2026-09-05",
+                    "v": "1.8.3",
+                    "t": "Trang Lam viec: mac dinh xem tat ca du an lien quan toi minh (tu Bao gia tro di), du an da dong xep cuoi; them Nhan vat dai dien cho tung user (32 nhan vat, doi duoc)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-05",
                     "v": "1.8.2",
