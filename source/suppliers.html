@@ -229,8 +229,12 @@
         <option value="trung">Miền Trung</option>
         <option value="nam">Miền Nam</option>
         <option value="tay">Miền Tây</option>
-      </select>
-    </div>
+        </select>
+      </div>
+      <div class="fg" id="fgPos">
+        <label>Vị trí</label>
+        <select id="ePos"><option value="">— chưa xác định —</option></select>
+      </div>
     <div class="fg">
       <label>Trạng thái</label>
       <select id="eActive"><option value="1">Đang hợp tác</option><option value="0">Ngừng hợp tác</option></select>
@@ -461,10 +465,29 @@ el('q').addEventListener('keydown', function (e) { if (e.key === 'Escape') { e.s
 function clearSearch() { el('q').value = ''; FQ = ''; el('sbox').classList.remove('has'); draw(); el('q').focus(); }
 
 /* ── thêm / sửa ── */
+var POS_MAP = null;
+function ensurePos(cb) {
+  if (POS_MAP) { if (cb) cb(); return; }
+  fetch('./api/auth-api.php?action=positions', { credentials: 'same-origin' })
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      POS_MAP = (j && j.ok && j.data) ? j.data : {};
+      var sel = el('ePos');
+      if (sel) sel.innerHTML = '<option value="">— chưa xác định —</option>' +
+        Object.keys(POS_MAP).map(function (k) {
+          return '<option value="' + k + '">' + POS_MAP[k] + '</option>';
+        }).join('');
+      if (cb) cb();
+    })
+    .catch(function () { POS_MAP = {}; if (cb) cb(); });
+}
+
 function kindLbl() {
   var p = el('eKind').value === 'person';
   el('eNameLb').textContent  = p ? 'Họ tên *' : 'Công ty *';
   el('eName').placeholder    = p ? 'VD: Nguyễn Văn Nam' : 'VD: Song Khánh';
+  var fp = el('fgPos'); if (fp) fp.style.display = p ? '' : 'none';
+  ensurePos();
 }
 function fill(s) {
   el('eKind').value = (s && s.kind === 'person') ? 'person' : 'company';
@@ -478,6 +501,7 @@ function fill(s) {
   el('eAddr').value    = s ? (s.address || '') : '';
   el('eNote').value    = s ? (s.note || '') : '';
   el('eRegion').value  = s ? (s.region || '') : '';
+  ensurePos(function(){ var e = el('ePos'); if (e) e.value = s ? (s.position || '') : ''; });
   el('eBank').value    = s ? (s.bank_name || '') : '';
   el('eBranch').value  = s ? (s.bank_branch || '') : '';
   el('eAcc').value     = s ? (s.bank_account || '') : '';
@@ -514,6 +538,7 @@ function saveIt() {
     address: el('eAddr').value.trim(),
     note: el('eNote').value.trim(),
     region: el('eRegion').value,
+    position: el('ePos') ? el('ePos').value : '',
     bank_name: el('eBank').value.trim(),
     bank_branch: el('eBranch').value.trim(),
     bank_account: el('eAcc').value.trim(),

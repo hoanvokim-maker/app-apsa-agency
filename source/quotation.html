@@ -2056,8 +2056,20 @@ function whoOpts(a){
   let h = opt('0', '\u2014 ch\u01b0a giao \u2014');
   const st = (STAFF || []).filter(u => Number(u.active) !== 0);
   if (st.length) h += '<optgroup label="Nh\u00e2n s\u1ef1 APSA">' + st.map(u => opt('u' + u.id, staffLabel(u))).join('') + '</optgroup>';
-  if ((SUPP || []).length) h += '<optgroup label="Nh\u00e0 cung c\u1ea5p c\u00e1 nh\u00e2n">' +
-      SUPP.map(x => opt('s' + x.id, x.name)).join('') + '</optgroup>';
+  if ((SUPP || []).length) {
+    const PM = (ASG_META && ASG_META.positions) || {};
+    const byPos = {};
+    SUPP.forEach(x => { const kk = String(x.position || ''); (byPos[kk] = byPos[kk] || []).push(x); });
+    const keys = Object.keys(byPos).filter(kk => kk !== '')
+      .sort((p, q) => String(PM[p] || p).localeCompare(String(PM[q] || q), 'vi'));
+    if (byPos['']) keys.push('');
+    keys.forEach(kk => {
+      const lbl = kk ? (PM[kk] || kk) : 'Ch\u01b0a c\u00f3 v\u1ecb tr\u00ed';
+      h += '<optgroup label="NCC \u00b7 ' + esc(lbl) + '">' +
+           byPos[kk].slice().sort((p, q) => String(p.name || '').localeCompare(String(q.name || ''), 'vi'))
+             .map(x => opt('s' + x.id, x.name)).join('') + '</optgroup>';
+    });
+  }
   return h;
 }
 

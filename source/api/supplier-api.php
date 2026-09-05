@@ -136,6 +136,24 @@ function sp_region_col(PDO $pdo)
 
 sp_bank_cols($pdo);
 sp_region_col($pdo);
+
+/* APSA187: vi tri cho NCC ca nhan */
+function sp_position_col(PDO $pdo) {
+    try {
+        $st = $pdo->prepare("SELECT COUNT(*) FROM information_schema.COLUMNS
+                              WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ratecard_suppliers'
+                                AND COLUMN_NAME = 'position'");
+        $st->execute();
+        if (!(int) $st->fetchColumn())
+            $pdo->exec("ALTER TABLE `ratecard_suppliers` ADD COLUMN `position` VARCHAR(30) NOT NULL DEFAULT ''");
+    } catch (Exception $e) { }
+}
+function sp_pos($v) {
+    $v = strtolower(trim((string) $v));
+    $v = preg_replace('/[^a-z0-9_]/', '', $v);
+    return substr($v, 0, 30);
+}
+sp_position_col($pdo);
 $WHO = (string) (($ME['display_name'] ?? '') !== '' ? $ME['display_name'] : ($ME['username'] ?? ''));
 $act = isset($_GET['action']) ? (string) $_GET['action'] : '';
 
@@ -147,7 +165,7 @@ case 'me':
 
 case 'list': {
     $q  = sp_s(isset($_GET['q']) ? $_GET['q'] : '', 120);
-    $sql = "SELECT `id`,`name`,`contact`,`address`,`phone`,`phone2`,`email`,`tax_code`,`region`,`bank_name`,`bank_branch`,`bank_account`,`bank_holder`,`kind`,`note`,`active`,`updated_by`,`updated_at`
+    $sql = "SELECT `id`,`name`,`contact`,`address`,`phone`,`phone2`,`email`,`tax_code`,`region`,`position`,`bank_name`,`bank_branch`,`bank_account`,`bank_holder`,`kind`,`note`,`active`,`updated_by`,`updated_at`
               FROM `ratecard_suppliers`";
     $arg = array();
     if ($q !== '') {
@@ -185,6 +203,7 @@ case 'save': {
         sp_s(isset($b['bank_holder'])  ? $b['bank_holder']  : '', 200),
         sp_s(isset($b['note'])     ? $b['note']     : '', 300),
         (int) (isset($b['active']) ? (int) $b['active'] : 1) ? 1 : 0,
+        sp_pos(isset($b['position']) ? $b['position'] : ''),
         $WHO,
     );
 
@@ -192,13 +211,13 @@ case 'save': {
         if ($id > 0) {
             $f[] = $id;
             $st = $pdo->prepare("UPDATE `ratecard_suppliers`
-                                    SET `kind`=?,`name`=?,`contact`=?,`address`=?,`phone`=?,`phone2`=?,`email`=?,`tax_code`=?,`region`=?,`bank_name`=?,`bank_branch`=?,`bank_account`=?,`bank_holder`=?,`note`=?,`active`=?,`updated_by`=?
+                                    SET `kind`=?,`name`=?,`contact`=?,`address`=?,`phone`=?,`phone2`=?,`email`=?,`tax_code`=?,`region`=?,`bank_name`=?,`bank_branch`=?,`bank_account`=?,`bank_holder`=?,`note`=?,`active`=?,`position`=?,`updated_by`=?
                                   WHERE `id`=?");
             $st->execute($f);
         } else {
             $st = $pdo->prepare("INSERT INTO `ratecard_suppliers`
-                                 (`kind`,`name`,`contact`,`address`,`phone`,`phone2`,`email`,`tax_code`,`region`,`bank_name`,`bank_branch`,`bank_account`,`bank_holder`,`note`,`active`,`updated_by`)
-                                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                                 (`kind`,`name`,`contact`,`address`,`phone`,`phone2`,`email`,`tax_code`,`region`,`position`,`bank_name`,`bank_branch`,`bank_account`,`bank_holder`,`note`,`active`,`position`,`updated_by`)
+                                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             $st->execute($f);
             $id = (int) $pdo->lastInsertId();
         }

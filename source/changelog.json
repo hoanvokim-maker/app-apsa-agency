@@ -1,5 +1,5 @@
 {
-    "version": "1.8.7",
+    "version": "1.8.8",
     "updated": "2026-09-05",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-05",
             "note": "Phiên bản 1.8",
             "items": [
+                {
+                    "d": "2026-09-05",
+                    "v": "1.8.8",
+                    "t": "NCC ca nhan co them truong Vi tri (sua o trang Nha cung cap); o Nguoi duoc giao trong checklist nhom NCC theo vi tri, nhom chua co vi tri xep cuoi",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-05",
                     "v": "1.8.7",

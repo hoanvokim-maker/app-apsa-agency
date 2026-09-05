@@ -3987,11 +3987,12 @@ function q_payeeList(PDO $pdo) {
     $see = q_seePersonalBank($pdo);
     $out = array('sup' => array(), 'user' => array(), 'see_personal_bank' => $see ? 1 : 0);
     try {
-        $st = $pdo->query("SELECT id, name, kind, bank_name, bank_account, bank_holder FROM `ratecard_suppliers` WHERE active = 1 ORDER BY name ASC");
+        $st = $pdo->query("SELECT id, name, kind, position, bank_name, bank_account, bank_holder FROM `ratecard_suppliers` WHERE active = 1 ORDER BY name ASC");
         foreach ($st->fetchAll() as $r) {
             $out['sup'][] = array(
                 'id' => (int) $r['id'], 'name' => $r['name'],
                 'kind' => (string) (isset($r['kind']) ? $r['kind'] : 'company'),
+                'position' => (string) (isset($r['position']) ? $r['position'] : ''),
                 'bank_name' => $r['bank_name'], 'bank_account' => $r['bank_account'],
                 'bank_holder' => $r['bank_holder'],
             );
