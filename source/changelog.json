@@ -1,7 +1,20 @@
 {
-    "version": "1.7.40",
+    "version": "1.8.0",
     "updated": "2026-09-05",
     "releases": [
+        {
+            "v": "1.8",
+            "date": "2026-09-05",
+            "note": "Phiên bản 1.8",
+            "items": [
+                {
+                    "d": "2026-09-05",
+                    "v": "1.8.0",
+                    "t": "1.8 — Better Me: them the module o trang chu (icon rise + mo ta + nhom Tien ich), dang ky ico-rise vao sprite va ICO_SET",
+                    "by": "mee53661"
+                }
+            ]
+        },
         {
             "v": "1.7",
             "date": "2026-09-03",
