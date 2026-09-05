@@ -1,5 +1,5 @@
 {
-    "version": "1.7.38",
+    "version": "1.7.39",
     "updated": "2026-09-05",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-03",
             "note": "Phiên bản 1.7",
             "items": [
+                {
+                    "d": "2026-09-05",
+                    "v": "1.7.39",
+                    "t": "Cot Uu tien chi con icon (bo chu), o vuong gon, ten muc uu tien chuyen thanh tooltip; cot thu hep tu 104px con 66px",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-05",
                     "v": "1.7.38",

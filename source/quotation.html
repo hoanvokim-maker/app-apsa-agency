@@ -803,6 +803,9 @@ table.q tbody tr.g0>td:first-child{border-left:3px solid rgba(255,255,255,.20)}
 table.q tbody tr.g1>td:first-child{border-left:3px solid #dff20d}
 table.q tbody tr.g2>td:first-child{border-left:3px solid #5aa0ff}
 table.q tbody tr.g3>td:first-child{border-left:3px solid #ff9f0a}
+.prio-cell{width:66px!important}
+.priochip.ico{width:30px;height:24px;padding:0!important;gap:0;justify-content:center}
+.priochip.ico .ic{margin:0}
 .chip.kd-media{border-color:rgba(90,160,255,.55)!important;background:rgba(90,160,255,.14)!important;color:#7fb4ff!important}
 .chip.kd-production{border-color:rgba(255,159,10,.60)!important;background:rgba(255,159,10,.15)!important;color:#ffb043!important}
 .dmy{position:relative;display:block;width:100%}
@@ -1625,10 +1628,13 @@ function pinCell(r){
 }
 function prioCell(r){
   const d = PRIO_LBL[Number(r.priority || 0)];
-  return '<td class="prio-cell"><button class="priochip ' + (d ? d[1] : 'p0') +
-    '" title="Đổi mức ưu tiên" onclick="prioMenu(' + r.id + ', event)">' +
-    (d ? svgIco(ICO[d[2]], 12) + esc(d[0]) : svgIco(ICO.plusc, 12) + 'Đặt mức') + '</button></td>';
+  const tip = d ? ('\u01afu ti\u00ean: ' + d[0] + ' \u2014 b\u1ea5m \u0111\u1ec3 \u0111\u1ed5i')
+                : 'Ch\u01b0a \u0111\u1eb7t m\u1ee9c \u01b0u ti\u00ean \u2014 b\u1ea5m \u0111\u1ec3 \u0111\u1eb7t';
+  return '<td class="prio-cell"><button class="priochip ico ' + (d ? d[1] : 'p0') +
+    '" title="' + tip + '" onclick="prioMenu(' + r.id + ', event)">' +
+    svgIco(d ? ICO[d[2]] : ICO.plusc, 13) + '</button></td>';
 }
+
 function toggleOnlyPin(){
   ONLY_PIN = !ONLY_PIN;
   const b = document.getElementById('btnOnlyPin');
