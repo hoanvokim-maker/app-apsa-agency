@@ -484,6 +484,11 @@ if (!q_hasColumn($pdo, 'quotation_items', 'act_qty')) {
 }
 
 /* --- Chi phi thuc te: nguoi nhan + trang thai tra tien --- */
+if (!q_hasColumn($pdo, 'quotation_expenses', 'created_by')) {
+    q_mig($pdo, "ALTER TABLE `quotation_expenses`
+        ADD COLUMN `created_by` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'User da them dong chi phi',
+        ADD COLUMN `created_by_name` VARCHAR(120) NOT NULL DEFAULT ''");
+}
 if (!q_hasColumn($pdo, 'quotation_expenses', 'pay_date')) {
     q_mig($pdo, "ALTER TABLE `quotation_expenses` ADD COLUMN `pay_date` DATE NULL DEFAULT NULL");
 }
@@ -1003,6 +1008,21 @@ function q_calSyncDeliv(PDO $pdo, $id) {
     } catch (Exception $e) {
         /* im lang: lich khong duoc lam hong viec luu bao gia */
     }
+}
+
+function q_expStamp(PDO $pdo, $rowId) {
+    global $ME;
+    $rowId = (int) $rowId;
+    if ($rowId <= 0) return;
+    $uid  = (is_array($ME) && isset($ME['id'])) ? (int) $ME['id'] : 0;
+    $name = (is_array($ME) && isset($ME['display_name'])) ? (string) $ME['display_name'] : '';
+    if ($uid <= 0 && $name === '') return;
+    try {
+        $pdo->prepare("UPDATE `quotation_expenses`
+                          SET created_by = ?, created_by_name = ?
+                        WHERE id = ? AND created_by = 0 AND created_by_name = ''")
+            ->execute(array($uid, mb_substr($name, 0, 120), $rowId));
+    } catch (PDOException $e) { }
 }
 
 function q_calSync(PDO $pdo, $id)
@@ -2225,7 +2245,9 @@ case 'exp-row-save': {
         q_payeeF($pdo, $B, 'bank_account'), q_payeeF($pdo, $B, 'bank_holder'),
         q_dateOf($B),
     ]);
-    q_ok(array('id' => (int) $pdo->lastInsertId()));
+    $newExpId = (int) $pdo->lastInsertId();
+        q_expStamp($pdo, $newExpId);
+        q_ok(array('id' => $newExpId));
 }
 
 case 'exp-row-del': {
@@ -2396,7 +2418,9 @@ case 'expenses-save': {
             } else {
                 $n = $v; array_unshift($n, $qid);
                 $ins->execute($n);
-                $keep[(int) $pdo->lastInsertId()] = true;
+                    $newExpId = (int) $pdo->lastInsertId();
+                    q_expStamp($pdo, $newExpId);
+                    $keep[$newExpId] = true;
             }
         }
         $gone = array_diff(array_keys($old), array_keys($keep));
@@ -2460,6 +2484,7 @@ case 'expenses-import': {
                         $i++,
                         mb_substr((string)($p['src_id'] ?? ''), 0, 80) ?: null,
                     ]);
+                    q_expStamp($pdo, (int) $pdo->lastInsertId());
                     $rowsN++;
                 }
             }
@@ -2911,6 +2936,7 @@ case 'manage-import': {
                     $ie->execute([$qid, $r['kind'], $r['category'], $r['name'],
                         (string)($r['description'] ?? ''), num($r['qty'] ?? 0), s($r['unit'] ?? '', 50),
                         num($r['price'] ?? 0), q_vatOf($r), $k++]);
+                        q_expStamp($pdo, (int) $pdo->lastInsertId());
                 }
             }
             $pdo->commit();

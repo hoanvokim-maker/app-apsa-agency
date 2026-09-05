@@ -2235,7 +2235,7 @@ function renderExp(){
     const amt = (Number(r.qty)||0) * (Number(r.price)||0);
     return '<tr class="' + expRowCls(r) + (gIdx >= 0 ? ' eg' + (gIdx % 4) : '') + '"' + (gHide ? ' style="display:none"' : '') + ' data-ei="' + i + '" ondragover="expDragOver(event,' + i + ')" ondragleave="expDragLeave(event)" ondrop="expDrop(event,' + i + ')">' +
         '<td class="exp-grip"><span class="grip" draggable="true" title="Kéo để sắp xếp" ondragstart="expDragStart(event,' + i + ')" ondragend="expDragEnd()"><svg class=\"ic\" viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M9 5h.01M9 12h.01M9 19h.01M15 5h.01M15 12h.01M15 19h.01\"/></svg></span></td>' +
-      '<td><input value="' + esc(r.name) + '" placeholder="Hạng mục" oninput="expSet(' + i + ',\'name\',this.value)" /></td>' +
+      '<td><input value="' + esc(r.name) + '" placeholder="Hạng mục" title="' + (r.created_by_name ? 'Người thêm: ' + esc(r.created_by_name) : '') + '" oninput="expSet(' + i + ',\'name\',this.value)" /></td>' +
       '<td><input value="' + esc(r.description) + '" placeholder="Mô tả / nhà cung cấp" oninput="expSet(' + i + ',\'description\',this.value)" /></td>' +
       '<td><input class="num" value="' + (Number(r.qty)||0) + '" oninput="expSet(' + i + ',\'qty\',this.value)" /></td>' +
       '<td><input value="' + esc(r.unit) + '" placeholder="Gói" oninput="expSet(' + i + ',\'unit\',this.value)" /></td>' +

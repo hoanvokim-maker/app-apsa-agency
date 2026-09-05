@@ -1,12 +1,18 @@
 {
-    "version": "1.7.36",
-    "updated": "2026-09-04",
+    "version": "1.7.37",
+    "updated": "2026-09-05",
     "releases": [
         {
             "v": "1.7",
             "date": "2026-09-03",
             "note": "Phiên bản 1.7",
             "items": [
+                {
+                    "d": "2026-09-05",
+                    "v": "1.7.37",
+                    "t": "Module moi Better Me: board phat trien ky nang theo thang, moi topic co HOW + PROCESS checklist %, moi nguoi cung phat trien / mentor, thao luan tra loi duoc, Admin resolve khoa topic; thong bao Zalo khi duoc moi / co comment / duoc resolve",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-04",
                     "v": "1.7.36",

@@ -67,6 +67,13 @@ function pm_groups()
             'needs' => array(),
         ),
         array(
+            'key'   => 'betterme', 'name' => 'Better Me', 'def' => 2,
+            'mods'  => array(102),
+            'pages' => array('betterme.html'),
+            'note'  => 'Board phát triển kỹ năng cá nhân theo tháng — ai cũng có board riêng, Admin xem được hết',
+            'needs' => array(),
+        ),
+        array(
             'key' => 'hr', 'name' => 'Nhân sự', 'def' => 2,
             'mods' => array(90, 91, 94),
             'pages' => array('accounts.html', 'leave.html', 'policy.html'),
@@ -355,6 +362,7 @@ function pm_mods()
         array('id' =>  25, 'name' => 'Inspiration',           'page' => 'inspiration.html',        'grp' => 'media'),
         array('id' => 100, 'name' => 'Frame Avatar',          'page' => 'frame.html',              'grp' => 'media'),
         array('id' => 101, 'name' => 'Chụp ảnh AI',           'page' => 'aiphoto.html',            'grp' => 'media'),
+        array('id' => 102, 'name' => 'Better Me',              'page' => 'betterme.html',        'grp' => 'betterme'),
         array('id' =>  90, 'name' => 'Accounts nhân viên',    'page' => 'accounts.html',           'grp' => 'hr'),
         array('id' =>  91, 'name' => 'Xin nghỉ phép',         'page' => 'leave.html',              'grp' => 'hr'),
         array('id' =>  94, 'name' => 'Policy công ty',        'page' => 'policy.html',             'grp' => 'hr'),

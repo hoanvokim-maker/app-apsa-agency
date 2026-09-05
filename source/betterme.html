@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<script>
+  document.documentElement.style.visibility = 'hidden';
+  fetch('./api/auth-api.php?action=me', { credentials: 'same-origin' })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(res => {
+      if (!res.ok) throw new Error();
+      window.__APSA_USER = res.data;
+      document.documentElement.style.visibility = 'visible';
+    })
+    .catch(() => {
+      location.replace('./login.html?next=' + encodeURIComponent(location.pathname + location.search));
+    });
+</script>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=1">
+  <meta name="theme-color" content="#dff20d">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>APSA — Better Me</title>
+  <link rel="stylesheet" href="/theme.css?v=22" />
+  <script src="/apsa-ui.js?v=32"></script>
+  <style>
+/* ---- base theme ke thua tu cac trang khac ---- */
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #000000; --bg2: #0b0b0b; --bg3: #141414; --bg4: #1c1c1c;
+      --border: rgba(255,255,255,0.08); --border-h: rgba(255,255,255,0.16);
+      --text: #ffffff; --text2: #9a9a9a; --text3: #5e5e5e;
+      --green: #dff20d; --pink: #c9dd00; --red: #ff4d4d;
+      --amber: #ffb020; --sky: #56ccf2;
+      --r: 11px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Oxanium', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(0,0,0,0.9); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      height: 60px; padding: 0 28px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo img { height: 26px; filter: brightness(0) invert(1); opacity: .9; display: block; }
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      color: var(--text2); text-decoration: none; font-size: 13px; font-weight: 500;
+      padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); transition: all .2s;
+    }
+    .back-btn:hover { color: var(--text); border-color: var(--border-h); }
+
+    /* ── PAGE HEAD ── */
+    .page-head { padding: 32px 28px 20px; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+    .page-head h1 { font-size: 26px; font-weight: 800; letter-spacing: -.5px; }
+    .page-head p  { font-size: 13px; color: var(--text2); margin-top: 4px; }
+    .head-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip { background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 14px; font-size: 12px; color: var(--text2); }
+    .chip strong { color: var(--text); }
+    .chip.hi strong { color: var(--green); }
+    .chip.warn strong { color: var(--amber); }
+
+    /* ── TOOLBAR ── */
+    .wrap { padding: 0 28px 60px; }
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+    .tab {
+      background: var(--bg2); border: 1px solid var(--border); color: var(--text2);
+      border-radius: 20px; padding: 7px 16px; font: inherit; font-size: 12.5px; font-weight: 700;
+      cursor: pointer; transition: all .18s; display: inline-flex; align-items: center; gap: 7px;
+    }
+    .tab:hover { border-color: var(--border-h); color: var(--text); }
+    .tab.on { background: var(--green); border-color: var(--green); color: #000; }
+    .tab .cnt { background: var(--red); color: #fff; border-radius: 10px; font-size: 10.5px; padding: 1px 6px; font-weight: 800; }
+    .tab.on .cnt { background: #000; color: var(--green); }
+    .spacer { flex: 1 1 auto; }
+
+    .btn {
+      background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+      border-radius: 20px; padding: 7px 16px; font: inherit; font-size: 12.5px; font-weight: 700;
+      cursor: pointer; transition: all .18s;
+    }
+    .btn:hover:not(:disabled) { border-color: var(--border-h); background: var(--bg4); }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+    .btn.primary { background: var(--green); border-color: var(--green); color: #000; }
+    .btn.primary:hover:not(:disabled) { background: var(--pink); border-color: var(--pink); }
+    .btn.danger { color: var(--red); border-color: rgba(255,77,77,.4); }
+    .btn.danger:hover:not(:disabled) { background: rgba(255,77,77,.12); border-color: var(--red); }
+    .btn.sm { padding: 4px 11px; font-size: 11.5px; }
+
+    /* ── TABLE ── */
+    .tbl-wrap { border: 1px solid var(--border); border-radius: var(--r); overflow: auto; background: var(--bg2); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 900px; }
+    thead th {
+      text-align: left; padding: 12px 14px; font-size: 11px; font-weight: 800; letter-spacing: .6px;
+      text-transform: uppercase; color: var(--text3); border-bottom: 1px solid var(--border);
+      background: var(--bg3); position: sticky; top: 0; white-space: nowrap;
+    }
+    tbody td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,.02); }
+    .lv-who { font-weight: 700; }
+    .sub { color: var(--text3); font-size: 11.5px; margin-top: 3px; }
+    .nowrap { white-space: nowrap; }
+    .days { font-weight: 800; font-size: 15px; color: var(--green); }
+    .reason { max-width: 280px; color: var(--text2); font-size: 12.5px; line-height: 1.5; }
+
+    .pill {
+      display: inline-block; border-radius: 999px; padding: 4px 12px;
+      font-size: 11.5px; font-weight: 800; white-space: nowrap;
+      color: var(--neon);
+      background-color: color-mix(in srgb, var(--neon) 16%, transparent);
+      border: 1px solid color-mix(in srgb, var(--neon) 50%, transparent);
+    }
+    .st-pending  { --neon: var(--amber); }
+    .st-approved { --neon: var(--green); }
+    .st-rejected { --neon: var(--red); }
+    .st-canceled { --neon: var(--text3); }
+
+    .cal-ok  { color: var(--green); font-size: 11.5px; font-weight: 700; }
+    .cal-err { color: var(--red);   font-size: 11.5px; font-weight: 700; cursor: help; }
+    .cal-off { color: var(--text3); font-size: 11.5px; }
+
+    .acts { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* APSA1213: thanh loc + tieu de sap xep cho danh sach nghi phep */
+.lvbar { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-bottom:14px;
+         background:var(--bg2); border:1px solid var(--border); border-radius:var(--r); padding:12px 14px; }
+.lvf { display:flex; flex-direction:column; gap:5px; }
+.lvf > span { font-size:10.5px; font-weight:800; letter-spacing:.6px; text-transform:uppercase; color:var(--text3); }
+.lvf select, .lvf input { background:var(--bg3); border:1px solid var(--border); color:var(--text);
+         border-radius:9px; padding:7px 10px; font:inherit; font-size:12.5px; outline:none; min-width:150px; }
+.lvf select:focus, .lvf input:focus { border-color:var(--green); }
+.lvf select { cursor:pointer; }
+.lvcnt { font-size:12px; color:var(--text3); align-self:center; white-space:nowrap; }
+th.lv-sort { cursor:pointer; user-select:none; }
+th.lv-sort:hover { color:var(--text); }
+
+    .empty { padding: 60px 20px; text-align: center; color: var(--text3); font-size: 13.5px; }
+    .empty b { display: block; color: var(--text2); font-size: 15px; margin-bottom: 6px; }
+
+    /* ── BANNER ── */
+    .banner {
+      border-radius: var(--r); padding: 12px 16px; font-size: 12.5px; line-height: 1.55;
+      margin-bottom: 16px; display: flex; gap: 10px; align-items: flex-start;
+    }
+    .banner.warn { background: rgba(255,176,32,.09); border: 1px solid rgba(255,176,32,.32); color: #ffd88a; }
+    .banner.warn b { color: var(--amber); }
+    .banner .bx { flex: 1; }
+
+    /* ── MODAL ── */
+    .mask {
+      position: fixed; inset: 0; background: rgba(0,0,0,.75); backdrop-filter: blur(4px);
+      display: none; align-items: flex-start; justify-content: center; z-index: 300; padding: 40px 16px; overflow: auto;
+    }
+    .mask.on { display: flex; }
+    .modal {
+      background: var(--bg2); border: 1px solid var(--border-h); border-radius: 16px;
+      width: 100%; max-width: 560px; padding: 24px;
+    }
+    .modal h2 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+    .modal .mh-sub { font-size: 12.5px; color: var(--text2); margin-bottom: 20px; }
+
+    .fg { margin-bottom: 15px; }
+    .fg > label { display: block; font-size: 11px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; }
+    .fg input[type=text], .fg input[type=date], .fg input[type=number], .fg select, .fg textarea {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+      border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 13.5px; outline: none; transition: border-color .18s;
+    }
+    .fg input:focus, .fg select:focus, .fg textarea:focus { border-color: var(--green); }
+    .fg textarea { resize: vertical; min-height: 76px; line-height: 1.55; }
+    .fg select { cursor: pointer; }
+    .row2 { display: grid; grid-template-columns: 1fr 148px; gap: 10px; }
+    .ck { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--text2); text-transform: none; font-weight: 400; letter-spacing: 0; cursor: pointer; }
+    .ck input { width: 16px; height: 16px; accent-color: var(--green); cursor: pointer; }
+
+    .calc {
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px 14px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .calc .lb { font-size: 12px; color: var(--text2); }
+    .calc .vl { font-size: 22px; font-weight: 800; color: var(--green); }
+    .calc .vl small { font-size: 12px; color: var(--text2); font-weight: 600; margin-left: 4px; }
+
+    .modal-acts { display: flex; gap: 9px; justify-content: flex-end; margin-top: 22px; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px);
+      background: var(--bg4); border: 1px solid var(--border-h); color: var(--text);
+      padding: 12px 20px; border-radius: 24px; font-size: 13px; font-weight: 600;
+      opacity: 0; pointer-events: none; transition: all .25s; z-index: 500; max-width: 88vw; text-align: center;
+    }
+    #toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.err { border-color: rgba(255,77,77,.5); color: #ffb3b3; }
+
+    @media (max-width: 720px) {
+      header { padding: 0 16px; }
+      .page-head, .wrap { padding-left: 16px; padding-right: 16px; }
+      .row2 { grid-template-columns: 1fr; }
+    }
+  
+/* ---- Better Me ---- */
+
+    .bmbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:18px }
+    .bmbar .grow { flex:1 }
+    .bmbar select { min-width:190px }
+
+    .mgrp { margin-bottom:26px }
+    .mhead { display:flex; align-items:center; gap:10px; margin:0 0 10px;
+             font-family:var(--font-display,inherit); font-size:13px; letter-spacing:2px;
+             text-transform:uppercase; color:var(--text2,#9a9a9a); cursor:pointer; user-select:none }
+    .mhead .ln { flex:1; height:1px; background:var(--border,rgba(255,255,255,.1)) }
+    .mhead .cnt { font-size:10px; padding:1px 8px; border-radius:999px;
+                  background:rgba(255,255,255,.08); color:var(--text2,#9a9a9a); letter-spacing:.5px }
+
+    .tcard { border:1px solid var(--border,rgba(255,255,255,.1)); border-radius:var(--radius,4px);
+             background:var(--bg2,#0b0b0b); margin-bottom:10px; overflow:hidden;
+             border-left:3px solid rgba(255,255,255,.14) }
+    .tcard.done { border-left-color:#dff20d; background:rgba(223,242,13,.035) }
+    .tcard .th { display:flex; gap:12px; align-items:center; padding:13px 15px; cursor:pointer }
+    .tcard .th:hover { background:rgba(255,255,255,.025) }
+    .tcard .tt { font-weight:700; font-size:14px; flex:1; min-width:0 }
+    .tcard .tt small { display:block; font-weight:400; font-size:11px; color:var(--text3,#5e5e5e);
+                       margin-top:3px; letter-spacing:0; text-transform:none }
+    .tcard .tb { padding:0 15px 16px; border-top:1px solid var(--border,rgba(255,255,255,.08)) }
+
+    .pbar { width:110px; height:5px; border-radius:99px; background:rgba(255,255,255,.10); overflow:hidden; flex:0 0 auto }
+    .pbar i { display:block; height:100%; background:#dff20d; border-radius:99px }
+    .pct { font-size:10px; font-weight:700; color:var(--text2,#9a9a9a); width:34px; text-align:right; flex:0 0 auto }
+
+    .who { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px;
+           font-size:10px; font-weight:700; letter-spacing:.3px; white-space:nowrap;
+           border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.04); color:var(--text2,#9a9a9a) }
+    .who.mentor { border-color:rgba(86,204,242,.5); background:rgba(86,204,242,.12); color:#7fd0f5 }
+    .who.owner  { border-color:rgba(223,242,13,.5); background:rgba(223,242,13,.12); color:#dff20d }
+    .whos { display:flex; gap:5px; flex-wrap:wrap; align-items:center }
+
+    .stat { font-size:10px; font-weight:700; letter-spacing:.5px; padding:2px 9px; border-radius:999px;
+            border:1px solid rgba(255,255,255,.14); color:var(--text2,#9a9a9a); white-space:nowrap }
+    .stat.ok { border-color:rgba(223,242,13,.55); background:rgba(223,242,13,.14); color:#dff20d }
+
+    .sec { margin-top:16px }
+    .sec > h4 { font-family:var(--font-display,inherit); font-size:11px; letter-spacing:2px;
+                text-transform:uppercase; color:var(--text3,#5e5e5e); margin:0 0 7px;
+                display:flex; align-items:center; gap:8px }
+    .sec > h4 .ln { flex:1; height:1px; background:var(--border,rgba(255,255,255,.08)) }
+
+    .howbox { white-space:pre-wrap; font-size:13px; line-height:1.6; color:var(--text,#fff);
+              background:var(--bg3,#141414); border:1px solid var(--border,rgba(255,255,255,.08));
+              border-radius:var(--radius,4px); padding:11px 13px; min-height:44px }
+    .howbox.empty { color:var(--text3,#5e5e5e); font-style:italic }
+
+    .step { display:flex; gap:9px; align-items:flex-start; padding:6px 0;
+            border-bottom:1px dashed rgba(255,255,255,.06) }
+    .step:last-child { border-bottom:0 }
+    .step input[type=checkbox] { width:15px; height:15px; margin-top:2px; flex:0 0 auto; cursor:pointer; accent-color:#dff20d }
+    .step .sc { flex:1; font-size:13px; line-height:1.5 }
+    .step.on .sc { color:var(--text3,#5e5e5e); text-decoration:line-through }
+    .step .sx { opacity:.4; cursor:pointer; background:none; border:0; color:var(--text2,#9a9a9a); padding:2px 4px }
+    .step .sx:hover { opacity:1; color:var(--red,#ff4d4f) }
+    .step input[type=text] { flex:1; background:transparent; border:0; border-bottom:1px solid transparent;
+                             color:var(--text,#fff); font:inherit; font-size:13px; padding:1px 0 }
+    .step input[type=text]:focus { outline:none; border-bottom-color:rgba(223,242,13,.45) }
+
+    .cmt { display:flex; gap:9px; padding:9px 0; border-bottom:1px solid rgba(255,255,255,.05) }
+    .cmt.rep { margin-left:34px }
+    .cav { width:26px; height:26px; border-radius:50%; flex:0 0 auto; display:grid; place-items:center;
+           font-size:10px; font-weight:800; background:rgba(255,255,255,.09); color:var(--text2,#9a9a9a) }
+    .cwho { font-size:12px; font-weight:700 }
+    .cwhen { font-size:10px; color:var(--text3,#5e5e5e); margin-left:7px }
+    .ctext { font-size:13px; line-height:1.55; white-space:pre-wrap; margin-top:2px }
+    .cact { margin-top:3px; display:flex; gap:10px }
+    .cact button { background:none; border:0; color:var(--text3,#5e5e5e); font-size:10px;
+                   font-weight:700; letter-spacing:.4px; cursor:pointer; padding:0 }
+    .cact button:hover { color:var(--accent,#dff20d) }
+    .cact button.del:hover { color:var(--red,#ff4d4f) }
+
+    .row2 { display:flex; gap:8px; align-items:flex-start }
+    .row2 textarea { flex:1; min-height:38px; resize:vertical }
+    .muted { color:var(--text3,#5e5e5e); font-size:12px }
+    .empty { text-align:center; padding:38px 16px; color:var(--text3,#5e5e5e); font-size:13px }
+
+    .mask { position:fixed; inset:0; background:rgba(0,0,0,.75); backdrop-filter:blur(3px);
+            display:none; align-items:center; justify-content:center; z-index:90; padding:20px }
+    .mask.on { display:flex }
+    .dlg { width:100%; max-width:540px; max-height:88vh; overflow:auto; background:var(--bg2,#0b0b0b);
+           border:1px solid var(--border,rgba(255,255,255,.12)); border-radius:var(--radius,4px); padding:20px }
+    .dlg h3 { font-family:var(--font-display,inherit); font-size:15px; letter-spacing:1px;
+              text-transform:uppercase; margin:0 0 14px }
+    .dlg label { display:block; font-size:10px; font-weight:700; letter-spacing:1.2px;
+                 text-transform:uppercase; color:var(--text3,#5e5e5e); margin:12px 0 5px }
+    .dlg .ft { display:flex; gap:9px; justify-content:flex-end; margin-top:18px }
+    .pick { display:flex; gap:8px; align-items:center; padding:7px 0;
+            border-bottom:1px solid rgba(255,255,255,.06) }
+    .pick .nm { flex:1; font-size:13px }
+    .pick select { width:150px }
+  </style>
+</head>
+<body>
+
+<div class="page-head">
+  <div>
+    <h1>Better Me</h1>
+    <p>Mỗi tháng chọn vài kỹ năng muốn phát triển — <b>HOW?</b> để định hướng, <b>PROCESS</b> để theo dõi tiến độ.</p>
+  </div>
+  <div class="head-chips" id="chips"></div>
+</div>
+
+<div class="wrap">
+
+  <div class="bmbar">
+    <select id="fBoard" onchange="loadBoard()"></select>
+    <select id="fYm" onchange="render()"></select>
+    <button class="btn sm" type="button" onclick="openTopic(0)">+&nbsp; Topic mới</button>
+    <span class="grow"></span>
+    <button class="btn sm" type="button" onclick="expandAll(true)">Mở tất cả</button>
+    <button class="btn sm" type="button" onclick="expandAll(false)">Thu gọn</button>
+  </div>
+
+  <div id="board"><div class="empty">Đang tải…</div></div>
+</div>
+
+<div class="mask" id="mTopic">
+  <div class="dlg">
+    <h3 id="tDlgTitle">Topic mới</h3>
+    <label>Kỹ năng muốn phát triển *</label>
+    <input type="text" id="tTitle" placeholder="VD: Thuyết trình trước khách hàng" maxlength="300" />
+    <label>Thuộc tháng</label>
+    <input type="month" id="tYm" />
+    <label>HOW? — mình sẽ phát triển kỹ năng này bằng cách nào</label>
+    <textarea id="tHow" rows="6" placeholder="VD: Mỗi tuần thuyết trình thử 1 lần với team, quay video xem lại…"></textarea>
+    <div class="ft">
+      <button class="btn sm" type="button" onclick="closeAll()">Huỷ</button>
+      <button class="btn sm primary" type="button" onclick="saveTopic()">Lưu topic</button>
+    </div>
+  </div>
+</div>
+
+<div class="mask" id="mInvite">
+  <div class="dlg">
+    <h3>Mời cùng phát triển / mentor</h3>
+    <p class="muted">Người được mời sẽ thấy topic này trên Better Me của họ và nhận thông báo Zalo.</p>
+    <div id="pickList" style="margin-top:12px"></div>
+    <div class="ft">
+      <button class="btn sm" type="button" onclick="closeAll()">Huỷ</button>
+      <button class="btn sm primary" type="button" onclick="saveMembers()">Lưu</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var API   = './api/betterme-api.php';
+var ME    = { id: 0, name: '' };
+var ADMIN = false;
+var USERS = [];
+var BOARDS = [];
+var TOPICS = [];
+var OPEN  = {};
+var CMTS  = {};
+var REPLY = {};
+var CUR_TOPIC = 0;
+
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function el(id) { return document.getElementById(id); }
+function toast(m, bad) {
+  if (window.APSA && APSA.toast) return APSA.toast(m, bad ? 'err' : '');
+  if (bad) alert(m);
+}
+async function api(action, opt) {
+  opt = opt || {};
+  var url = API + '?action=' + encodeURIComponent(action) + (opt.qs || '');
+  var o = { credentials: 'same-origin' };
+  if (opt.body) {
+    o.method = 'POST';
+    o.headers = { 'Content-Type': 'application/json' };
+    o.body = JSON.stringify(opt.body);
+  }
+  var r = await fetch(url, o);
+  var j = null;
+  try { j = await r.json(); } catch (e) { }
+  if (!r.ok || !j || !j.ok) throw new Error((j && j.error) || ('Lỗi ' + r.status));
+  return j;
+}
+function ini(n) {
+  var p = String(n || '').trim().split(/\s+/);
+  if (!p[0]) return '?';
+  return (p.length > 1 ? p[p.length - 2][0] + p[p.length - 1][0] : p[0].slice(0, 2)).toUpperCase();
+}
+function ymLabel(ym) {
+  var m = /^(\d{4})-(\d{2})$/.exec(String(ym || ''));
+  return m ? ('Tháng ' + m[2] + '/' + m[1]) : String(ym || '');
+}
+function when(s) {
+  if (!s) return '';
+  var d = new Date(String(s).replace(' ', 'T'));
+  if (isNaN(d)) return String(s);
+  var p = function (n) { return (n < 10 ? '0' : '') + n; };
+  return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear()
+       + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+function thisYm() {
+  var d = new Date();
+  return d.getFullYear() + '-' + ((d.getMonth() + 1 < 10 ? '0' : '') + (d.getMonth() + 1));
+}
+function closeAll() { document.querySelectorAll('.mask').forEach(function (m) { m.classList.remove('on'); }); }
+document.querySelectorAll('.mask').forEach(function (m) {
+  m.addEventListener('click', function (e) { if (e.target === m) closeAll(); });
+});
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAll(); });
+
+/* ---------------- Nap du lieu ---------------- */
+async function boot() {
+  try {
+    var m = await api('meta');
+    ME = m.me; ADMIN = !!m.is_admin; USERS = m.users || []; BOARDS = m.boards || [];
+  } catch (e) {
+    el('board').innerHTML = '<div class="empty">' + esc(e.message) + '</div>';
+    return;
+  }
+  var sel = el('fBoard');
+  sel.innerHTML = BOARDS.map(function (b) {
+    return '<option value="' + b.user_id + '">' +
+      esc(b.name) + (b.user_id === ME.id ? ' (bạn)' : '') + '</option>';
+  }).join('');
+  sel.value = String(ME.id);
+  if (BOARDS.length < 2) sel.style.display = 'none';
+  var t = new URLSearchParams(location.search).get('t');
+  if (t) OPEN[Number(t)] = true;
+  await loadBoard();
+}
+
+async function loadBoard() {
+  var uid = Number(el('fBoard').value || ME.id);
+  el('board').innerHTML = '<div class="empty">Đang tải…</div>';
+  try {
+    var d = await api('board', { qs: '&user_id=' + uid });
+    TOPICS = d.topics || [];
+  } catch (e) {
+    el('board').innerHTML = '<div class="empty">' + esc(e.message) + '</div>';
+    return;
+  }
+  var yms = [];
+  TOPICS.forEach(function (t) { if (yms.indexOf(t.ym) < 0) yms.push(t.ym); });
+  yms.sort().reverse();
+  var cur = el('fYm').value;
+  el('fYm').innerHTML = '<option value="">Tất cả các tháng</option>' +
+    yms.map(function (y) { return '<option value="' + y + '">' + ymLabel(y) + '</option>'; }).join('');
+  if (cur && yms.indexOf(cur) >= 0) el('fYm').value = cur;
+  paintChips();
+  render();
+}
+
+function paintChips() {
+  var tot = TOPICS.length;
+  var done = TOPICS.filter(function (t) { return t.status === 'resolved'; }).length;
+  var steps = 0, sdone = 0;
+  TOPICS.forEach(function (t) { steps += (t.steps || []).length; sdone += t.steps_done || 0; });
+  var pct = steps ? Math.round(sdone * 100 / steps) : 0;
+  el('chips').innerHTML =
+    '<span class="chip">' + tot + ' topic</span>' +
+    '<span class="chip ' + (done ? 'ok' : '') + '">' + done + ' đã resolve</span>' +
+    '<span class="chip">' + pct + '% bước hoàn thành</span>';
+}
+
+/* ---------------- Ve board ---------------- */
+function render() {
+  var fy = el('fYm').value;
+  var list = TOPICS.filter(function (t) { return !fy || t.ym === fy; });
+  if (!list.length) {
+    el('board').innerHTML = '<div class="empty">Chưa có topic nào — bấm “+ Topic mới” để bắt đầu tháng này.</div>';
+    return;
+  }
+  var byYm = {}, order = [];
+  list.forEach(function (t) {
+    if (!byYm[t.ym]) { byYm[t.ym] = []; order.push(t.ym); }
+    byYm[t.ym].push(t);
+  });
+  order.sort().reverse();
+  el('board').innerHTML = order.map(function (ym) {
+    var g = byYm[ym];
+    var dn = g.filter(function (t) { return t.status === 'resolved'; }).length;
+    return '<div class="mgrp">' +
+      '<div class="mhead"><span>' + ymLabel(ym) + '</span>' +
+        '<span class="cnt">' + g.length + ' topic' + (dn ? ' · ' + dn + ' resolve' : '') + '</span>' +
+        '<span class="ln"></span></div>' +
+      g.map(card).join('') +
+    '</div>';
+  }).join('');
+  Object.keys(OPEN).forEach(function (id) { if (OPEN[id]) loadComments(Number(id)); });
+}
+
+function pctOf(t) {
+  var n = (t.steps || []).length;
+  return n ? Math.round((t.steps_done || 0) * 100 / n) : 0;
+}
+
+function card(t) {
+  var open = !!OPEN[t.id];
+  var p = pctOf(t);
+  var mem = (t.members || []).map(function (m) {
+    return '<span class="who ' + (m.role === 'mentor' ? 'mentor' : '') + '" title="' +
+      (m.role === 'mentor' ? 'Mentor' : 'Cùng phát triển') + '">' + esc(m.user_name) + '</span>';
+  }).join('');
+  return '<div class="tcard' + (t.status === 'resolved' ? ' done' : '') + '" id="tc' + t.id + '">' +
+    '<div class="th" onclick="toggle(' + t.id + ')">' +
+      '<div class="tt">' + esc(t.title) +
+        '<small>' + esc(t.owner_name) +
+          ((t.steps || []).length ? ' · ' + (t.steps_done || 0) + '/' + t.steps.length + ' bước' : ' · chưa có bước nào') +
+          (t.comments ? ' · ' + t.comments + ' bình luận' : '') + '</small>' +
+      '</div>' +
+      '<div class="whos">' + mem + '</div>' +
+      '<div class="pbar"><i style="width:' + p + '%"></i></div>' +
+      '<div class="pct">' + p + '%</div>' +
+      (t.status === 'resolved'
+        ? '<span class="stat ok" title="' + esc(t.resolved_name) + ' · ' + esc(when(t.resolved_at)) + '">RESOLVED</span>'
+        : '<span class="stat">ĐANG LÀM</span>') +
+    '</div>' +
+    (open ? body(t) : '') +
+  '</div>';
+}
+
+function body(t) {
+  var can = !!t.can_edit;
+  var owner = (t.owner_id === ME.id);
+  var acts = [];
+  if (can) acts.push('<button class="btn sm" type="button" onclick="openTopic(' + t.id + ')">Sửa topic</button>');
+  if ((owner || ADMIN) && t.status !== 'resolved') {
+    acts.push('<button class="btn sm" type="button" onclick="openInvite(' + t.id + ')">Mời người</button>');
+  }
+  if (ADMIN) {
+    acts.push(t.status === 'resolved'
+      ? '<button class="btn sm" type="button" onclick="resolve(' + t.id + ',0)">Mở lại</button>'
+      : '<button class="btn sm primary" type="button" onclick="resolve(' + t.id + ',1)">Resolve</button>');
+  }
+  if (t.can_del) acts.push('<button class="btn sm danger" type="button" onclick="delTopic(' + t.id + ')">Xoá</button>');
+
+  var steps = (t.steps || []).map(function (s, i) { return stepRow(t, s, i); }).join('');
+  return '<div class="tb">' +
+    (t.status === 'resolved'
+      ? '<p class="muted" style="margin:12px 0 0">🏆 Admin ' + esc(t.resolved_name) +
+        ' đã resolve topic này lúc ' + esc(when(t.resolved_at)) + ' — nội dung đang khoá, chỉ đọc.</p>'
+      : '') +
+
+    '<div class="sec"><h4><span>HOW?</span><span class="ln"></span>' +
+      (can ? '<button class="btn sm" type="button" onclick="openTopic(' + t.id + ')">Sửa</button>' : '') +
+    '</h4>' +
+    '<div class="howbox' + (t.how ? '' : ' empty') + '">' +
+      (t.how ? esc(t.how) : 'Chưa ghi cách phát triển kỹ năng này.') + '</div></div>' +
+
+    '<div class="sec"><h4><span>PROCESS</span><span class="ln"></span>' +
+      (can ? '<button class="btn sm" type="button" onclick="addStep(' + t.id + ')">+ Bước</button>' : '') +
+    '</h4>' +
+    '<div id="stp' + t.id + '">' + (steps || '<div class="muted">Chưa có bước nào.</div>') + '</div></div>' +
+
+    '<div class="sec"><h4><span>Thảo luận</span><span class="ln"></span></h4>' +
+    '<div id="cm' + t.id + '"><div class="muted">Đang tải…</div></div>' +
+    (t.status === 'resolved' ? '' :
+      '<div class="row2" style="margin-top:10px">' +
+        '<textarea id="ci' + t.id + '" rows="2" placeholder="Viết bình luận…"></textarea>' +
+        '<button class="btn sm primary" type="button" onclick="addComment(' + t.id + ',0)">Gửi</button>' +
+      '</div>') +
+    '</div>' +
+
+    (acts.length ? '<div class="bmbar" style="margin:16px 0 0">' + acts.join('') + '</div>' : '') +
+  '</div>';
+}
+
+function stepRow(t, s, i) {
+  var can = !!t.can_edit;
+  return '<div class="step' + (Number(s.done) ? ' on' : '') + '">' +
+    '<input type="checkbox"' + (Number(s.done) ? ' checked' : '') + (can ? '' : ' disabled') +
+      ' onchange="toggleStep(' + t.id + ',' + i + ',this.checked)" />' +
+    (can
+      ? '<input type="text" value="' + esc(s.content) + '" onchange="editStep(' + t.id + ',' + i + ',this.value)" />'
+      : '<div class="sc">' + esc(s.content) + '</div>') +
+    (can ? '<button class="sx" type="button" title="Xoá bước" onclick="delStep(' + t.id + ',' + i + ')">✕</button>' : '') +
+  '</div>';
+}
+
+/* ---------------- Tuong tac ---------------- */
+function find(id) { for (var i = 0; i < TOPICS.length; i++) if (TOPICS[i].id === id) return TOPICS[i]; return null; }
+function toggle(id) { OPEN[id] = !OPEN[id]; render(); }
+function expandAll(on) {
+  TOPICS.forEach(function (t) { OPEN[t.id] = !!on; });
+  render();
+}
+
+function openTopic(id) {
+  var t = id ? find(id) : null;
+  CUR_TOPIC = id || 0;
+  el('tDlgTitle').textContent = t ? 'Sửa topic' : 'Topic mới';
+  el('tTitle').value = t ? t.title : '';
+  el('tYm').value    = t ? t.ym : (el('fYm').value || thisYm());
+  el('tHow').value   = t ? (t.how || '') : '';
+  el('mTopic').classList.add('on');
+  setTimeout(function () { el('tTitle').focus(); }, 40);
+}
+async function saveTopic() {
+  var b = {
+    id:    CUR_TOPIC,
+    title: el('tTitle').value.trim(),
+    ym:    el('tYm').value || thisYm(),
+    how:   el('tHow').value
+  };
+  if (!b.title) { toast('Nhập tên kỹ năng muốn phát triển.', 1); return; }
+  try {
+    var r = await api('topic-save', { body: b });
+    closeAll();
+    OPEN[r.id] = true;
+    toast(r.message);
+    await loadBoard();
+  } catch (e) { toast(e.message, 1); }
+}
+async function delTopic(id) {
+  var t = find(id);
+  if (!confirm('Xoá topic “' + (t ? t.title : '') + '”?')) return;
+  try {
+    var r = await api('topic-del', { body: { id: id } });
+    toast(r.message);
+    delete OPEN[id];
+    await loadBoard();
+  } catch (e) { toast(e.message, 1); }
+}
+async function resolve(id, on) {
+  var t = find(id);
+  var q = on
+    ? 'Xác nhận resolve topic “' + (t ? t.title : '') + '”? Sau khi resolve topic sẽ bị khoá, chỉ đọc.'
+    : 'Mở lại topic “' + (t ? t.title : '') + '” để tiếp tục chỉnh sửa?';
+  if (!confirm(q)) return;
+  try {
+    var r = await api('topic-resolve', { body: { id: id, on: on ? 1 : 0 } });
+    toast(r.message);
+    await loadBoard();
+  } catch (e) { toast(e.message, 1); }
+}
+
+/* --- PROCESS --- */
+async function pushSteps(t) {
+  try {
+    await api('steps-save', { body: { topic_id: t.id, steps: t.steps } });
+    t.steps_done = t.steps.filter(function (s) { return Number(s.done); }).length;
+    paintChips();
+  } catch (e) { toast(e.message, 1); await loadBoard(); }
+}
+function addStep(id) {
+  var t = find(id); if (!t) return;
+  t.steps = t.steps || [];
+  t.steps.push({ id: 0, content: '', done: 0 });
+  render();
+  var box = el('stp' + id);
+  if (box) { var ins = box.querySelectorAll('input[type=text]'); if (ins.length) ins[ins.length - 1].focus(); }
+}
+async function editStep(id, i, v) {
+  var t = find(id); if (!t || !t.steps[i]) return;
+  t.steps[i].content = v;
+  if (!String(v).trim()) { t.steps.splice(i, 1); }
+  await pushSteps(t);
+  render();
+}
+async function toggleStep(id, i, on) {
+  var t = find(id); if (!t || !t.steps[i]) return;
+  t.steps[i].done = on ? 1 : 0;
+  await pushSteps(t);
+  render();
+}
+async function delStep(id, i) {
+  var t = find(id); if (!t || !t.steps[i]) return;
+  t.steps.splice(i, 1);
+  await pushSteps(t);
+  render();
+}
+
+/* --- Moi nguoi --- */
+function openInvite(id) {
+  CUR_TOPIC = id;
+  var t = find(id); if (!t) return;
+  var cur = {};
+  (t.members || []).forEach(function (m) { cur[m.user_id] = m.role; });
+  el('pickList').innerHTML = USERS.filter(function (u) { return u.id !== t.owner_id; }).map(function (u) {
+    var r = cur[u.id] || '';
+    return '<div class="pick">' +
+      '<span class="nm">' + esc(u.name) + '</span>' +
+      '<select data-uid="' + u.id + '">' +
+        '<option value=""' + (r === '' ? ' selected' : '') + '>— không tham gia —</option>' +
+        '<option value="peer"' + (r === 'peer' ? ' selected' : '') + '>Cùng phát triển</option>' +
+        '<option value="mentor"' + (r === 'mentor' ? ' selected' : '') + '>Mentor</option>' +
+      '</select></div>';
+  }).join('') || '<div class="muted">Chưa có người dùng nào khác.</div>';
+  el('mInvite').classList.add('on');
+}
+async function saveMembers() {
+  var ms = [];
+  el('pickList').querySelectorAll('select').forEach(function (s) {
+    if (s.value) ms.push({ user_id: Number(s.getAttribute('data-uid')), role: s.value });
+  });
+  try {
+    var r = await api('members-save', { body: { topic_id: CUR_TOPIC, members: ms } });
+    closeAll();
+    toast(r.message);
+    await loadBoard();
+  } catch (e) { toast(e.message, 1); }
+}
+
+/* --- Binh luan --- */
+async function loadComments(id) {
+  var box = el('cm' + id);
+  if (!box) return;
+  try {
+    var d = await api('comments', { qs: '&topic_id=' + id });
+    CMTS[id] = d.rows || [];
+  } catch (e) {
+    box.innerHTML = '<div class="muted">' + esc(e.message) + '</div>';
+    return;
+  }
+  paintComments(id);
+}
+function paintComments(id) {
+  var box = el('cm' + id);
+  if (!box) return;
+  var t = find(id);
+  var rows = CMTS[id] || [];
+  if (!rows.length) { box.innerHTML = '<div class="muted">Chưa có bình luận nào.</div>'; return; }
+  var tops = rows.filter(function (c) { return !c.parent_id; });
+  var one = function (c, rep) {
+    return '<div class="cmt' + (rep ? ' rep' : '') + '">' +
+      '<div class="cav">' + esc(ini(c.user_name)) + '</div>' +
+      '<div style="flex:1;min-width:0">' +
+        '<div><span class="cwho">' + esc(c.user_name) + '</span>' +
+          '<span class="cwhen">' + esc(when(c.created_at)) + '</span></div>' +
+        '<div class="ctext">' + esc(c.body) + '</div>' +
+        '<div class="cact">' +
+          (rep || (t && t.status === 'resolved') ? '' :
+            '<button type="button" onclick="openReply(' + id + ',' + c.id + ')">Trả lời</button>') +
+          ((c.mine || ADMIN) ? '<button type="button" class="del" onclick="delComment(' + id + ',' + c.id + ')">Xoá</button>' : '') +
+        '</div>' +
+        (REPLY[c.id] ?
+          '<div class="row2" style="margin-top:8px">' +
+            '<textarea id="ri' + c.id + '" rows="2" placeholder="Trả lời…"></textarea>' +
+            '<button class="btn sm primary" type="button" onclick="addComment(' + id + ',' + c.id + ')">Gửi</button>' +
+          '</div>' : '') +
+      '</div></div>';
+  };
+  box.innerHTML = tops.map(function (c) {
+    return one(c, false) + rows.filter(function (r) { return r.parent_id === c.id; })
+      .map(function (r) { return one(r, true); }).join('');
+  }).join('');
+  if (Object.keys(REPLY).length) {
+    var k = Object.keys(REPLY)[0];
+    var ta = el('ri' + k); if (ta) ta.focus();
+  }
+}
+function openReply(tid, cid) { REPLY = {}; REPLY[cid] = true; paintComments(tid); }
+async function addComment(tid, pid) {
+  var ta = el(pid ? ('ri' + pid) : ('ci' + tid));
+  if (!ta) return;
+  var body = ta.value.trim();
+  if (!body) { toast('Nhập nội dung bình luận.', 1); return; }
+  try {
+    await api('comment-add', { body: { topic_id: tid, parent_id: pid, body: body } });
+    ta.value = '';
+    REPLY = {};
+    var t = find(tid); if (t) t.comments = (t.comments || 0) + 1;
+    await loadComments(tid);
+  } catch (e) { toast(e.message, 1); }
+}
+async function delComment(tid, cid) {
+  if (!confirm('Xoá bình luận này?')) return;
+  try {
+    await api('comment-del', { body: { id: cid } });
+    var t = find(tid); if (t && t.comments) t.comments--;
+    await loadComments(tid);
+  } catch (e) { toast(e.message, 1); }
+}
+
+boot();
+</script>
+</body>
+</html>

@@ -110,6 +110,8 @@
   td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .nm { font-weight: 700; }
   .sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+    .byu { display:inline-flex; align-items:center; gap:3px; margin-top:3px; padding:1px 6px; border-radius:999px; font-size:10px; font-weight:600; letter-spacing:.2px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); color:var(--text3); }
+    .byu-i { opacity:.6; font-weight:700; }
   .qcode { font-weight: 700; color: var(--text); text-decoration: none; }
   .qcode:hover { color: var(--green); }
   .tag { display: inline-block; font-size: 9.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
@@ -379,7 +381,8 @@ function view() {
     if (FTY === 'pers' && r.payee_type !== 'user') return false;
     if (FTY === 'corp' && r.payee_type !== 'sup')  return false;
     if (!q) return true;
-    return nrm([r.code, r.title, r.client_name, r.name, r.description, r.payee_name].join(' ')).indexOf(q) >= 0;
+    return nrm([r.code, r.title, r.client_name, r.name, r.description, r.payee_name,
+    r.created_by_name].join(' ')).indexOf(q) >= 0;
   });
 }
 
@@ -450,7 +453,9 @@ function render() {
       '<td><a class="qcode" href="./quotation.html?q=' + encodeURIComponent(r.code) + '" target="_blank" rel="noopener">' + esc(r.code) + '</a>' +
         '<div class="sub">' + esc(r.client_name || r.title || '') + '</div></td>' +
       '<td><span class="nm">' + esc(r.name) + '</span>' +
-        (r.description ? '<div class="sub">' + esc(r.description) + '</div>' : '') + '</td>' +
+        (r.description ? '<div class="sub">' + esc(r.description) + '</div>' : '') +
+        (r.created_by_name ? '<div class="byu" title="Người đã thêm khoản chi này">'
+          + '<span class="byu-i">+</span>' + esc(r.created_by_name) + '</div>' : '') + '</td>' +
       '<td>' + (r.payee_name ? esc(r.payee_name) + ' <span class="tag ' + (r.payee_type || 'sup') + '">' +
         (r.payee_type === 'user' ? 'FL' : 'NCC') + '</span>' +
         (r.bank_account ? '<div class="sub">' + esc(r.bank_name || '') + ' · ' + esc(r.bank_account) + '</div>' : '')

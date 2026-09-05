@@ -349,6 +349,7 @@
     policy:  '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M7.5 8.5 9 10l2.5-2.5M7.5 15 9 16.5l2.5-2.5M14 8.5h2.5M14 15h2.5"/>',
     task:    '<rect x="4" y="4" width="16" height="16" rx="2.5"/><path d="M8 10.5 9.8 12.3 13.5 8.6M8 16h8"/>',
     chat:    '<path d="M20.5 12a7.5 7.5 0 0 1-10.9 6.7L4 20.5l1.9-5.4A7.5 7.5 0 1 1 20.5 12z"/><path d="M9 11.5h6M9 14.5h4"/>',
+    rise:    '<path d="M3 17l6-6 4 4 7-7"/><path d="M14 8h6v6"/>',
     trophy:  '<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 5.5H4.5V7A3.5 3.5 0 0 0 7 10.3M17 5.5h2.5V7A3.5 3.5 0 0 1 17 10.3"/><path d="M12 14v3.5M8.5 20.5h7l-.7-3h-5.6z"/>'
   };
 
@@ -379,6 +380,7 @@
     { ico: 'qr',      name: 'Quản lý Link',         url: './event-qr-generator.html', id: 1 },
     { ico: 'key',     name: 'Accounts nhân viên', url: './accounts.html', id: 90 },
     { ico: 'leave',   name: 'Xin nghỉ phép',      url: './leave.html', id: 91 },
+    { ico: 'rise',    name: 'Better Me',          url: './betterme.html', id: 102 },
       { ico: 'policy', name: 'Policy công ty', url: './policy.html', id: 94 },
     { ico: 'shield',  name: 'Quản lý User',      url: './users.html', id: 27 },
     { ico: 'gear',    name: 'Cài đặt hệ thống',  url: './settings.html', id: 92, admin: true },
