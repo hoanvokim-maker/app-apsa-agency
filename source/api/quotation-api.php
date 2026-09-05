@@ -120,6 +120,16 @@ function q_asgStatus($v) { global $ASSIGN_STATUS; $v = strtolower(trim((string)$
 function q_asgPos($v)    { global $ASSIGN_POS;    $v = strtolower(trim((string)$v)); return isset($ASSIGN_POS[$v]) ? $v : null; }
 
 /** Danh sách người thực hiện của 1 báo giá (kèm tên + vị trí hiện tại của user). */
+/* APSA184: con bao nhieu task checklist chua hoan thanh */
+function q_chkPending(PDO $pdo, $qid) {
+    try {
+        $st = $pdo->prepare("SELECT COUNT(*) FROM `quotation_assignees`
+                              WHERE quotation_id = ? AND kind <> 'group' AND status <> 'done'");
+        $st->execute(array((int) $qid));
+        return (int) $st->fetchColumn();
+    } catch (PDOException $e) { return 0; }
+}
+
 function q_chkRows(PDO $pdo, $qid) {
     global $ASSIGN_STATUS;
     $out = array();
@@ -2177,6 +2187,14 @@ case 'assignees-save': {
             $stOldAsg->execute([$qid]);
             foreach ($stOldAsg->fetchAll() as $roAsg) $qOldAsg[(int)$roAsg['user_id'] . '|' . (string)$roAsg['task']] = 1;
         } catch (Exception $eAsg) { $qOldAsg = []; }
+        /* APSA184: giu nguyen trang thai task cua nguoi khac */
+        $qOldStt = array();
+        try {
+            $stSttOld = $pdo->prepare("SELECT user_id, task, status FROM `quotation_assignees` WHERE quotation_id = ?");
+            $stSttOld->execute([$qid]);
+            foreach ($stSttOld->fetchAll() as $rSt)
+                $qOldStt[(int) $rSt['user_id'] . '|' . (string) $rSt['task']] = (string) $rSt['status'];
+        } catch (Exception $eSt) { $qOldStt = array(); }
         $pdo->beginTransaction();
     try {
         $pdo->prepare("DELETE FROM `quotation_assignees` WHERE quotation_id = ?")->execute([$qid]);
@@ -2190,9 +2208,13 @@ case 'assignees-save': {
             $nm  = s((string)($a['name'] ?? ($a['task'] ?? '')), 300);
             if ($kd === 'group') { $uid = 0; }
             if (trim($nm) === '' && !$uid) continue;
+            $sttRow = q_asgStatus($a['status'] ?? 'todo');
+            $meRow  = (is_array($ME) && isset($ME['id'])) ? (int) $ME['id'] : 0;
+            if ($uid > 0 && $uid !== $meRow && isset($qOldStt[$uid . '|' . $nm]))
+                $sttRow = $qOldStt[$uid . '|' . $nm];
             $ins->execute([$qid, $kd, $uid, q_asgPos($a['position'] ?? ''),
                            $nm, dateOrNull($a['due_date'] ?? ''),
-                           q_asgStatus($a['status'] ?? 'todo'), $i, $WHO,
+                           $sttRow, $i, $WHO,
                            max(0, min(3, (int)($a['priority'] ?? 0)))]);
             $n++;
         }
@@ -2223,8 +2245,15 @@ case 'assignees-save': {
 
 // Đổi nhanh trạng thái 1 dòng phân công (dùng ở trang Giao việc)
 case 'assign-status': {
+    global $ME;
     $id = (int)($B['id'] ?? 0);
     if (!$id) q_fail('Thiếu id phân công');
+    $stOwn = $pdo->prepare("SELECT user_id FROM `quotation_assignees` WHERE id = ?");
+    $stOwn->execute([$id]);
+    $ownId = (int) $stOwn->fetchColumn();
+    $meId  = (is_array($ME) && isset($ME['id'])) ? (int) $ME['id'] : 0;
+    if ($ownId > 0 && $ownId !== $meId)
+        q_fail('Chỉ người được giao mới cập nhật được trạng thái công việc này.', 403);
     $pdo->prepare("UPDATE `quotation_assignees` SET status = ? WHERE id = ?")
         ->execute([q_asgStatus($B['status'] ?? 'todo'), $id]);
     $st = $pdo->prepare("SELECT quotation_id FROM `quotation_assignees` WHERE id = ?");
@@ -3705,6 +3734,8 @@ case 'set-status': {
     $id = (int)($B['id'] ?? 0);
     if (!$id) q_fail('id is required');
     $stt = q_status($B['status'] ?? '');
+    if (in_array($stt, array('done', 'paid', 'dong_du_an'), true) && q_chkPending($pdo, $id) > 0)
+        q_fail('Tất cả các task trong checklist phải hoàn thành trước khi đóng dự án', 409);
     $st = $pdo->prepare("UPDATE quotations SET status = ? WHERE id = ?");
     $st->execute([$stt, $id]);
     if (isset($B) && is_array($B) && array_key_exists('deliveries', $B)) {
