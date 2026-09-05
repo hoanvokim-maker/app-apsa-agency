@@ -774,7 +774,11 @@ async function boot(){
   loadOpen();
   $('q').addEventListener('input', onSearch);
   const p = new URLSearchParams(location.search);
-  if (p.get('user'))   F.user   = p.get('user');
+  /* APSA181: mac dinh chi hien du an co checklist giao cho chinh minh */
+  let meU = window.__APSA_USER;
+  if (!meU || !meU.id) { try { meU = await api(AUTH_API, 'me'); } catch(e){} }
+  if (meU && meU.id) F.user = String(meU.id);
+  if (p.get('user'))   F.user   = (p.get('user') === 'all' ? '' : p.get('user'));
   if (p.get('pos'))    F.pos    = p.get('pos');
   if (p.get('status')) F.status = p.get('status');
   if (p.get('scope'))  F.scope  = p.get('scope');

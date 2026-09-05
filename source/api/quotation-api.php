@@ -98,6 +98,10 @@ q_mig($pdo, "CREATE TABLE IF NOT EXISTS `quotation_assignees` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
 /* APSA180: checklist du an - cot kind phan biet dong nhom / dong cong viec */
+if (!q_hasColumn($pdo, 'quotation_assignees', 'priority')) {
+    q_mig($pdo, "ALTER TABLE `quotation_assignees`
+        ADD COLUMN `priority` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '0 khong / 1 binh thuong / 2 quan trong / 3 khan'");
+}
 if (!q_hasColumn($pdo, 'quotation_assignees', 'kind')) {
     q_mig($pdo, "ALTER TABLE `quotation_assignees`
         ADD COLUMN `kind` VARCHAR(8) NOT NULL DEFAULT 'item' COMMENT 'group|item' AFTER `quotation_id`");
@@ -120,7 +124,7 @@ function q_chkRows(PDO $pdo, $qid) {
     global $ASSIGN_STATUS;
     $out = array();
     try {
-        $st = $pdo->prepare("SELECT a.id, a.kind, a.user_id, a.task, a.due_date, a.status, a.sort_order,
+        $st = $pdo->prepare("SELECT a.id, a.kind, a.user_id, a.task, a.due_date, a.status, a.sort_order, a.priority,
                                     u.display_name
                                FROM `quotation_assignees` a
                           LEFT JOIN `app_users` u ON u.id = a.user_id
@@ -138,6 +142,7 @@ function q_chkRows(PDO $pdo, $qid) {
                 'name'      => (string) $r['task'],
                 'due_date'  => $r['due_date'] ? (string) $r['due_date'] : '',
                 'status'    => isset($ASSIGN_STATUS[$stt]) ? $stt : 'todo',
+                'priority'  => (int) $r['priority'],
             );
         }
     } catch (PDOException $e) { }
@@ -2176,8 +2181,8 @@ case 'assignees-save': {
     try {
         $pdo->prepare("DELETE FROM `quotation_assignees` WHERE quotation_id = ?")->execute([$qid]);
         $ins = $pdo->prepare("INSERT INTO `quotation_assignees`
-            (quotation_id, kind, user_id, position, task, due_date, status, sort_order, assigned_by)
-            VALUES (?,?,?,?,?,?,?,?,?)");
+            (quotation_id, kind, user_id, position, task, due_date, status, sort_order, assigned_by, priority)
+            VALUES (?,?,?,?,?,?,?,?,?,?)");
         $n = 0;
         foreach ($list as $i => $a) {
             $kd  = (isset($a['kind']) && (string) $a['kind'] === 'group') ? 'group' : 'item';
@@ -2187,7 +2192,8 @@ case 'assignees-save': {
             if (trim($nm) === '' && !$uid) continue;
             $ins->execute([$qid, $kd, $uid, q_asgPos($a['position'] ?? ''),
                            $nm, dateOrNull($a['due_date'] ?? ''),
-                           q_asgStatus($a['status'] ?? 'todo'), $i, $WHO]);
+                           q_asgStatus($a['status'] ?? 'todo'), $i, $WHO,
+                           max(0, min(3, (int)($a['priority'] ?? 0)))]);
             $n++;
         }
         $pdo->commit();
@@ -2625,6 +2631,10 @@ case 'project-board': {
     // đếm theo nhóm để hiện số trên bộ lọc (không phụ thuộc bộ lọc hiện tại)
     $cw = ['q.deleted_at IS NULL']; $cp = [];
     if (!empty($_GET['kind'])) { $cw[] = 'q.kind = ?'; $cp[] = q_kind($_GET['kind']); }
+        if (!empty($_GET['user'])) {
+            $cw[] = 'EXISTS (SELECT 1 FROM `quotation_assignees` x WHERE x.quotation_id = q.id AND x.user_id = ?)';
+            $cp[] = (int) $_GET['user'];
+        }
     $cs = $pdo->prepare("SELECT q.status, COUNT(*) n FROM `quotations` q WHERE " . implode(' AND ', $cw) . " GROUP BY q.status");
     $cs->execute($cp);
     $byStatus = [];
