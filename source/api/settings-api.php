@@ -337,12 +337,19 @@ function st_pos_usage()
 function st_sidebar()
 {
     $d = st_json('ui.sidebar', array());
-    $out = array('order' => array(), 'hidden' => array());
+    $out = array('order' => array(), 'hidden' => array(), 'layout' => array());
     if (isset($d['order']) && is_array($d['order'])) {
         foreach ($d['order'] as $v) { $v = (int) $v; if ($v > 0) $out['order'][] = $v; }
     }
     if (isset($d['hidden']) && is_array($d['hidden'])) {
         foreach ($d['hidden'] as $v) { $v = (int) $v; if ($v > 0) $out['hidden'][] = $v; }
+    }
+    if (isset($d['layout']) && is_array($d['layout'])) {
+        foreach ($d['layout'] as $e) {
+            if (!is_array($e)) continue;
+            if (isset($e['g']))      $out['layout'][] = array('g' => mb_substr((string) $e['g'], 0, 40));
+            elseif (isset($e['m']) && (int) $e['m'] > 0) $out['layout'][] = array('m' => (int) $e['m']);
+        }
     }
     $out['order']  = array_values(array_unique($out['order']));
     $out['hidden'] = array_values(array_unique($out['hidden']));
@@ -687,7 +694,7 @@ case 'pos-delete': {
 case 'sidebar': {
     s_me();
     $d = st_sidebar();
-    s_out(array('ok' => true, 'order' => $d['order'], 'hidden' => $d['hidden']));
+    s_out(array('ok' => true, 'order' => $d['order'], 'hidden' => $d['hidden'], 'layout' => $d['layout']));
 }
 
 case 'sidebar-save': {
@@ -698,7 +705,19 @@ case 'sidebar-save': {
     foreach ($bo as $v) { $v = (int) $v; if ($v > 0 && !in_array($v, $order))  $order[]  = $v; }
     foreach ($bh as $v) { $v = (int) $v; if ($v > 0 && !in_array($v, $hidden)) $hidden[] = $v; }
     if (count($order) > 200 || count($hidden) > 200) s_fail('Danh sách quá dài.');
-    s_put('ui.sidebar', json_encode(array('order' => $order, 'hidden' => $hidden), JSON_UNESCAPED_UNICODE));
+    $layout = array();
+        $bl = isset($B['layout']) && is_array($B['layout']) ? $B['layout'] : array();
+        foreach ($bl as $e) {
+            if (!is_array($e)) continue;
+            if (isset($e['g'])) {
+                $gn = trim(mb_substr((string) $e['g'], 0, 40));
+                if ($gn !== '') $layout[] = array('g' => $gn);
+            } elseif (isset($e['m']) && (int) $e['m'] > 0) {
+                $layout[] = array('m' => (int) $e['m']);
+            }
+        }
+        if (count($layout) > 300) s_fail('Danh sach qua dai.');
+        s_put('ui.sidebar', json_encode(array('order' => $order, 'hidden' => $hidden, 'layout' => $layout), JSON_UNESCAPED_UNICODE));
     s_out(array('ok' => true, 'message' => 'Đã lưu thứ tự thanh menu cho cả công ty.'));
 }
 

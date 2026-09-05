@@ -390,6 +390,7 @@
 
   /* Trang con nào tính là đang ở mục nào */
   window.APSA_NAV = NAV;
+  window.APSA_ICO = I;
   var GLOB = null;   /* APSA1215: thu tu dung chung ca cong ty */
 
   var ALIAS = { 'debt-detail.html': 'debts.html', 'qr-tool.html': 'event-qr-generator.html' };
@@ -516,8 +517,31 @@
     var isPin = function (n) { return n.id != null && pinned.indexOf(n.id) >= 0; };
 
     var groups = [], cur = null, k = 0, home = null;
-    for (i = 0; i < NAV.length; i++) {
-      var n = NAV[i];
+
+    /* APSA183: bo cuc thanh menu do Admin sap xep (nhom + thu tu) */
+    var NAVX = NAV;
+    if (GLOB && GLOB.layout && GLOB.layout.length) {
+      var byId = {}, jj, LL, itx, nnx;
+      for (jj = 0; jj < NAV.length; jj++) if (NAV[jj].id != null) byId[NAV[jj].id] = NAV[jj];
+      var seen = {}, outx = [];
+      for (jj = 0; jj < NAV.length; jj++) if (NAV[jj].home) outx.push(NAV[jj]);
+      for (jj = 0; jj < GLOB.layout.length; jj++) {
+        LL = GLOB.layout[jj];
+        if (!LL) continue;
+        if (LL.g != null) { outx.push({ grp: String(LL.g) }); continue; }
+        itx = byId[LL.m];
+        if (itx && !seen[itx.id]) { seen[itx.id] = 1; outx.push(itx); }
+      }
+      for (jj = 0; jj < NAV.length; jj++) {
+        nnx = NAV[jj];
+        if (nnx.home || nnx.grp || nnx.id == null) continue;
+        if (!seen[nnx.id]) outx.push(nnx);
+      }
+      NAVX = outx;
+    }
+
+    for (i = 0; i < NAVX.length; i++) {
+      var n = NAVX[i];
       if (n.home) { home = n; continue; }
       if (n.grp)  { cur = { grp: n.grp, items: [] }; groups.push(cur); continue; }
       n._i = k++;
@@ -772,7 +796,7 @@ function pullSideGlobal() {
     .then(function (r) { return r.json(); })
     .then(function (j) {
       if (!j || !j.ok) return;
-      GLOB = { order: j.order || [], hidden: j.hidden || [] };
+      GLOB = { order: j.order || [], hidden: j.hidden || [], layout: j.layout || [] };
       paint(layout(window.__APSA_HOME_PREFS || null));
     })
     .catch(function () {});

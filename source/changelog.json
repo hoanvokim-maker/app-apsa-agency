@@ -1,5 +1,5 @@
 {
-    "version": "1.8.3",
+    "version": "1.8.4",
     "updated": "2026-09-05",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-05",
             "note": "Phiên bản 1.8",
             "items": [
+                {
+                    "d": "2026-09-05",
+                    "v": "1.8.4",
+                    "t": "Cai dat > Thanh menu: hien nhu sidebar that (icon), keo tha sap xep, them/xoa/doi ten nhom; sidebar doc bo cuc moi",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-05",
                     "v": "1.8.3",
