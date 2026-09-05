@@ -894,6 +894,12 @@ table.chktbl tr.it.done > td input, table.chktbl tr.it.done > td select{ opacity
 table.chktbl td.chk-x{ width:34px; text-align:center; }
 table.chktbl td.chk-p{ width:74px; text-align:center; }
 table.chktbl th:nth-last-child(2){ width:74px; }
+.asgprog{ display:flex; align-items:center; gap:10px; margin-top:10px; }
+.asgpbar{ position:relative; flex:1; height:6px; border-radius:99px; background:rgba(255,255,255,.09); overflow:hidden; }
+.asgpbar > i{ position:absolute; left:0; top:0; bottom:0; border-radius:99px; background:var(--accent,#dff20d); transition:width .25s ease; }
+.asgpbar.full > i{ background:#4ade80; }
+.asgpnum{ font-size:12.5px; font-weight:700; min-width:40px; text-align:right; }
+.asgpmeta{ font-size:11.5px; color:var(--text3); white-space:nowrap; }
 table.chktbl td.chk-grip{ width:26px; text-align:center; padding-left:2px !important; padding-right:0 !important; }
 table.chktbl th.chk-grip{ width:26px; }
 table.chktbl td.chk-c{ width:30px; text-align:center; }
@@ -2155,6 +2161,27 @@ function asgDup(i){
   renderAsg(); markDirty();
   try { toast(src.kind === 'group' ? ('Đã nhân đôi nhóm — ' + len + ' dòng') : 'Đã nhân đôi dòng', 'ok'); } catch (x) {}
 }
+/* APSA1811: tien do checklist */
+var ASG_W = { todo: 0, doing: 40, review: 75, done: 100 };
+function asgProg(){
+  var rows = (ASG || []).filter(function(a){ return a.kind !== 'group'; });
+  if (!rows.length) return null;
+  var w = 0, done = 0;
+  rows.forEach(function(a){
+    var st = a.status || 'todo';
+    w += (ASG_W[st] != null ? ASG_W[st] : 0);
+    if (st === 'done') done++;
+  });
+  return { n: rows.length, done: done, pct: Math.round(w / rows.length) };
+}
+function asgProgHtml(){
+  var p = asgProg();
+  if (!p) return '';
+  return '<div class="asgprog" title="Chưa giao 0% · Đang làm 40% · Đang review 75% · Đã hoàn thành 100%">' +
+         '<div class="asgpbar' + (p.pct === 100 ? ' full' : '') + '"><i style="width:' + p.pct + '%"></i></div>' +
+         '<span class="asgpnum">' + p.pct + '%</span>' +
+         '<span class="asgpmeta">' + p.done + '/' + p.n + ' việc xong</span></div>';
+}
 function renderAsg(){
   const box = document.getElementById('asgWrap');
   if (!box) return;
@@ -2189,7 +2216,8 @@ function renderAsg(){
     (ASG.length
       ? `<table class="asgtbl chktbl"><thead><tr><th class="chk-grip"></th><th>Công việc</th><th>Người được giao</th><th>Hạn</th><th>Trạng thái</th><th>Ưu tiên</th><th colspan="2"></th></tr></thead><tbody>${rows}</tbody></table>`
       : `<div class="asgempty">Chưa có công việc nào — bấm “+ Thêm dòng”.</div>`) +
-    `<div class="asgadd">` +
+    asgProgHtml() +
+      `<div class="asgadd">` +
       `<button class="hbtn" type="button" onclick="asgAdd('group')">+ Thêm nhóm</button>` +
       `<button class="hbtn" type="button" onclick="asgAdd('item')">+ Thêm dòng</button>` +
       (ASG.length ? `<span class="xs" style="color:var(--text3)">Lưu báo giá là checklist được lưu theo.</span>` : '') +

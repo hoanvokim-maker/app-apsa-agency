@@ -2714,12 +2714,34 @@ case 'project-board': {
         $byQuo[$a['quotation_id']][] = $a;
     }
 
-    foreach ($rows as &$r) {
+    /* APSA1811: tien do checklist - tinh ca task chua giao, co trong so theo trang thai */
+        $PW   = array('todo' => 0, 'doing' => 40, 'review' => 75, 'done' => 100);
+        $prog = array();
+        try {
+            $sg = $pdo->prepare("SELECT quotation_id, status, COUNT(*) AS c
+                                   FROM `quotation_assignees`
+                                  WHERE quotation_id IN ($in) AND kind <> 'group'
+                               GROUP BY quotation_id, status");
+            $sg->execute($ids);
+            foreach ($sg->fetchAll() as $g) {
+                $qi = (int) $g['quotation_id'];
+                $c  = (int) $g['c'];
+                $gs = (string) $g['status'];
+                if (!isset($prog[$qi])) $prog[$qi] = array('n' => 0, 'done' => 0, 'w' => 0);
+                $prog[$qi]['n'] += $c;
+                $prog[$qi]['w'] += $c * (isset($PW[$gs]) ? $PW[$gs] : 0);
+                if ($gs === 'done') $prog[$qi]['done'] += $c;
+            }
+        } catch (Exception $ep) { $prog = array(); }
+
+        foreach ($rows as &$r) {
         $r['id'] = (int)$r['id'];
         $list = $byQuo[$r['id']] ?? [];
         $r['assignees']    = $list;
-        $r['task_total']   = count($list);
-        $r['task_done']    = count(array_filter($list, fn($a) => $a['status'] === 'done'));
+        $pg = isset($prog[$r['id']]) ? $prog[$r['id']] : array('n' => count($list), 'done' => 0, 'w' => 0);
+        $r['task_total']  = (int) $pg['n'];
+        $r['task_done']   = (int) $pg['done'];
+        $r['task_pct']    = $pg['n'] > 0 ? (int) round($pg['w'] / $pg['n']) : 0;
         $r['task_doing']   = count(array_filter($list, fn($a) => $a['status'] === 'doing'));
         $r['task_overdue'] = count(array_filter($list, fn($a) => $a['overdue']));
         $r['unassigned']   = $r['task_total'] === 0 ? 1 : 0;

@@ -664,7 +664,7 @@ function teamHtml(r){
 }
 function progHtml(r){
   if (!r.task_total) return '<div class="prog"></div>';
-  const pct = Math.round(r.task_done / r.task_total * 100);
+  const pct = (r.task_pct != null) ? Number(r.task_pct) : Math.round(r.task_done / r.task_total * 100);
   const bits = [];
   if (r.task_overdue) bits.push('<span class="lt">' + r.task_overdue + ' quá hạn</span>');
   else if (r.next_due){
@@ -673,7 +673,7 @@ function progHtml(r){
   }
   return '<div class="prog">' +
     '<div class="pbar' + (pct === 100 ? ' full' : '') + '"><i style="width:' + pct + '%"></i></div>' +
-    '<div class="pmeta">' + r.task_done + '/' + r.task_total + ' việc xong' +
+    '<div class="pmeta"><b>' + pct + '%</b> · ' + r.task_done + '/' + r.task_total + ' việc xong' +
       (bits.length ? ' · ' + bits.join(' · ') : '') + '</div></div>';
 }
 function cardHtml(r){
