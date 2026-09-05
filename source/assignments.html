@@ -613,7 +613,7 @@ function posPill(a){
 function statusSel(a){
   const opts = Object.keys(META.status).map(k =>
     '<option value="' + k + '"' + (a.status === k ? ' selected' : '') + '>' + esc(META.status[k]) + '</option>').join('');
-  const mine = String(a.user_id) === String(MY_ID);
+  const mine = String(a.user_id) === String(MY_ID) || Number(a.user_id) === 0;
   return '<select class="ssel s-' + esc(a.status) + (mine ? '' : ' lockd') + '"' +
          (mine ? '' : ' disabled title="Ch\u1ec9 ng\u01b0\u1eddi \u0111\u01b0\u1ee3c giao m\u1edbi \u0111\u1ed5i \u0111\u01b0\u1ee3c tr\u1ea1ng th\u00e1i"') +
          ' onchange="setStatus(' + a.quotation_id + ',' + a.id + ', this.value)">' + opts + '</select>';

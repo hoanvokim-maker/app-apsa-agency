@@ -1,5 +1,5 @@
 {
-    "version": "1.8.6",
+    "version": "1.8.7",
     "updated": "2026-09-05",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-05",
             "note": "Phiên bản 1.8",
             "items": [
+                {
+                    "d": "2026-09-05",
+                    "v": "1.8.7",
+                    "t": "Checklist du an: danh sach Nguoi duoc giao co them Nha cung cap ca nhan (ratecard_suppliers kind=person), tach nhom Nhan su APSA / NCC ca nhan; trang Lam viec hien luon task giao cho NCC",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-05",
                     "v": "1.8.6",

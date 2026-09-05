@@ -98,6 +98,10 @@ q_mig($pdo, "CREATE TABLE IF NOT EXISTS `quotation_assignees` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
 /* APSA180: checklist du an - cot kind phan biet dong nhom / dong cong viec */
+if (!q_hasColumn($pdo, 'quotation_assignees', 'supplier_id')) {
+    q_mig($pdo, "ALTER TABLE `quotation_assignees`
+        ADD COLUMN `supplier_id` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'ratecard_suppliers.id khi giao cho NCC ca nhan'");
+}
 if (!q_hasColumn($pdo, 'quotation_assignees', 'priority')) {
     q_mig($pdo, "ALTER TABLE `quotation_assignees`
         ADD COLUMN `priority` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '0 khong / 1 binh thuong / 2 quan trong / 3 khan'");
@@ -134,10 +138,11 @@ function q_chkRows(PDO $pdo, $qid) {
     global $ASSIGN_STATUS;
     $out = array();
     try {
-        $st = $pdo->prepare("SELECT a.id, a.kind, a.user_id, a.task, a.due_date, a.status, a.sort_order, a.priority,
-                                    u.display_name
+        $st = $pdo->prepare("SELECT a.id, a.kind, a.user_id, a.supplier_id, a.task, a.due_date, a.status, a.sort_order, a.priority,
+                                    u.display_name, sp.name AS supplier_name
                                FROM `quotation_assignees` a
                           LEFT JOIN `app_users` u ON u.id = a.user_id
+                          LEFT JOIN `ratecard_suppliers` sp ON sp.id = a.supplier_id
                               WHERE a.quotation_id = ?
                            ORDER BY a.sort_order ASC, a.id ASC");
         $st->execute(array((int) $qid));
@@ -148,7 +153,10 @@ function q_chkRows(PDO $pdo, $qid) {
                 'id'        => (int) $r['id'],
                 'kind'      => $kd,
                 'user_id'   => (int) $r['user_id'],
-                'user_name' => isset($r['display_name']) ? (string) $r['display_name'] : '',
+                'supplier_id' => (int) $r['supplier_id'],
+                'user_name' => ((int) $r['supplier_id'] > 0 && isset($r['supplier_name']))
+                                 ? (string) $r['supplier_name']
+                                 : (isset($r['display_name']) ? (string) $r['display_name'] : ''),
                 'name'      => (string) $r['task'],
                 'due_date'  => $r['due_date'] ? (string) $r['due_date'] : '',
                 'status'    => isset($ASSIGN_STATUS[$stt]) ? $stt : 'todo',
@@ -2199,20 +2207,22 @@ case 'assignees-save': {
     try {
         $pdo->prepare("DELETE FROM `quotation_assignees` WHERE quotation_id = ?")->execute([$qid]);
         $ins = $pdo->prepare("INSERT INTO `quotation_assignees`
-            (quotation_id, kind, user_id, position, task, due_date, status, sort_order, assigned_by, priority)
-            VALUES (?,?,?,?,?,?,?,?,?,?)");
+            (quotation_id, kind, user_id, supplier_id, position, task, due_date, status, sort_order, assigned_by, priority)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?)");
         $n = 0;
         foreach ($list as $i => $a) {
             $kd  = (isset($a['kind']) && (string) $a['kind'] === 'group') ? 'group' : 'item';
             $uid = (int)($a['user_id'] ?? 0);
             $nm  = s((string)($a['name'] ?? ($a['task'] ?? '')), 300);
-            if ($kd === 'group') { $uid = 0; }
-            if (trim($nm) === '' && !$uid) continue;
+            $sup = (int)($a['supplier_id'] ?? 0);
+            if ($kd === 'group') { $uid = 0; $sup = 0; }
+            if ($uid > 0) $sup = 0;
+            if (trim($nm) === '' && !$uid && !$sup) continue;
             $sttRow = q_asgStatus($a['status'] ?? 'todo');
             $meRow  = (is_array($ME) && isset($ME['id'])) ? (int) $ME['id'] : 0;
             if ($uid > 0 && $uid !== $meRow && isset($qOldStt[$uid . '|' . $nm]))
                 $sttRow = $qOldStt[$uid . '|' . $nm];
-            $ins->execute([$qid, $kd, $uid, q_asgPos($a['position'] ?? ''),
+            $ins->execute([$qid, $kd, $uid, $sup, q_asgPos($a['position'] ?? ''),
                            $nm, dateOrNull($a['due_date'] ?? ''),
                            $sttRow, $i, $WHO,
                            max(0, min(3, (int)($a['priority'] ?? 0)))]);
@@ -2684,10 +2694,12 @@ case 'project-board': {
     $ids = array_map(fn($r) => (int)$r['id'], $rows);
     $in  = implode(',', array_fill(0, count($ids), '?'));
     $sa  = $pdo->prepare(
-        "SELECT a.*, u.display_name, u.staff_type, u.phone, u.email, u.avatar
-           FROM `quotation_assignees` a
-           JOIN `app_users` u ON u.id = a.user_id
-          WHERE a.quotation_id IN ($in)
+        "SELECT a.*, COALESCE(NULLIF(sp.name, ''), u.display_name) AS display_name, u.staff_type, u.phone, u.email, u.avatar
+               FROM `quotation_assignees` a
+          LEFT JOIN `app_users` u ON u.id = a.user_id
+          LEFT JOIN `ratecard_suppliers` sp ON sp.id = a.supplier_id
+              WHERE a.quotation_id IN ($in)
+                AND (a.user_id > 0 OR a.supplier_id > 0)
        ORDER BY (a.status='done') ASC, (a.due_date IS NULL) ASC, a.due_date ASC, a.sort_order ASC, a.id ASC");
     $sa->execute($ids);
     $today = date('Y-m-d');

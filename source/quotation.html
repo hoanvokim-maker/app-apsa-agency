@@ -2004,7 +2004,7 @@ async function openQuote(id, opts){
       act_amount: Number(i.act_amount)||0, act_remark: i.act_remark || ''
     })) });
     if (!EDIT.items.length) EDIT.items = [blankItem('section')];
-    ASG = (d.checklist || []).map(a => ({ kind:a.kind||'item', name:a.name||'', user_id:Number(a.user_id)||0, due_date:a.due_date||'', status:a.status||'todo', priority:Number(a.priority)||0 }));
+    ASG = (d.checklist || []).map(a => ({ kind:a.kind||'item', name:a.name||'', user_id:Number(a.user_id)||0, supplier_id:Number(a.supplier_id)||0, due_date:a.due_date||'', status:a.status||'todo', priority:Number(a.priority)||0 }));
     renderAsg();
     EXP = (d.expenses || []).map(r => ({ id:Number(r.id)||0, has_proof:Number(r.has_proof)||0, proof_name:r.proof_name||'', kind:r.kind || 'item', name:r.name || '', description:r.description || '',
                                          qty:Number(r.qty)||0, unit:r.unit || '',
@@ -2026,7 +2026,7 @@ async function openQuote(id, opts){
 }
 
 /* ══════════ GIAO VIỆC — người thực hiện của dự án ══════════ */
-let STAFF = [], ASG = [], ASG_META = { status: {}, positions: {} };
+let STAFF = [], SUPP = [], ASG = [], ASG_META = { status: {}, positions: {} };
 
 async function loadStaff(){
   try {
@@ -2035,6 +2035,10 @@ async function loadStaff(){
     if (j && j.ok) STAFF = j.data || [];
   } catch(e){}
   try { ASG_META = await api(API, 'assign-meta'); } catch(e){}
+  try {
+    const pl = await api(API, 'payees');
+    SUPP = (pl.sup || []).filter(x => String(x.kind) === 'person');
+  } catch(e){}
 }
 
 function staffLabel(u){
@@ -2044,6 +2048,18 @@ function staffLabel(u){
 }
 
 const CHK_X = '<svg class="ic" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+
+function whoOpts(a){
+  const cur = Number(a.supplier_id) > 0 ? ('s' + a.supplier_id)
+            : (Number(a.user_id) > 0 ? ('u' + a.user_id) : '0');
+  const opt = (v, l) => '<option value="' + esc(v) + '"' + (String(v) === String(cur) ? ' selected' : '') + '>' + esc(l) + '</option>';
+  let h = opt('0', '\u2014 ch\u01b0a giao \u2014');
+  const st = (STAFF || []).filter(u => Number(u.active) !== 0);
+  if (st.length) h += '<optgroup label="Nh\u00e2n s\u1ef1 APSA">' + st.map(u => opt('u' + u.id, staffLabel(u))).join('') + '</optgroup>';
+  if ((SUPP || []).length) h += '<optgroup label="Nh\u00e0 cung c\u1ea5p c\u00e1 nh\u00e2n">' +
+      SUPP.map(x => opt('s' + x.id, x.name)).join('') + '</optgroup>';
+  return h;
+}
 
 function chkOpts(pairs, cur){
   return pairs.map(p => `<option value="${esc(p[0])}"${String(p[0]) === String(cur) ? ' selected' : ''}>${esc(p[1])}</option>`).join('');
@@ -2072,7 +2088,7 @@ function renderAsg(){
     }
     return `<tr class="it${cls}">` +
       `<td><input value="${esc(a.name || '')}" placeholder="Tên công việc" oninput="asgSet(${i},'name',this.value)" /></td>` +
-      `<td style="width:200px"><select onchange="asgSet(${i},'user_id',this.value)">${chkOpts(people, a.user_id || 0)}</select></td>` +
+      `<td style="width:210px"><select onchange="asgSet(${i},'who',this.value)">${whoOpts(a)}</select></td>` +
       `<td style="width:145px"><input type="date" value="${esc(a.due_date || '')}" onchange="asgSet(${i},'due_date',this.value)" /></td>` +
       `<td style="width:150px"><select${(Number(a.user_id) > 0 && Number(a.user_id) !== meId) ? ' disabled title="Ch\u1ec9 ng\u01b0\u1eddi \u0111\u01b0\u1ee3c giao m\u1edbi \u0111\u1ed5i \u0111\u01b0\u1ee3c tr\u1ea1ng th\u00e1i"' : ''} onchange="asgSet(${i},'status',this.value)">${chkOpts(stats, a.status || 'todo')}</select></td>` +
       `<td class="chk-p">${chkPrioBtn(a, i)}</td>` +
@@ -2093,12 +2109,18 @@ function renderAsg(){
 
 function asgSet(i, k, v){
   if (!ASG[i]) return;
+  if (k === 'who') {
+    const w = String(v || '0');
+    ASG[i].user_id     = (w.charAt(0) === 'u') ? (Number(w.slice(1)) || 0) : 0;
+    ASG[i].supplier_id = (w.charAt(0) === 's') ? (Number(w.slice(1)) || 0) : 0;
+    markDirty(); renderAsg(); return;
+  }
   ASG[i][k] = (k === 'user_id') ? (Number(v) || 0) : v;
   markDirty();
   if (k === 'user_id' || k === 'status' || k === 'due_date') renderAsg();
 }
 function asgAdd(kind){
-  ASG.push({ kind: (kind === 'group' ? 'group' : 'item'), name: '', user_id: 0, due_date: '', status: 'todo', priority: 0 });
+  ASG.push({ kind: (kind === 'group' ? 'group' : 'item'), name: '', user_id: 0, supplier_id: 0, due_date: '', status: 'todo', priority: 0 });
   renderAsg(); markDirty();
 }
 function asgDel(i){ ASG.splice(i, 1); renderAsg(); markDirty(); }
@@ -2376,10 +2398,10 @@ async function saveExp(qid, quiet){
 /* Lưu phân công (gọi sau khi lưu báo giá để chắc chắn đã có id) */
 async function saveAsg(qid, quiet){
   if (!qid) return;
-  const list = ASG.filter(a => (String(a.name||'').trim() !== '') || Number(a.user_id) > 0);
+  const list = ASG.filter(a => (String(a.name||'').trim() !== '') || Number(a.user_id) > 0 || Number(a.supplier_id) > 0);
   try {
     const d = await api(API, 'assignees-save', { body: { quotation_id: qid, list } });
-    ASG = (d.list || []).map(a => ({ kind:a.kind||'item', name:a.name||'', user_id:Number(a.user_id)||0, due_date:a.due_date||'', status:a.status||'todo', priority:Number(a.priority)||0 }));
+    ASG = (d.list || []).map(a => ({ kind:a.kind||'item', name:a.name||'', user_id:Number(a.user_id)||0, supplier_id:Number(a.supplier_id)||0, due_date:a.due_date||'', status:a.status||'todo', priority:Number(a.priority)||0 }));
     if (!quiet) renderAsg();
   } catch(e){ toast('Không lưu được phân công: ' + e.message, 'err'); }
 }
