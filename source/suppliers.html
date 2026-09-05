@@ -407,12 +407,13 @@ function drawRegionBar() {
 }
 
 function draw() {
+  if (!POS_MAP) ensurePos(function () { draw(); });
   var tm = terms(FQ);
   var base = ITEMS;
   if (FR) base = ITEMS.filter(function (s) { return (s.region || '') === FR; });
   if (KD) base = base.filter(function (s) { return kindOf(s) === KD; });
   var rows = tm.length ? base.filter(function (s) {
-    return hit([s.name, s.contact, s.phone, s.phone2, s.address, s.email, s.note, s.bank_name, s.bank_account, s.bank_holder].join(' '), tm);
+    return hit([s.name, s.contact, s.phone, s.phone2, s.address, s.email, s.note, s.bank_name, s.bank_account, s.bank_holder, posLabel(s.position)].join(' '), tm);
   }) : base;
 
   el('chips').innerHTML = '<span class="chip"><b>' + ITEMS.length + '</b> nhà cung cấp</span>'
@@ -427,7 +428,7 @@ function draw() {
   }
 
   var h = '<table><thead><tr>'
-    + '<th>Công ty</th><th style="width:120px">Khu vực</th><th style="width:170px">Người liên hệ</th><th style="width:150px">Điện thoại</th>'
+    + '<th>Công ty</th><th style="width:120px">Khu vực</th><th style="width:130px">Vị trí</th><th style="width:170px">Người liên hệ</th><th style="width:150px">Điện thoại</th>'
     + '<th style="width:210px">Tài khoản</th><th class="addr">Địa chỉ</th><th style="width:100px"></th>'
     + '</tr></thead><tbody>';
 
@@ -441,6 +442,7 @@ function draw() {
       + (s.note ? '<div class="sub">' + hlt(s.note, tm) + '</div>' : '')
       + '</td>'
       + '<td>' + (s.region ? '<span class="rg rg-' + s.region + '">' + regionLabel(s.region) + '</span>' : '<span style="color:var(--text3)">—</span>') + '</td>'
+      + '<td>' + (s.position ? '<b>' + esc(posLabel(s.position)) + '</b>' : '<span style="color:var(--text3)">—</span>') + '</td>'
       + '<td>' + (s.contact ? hlt(s.contact, tm) : '<span style="color:var(--text3)">—</span>') + '</td>'
       + '<td class="tel">' + (s.phone ? telLink(s.phone, tm) : '<span style="color:var(--text3)">—</span>')
       + (s.phone2 ? '<div class="sub tel">' + telLink(s.phone2, tm) + '</div>' : '') + '</td>'
@@ -466,6 +468,7 @@ function clearSearch() { el('q').value = ''; FQ = ''; el('sbox').classList.remov
 
 /* ── thêm / sửa ── */
 var POS_MAP = null;
+function posLabel(k) { if (!k) return ''; return (POS_MAP && POS_MAP[k]) ? POS_MAP[k] : k; }
 function ensurePos(cb) {
   if (POS_MAP) { if (cb) cb(); return; }
   fetch('./api/auth-api.php?action=positions', { credentials: 'same-origin' })

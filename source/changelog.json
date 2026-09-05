@@ -1,5 +1,5 @@
 {
-    "version": "1.8.9",
+    "version": "1.8.10",
     "updated": "2026-09-05",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-05",
             "note": "Phiên bản 1.8",
             "items": [
+                {
+                    "d": "2026-09-05",
+                    "v": "1.8.10",
+                    "t": "icon avatar ra sau ten de go tim; NCC them cot Vi tri + tim theo vi tri",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-05",
                     "v": "1.8.9",
