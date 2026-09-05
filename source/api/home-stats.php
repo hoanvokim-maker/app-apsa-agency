@@ -149,4 +149,27 @@ $mon['label']      = date('m/Y');
 $mon['prev_label'] = date('m/Y', strtotime($p0));
 $nxt['label'] = date('m/Y', strtotime($m1));
 
-hs_out(array('ok' => true, 'allowed' => true, 'month' => $mon, 'next' => $nxt));
+/* ---- Du an cua rieng nguoi dang dang nhap, trong thang hien tai ---- */
+$mine  = array('label' => date('m/Y'), 'doing' => 0, 'done' => 0, 'total' => 0, 'lost' => 0);
+$uidMe = isset($_SESSION['user_id']) ? (int) $_SESSION['user_id'] : 0;
+if ($uidMe > 0) {
+    try {
+        $stM = $pdo->prepare(
+            "SELECT q.status
+               FROM `quotations` q
+              WHERE q.deleted_at IS NULL
+                AND DATE_FORMAT(q.quotation_date, '%Y-%m') = ?
+                AND EXISTS (SELECT 1 FROM `quotation_assignees` a
+                             WHERE a.quotation_id = q.id AND a.user_id = ?)");
+        $stM->execute(array(date('Y-m'), $uidMe));
+        foreach ($stM->fetchAll(PDO::FETCH_COLUMN) as $stt) {
+            $stt = (string) $stt;
+            $mine['total']++;
+            if ($stt === 'done' || $stt === 'paid')  $mine['done']++;
+            elseif ($stt === 'lost')                 $mine['lost']++;
+            else                                     $mine['doing']++;
+        }
+    } catch (PDOException $e) { /* bo qua */ }
+}
+
+hs_out(array('ok' => true, 'allowed' => true, 'month' => $mon, 'next' => $nxt, 'mine' => $mine));

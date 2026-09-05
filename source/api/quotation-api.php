@@ -2032,8 +2032,29 @@ case 'list': {
     $st = $pdo->prepare($sql);
     $st->execute($params);
     $rows = $st->fetchAll();
+
+        /* --- Ghim + muc uu tien cua chinh nguoi dang dang nhap --- */
+        $uidPin = (is_array($ME) && isset($ME['id'])) ? (int) $ME['id']
+                : (isset($_SESSION['user_id']) ? (int) $_SESSION['user_id'] : 0);
+        $pinIds = array();
+        if ($uidPin > 0) {
+            try {
+                $ps = $pdo->prepare("SELECT quotation_id FROM `quotation_pins` WHERE user_id = ?");
+                $ps->execute(array($uidPin));
+                foreach ($ps->fetchAll(PDO::FETCH_COLUMN) as $pid) $pinIds[(int) $pid] = true;
+            } catch (PDOException $e) { }
+        }
+        $prioMap = array();
+        try {
+            foreach ($pdo->query("SELECT id, priority FROM `quotations` WHERE priority > 0")->fetchAll() as $pr) {
+                $prioMap[(int) $pr['id']] = (int) $pr['priority'];
+            }
+        } catch (PDOException $e) { }
+
     foreach ($rows as &$r) {
         $r['id']            = (int)$r['id'];
+            $r['pinned']        = isset($pinIds[(int)$r['id']]) ? 1 : 0;
+            $r['priority']      = isset($prioMap[(int)$r['id']]) ? $prioMap[(int)$r['id']] : 0;
         $r['status']        = q_status($r['status'] ?? '');
         $r['status_label']  = $Q_STATUS[$r['status']];
         $r['src_link']      = $r['src_link'] ?? '';
@@ -2053,11 +2074,14 @@ case 'list': {
 
     // Chỉ trả về những cột danh sách thực sự hiển thị — payload nhẹ hơn ~60%
     $KEEP = ['id','kind','code','title','client_name','company_name','status','status_label',
-             'quotation_date','item_count','grand_total','liq_subtotal','liq_grand_total','has_liquidation','contact_name'];
+             'quotation_date','item_count','grand_total','liq_subtotal','liq_grand_total','has_liquidation','contact_name',
+                  'pinned','priority'];
     $slim = [];
     foreach ($rows as $r) {
         $o = [];
         foreach ($KEEP as $k) if (array_key_exists($k, $r)) $o[$k] = $r[$k];
+        $o['pinned']   = empty($r['pinned']) ? 0 : 1;
+        $o['priority'] = isset($r['priority']) ? (int) $r['priority'] : 0;
         $slim[] = $o;
     }
     q_ok($slim);
@@ -2544,7 +2568,8 @@ case 'project-board': {
         $params[] = q_asgPos($_GET['pos']);
     }
 
-    $meIdPin = (is_array($ME) && isset($ME['id'])) ? (int) $ME['id'] : 0;
+    $meIdPin = (is_array($ME) && isset($ME['id'])) ? (int) $ME['id']
+                 : (isset($_SESSION['user_id']) ? (int) $_SESSION['user_id'] : 0);
     $sql = "SELECT q.id, q.code, q.title, q.kind, q.status, q.quotation_date, q.event_date,
                    q.priority,
                    (SELECT 1 FROM `quotation_pins` pn

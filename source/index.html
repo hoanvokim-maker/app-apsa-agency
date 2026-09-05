@@ -877,6 +877,22 @@
       </div>
     </section>
 
+    <section class="gsec" id="secMine" style="display:none">
+      <div class="ghead"><span class="gttl">&#9670; D&#7921; &#225;n c&#7911;a t&#244;i</span><span class="gline"></span><span class="gnum" id="mineNum"></span></div>
+      <div class="biz-wrap">
+        <a class="biz-card" href="./quotation.html">
+          <div class="biz-lbl">&#272;ang l&#224;m &#183; th&#225;ng <b id="mineM1"></b></div>
+          <div class="biz-num" id="mineDoing">0</div>
+          <div class="biz-sub" id="mineDoingS">d&#7921; &#225;n b&#7841;n &#273;&#432;&#7907;c giao vi&#7879;c, ch&#432;a &#273;&#243;ng</div>
+        </a>
+        <a class="biz-card" href="./quotation.html">
+          <div class="biz-lbl">&#272;&#227; ho&#224;n th&#224;nh &#183; th&#225;ng <b id="mineM2"></b></div>
+          <div class="biz-num" id="mineDone">0</div>
+          <div class="biz-sub" id="mineDoneS">&#272;&#243;ng v&#224; ch&#7901; thanh to&#225;n + &#272;&#227; thanh to&#225;n</div>
+        </a>
+      </div>
+    </section>
+
     <!-- ===== TO-DO LIST (v1.2.5) ===== -->
     <section class="gsec" id="secTodo" style="display:none">
       <div class="ghead">
@@ -1765,6 +1781,38 @@
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load);
   else load();
+})();
+</script>
+
+<script>
+/* ---- Du an cua toi trong thang ---- */
+(function () {
+  function g(id) { return document.getElementById(id); }
+  function paintMine(d) {
+    var m = d && d.mine;
+    var sec = g('secMine');
+    if (!sec || !m) return;
+    g('mineM1').textContent = m.label || '';
+    g('mineM2').textContent = m.label || '';
+    g('mineDoing').textContent = m.doing || 0;
+    g('mineDone').textContent  = m.done  || 0;
+    g('mineNum').textContent   = (m.total || 0) + ' d\u1ef1 \u00e1n';
+    g('mineDoingS').textContent = (m.total || 0)
+      ? 'B\u1ea1n \u0111\u01b0\u1ee3c giao vi\u1ec7c \u1edf ' + (m.total || 0)
+        + ' d\u1ef1 \u00e1n th\u00e1ng n\u00e0y'
+      : 'Th\u00e1ng n\u00e0y b\u1ea1n ch\u01b0a \u0111\u01b0\u1ee3c giao d\u1ef1 \u00e1n n\u00e0o';
+    g('mineDoneS').textContent =
+      '\u0110\u00f3ng v\u00e0 ch\u1edd thanh to\u00e1n + \u0110\u00e3 thanh to\u00e1n';
+    sec.style.display = '';
+  }
+  function loadMine() {
+    fetch('./api/home-stats.php', { credentials: 'same-origin', cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(paintMine)
+      .catch(function () { });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadMine);
+  else loadMine();
 })();
 </script>
 </body>

@@ -1,5 +1,5 @@
 {
-    "version": "1.7.37",
+    "version": "1.7.38",
     "updated": "2026-09-05",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-03",
             "note": "Phiên bản 1.7",
             "items": [
+                {
+                    "d": "2026-09-05",
+                    "v": "1.7.38",
+                    "t": "Trang chu them muc Du an cua toi (dang lam / da hoan thanh trong thang, tinh theo viec duoc giao); sua loi ghim + muc uu tien khong con sau khi refresh (action list khong tra ve cot pinned/priority)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-05",
                     "v": "1.7.37",
