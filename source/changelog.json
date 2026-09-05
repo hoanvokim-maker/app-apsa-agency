@@ -1,5 +1,5 @@
 {
-    "version": "1.8.14",
+    "version": "1.8.15",
     "updated": "2026-09-05",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-05",
             "note": "Phiên bản 1.8",
             "items": [
+                {
+                    "d": "2026-09-05",
+                    "v": "1.8.15",
+                    "t": "admin duoc cap nhat trang thai task cua moi nguoi trong checklist",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-05",
                     "v": "1.8.14",

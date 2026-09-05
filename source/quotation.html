@@ -2271,6 +2271,7 @@ function renderAsg(){
   const stats = Object.entries((ASG_META && ASG_META.status) || { todo:'todo', doing:'doing', review:'review', done:'done' });
   const today = new Date(); today.setHours(0,0,0,0);
   const meId = (window.__APSA_USER && Number(window.__APSA_USER.id)) || 0;
+  const IS_ADM = !!(window.__APSA_USER && String(window.__APSA_USER.role || '').toLowerCase() === 'admin');
 
   const rows = ASG.map((a, i) => {
     const del = `<td class="chk-c"><button class="asgrow-x asgrow-c" type="button" title="Nhân đôi (nhóm: cả nhóm)" onclick="asgDup(${i})">${CHK_C}</button></td><td class="chk-x"><button class="asgrow-x" type="button" title="Xoá" onclick="asgDel(${i})">${CHK_X}</button></td>`;
@@ -2288,7 +2289,7 @@ function renderAsg(){
       `<td><input value="${esc(a.name || '')}" placeholder="Tên công việc" oninput="asgSet(${i},'name',this.value)" /></td>` +
       `<td style="width:210px"><select onchange="asgSet(${i},'who',this.value)">${whoOpts(a)}</select></td>` +
       `<td style="width:145px"><input type="date" value="${esc(a.due_date || '')}" onchange="asgSet(${i},'due_date',this.value)" /></td>` +
-      `<td style="width:150px"><select${(Number(a.user_id) > 0 && Number(a.user_id) !== meId) ? ' disabled title="Ch\u1ec9 ng\u01b0\u1eddi \u0111\u01b0\u1ee3c giao m\u1edbi \u0111\u1ed5i \u0111\u01b0\u1ee3c tr\u1ea1ng th\u00e1i"' : ''} onchange="asgSet(${i},'status',this.value)">${chkOpts(stats, a.status || 'todo')}</select></td>` +
+      `<td style="width:150px"><select${(!IS_ADM && Number(a.user_id) > 0 && Number(a.user_id) !== meId) ? ' disabled title="Ch\u1ec9 ng\u01b0\u1eddi \u0111\u01b0\u1ee3c giao m\u1edbi \u0111\u1ed5i \u0111\u01b0\u1ee3c tr\u1ea1ng th\u00e1i"' : ''} onchange="asgSet(${i},'status',this.value)">${chkOpts(stats, a.status || 'todo')}</select></td>` +
       `<td class="chk-p">${chkPrioBtn(a, i)}</td>` +
       del + `</tr>`;
   }).join('');

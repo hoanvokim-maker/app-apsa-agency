@@ -2220,7 +2220,7 @@ case 'assignees-save': {
             if (trim($nm) === '' && !$uid && !$sup) continue;
             $sttRow = q_asgStatus($a['status'] ?? 'todo');
             $meRow  = (is_array($ME) && isset($ME['id'])) ? (int) $ME['id'] : 0;
-            if ($uid > 0 && $uid !== $meRow && isset($qOldStt[$uid . '|' . $nm]))
+            if ($uid > 0 && $uid !== $meRow && !qc_is_admin() && isset($qOldStt[$uid . '|' . $nm]))
                 $sttRow = $qOldStt[$uid . '|' . $nm];
             $ins->execute([$qid, $kd, $uid, $sup, q_asgPos($a['position'] ?? ''),
                            $nm, dateOrNull($a['due_date'] ?? ''),
@@ -2262,7 +2262,7 @@ case 'assign-status': {
     $stOwn->execute([$id]);
     $ownId = (int) $stOwn->fetchColumn();
     $meId  = (is_array($ME) && isset($ME['id'])) ? (int) $ME['id'] : 0;
-    if ($ownId > 0 && $ownId !== $meId)
+    if ($ownId > 0 && $ownId !== $meId && !qc_is_admin())
         q_fail('Chỉ người được giao mới cập nhật được trạng thái công việc này.', 403);
     $pdo->prepare("UPDATE `quotation_assignees` SET status = ? WHERE id = ?")
         ->execute([q_asgStatus($B['status'] ?? 'todo'), $id]);

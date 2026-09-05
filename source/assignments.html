@@ -449,7 +449,7 @@ const API      = './api/quotation-api.php';
 const AUTH_API = './api/auth-api.php';
 
 let ROWS = [], STAFF = [], META = { status:{}, positions:{}, quo:{} };
-let MY_ID = '';
+let MY_ID = ''; let IS_ADMIN = false;
 let F = { scope:'all', status:'', kind:'', user:'', pos:'', q:'', view:'' };
 let PAGE = 40;
 let OPEN = new Set();
@@ -613,7 +613,7 @@ function posPill(a){
 function statusSel(a){
   const opts = Object.keys(META.status).map(k =>
     '<option value="' + k + '"' + (a.status === k ? ' selected' : '') + '>' + esc(META.status[k]) + '</option>').join('');
-  const mine = String(a.user_id) === String(MY_ID) || Number(a.user_id) === 0;
+  const mine = IS_ADMIN || String(a.user_id) === String(MY_ID) || Number(a.user_id) === 0;
   return '<select class="ssel s-' + esc(a.status) + (mine ? '' : ' lockd') + '"' +
          (mine ? '' : ' disabled title="Ch\u1ec9 ng\u01b0\u1eddi \u0111\u01b0\u1ee3c giao m\u1edbi \u0111\u1ed5i \u0111\u01b0\u1ee3c tr\u1ea1ng th\u00e1i"') +
          ' onchange="setStatus(' + a.quotation_id + ',' + a.id + ', this.value)">' + opts + '</select>';
@@ -815,7 +815,8 @@ async function boot(){
   /* APSA183: mac dinh xem tat ca du an lien quan toi chinh minh */
   let meU = window.__APSA_USER;
   if (!meU || !meU.id) { try { meU = await api(AUTH_API, 'me'); } catch(e){} }
-  if (meU && meU.id) { MY_ID = String(meU.id); F.user = MY_ID; }
+  if (meU && meU.id) { MY_ID = String(meU.id); F.user = MY_ID;
+    IS_ADMIN = String(meU.role || '').toLowerCase() === 'admin'; }
   if (p.get('user'))   F.user   = (p.get('user') === 'all' ? '' : p.get('user'));
   if (p.get('pos'))    F.pos    = p.get('pos');
   if (p.get('status')) F.status = p.get('status');
