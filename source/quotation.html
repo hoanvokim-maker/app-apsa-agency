@@ -894,6 +894,14 @@ table.chktbl tr.it.done > td input, table.chktbl tr.it.done > td select{ opacity
 table.chktbl td.chk-x{ width:34px; text-align:center; }
 table.chktbl td.chk-p{ width:74px; text-align:center; }
 table.chktbl th:nth-last-child(2){ width:74px; }
+table.chktbl td.chk-grip{ width:26px; text-align:center; padding-left:2px !important; padding-right:0 !important; }
+table.chktbl th.chk-grip{ width:26px; }
+table.chktbl td.chk-c{ width:30px; text-align:center; }
+table.chktbl tr:hover .grip{ opacity:.85; }
+table.chktbl tr.dragging{ opacity:.35; }
+table.chktbl tr.dropbefore > td{ box-shadow:inset 0 2px 0 var(--accent,#dff20d) !important; }
+table.chktbl tr.dropafter > td{ box-shadow:inset 0 -2px 0 var(--accent,#dff20d) !important; }
+.asgrow-c:hover{ color:#000 !important; background:var(--accent) !important; border-color:var(--accent) !important; }
 table.chktbl th:last-child{ width:34px; }
 .asgempty{ color:var(--text3); font-size:12px; padding:7px 2px; }
 .asgadd{ display:flex; align-items:center; gap:8px; margin-top:8px; flex-wrap:wrap; }
@@ -2077,6 +2085,76 @@ function chkOpts(pairs, cur){
   return pairs.map(p => `<option value="${esc(p[0])}"${String(p[0]) === String(cur) ? ' selected' : ''}>${esc(p[1])}</option>`).join('');
 }
 
+/* APSA189: keo tha sap xep + nhan doi dong/nhom trong checklist */
+var ASG_DRAG = -1;
+var CHK_GRIP = '<svg class="ic" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 5h.01M9 12h.01M9 19h.01M15 5h.01M15 12h.01M15 19h.01"/></svg>';
+var CHK_C = '<svg class="ic" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>';
+function asgGrip(i){
+  return '<td class="chk-grip"><span class="grip" draggable="true" title="Kéo để sắp xếp" ondragstart="asgDragStart(event,' + i + ')" ondragend="asgDragEnd()">' + CHK_GRIP + '</span></td>';
+}
+function asgDnd(i){
+  return ' data-ai="' + i + '" ondragover="asgDragOver(event,' + i + ')" ondragleave="asgDragLeave(event)" ondrop="asgDrop(event,' + i + ')"';
+}
+function asgBlockLen(i){
+  if (!ASG[i]) return 1;
+  if (ASG[i].kind !== 'group') return 1;
+  var n = 1;
+  while (i + n < ASG.length && ASG[i + n].kind !== 'group') n++;
+  return n;
+}
+function asgClearMarks(){
+  document.querySelectorAll('.chktbl tr').forEach(function(x){ x.classList.remove('dragging','dropbefore','dropafter'); });
+}
+function asgDragStart(e, i){
+  ASG_DRAG = i;
+  try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', String(i)); } catch (x) {}
+  var tr = e.target.closest('tr');
+  if (tr) setTimeout(function(){ tr.classList.add('dragging'); }, 0);
+}
+function asgDragEnd(){ ASG_DRAG = -1; asgClearMarks(); }
+function asgDragLeave(e){ e.currentTarget.classList.remove('dropbefore','dropafter'); }
+function asgDropBelow(e, tr){ var rc = tr.getBoundingClientRect(); return (e.clientY - rc.top) > rc.height / 2; }
+function asgDragOver(e, i){
+  if (ASG_DRAG < 0) return;
+  e.preventDefault();
+  try { e.dataTransfer.dropEffect = 'move'; } catch (x) {}
+  var tr = e.currentTarget;
+  document.querySelectorAll('.chktbl tr.dropbefore,.chktbl tr.dropafter')
+    .forEach(function(x){ x.classList.remove('dropbefore','dropafter'); });
+  tr.classList.add(asgDropBelow(e, tr) ? 'dropafter' : 'dropbefore');
+}
+function asgDrop(e, i){
+  e.preventDefault();
+  var from = ASG_DRAG;
+  var below = asgDropBelow(e, e.currentTarget);
+  asgDragEnd();
+  if (from < 0) return;
+  asgMoveBlock(from, below ? i + asgBlockLen(i) : i);
+}
+function asgMoveBlock(from, to){
+  var n = asgBlockLen(from);
+  if (to >= from && to <= from + n) return;
+  var part = ASG.splice(from, n);
+  var at = to > from ? to - n : to;
+  ASG.splice.apply(ASG, [at, 0].concat(part));
+  renderAsg(); markDirty();
+}
+function asgDup(i){
+  var src = ASG[i];
+  if (!src) return;
+  var len = asgBlockLen(i);
+  var copy = ASG.slice(i, i + len).map(function(a){
+    return { kind: a.kind || 'item', name: a.name || '',
+             user_id: Number(a.user_id) || 0, supplier_id: Number(a.supplier_id) || 0,
+             due_date: a.due_date || '', status: a.status || 'todo',
+             priority: Number(a.priority) || 0 };
+  });
+  if (src.kind === 'group' && copy[0])
+    copy[0].name = String(copy[0].name || '').trim() + ' (bản sao)';
+  ASG.splice.apply(ASG, [i + len, 0].concat(copy));
+  renderAsg(); markDirty();
+  try { toast(src.kind === 'group' ? ('Đã nhân đôi nhóm — ' + len + ' dòng') : 'Đã nhân đôi dòng', 'ok'); } catch (x) {}
+}
 function renderAsg(){
   const box = document.getElementById('asgWrap');
   if (!box) return;
@@ -2087,9 +2165,9 @@ function renderAsg(){
   const meId = (window.__APSA_USER && Number(window.__APSA_USER.id)) || 0;
 
   const rows = ASG.map((a, i) => {
-    const del = `<td class="chk-x"><button class="asgrow-x" type="button" title="Xoá" onclick="asgDel(${i})">${CHK_X}</button></td>`;
+    const del = `<td class="chk-c"><button class="asgrow-x asgrow-c" type="button" title="Nhân đôi (nhóm: cả nhóm)" onclick="asgDup(${i})">${CHK_C}</button></td><td class="chk-x"><button class="asgrow-x" type="button" title="Xoá" onclick="asgDel(${i})">${CHK_X}</button></td>`;
     if (a.kind === 'group') {
-      return `<tr class="gr"><td colspan="5"><input value="${esc(a.name || '')}" placeholder="Tên nhóm" oninput="asgSet(${i},'name',this.value)" /></td>${del}</tr>`;
+      return `<tr class="gr"${asgDnd(i)}>${asgGrip(i)}<td colspan="5"><input value="${esc(a.name || '')}" placeholder="Tên nhóm" oninput="asgSet(${i},'name',this.value)" /></td>${del}</tr>`;
     }
     let cls = '';
     if (a.status === 'done') cls = ' done';
@@ -2098,7 +2176,7 @@ function renderAsg(){
       const days = Math.round((dd - today) / 86400000);
       if (days < 0) cls = ' late'; else if (days <= 2) cls = ' soon';
     }
-    return `<tr class="it${cls}">` +
+    return `<tr class="it${cls}"${asgDnd(i)}>${asgGrip(i)}` +
       `<td><input value="${esc(a.name || '')}" placeholder="Tên công việc" oninput="asgSet(${i},'name',this.value)" /></td>` +
       `<td style="width:210px"><select onchange="asgSet(${i},'who',this.value)">${whoOpts(a)}</select></td>` +
       `<td style="width:145px"><input type="date" value="${esc(a.due_date || '')}" onchange="asgSet(${i},'due_date',this.value)" /></td>` +
@@ -2109,7 +2187,7 @@ function renderAsg(){
 
   box.innerHTML =
     (ASG.length
-      ? `<table class="asgtbl chktbl"><thead><tr><th>Công việc</th><th>Người được giao</th><th>Hạn</th><th>Trạng thái</th><th>Ưu tiên</th><th></th></tr></thead><tbody>${rows}</tbody></table>`
+      ? `<table class="asgtbl chktbl"><thead><tr><th class="chk-grip"></th><th>Công việc</th><th>Người được giao</th><th>Hạn</th><th>Trạng thái</th><th>Ưu tiên</th><th colspan="2"></th></tr></thead><tbody>${rows}</tbody></table>`
       : `<div class="asgempty">Chưa có công việc nào — bấm “+ Thêm dòng”.</div>`) +
     `<div class="asgadd">` +
       `<button class="hbtn" type="button" onclick="asgAdd('group')">+ Thêm nhóm</button>` +
