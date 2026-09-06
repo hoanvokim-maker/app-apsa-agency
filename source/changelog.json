@@ -1,12 +1,18 @@
 {
-    "version": "1.8.15",
-    "updated": "2026-09-05",
+    "version": "1.8.16",
+    "updated": "2026-09-06",
     "releases": [
         {
             "v": "1.8",
             "date": "2026-09-05",
             "note": "Phiên bản 1.8",
             "items": [
+                {
+                    "d": "2026-09-06",
+                    "v": "1.8.16",
+                    "t": "tieu de link khi chia se: playlist va bao gia hien ten playlist / ten du an (OG server-side)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-05",
                     "v": "1.8.15",
