@@ -375,6 +375,12 @@ var PLS = [], PLSEL = [], PLID = 0;
     '.plrow .mini{font:inherit;font-size:11px;padding:2px 7px;border-radius:6px;cursor:pointer;' +
     'border:1px solid rgba(255,255,255,.16);background:transparent;color:#9aa0a6}' +
     '.plrow .mini:disabled{opacity:.3;cursor:default}' +
+      '.plrow{cursor:grab}' +
+      '.plrow.dragging{opacity:.4}' +
+      '.plrow.dropbefore{box-shadow:inset 0 2px 0 #dff20d}' +
+      '.plrow.dropafter{box-shadow:inset 0 -2px 0 #dff20d}' +
+      '.plrow .pgrip{width:13px;color:#5e6470;font-size:13px;line-height:1;cursor:grab;user-select:none}' +
+      '.plrow:hover .pgrip{color:#9aa0a6}' +
     '.plpick{display:flex;align-items:center;gap:8px;padding:5px 8px;font-size:12.5px;cursor:pointer;' +
     'border-radius:7px}' +
     '.plpick:hover{background:rgba(255,255,255,.05)}' +
@@ -494,7 +500,12 @@ function plDrawPick() {
   ov.querySelector('.pc').textContent = PLSEL.length ? '· đã chọn ' + PLSEL.length : '';
   ov.querySelector('.psel').innerHTML = PLSEL.map(function (id, i) {
     var r = plRow(id); if (!r) return '';
-    return '<div class="plrow"><span class="ix">' + (i + 1) + '</span>' +
+    return '<div class="plrow" draggable="true"' +
+        ' ondragstart="plDragStart(event,' + i + ')" ondragend="plDragEnd()"' +
+        ' ondragover="plDragOver(event,' + i + ')" ondragleave="plDragLeave(event)"' +
+        ' ondrop="plDrop(event,' + i + ')">' +
+        '<span class="pgrip" title="Keo de sap xep">\u283F</span>' +
+        '<span class="ix">' + (i + 1) + '</span>' +
       '<span class="nm">' + esc(r.title || r.file_name) + '</span>' +
       '<button class="mini" onclick="plMove(' + i + ',-1)"' + (i === 0 ? ' disabled' : '') + '>↑</button>' +
       '<button class="mini" onclick="plMove(' + i + ',1)"' + (i === PLSEL.length - 1 ? ' disabled' : '') + '>↓</button>' +
@@ -519,6 +530,44 @@ function plToggleId(id) {
   plDrawPick();
 }
 
+/* APSA1817: keo tha sap xep video trong playlist */
+var PL_DRAG = -1;
+function plClearMarks() {
+  var ov = window.__plov; if (!ov) return;
+  var n = ov.querySelectorAll('.plrow');
+  for (var i = 0; i < n.length; i++) n[i].classList.remove('dragging', 'dropbefore', 'dropafter');
+}
+function plDragStart(e, i) {
+  PL_DRAG = i;
+  try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', String(i)); } catch (x) {}
+  var el = e.currentTarget;
+  setTimeout(function () { el.classList.add('dragging'); }, 0);
+}
+function plDragEnd() { PL_DRAG = -1; plClearMarks(); }
+function plDragLeave(e) { e.currentTarget.classList.remove('dropbefore', 'dropafter'); }
+function plBelow(e, el) { var r = el.getBoundingClientRect(); return (e.clientY - r.top) > r.height / 2; }
+function plDragOver(e, i) {
+  if (PL_DRAG < 0) return;
+  e.preventDefault();
+  try { e.dataTransfer.dropEffect = 'move'; } catch (x) {}
+  var el = e.currentTarget, ov = window.__plov;
+  if (ov) {
+    var n = ov.querySelectorAll('.plrow');
+    for (var k = 0; k < n.length; k++) n[k].classList.remove('dropbefore', 'dropafter');
+  }
+  el.classList.add(plBelow(e, el) ? 'dropafter' : 'dropbefore');
+}
+function plDrop(e, i) {
+  e.preventDefault();
+  var from = PL_DRAG, below = plBelow(e, e.currentTarget);
+  plDragEnd();
+  if (from < 0) return;
+  var to = below ? i + 1 : i;
+  if (to === from || to === from + 1) return;
+  var v = PLSEL.splice(from, 1)[0];
+  PLSEL.splice(to > from ? to - 1 : to, 0, v);
+  plDrawPick();
+}
 function plMove(i, d) {
   var j = i + d;
   if (j < 0 || j >= PLSEL.length) return;
