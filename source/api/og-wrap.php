@@ -15,7 +15,7 @@ function apsa_og_pdo()
     );
 }
 
-function apsa_og_wrap($htmlFile, $selfPath, $title, $desc, $ogType = 'website')
+function apsa_og_wrap($htmlFile, $selfPath, $title, $desc, $ogType = 'website', $ogImage = '')
 {
     $html = @file_get_contents($htmlFile);
     if ($html === false) {
@@ -32,19 +32,23 @@ function apsa_og_wrap($htmlFile, $selfPath, $title, $desc, $ogType = 'website')
     $qs     = isset($_SERVER['QUERY_STRING']) ? (string) $_SERVER['QUERY_STRING'] : '';
     $self   = $scheme . '://' . $host . $selfPath . ($qs !== '' ? '?' . $qs : '');
 
+    /* APSA1825: cho phep dat anh rieng (thumbnail playlist), khong co thi dung icon app */
+    $ogImage = trim((string) $ogImage);
+    $big     = ($ogImage !== '');
+    $img     = $big ? ($scheme . '://' . $host . '/' . ltrim($ogImage, '/'))
+                    : ($scheme . '://' . $host . '/icon-512.png');
     $meta = "\n<meta property=\"og:type\" content=\"" . $e($ogType) . "\" />"
           . "\n<meta property=\"og:site_name\" content=\"APSA Agency\" />"
           . "\n<meta property=\"og:url\" content=\"" . $e($self) . "\" />"
           . "\n<meta property=\"og:title\" content=\"" . $e($title) . "\" />"
           . "\n<meta property=\"og:description\" content=\"" . $e($desc) . "\" />"
-          . "\n<meta property=\"og:image\" content=\"" . $e($scheme . '://' . $host . '/icon-512.png') . "\" />"
-          . "\n<meta property=\"og:image:width\" content=\"512\" />"
-          . "\n<meta property=\"og:image:height\" content=\"512\" />"
-          . "\n<meta name=\"twitter:image\" content=\"" . $e($scheme . '://' . $host . '/icon-512.png') . "\" />"
-          . "\n<meta name=\"twitter:card\" content=\"summary\" />"
+          . "\n<meta property=\"og:image\" content=\"" . $e($img) . "\" />"
+          . ($big ? "" : "\n<meta property=\"og:image:width\" content=\"512\" />"
+                       . "\n<meta property=\"og:image:height\" content=\"512\" />")
+          . "\n<meta name=\"twitter:image\" content=\"" . $e($img) . "\" />"
+          . "\n<meta name=\"twitter:card\" content=\"" . ($big ? 'summary_large_image' : 'summary') . "\" />"
           . "\n<meta name=\"twitter:title\" content=\"" . $e($title) . "\" />"
           . "\n<meta name=\"twitter:description\" content=\"" . $e($desc) . "\" />";
-
     /* Dung callback de ky tu $ hoac \ trong tieu de khong bi hieu la backreference */
     $rep = '<title>' . $e($title) . '</title>' . $meta;
     $out = preg_replace_callback(

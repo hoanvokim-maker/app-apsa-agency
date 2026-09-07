@@ -69,6 +69,13 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS `video_playlists` (
   PRIMARY KEY (`id`), UNIQUE KEY `k_tok` (`token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
+/* APSA1825: cot anh thumbnail cho playlist */
+try {
+    if (!$pdo->query("SHOW COLUMNS FROM `video_playlists` LIKE 'thumb'")->fetch()) {
+        $pdo->exec("ALTER TABLE `video_playlists` ADD COLUMN `thumb` VARCHAR(255) NOT NULL DEFAULT '' AFTER `note`");
+    }
+} catch (Exception $e) {}
+
 $pdo->exec("CREATE TABLE IF NOT EXISTS `video_playlist_items` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `playlist_id` INT UNSIGNED NOT NULL,
@@ -260,16 +267,18 @@ case 'pl-save': {
     $title = rv_s(isset($B['title']) ? $B['title'] : '', 300);
     $note  = rv_s(isset($B['note']) ? $B['note'] : '', 500);
     $ids   = (isset($B['items']) && is_array($B['items'])) ? $B['items'] : null;
+    $thumb = rv_s(isset($B['thumb']) ? $B['thumb'] : '', 255);
+    if ($thumb !== '' && !preg_match('#^uploads/playlists/[A-Za-z0-9._-]{1,120}$#', $thumb)) $thumb = '';
     if ($title === '') rv_fail('Tên playlist không được để trống.');
     $tk = null;
     if ($id > 0) {
-        $pdo->prepare("UPDATE `video_playlists` SET title = ?, note = ? WHERE id = ?")->execute(array($title, $note, $id));
+        $pdo->prepare("UPDATE `video_playlists` SET title = ?, note = ?, thumb = ? WHERE id = ?")->execute(array($title, $note, $thumb, $id));
     } else {
         $me = rv_me($pdo);
         $tk = bin2hex(random_bytes(16));
         $who = $me ? (isset($me['display_name']) && $me['display_name'] !== '' ? $me['display_name'] : $me['username']) : '';
-        $st = $pdo->prepare("INSERT INTO `video_playlists` (token, title, note, created_by) VALUES (?,?,?,?)");
-        $st->execute(array($tk, $title, $note, $who));
+        $st = $pdo->prepare("INSERT INTO `video_playlists` (token, title, note, thumb, created_by) VALUES (?,?,?,?,?)");
+        $st->execute(array($tk, $title, $note, $thumb, $who));
         $id = (int) $pdo->lastInsertId();
     }
     if ($ids !== null) {
@@ -290,6 +299,22 @@ case 'pl-items': {
     $st = $pdo->prepare("SELECT review_id FROM `video_playlist_items` WHERE playlist_id = ? ORDER BY sort ASC, id ASC");
     $st->execute(array($id));
     rv_ok(array('items' => array_map('intval', $st->fetchAll(PDO::FETCH_COLUMN))));
+}
+
+/* APSA1825: upload anh thumbnail cho playlist */
+case 'pl-thumb': {
+    rv_needAdmin($pdo);
+    if (empty($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) rv_fail('Khong nhan duoc file anh.');
+    if ((int) $_FILES['file']['size'] > 5 * 1024 * 1024) rv_fail('Anh toi da 5MB.');
+    $inf = @getimagesize($_FILES['file']['tmp_name']);
+    $ok  = array(IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png', IMAGETYPE_WEBP => 'webp');
+    if (!$inf || !isset($ok[$inf[2]])) rv_fail('Chi nhan anh JPG, PNG hoac WEBP.');
+    $dir = dirname(__DIR__) . '/uploads/playlists';
+    if (!is_dir($dir) && !@mkdir($dir, 0755, true)) rv_fail('Khong tao duoc thu muc anh.', 500);
+    $fn = date('YmdHis') . '-' . bin2hex(random_bytes(4)) . '.' . $ok[$inf[2]];
+    if (!@move_uploaded_file($_FILES['file']['tmp_name'], $dir . '/' . $fn)) rv_fail('Khong luu duoc anh.', 500);
+    @chmod($dir . '/' . $fn, 0644);
+    rv_ok(array('thumb' => 'uploads/playlists/' . $fn, 'w' => (int) $inf[0], 'h' => (int) $inf[1]));
 }
 
 case 'pl-toggle': {
@@ -325,7 +350,7 @@ case 'pl-open': {
     $st->execute(array((int) $p['id']));
     $rows = array();
     foreach ($st->fetchAll() as $r) { if ((int) $r['active']) { unset($r['active']); $rows[] = $r; } }
-    rv_ok(array('title' => $p['title'], 'note' => $p['note'], 'videos' => $rows));
+    rv_ok(array('title' => $p['title'], 'note' => $p['note'], 'thumb' => isset($p['thumb']) ? $p['thumb'] : '', 'videos' => $rows));
 }
 
 case 'toggle': {

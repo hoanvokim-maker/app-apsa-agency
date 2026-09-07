@@ -352,7 +352,7 @@ function mk() {
 document.addEventListener('DOMContentLoaded', load);
 
 /* ================= PLAYLIST ================= */
-var PLS = [], PLSEL = [], PLID = 0;
+var PLS = [], PLSEL = [], PLID = 0; var PLTHUMB = '';   /* APSA1825 */
 
 (function plCss() {
   var st = document.createElement('style');
@@ -365,6 +365,15 @@ var PLS = [], PLSEL = [], PLID = 0;
     'width:min(760px,100%);max-height:90vh;display:flex;flex-direction:column;box-shadow:0 18px 50px rgba(0,0,0,.5)}' +
     '.plbx h3{margin:0 0 12px;font-size:15px;letter-spacing:.04em;text-transform:uppercase}' +
     '.plbx label{display:block;font-size:11px;opacity:.65;margin:10px 0 4px;text-transform:uppercase;letter-spacing:.06em}' +
+    '.plth{display:flex;gap:12px;align-items:flex-start;margin:2px 0 14px}' +
+    '.ptbox{width:140px;height:79px;flex:0 0 auto;border:1px solid #2b3138;border-radius:8px;background:#0f1216;display:flex;align-items:center;justify-content:center;overflow:hidden}' +
+    '.ptbox img{width:100%;height:100%;object-fit:cover;display:none}' +
+    '.ptno{font-size:11px;color:#5e6470}' +
+    '.ptbtn{flex:1;min-width:0}' +
+    '.pthint{font-size:11px;color:#5e6470;margin-top:7px;line-height:1.5}' +
+    '.ptbtn .mini{font:inherit;font-size:12px;padding:6px 12px;border:1px solid #2b3138;background:#1b2026;color:#c9ced6;border-radius:7px;cursor:pointer}' +
+    '.ptbtn .mini:hover{border-color:#3a424c;color:#fff}' +
+    '.ptbtn .mini:disabled{opacity:.5;cursor:default}' +
     '.plbx input[type=text],.plbx textarea{width:100%;box-sizing:border-box;font:inherit;font-size:13px;' +
     'padding:8px 10px;border-radius:8px;border:1px solid #333a43;background:#0f1216;color:#e6e8ea;resize:vertical}' +
     '.plscroll{overflow:auto;flex:1;min-height:80px;margin-top:4px}' +
@@ -456,12 +465,13 @@ function plEdit(id) {
   for (i = 0; i < PLS.length; i++) if (Number(PLS[i].id) === Number(id)) p = PLS[i];
   if (!p) return;
   api('pl-items', null, '&id=' + id).then(function (d) {
-    plOpen(id, p.title, p.note, d.items || []);
+    plOpen(id, p.title, p.note, d.items || [], p.thumb || '');
   }).catch(function (e) { toast(e.message); });
 }
 
-function plOpen(id, title, note, sel) {
+function plOpen(id, title, note, sel, thumb) {
   PLID = id;
+  PLTHUMB = thumb || '';
   PLSEL = (sel || []).map(Number);
   var ov = document.createElement('div');
   ov.className = 'plov';
@@ -469,6 +479,11 @@ function plOpen(id, title, note, sel) {
     '<h3>' + (id ? 'Sửa playlist' : 'Tạo playlist mới') + '</h3>' +
     '<label>Tên playlist *</label><input class="pt" type="text" maxlength="300" />' +
     '<label>Ghi chú gửi khách</label><textarea class="pn" rows="2" maxlength="500"></textarea>' +
+    '<label>Ảnh thumbnail (hiện khi gửi link)</label>' +
+    '<div class="plth"><div class="ptbox"><img class="pti" alt="" /><span class="ptno">Chưa có ảnh</span></div>' +
+    '<div class="ptbtn"><button type="button" class="mini ptpick">Chọn ảnh…</button> <button type="button" class="mini ptclr">Xoá ảnh</button>' +
+    '<div class="pthint">JPG / PNG / WEBP — ảnh sẽ hiện khi gửi link playlist qua Zalo, Messenger…</div></div>' +
+    '<input type="file" class="ptf" accept="image/*" style="display:none" /></div>' +
     '<label>Video trong playlist <span class="pc"></span></label>' +
     '<div class="plscroll"><div class="psel"></div><div class="pall"></div></div>' +
     '<div class="plft"><button class="no">Huỷ</button><button class="ok">Lưu</button></div></div>';
@@ -480,6 +495,24 @@ function plOpen(id, title, note, sel) {
   ov.querySelector('.pt').focus();
   function close() { if (ov.parentNode) ov.parentNode.removeChild(ov); window.__plov = null; }
   ov.onclick = function (e) { if (e.target === ov) close(); };
+  var ptf = ov.querySelector('.ptf');
+  function ptDraw() {
+    var im = ov.querySelector('.pti'), no = ov.querySelector('.ptno');
+    if (PLTHUMB) { im.src = './' + PLTHUMB + '?v=' + Date.now(); im.style.display = 'block'; no.style.display = 'none'; }
+    else { im.removeAttribute('src'); im.style.display = 'none'; no.style.display = 'block'; }
+  }
+  ov.querySelector('.ptpick').onclick = function () { ptf.value = ''; ptf.click(); };
+  ov.querySelector('.ptclr').onclick  = function () { PLTHUMB = ''; ptDraw(); };
+  ptf.onchange = function () {
+    var f = ptf.files && ptf.files[0]; if (!f) return;
+    var bt = ov.querySelector('.ptpick'); bt.disabled = true; bt.textContent = 'Đang tải…';
+    plThumbUp(f, function (err, url) {
+      bt.disabled = false; bt.textContent = 'Chọn ảnh…';
+      if (err) { toast(err); return; }
+      PLTHUMB = url; ptDraw(); toast('Đã tải ảnh lên');
+    });
+  };
+  ptDraw();
   ov.querySelector('.no').onclick = close;
   ov.querySelector('.ok').onclick = function () {
     var b = ov.querySelector('.ok');
@@ -487,10 +520,41 @@ function plOpen(id, title, note, sel) {
     if (!t) { toast('Tên playlist không được để trống.'); return; }
     if (!PLSEL.length) { toast('Chọn ít nhất 1 video.'); return; }
     b.disabled = true; b.textContent = 'Đang lưu…';
-    api('pl-save', { id: PLID, title: t, note: ov.querySelector('.pn').value, items: PLSEL })
+    api('pl-save', { id: PLID, title: t, note: ov.querySelector('.pn').value, thumb: PLTHUMB, items: PLSEL })
       .then(function () { close(); toast('Đã lưu playlist'); plLoad(); })
       .catch(function (e) { b.disabled = false; b.textContent = 'Lưu'; toast(e.message); });
   };
+}
+
+/* APSA1825: nen anh phia trinh duyet roi tai len lam thumbnail playlist */
+function plThumbUp(file, cb) {
+  if (!file || !/^image\//.test(file.type)) { cb('Chỉ nhận file ảnh.'); return; }
+  var fr = new FileReader();
+  fr.onerror = function () { cb('Không đọc được file.'); };
+  fr.onload = function () {
+    var im = new Image();
+    im.onerror = function () { cb('Không đọc được ảnh.'); };
+    im.onload = function () {
+      var M = 1200, w = im.width, h = im.height;
+      if (w > M || h > M) { var k = Math.min(M / w, M / h); w = Math.round(w * k); h = Math.round(h * k); }
+      var c = document.createElement('canvas'); c.width = w; c.height = h;
+      var x = c.getContext('2d'); x.fillStyle = '#000'; x.fillRect(0, 0, w, h); x.drawImage(im, 0, 0, w, h);
+      c.toBlob(function (b) {
+        if (!b) { cb('Không xử lý được ảnh.'); return; }
+        var fd = new FormData(); fd.append('file', b, 'thumb.jpg');
+        fetch('api/review-api.php?action=pl-thumb', { method: 'POST', body: fd, credentials: 'same-origin' })
+          .then(function (r) { return r.json(); })
+          .then(function (j) {
+            var d = (j && j.data) ? j.data : j;
+            if (!j || j.ok === false || !d || !d.thumb) { cb((j && (j.error || j.message)) || 'Tải ảnh thất bại.'); return; }
+            cb(null, d.thumb);
+          })
+          .catch(function (e) { cb(e.message || 'Tải ảnh thất bại.'); });
+      }, 'image/jpeg', 0.86);
+    };
+    im.src = fr.result;
+  };
+  fr.readAsDataURL(file);
 }
 
 function plRow(id) { for (var i = 0; i < ROWS.length; i++) if (Number(ROWS[i].id) === Number(id)) return ROWS[i]; return null; }

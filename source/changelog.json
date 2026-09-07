@@ -1,5 +1,5 @@
 {
-    "version": "1.8.22",
+    "version": "1.8.23",
     "updated": "2026-09-07",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-05",
             "note": "Phiên bản 1.8",
             "items": [
+                {
+                    "d": "2026-09-07",
+                    "v": "1.8.23",
+                    "t": "playlist duyet video: upload anh thumbnail, hien khi gui link (og:image)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-07",
                     "v": "1.8.22",
