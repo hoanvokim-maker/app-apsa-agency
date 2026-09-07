@@ -898,6 +898,10 @@ table.chktbl th:nth-last-child(2){ width:74px; }
 /* APSA1812: input date an cua bo chon ngay khong duoc an theo opacity cua dong */
 table.chktbl input.dmy-h{ opacity:0 !important; }
 table.exptbl input:disabled{ opacity:.4; cursor:not-allowed; }
+/* APSA1827: du an an */
+.hidepill{ display:inline-block; background:#ff6b6b; color:#fff; font-size:9.5px; font-weight:800; letter-spacing:.06em; padding:1px 6px; border-radius:5px; margin-right:7px; vertical-align:1px; }
+body.quo-hidden #btnHide{ color:#ff8a8a; }
+body.quo-hidden .qhead::after{ content:'DỰ ÁN ẨN — CHỈ ADMIN THẤY'; display:inline-block; margin-left:10px; font-size:10px; font-weight:800; letter-spacing:.08em; color:#ff8a8a; border:1px solid rgba(255,107,107,.45); border-radius:6px; padding:2px 8px; vertical-align:3px; }
 /* APSA1822: che thong tin tien cua du an voi vi tri khong duoc cap quyen */
 body.nofin #quoSec,
 body.nofin .sumbox,
@@ -998,6 +1002,7 @@ table.chktbl th:last-child{ width:34px; }
       <button class="hbtn" id="btnMore" onclick="toggleMore(event)" title="Thao tác khác">⋯</button>
       <div class="hmenu" id="moreMenu">
         <button type="button" onclick="copyQuoteLink(); closeMore()"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-link"/></svg> Chép link báo giá</button>
+        <button type="button" id="btnHide" onclick="toggleHide(); closeMore()" style="display:none"><svg class="pill-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l18 18M10.6 10.7a2 2 0 002.8 2.8"/><path d="M9.4 5.2A9.6 9.6 0 0112 5c5 0 9 4.5 9 7 0 .9-.5 2-1.4 3.1"/><path d="M6.2 6.9C3.9 8.4 3 10.3 3 12c0 2.5 4 7 9 7 1.4 0 2.7-.35 3.8-.9"/></svg> <span id="btnHideTx">Ẩn dự án</span></button>
         <button type="button" id="btnMail" onclick="openMail(); closeMore()"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-mail"/></svg> Gửi mail cho khách</button>
       </div>
     </div>
@@ -1848,7 +1853,7 @@ function renderRows2(){
       '<td class="sm"><span class="chip ' + (r.kind === 'event' ? 'partial' : 'ok') + ' kd-' + esc(r.kind || 'other') + '">' + esc(KIND_LABEL[r.kind] || r.kind || '—') + '</span></td>' +
       prioCell(r) +
       '<td class="nm" onclick="openQuote(' + r.id + ')" style="cursor:pointer">' + esc(r.code || '—') + '</td>' +
-      '<td class="sm" onclick="openQuote(' + r.id + ')" style="cursor:pointer">' + esc(r.title || '') + '</td>' +
+      '<td class="sm" onclick="openQuote(' + r.id + ')" style="cursor:pointer">' + (Number(r.hidden) ? '<span class="hidepill" title="Dự án ẩn — chỉ Admin nhìn thấy">ẨN</span>' : '') + esc(r.title || '') + '</td>' +
       '<td class="sm">' + esc(r.contact_name || r.client_name || r.company_name || '—') + '</td>' +
       statusCell(r) +
       progCell(r) +
@@ -2257,7 +2262,32 @@ function apToggleSec(k, force){
   if (el) el.classList.toggle('open', AP_SEC_OPEN[k]);
   try { localStorage.setItem('quo_sec_' + k, AP_SEC_OPEN[k] ? '1' : '0'); } catch (e) {}
 }
+/* APSA1827: du an an - chi Admin nhin thay */
+function qIsAdmin(){
+  return !!(window.__APSA_USER && String(window.__APSA_USER.role || '').toLowerCase() === 'admin');
+}
+function hideBtnPaint(){
+  const b = document.getElementById('btnHide');
+  if (!b) return;
+  const ok = qIsAdmin() && EDIT && Number(EDIT.id) > 0;
+  b.style.display = ok ? '' : 'none';
+  const on = !!(EDIT && Number(EDIT.hidden));
+  const t = document.getElementById('btnHideTx');
+  if (t) t.textContent = on ? 'Bỏ ẩn dự án' : 'Ẩn dự án (chỉ Admin thấy)';
+  document.body.classList.toggle('quo-hidden', ok && on);
+}
+async function toggleHide(){
+  if (!EDIT || !Number(EDIT.id)) { try { toast('Lưu dự án trước đã.'); } catch(e){} return; }
+  try {
+    const j = await api(API, 'hide-toggle', { body: { id: Number(EDIT.id) } });
+    EDIT.hidden = Number(j.hidden) ? 1 : 0;
+    hideBtnPaint();
+    try { toast(j.message); } catch(e){}
+  } catch (e) { try { toast(e.message); } catch(x){} }
+}
+
 function apSecSum(){
+  try { hideBtnPaint(); } catch (e) {}
   var sm = document.getElementById('chkSum');
   if (sm) {
     var p = (typeof asgProg === 'function') ? asgProg() : null;

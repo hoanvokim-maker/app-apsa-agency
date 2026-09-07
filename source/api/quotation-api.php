@@ -2079,7 +2079,7 @@ case 'list': {
               FROM quotations q
               LEFT JOIN crm_companies co ON co.id = q.company_id
                      LEFT JOIN crm_customers  cu ON cu.id = q.customer_id
-             WHERE q.deleted_at IS " . ($trash ? "NOT NULL" : "NULL");
+             WHERE q.deleted_at IS " . ($trash ? "NOT NULL" : "NULL") . qc_hide_and();
     $params = [];
     if ($q !== '') {
         $sql .= " AND (q.code LIKE :q OR q.title LIKE :q OR q.client_name LIKE :q OR co.name LIKE :q OR cu.name LIKE :q)";
@@ -2137,7 +2137,7 @@ case 'list': {
     unset($r);
 
     // Chỉ trả về những cột danh sách thực sự hiển thị — payload nhẹ hơn ~60%
-    $KEEP = ['id','kind','code','title','client_name','company_name','status','status_label',
+    $KEEP = ['id','hidden','kind','code','title','client_name','company_name','status','status_label',
              'quotation_date','item_count','grand_total','liq_subtotal','liq_grand_total','has_liquidation','contact_name',
                   'pinned','priority','task_total','task_done','task_pct'];
     $slim = [];
@@ -2162,6 +2162,12 @@ case 'get': {
         if (!$id) q_fail('Không tìm thấy báo giá có mã ' . $code, 404);
     }
     if (!$id) q_fail('id is required');
+    /* APSA1827: du an an chi Admin mo duoc */
+    if (!qc_is_admin()) {
+        $hs = $pdo->prepare("SELECT hidden FROM `quotations` WHERE id = ? LIMIT 1");
+        $hs->execute([$id]);
+        if ((int) $hs->fetchColumn() === 1) q_fail('Bạn không có quyền xem dự án này.', 403);
+    }
     $q = loadQuotation($pdo, $id);
     if (!$q) q_fail('Không tìm thấy báo giá', 404);
     $items = loadItems($pdo, $id);
@@ -2287,7 +2293,7 @@ case 'exp-all': {
     $st = $pdo->query("SELECT e.*, q.code, q.title, q.client_name, q.quotation_date, q.status
         FROM `quotation_expenses` e
         JOIN `quotations` q ON q.id = e.quotation_id
-        WHERE e.kind = 'item' AND q.deleted_at IS NULL
+        WHERE e.kind = 'item' AND q.deleted_at IS NULL" . qc_hide_and() . "
         ORDER BY q.quotation_date DESC, q.id DESC, e.sort_order ASC
         LIMIT 3000");
     q_ok(array('rows' => $st->fetchAll()));
@@ -2296,7 +2302,7 @@ case 'exp-all': {
 case 'quo-lite': {
     q_need_cap(32, 'view');
     $st = $pdo->query("SELECT id, code, title, client_name FROM `quotations`
-        WHERE deleted_at IS NULL ORDER BY id DESC LIMIT 800");
+        WHERE deleted_at IS NULL" . (qc_is_admin() ? "" : " AND hidden = 0") . " ORDER BY id DESC LIMIT 800");
     q_ok(array('rows' => $st->fetchAll()));
 }
 
@@ -2639,7 +2645,7 @@ case 'project-board': {
     elseif ($scope !== '' && isset($SCOPES[$scope]))                  $statuses = $SCOPES[$scope];
     else                                                              $statuses = $SCOPES['all'];
 
-    $where  = ['q.deleted_at IS NULL'];
+    $where  = ['q.deleted_at IS NULL']; if (!qc_is_admin()) $where[] = 'q.hidden = 0';
     $params = [];
     $where[] = 'q.status IN (' . implode(',', array_fill(0, count($statuses), '?')) . ')';
     foreach ($statuses as $s) $params[] = $s;
@@ -2678,7 +2684,7 @@ case 'project-board': {
     $st->execute($params);
     $rows = $st->fetchAll();
     // đếm theo nhóm để hiện số trên bộ lọc (không phụ thuộc bộ lọc hiện tại)
-    $cw = ['q.deleted_at IS NULL']; $cp = [];
+    $cw = ['q.deleted_at IS NULL']; if (!qc_is_admin()) $cw[] = 'q.hidden = 0'; $cp = [];
     if (!empty($_GET['kind'])) { $cw[] = 'q.kind = ?'; $cp[] = q_kind($_GET['kind']); }
         if (!empty($_GET['user'])) {
             $cw[] = 'EXISTS (SELECT 1 FROM `quotation_assignees` x WHERE x.quotation_id = q.id AND x.user_id = ?)';
@@ -2766,7 +2772,7 @@ case 'project-board': {
 }
 
 case 'assign-board': {
-    $where = ['q.deleted_at IS NULL']; $params = [];
+    $where = ['q.deleted_at IS NULL']; if (!qc_is_admin()) $where[] = 'q.hidden = 0'; $params = [];
     if (!empty($_GET['user']))   { $where[] = 'a.user_id = ?';  $params[] = (int)$_GET['user']; }
     if (!empty($_GET['status'])) { $where[] = 'a.status = ?';   $params[] = q_asgStatus($_GET['status']); }
     if (!empty($_GET['pos']))    { $where[] = 'a.position = ?'; $params[] = q_asgPos($_GET['pos']); }
@@ -3799,6 +3805,21 @@ case 'set-status': {
     q_ok(['id' => $id, 'status' => $stt, 'status_label' => $Q_STATUS[$stt], 'message' => 'Đã đổi trạng thái: ' . $Q_STATUS[$stt]]);
 }
 
+/* APSA1827: bat / tat che do an cho du an */
+case 'hide-toggle': {
+    if (!qc_is_admin()) q_fail('Chỉ Admin mới ẩn được dự án.', 403);
+    $id = (int)($B['id'] ?? 0);
+    if (!$id) q_fail('id is required');
+    $cur = $pdo->prepare("SELECT hidden FROM `quotations` WHERE id = ? AND deleted_at IS NULL LIMIT 1");
+    $cur->execute([$id]);
+    $row = $cur->fetch();
+    if ($row === false) q_fail('Không tìm thấy dự án.', 404);
+    $on = isset($B['hidden']) ? ((int) !!$B['hidden']) : (((int) $row['hidden']) ? 0 : 1);
+    $pdo->prepare("UPDATE `quotations` SET hidden = ? WHERE id = ?")->execute([$on, $id]);
+    q_ok(['id' => $id, 'hidden' => $on,
+          'message' => $on ? 'Đã ẩn dự án — chỉ Admin nhìn thấy.' : 'Đã bỏ ẩn dự án.']);
+}
+
 case 'pin-toggle': {
     global $ME;
     $id  = (int)($B['id'] ?? 0);
@@ -3889,6 +3910,12 @@ function qc_row(PDO $pdo, $id) {
     $st = $pdo->prepare("SELECT id, code, title, status, closed_at, closed_by, closed_by_name FROM `quotations` WHERE id = ?");
     $st->execute([$id]);
     return $st->fetch() ?: null;
+}
+
+/* APSA1827: du an an - chi Admin nhin thay */
+function qc_hide_and($alias = 'q')
+{
+    return qc_is_admin() ? '' : " AND ($alias.hidden = 0)";
 }
 
 function qc_is_admin() {
