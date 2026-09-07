@@ -897,6 +897,7 @@ table.chktbl td.chk-p{ width:74px; text-align:center; }
 table.chktbl th:nth-last-child(2){ width:74px; }
 /* APSA1812: input date an cua bo chon ngay khong duoc an theo opacity cua dong */
 table.chktbl input.dmy-h{ opacity:0 !important; }
+table.exptbl input:disabled{ opacity:.4; cursor:not-allowed; }
 /* APSA1822: che thong tin tien cua du an voi vi tri khong duoc cap quyen */
 body.nofin #quoSec,
 body.nofin .sumbox,
@@ -2555,6 +2556,20 @@ function expAll(open){
   EXP.forEach(function(r){ if (r.kind === 'group') EXP_COLLAPSED[r._gkey] = !open; });
   expPersist(); renderExp();
 }
+/* APSA1824: thanh toan ca nhan (nhan vien / freelancer / NCC ca nhan) -> khong tinh VAT */
+function expIsPerson(r){
+  if (!r || r.kind === 'group') return false;
+  const t = String(r.payee_type || '');
+  if (t === 'user') return true;
+  if (t !== 'sup')  return false;
+  const id = Number(r.payee_id) || 0;
+  const L = (window.EXP_PAYEES && window.EXP_PAYEES.sup) || [];
+  for (let k = 0; k < L.length; k++) {
+    if (Number(L[k].id) === id) return String(L[k].kind || '') === 'person';
+  }
+  return false;
+}
+
 function renderExp(){
   const box = document.getElementById('expWrap');
   if (!box) return;
@@ -2564,6 +2579,7 @@ function renderExp(){
     return;
   }
   expEnsure(); expKeys();
+  EXP.forEach(function(r){ if (expIsPerson(r)) r.vat_percent = 0; });   /* APSA1824 */
   let gIdx = -1, gKey = '', gHide = false;
   const rows = EXP.map((r, i) => {
     if (r.kind === 'group'){
@@ -2589,9 +2605,9 @@ function renderExp(){
       '<td><input value="' + esc(r.unit) + '" placeholder="Gói" oninput="expSet(' + i + ',\'unit\',this.value)" /></td>' +
       '<td><input class="num" value="' + fmt(Math.round(Number(r.price)||0)) + '" ' +
         'oninput="expSet(' + i + ',\'price\',this.value)" onblur="renderExp()" /></td>' +
-      '<td><input class="num" value="' + (Number(r.vat_percent)||0) + '" oninput="expSet(' + i + ',\'vat_percent\',this.value)" /></td>' +
-      '<td class="exp-amt">' + fmt(Math.round(expRowAmt(r))) + '</td>' +
       '<td class="exp-payee">' + expPayeeCell(r, i) + '</td>' +
+      '<td>' + (expIsPerson(r) ? '<input class="num" value="0" disabled title="Thanh toán cá nhân — không tính VAT" />' : '<input class="num" value="' + (Number(r.vat_percent)||0) + '" oninput="expSet(' + i + ',\'vat_percent\',this.value)" />') + '</td>' +
+      '<td class="exp-amt">' + fmt(Math.round(expRowAmt(r))) + '</td>' +
       '<td class="exp-dayc">' + (window.expDayCell ? window.expDayCell(r, i) : '') + '</td>' +
       '<td class="exp-paidc">' + expPaidCell(r, i) + (window.expUncCell ? window.expUncCell(r, i) : '') + '</td>' +
       '<td class="exp-actc">' + expQrCell(r, i) + '</td>' +
@@ -2600,11 +2616,11 @@ function renderExp(){
   box.innerHTML =
     '<table class="exptbl">' +
     '<colgroup><col style="width:26px"><col style="width:22%"><col><col style="width:66px"><col style="width:78px">' +
-    '<col style="width:120px"><col style="width:62px"><col style="width:126px">' +
-    '<col style="width:150px"><col style="width:126px"><col style="width:96px"><col style="width:64px"></colgroup>' +
+    '<col style="width:120px"><col style="width:150px"><col style="width:62px">' +
+    '<col style="width:126px"><col style="width:126px"><col style="width:96px"><col style="width:64px"></colgroup>' +
     '<thead><tr><th class="exp-grip"></th><th>Hạng mục</th><th>Mô tả</th><th>SL</th><th>ĐVT</th>' +
-    '<th style="text-align:right">Đơn giá</th><th style="text-align:right">VAT %</th>' +
-    '<th style="text-align:right">Thành tiền<br><span style="font-weight:400;font-size:10px;opacity:.6">đã gồm VAT</span></th><th>Người nhận</th><th>Ngày TT</th><th>Trạng thái</th><th></th></tr></thead>' +
+    '<th style="text-align:right">Đơn giá</th><th>Người nhận</th><th style="text-align:right">VAT %</th>' +
+    '<th style="text-align:right">Thành tiền<br><span style="font-weight:400;font-size:10px;opacity:.6">đã gồm VAT</span></th><th>Ngày TT</th><th>Trạng thái</th><th></th></tr></thead>' +
     '<tbody>' + rows + '</tbody></table>';
   renderExpTotals();
 }
