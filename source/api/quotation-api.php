@@ -2069,6 +2069,10 @@ case 'list': {
     $q     = trim((string)($_GET['q'] ?? ''));
     $sql = "SELECT q.*, co.name AS company_name, cu.name AS contact_name,
                    (SELECT COUNT(*) FROM quotation_items i WHERE i.quotation_id = q.id AND i.kind = 'item') AS item_count,
+                       (SELECT COUNT(*) FROM quotation_assignees ca WHERE ca.quotation_id = q.id AND ca.kind <> 'group') AS task_total,
+                       (SELECT COUNT(*) FROM quotation_assignees ca WHERE ca.quotation_id = q.id AND ca.kind <> 'group' AND ca.status = 'done') AS task_done,
+                       (SELECT ROUND(AVG(CASE ca.status WHEN 'done' THEN 100 WHEN 'review' THEN 75 WHEN 'doing' THEN 40 ELSE 0 END))
+                          FROM quotation_assignees ca WHERE ca.quotation_id = q.id AND ca.kind <> 'group') AS task_pct,
                    (SELECT COALESCE(SUM(i.qty * i.unit_price),0) FROM quotation_items i WHERE i.quotation_id = q.id AND i.kind = 'item') AS subtotal,
                    (SELECT COALESCE(SUM(CASE WHEN i.act_amount > 0 THEN i.act_amount ELSE i.act_qty * i.act_price END),0)
                       FROM quotation_items i WHERE i.quotation_id = q.id AND i.kind = 'item') AS liq_subtotal
@@ -2116,6 +2120,9 @@ case 'list': {
         $r['status_label']  = $Q_STATUS[$r['status']];
         $r['src_link']      = $r['src_link'] ?? '';
         $r['item_count']    = (int)$r['item_count'];
+            $r['task_total']  = (int)($r['task_total'] ?? 0);
+            $r['task_done']   = (int)($r['task_done'] ?? 0);
+            $r['task_pct']    = (int)($r['task_pct'] ?? 0);
         $r['subtotal']     = (float)$r['subtotal'];
         $r['liq_subtotal'] = (float)($r['liq_subtotal'] ?? 0);
         $ma  = $r['show_ma']  ? $r['subtotal'] * (float)$r['ma_percent'] / 100 : 0;
@@ -2132,7 +2139,7 @@ case 'list': {
     // Chỉ trả về những cột danh sách thực sự hiển thị — payload nhẹ hơn ~60%
     $KEEP = ['id','kind','code','title','client_name','company_name','status','status_label',
              'quotation_date','item_count','grand_total','liq_subtotal','liq_grand_total','has_liquidation','contact_name',
-                  'pinned','priority'];
+                  'pinned','priority','task_total','task_done','task_pct'];
     $slim = [];
     foreach ($rows as $r) {
         $o = [];

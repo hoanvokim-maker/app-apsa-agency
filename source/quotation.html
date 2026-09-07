@@ -896,6 +896,13 @@ table.chktbl td.chk-p{ width:74px; text-align:center; }
 table.chktbl th:nth-last-child(2){ width:74px; }
 /* APSA1812: input date an cua bo chon ngay khong duoc an theo opacity cua dong */
 table.chktbl input.dmy-h{ opacity:0 !important; }
+.lprog{ display:flex; align-items:center; gap:7px; }
+.lpbar{ position:relative; flex:1; min-width:34px; height:5px; border-radius:99px; background:rgba(255,255,255,.08); overflow:hidden; }
+.lpbar > i{ position:absolute; left:0; top:0; bottom:0; border-radius:99px; background:var(--accent,#dff20d); box-shadow:0 0 6px rgba(223,242,13,.6); }
+.lprog.full .lpbar > i{ background:#4ade80; box-shadow:0 0 6px rgba(74,222,128,.6); }
+.lpnum{ font-size:11.5px; font-weight:800; min-width:32px; text-align:right; color:var(--accent,#dff20d); }
+.lprog.full .lpnum{ color:#4ade80; }
+.lpsub{ font-size:10px; color:var(--text3); margin-top:3px; letter-spacing:.2px; }
 .expsum .secpc{ color:var(--accent,#dff20d); font-weight:800; font-size:13px; text-shadow:0 0 10px rgba(223,242,13,.5); }
 .expsum .secpc.ok{ color:#4ade80; text-shadow:0 0 10px rgba(74,222,128,.5); }
 #chkSec .asgprog{ margin-top:14px; }
@@ -1071,7 +1078,7 @@ table.chktbl th:last-child{ width:34px; }
     </div>
 
     <div class="tbl-wrap" id="tblWrap">
-      <table class="t" style="min-width:1330px">
+      <table class="t" style="min-width:1448px">
         <thead>
           <tr>
             <th class="pin-cell"></th>
@@ -1081,6 +1088,7 @@ table.chktbl th:last-child{ width:34px; }
             <th class="sortable" data-key="title" onclick="sortBy('title')">Tiêu đề</th>
             <th style="width:18%" class="sortable" data-key="client" onclick="sortBy('client')">Người liên hệ</th>
             <th style="width:150px" class="sortable" data-key="status" onclick="sortBy('status')">Trạng thái</th>
+            <th style="width:118px" class="sortable" data-key="prog" onclick="sortBy('prog')">Tiến độ</th>
             <th style="width:96px" class="sortable" data-key="appr" onclick="sortBy('appr')">Duyệt BG</th>
             <th style="width:110px" class="sortable" data-key="date" onclick="sortBy('date')">Ngày báo giá</th>
             <th class="num sortable" style="width:150px" data-key="total" onclick="sortBy('total')">Tổng cộng</th>
@@ -1642,7 +1650,8 @@ function applyFilters(){
     items: r => Number(r.item_count || 0),
     prio:  r => Number(r.priority || 0),
     total: r => Number(r.grand_total || 0),
-    liq:   r => Number(r.liq_grand_total || 0)
+    liq:   r => Number(r.liq_grand_total || 0),
+    prog:  r => Number(r.task_pct || 0)
   };
   const f = K[SORT.key] || K.date;
       VIEW.sort((a,b) => {
@@ -1754,7 +1763,7 @@ async function setPrio(id, p){
 
 function sortBy(key){
   if (SORT.key === key) SORT.dir = -SORT.dir;
-  else SORT = { key: key, dir: (key === 'date' || key === 'total' || key === 'liq' || key === 'items' || key === 'prio') ? -1 : 1 };
+  else SORT = { key: key, dir: (key === 'date' || key === 'total' || key === 'liq' || key === 'items' || key === 'prio' || key === 'prog') ? -1 : 1 };
   applyFilters();
 }
 
@@ -1834,6 +1843,7 @@ function renderRows2(){
       '<td class="sm" onclick="openQuote(' + r.id + ')" style="cursor:pointer">' + esc(r.title || '') + '</td>' +
       '<td class="sm">' + esc(r.contact_name || r.client_name || r.company_name || '—') + '</td>' +
       statusCell(r) +
+      progCell(r) +
         apprCell(r) +
       '<td class="sm">' + dmy(r.quotation_date) + '</td>' +
       '<td class="num" style="font-weight:800">' + fmt(r.grand_total) + '</td>' +
@@ -1843,6 +1853,18 @@ function renderRows2(){
   }).join('');
 }
 
+/* APSA1818: cot tien do du an tinh tu checklist */
+function progCell(r){
+  const n = Number(r.task_total || 0);
+  if (!n) return '<td class="sm"><span style="color:var(--text3)">\u2014</span></td>';
+  const p = Number(r.task_pct || 0), done = Number(r.task_done || 0);
+  return '<td class="sm">' +
+    '<div class="lprog' + (p === 100 ? ' full' : '') + '" title="' + done + '/' + n + ' viec xong">' +
+      '<div class="lpbar"><i style="width:' + p + '%"></i></div>' +
+      '<span class="lpnum">' + p + '%</span>' +
+    '</div>' +
+    '<div class="lpsub">' + done + '/' + n + ' xong</div></td>';
+}
 /* APSA1212: cot "Duyet BG" suy tu trang thai du an
    >= "Xac nhan bao gia" => da duyet; "Truot Bidding" tinh rieng */
 function apprRank(r){
