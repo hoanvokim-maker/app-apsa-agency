@@ -26,6 +26,31 @@ header('Access-Control-Allow-Headers: Content-Type, X-API-Key');
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
 
 require_once __DIR__ . '/db-config.php';
+if (session_status() !== PHP_SESSION_ACTIVE && is_file(__DIR__ . '/session-boot.php')) {
+    require_once __DIR__ . '/session-boot.php';
+}
+
+/* APSA1819: ten nguoi them lay tu tai khoan dang dang nhap, khong tin client */
+function ins_login_name() {
+    static $cached = null;
+    if ($cached !== null) return $cached;
+    $cached = '';
+    try {
+        if (!empty($_SESSION['user_id'])) {
+            global $pdo;
+            if (isset($pdo) && $pdo instanceof PDO) {
+                $st = $pdo->prepare("SELECT display_name, username FROM `app_users` WHERE id = ? AND active = 1");
+                $st->execute(array((int) $_SESSION['user_id']));
+                $u = $st->fetch(PDO::FETCH_ASSOC);
+                if ($u) {
+                    $dn = trim((string) $u['display_name']);
+                    $cached = $dn !== '' ? $dn : trim((string) $u['username']);
+                }
+            }
+        }
+    } catch (Exception $e) { $cached = ''; }
+    return $cached;
+}
 
 // ── Cấu hình ─────────────────────────────────────────────────
 define('UPLOAD_DIR',  __DIR__ . '/../uploads/inspiration');
@@ -409,7 +434,8 @@ if ($action === 'upload') {
 
     $tags    = norm_tags($_POST['tags'] ?? '');
     $note    = mb_substr(trim((string)($_POST['note']     ?? '')), 0, 2000);
-    $addedBy = mb_substr(trim((string)($_POST['added_by'] ?? '')), 0, 120);
+    $addedBy = ins_login_name();
+    if ($addedBy === '') $addedBy = mb_substr(trim((string)($_POST['added_by'] ?? '')), 0, 120);
 
     $files = $_FILES['files'];
     $n     = is_array($files['name']) ? count($files['name']) : 1;
@@ -496,7 +522,7 @@ if ($action === 'link') {
         mb_substr(trim((string)($b['note'] ?? '')), 0, 2000),
         $info['url'], $info['thumb'], $info['embed'],
         norm_tags($b['tags'] ?? ''),
-        mb_substr(trim((string)($b['added_by'] ?? '')), 0, 120),
+        (ins_login_name() !== '' ? ins_login_name() : mb_substr(trim((string)($b['added_by'] ?? '')), 0, 120)),
     ]);
     $id = (int)$pdo->lastInsertId();
     ok($pdo->query("SELECT * FROM inspiration_items WHERE id = $id")->fetch());

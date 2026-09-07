@@ -8,6 +8,7 @@
     .then(res => {
       if (!res.ok) throw new Error();
       window.__APSA_USER = res.data;
+      try { if (typeof paintName === 'function') paintName(); } catch (e) {}
       document.documentElement.style.visibility = 'visible';
     })
     .catch(() => {
@@ -481,11 +482,21 @@ let items = [], allTags = [], activeTags = [], fType = '', onlyPinned = false, i
 let cur = null, editing = null, qTimer = null, prevTimer = null;
 
 /* ── Tên người dùng ─────────────────────────── */
-function me(){ return localStorage.getItem('apsa_user_name') || ''; }
+/* APSA1819: ten nguoi them lay tu tai khoan dang dang nhap */
+function loginName(){
+  const u = window.__APSA_USER || {};
+  return String(u.display_name || u.username || '').trim();
+}
+function me(){ return loginName() || localStorage.getItem('apsa_user_name') || ''; }
 
 let nameResolve = null;
 /** Trả về Promise<string> — mở modal nếu chưa có tên (không dùng prompt() để tránh treo trang) */
 function askName(force){
+  const auto = loginName();
+  if (auto) {
+    if (force) { try { toast('Tên hiển thị lấy theo tài khoản đang đăng nhập: ' + auto); } catch (e) {} }
+    return Promise.resolve(auto);
+  }
   const cu = me();
   if (cu && !force) return Promise.resolve(cu);
   document.getElementById('nmInput').value = cu;

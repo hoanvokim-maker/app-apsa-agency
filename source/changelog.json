@@ -1,5 +1,5 @@
 {
-    "version": "1.8.18",
+    "version": "1.8.19",
     "updated": "2026-09-07",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-05",
             "note": "Phiên bản 1.8",
             "items": [
+                {
+                    "d": "2026-09-07",
+                    "v": "1.8.19",
+                    "t": "inspiration: nguoi them lay tu tai khoan dang dang nhap (client + server)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-07",
                     "v": "1.8.18",
