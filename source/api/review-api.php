@@ -69,6 +69,14 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS `video_playlists` (
   PRIMARY KEY (`id`), UNIQUE KEY `k_tok` (`token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
+/* APSA1826: chuoi phien ban cho video duyet */
+try {
+    $cols = array();
+    foreach ($pdo->query("SHOW COLUMNS FROM `video_reviews`") as $c) $cols[] = $c['Field'];
+    if (!in_array('root_id', $cols, true)) $pdo->exec("ALTER TABLE `video_reviews` ADD COLUMN `root_id` INT UNSIGNED NOT NULL DEFAULT 0");
+    if (!in_array('ver', $cols, true))     $pdo->exec("ALTER TABLE `video_reviews` ADD COLUMN `ver` SMALLINT UNSIGNED NOT NULL DEFAULT 1");
+} catch (Exception $e) {}
+
 /* APSA1825: cot anh thumbnail cho playlist */
 try {
     if (!$pdo->query("SHOW COLUMNS FROM `video_playlists` LIKE 'thumb'")->fetch()) {
@@ -217,6 +225,21 @@ case 'create': {
     if ($item === '') rv_fail('Chưa chọn video.');
     $title = rv_s($B['title'] ?? '', 300);
     if ($title === '') $title = $name;
+    /* APSA1826: tao ban moi cua 1 video da co */
+    $par = (int) (isset($B['parent']) ? $B['parent'] : 0);
+    $rootId = 0; $ver = 1;
+    if ($par > 0) {
+        $ps = $pdo->prepare("SELECT id, root_id, title, note FROM `video_reviews` WHERE id = ? LIMIT 1");
+        $ps->execute(array($par));
+        $pr = $ps->fetch();
+        if (!$pr) rv_fail('Khong tim thay video goc.', 404);
+        $rootId = (int) $pr['root_id'] ? (int) $pr['root_id'] : (int) $pr['id'];
+        $mx = $pdo->prepare("SELECT COALESCE(MAX(ver),1) FROM `video_reviews` WHERE id = ? OR root_id = ?");
+        $mx->execute(array($rootId, $rootId));
+        $ver = (int) $mx->fetchColumn() + 1;
+        if ($title === '' || $title === $name) $title = rv_s((string) $pr['title'], 300);
+        if (!isset($B['note']) || trim((string) $B['note']) === '') $B['note'] = (string) $pr['note'];
+    }
     $me = rv_me($pdo);
     $tk = bin2hex(random_bytes(16));
     $st = $pdo->prepare("INSERT INTO `video_reviews`
@@ -224,7 +247,9 @@ case 'create': {
         VALUES (?,?,?,?,?,?,?,?)");
     $st->execute(array($tk, $title, rv_s($B['note'] ?? '', 500), RV_DRIVE, $item, $name,
         (int) ($B['size'] ?? 0), $me ? ($me['display_name'] ?: $me['username']) : ''));
-    rv_ok(array('id' => (int) $pdo->lastInsertId(), 'token' => $tk));
+    $nid = (int) $pdo->lastInsertId();
+    if ($rootId > 0) $pdo->prepare("UPDATE `video_reviews` SET root_id = ?, ver = ? WHERE id = ?")->execute(array($rootId, $ver, $nid));
+    rv_ok(array('id' => $nid, 'token' => $tk, 'ver' => $ver));
 }
 
 case 'list': {
@@ -416,10 +441,40 @@ case 'resolve': {
 /* ═══════════ CÔNG KHAI (token) ═══════════ */
 case 'open': {
     $r = rv_byToken($pdo, $_GET['t'] ?? '');
+    $isAdm = rv_lvl($pdo) >= 2 ? 1 : 0;
+    /* APSA1826: cac phien ban cung chuoi */
+    $rootId = (int) (isset($r['root_id']) && $r['root_id'] ? $r['root_id'] : $r['id']);
+    $vers = array();
+    try {
+        $vs = $pdo->prepare("SELECT id, token, title, file_name, ver, active, created_at,
+                    (SELECT COUNT(*) FROM `video_comments` c WHERE c.review_id = v.id AND c.resolved = 0) AS n_open,
+                    (SELECT COUNT(*) FROM `video_comments` c WHERE c.review_id = v.id) AS n_cmt
+               FROM `video_reviews` v
+              WHERE v.id = ? OR v.root_id = ?
+           ORDER BY v.ver ASC, v.id ASC");
+        $vs->execute(array($rootId, $rootId));
+        foreach ($vs->fetchAll() as $x) {
+            if (!$isAdm && !(int) $x['active'] && (int) $x['id'] !== (int) $r['id']) continue;
+            $vers[] = array(
+                'token' => $x['token'], 'ver' => (int) $x['ver'], 'title' => $x['title'],
+                'file_name' => $x['file_name'], 'active' => (int) $x['active'],
+                'created_at' => $x['created_at'],
+                'n_open' => (int) $x['n_open'], 'n_cmt' => (int) $x['n_cmt'],
+                'cur' => ((int) $x['id'] === (int) $r['id']) ? 1 : 0,
+            );
+        }
+    } catch (Exception $e) { $vers = array(); }
+    $latest = '';
+    foreach ($vers as $x) if ((int) $x['active']) $latest = $x['token'];
+    if ($latest === '' && $vers) $latest = $vers[count($vers) - 1]['token'];
+
     rv_ok(array(
         'title' => $r['title'], 'note' => $r['note'], 'file_name' => $r['file_name'],
         'size' => (int) $r['file_size'], 'created_at' => $r['created_at'],
-        'admin' => rv_lvl($pdo) >= 2 ? 1 : 0,
+        'admin' => $isAdm,
+        'ver' => (int) (isset($r['ver']) ? $r['ver'] : 1),
+        'versions' => $vers,
+        'latest' => $latest,
     ));
 }
 

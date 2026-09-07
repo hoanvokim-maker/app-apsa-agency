@@ -114,6 +114,32 @@
            font-weight: 700; font-size: 13px; padding: 9px 16px; border-radius: 10px; opacity: 0; pointer-events: none; transition: .2s; z-index: 99; }
   .toast.on { opacity: 1; }
   .err { padding: 40px 22px; text-align: center; color: #ff8080; font-size: 14px; }
+
+/* APSA1826: chon phien ban + so sanh */
+.vbar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:12px 0 0}
+.vbar .vlb{font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.55;margin-right:2px}
+.vchip{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border:1px solid #2b3138;border-radius:99px;font-size:12px;font-weight:700;color:#c9ced6;text-decoration:none}
+.vchip:hover{border-color:#4a535e;color:#fff}
+.vchip.on{background:#dff20d;border-color:#dff20d;color:#111}
+.vchip.off{opacity:.45}
+.vchip i{font-style:normal;font-size:10px;background:#ff6b6b;color:#fff;border-radius:99px;padding:0 5px;line-height:15px}
+.vchip.on i{background:#111;color:#dff20d}
+.vcmp{margin-left:4px;padding:4px 12px;border:1px solid #2b3138;background:#1b2026;color:#c9ced6;border-radius:99px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.vcmp:hover{border-color:#dff20d;color:#dff20d}
+.tsn{margin-left:6px;padding:1px 8px;border:1px solid #2b3138;background:transparent;color:#8d96a3;border-radius:99px;font:inherit;font-size:11px;cursor:pointer}
+.tsn:hover{border-color:#dff20d;color:#dff20d}
+.cmpov{position:fixed;inset:0;background:#0b0d10;z-index:9000;display:none;flex-direction:column}
+.cmpov.open{display:flex}
+.cmphd{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid #20262d;flex-wrap:wrap}
+.cmphd b{font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+.cmphd select{font:inherit;font-size:13px;background:#151a20;color:#e6e9ee;border:1px solid #2b3138;border-radius:8px;padding:5px 9px}
+.cmphd .ar{opacity:.5}
+.cmphd .lk{font-size:12px;display:flex;align-items:center;gap:6px;opacity:.85;cursor:pointer}
+.cmpbd{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px 18px 18px}
+.cmpc{display:flex;flex-direction:column;min-width:0;min-height:0}
+.cmpt{font-size:11.5px;opacity:.7;margin-bottom:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmpc video{width:100%;flex:1;min-height:0;background:#000;border-radius:10px;object-fit:contain}
+@media (max-width:860px){.cmpbd{grid-template-columns:1fr;grid-template-rows:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -127,6 +153,7 @@
   <div class="rv-head">
     <h1 id="ttl">…</h1>
     <p id="note"></p>
+    <div class="vbar" id="vbar" style="display:none"></div>
   </div>
 
   <div class="rv-grid">
@@ -285,11 +312,122 @@ function api(action, body) {
 }
 
 /* ── khởi động ─────────────────────────────────────────── */
+/* APSA1826: chon phien ban + so sanh 2 ban */
+var VERS = [], LATEST = '', CMP = null, CMPLOCK = true, CMPQ = 0;
+
+function verUrl(tok) { return API + '?action=stream&t=' + encodeURIComponent(tok); }
+
+function verPaint() {
+  var b = el('vbar'); if (!b) return;
+  if (!VERS || VERS.length < 2) { b.innerHTML = ''; b.style.display = 'none'; return; }
+  b.style.display = '';
+  b.innerHTML = '<span class="vlb">Phiên bản</span>' + VERS.map(function (x) {
+    return '<a class="vchip' + (Number(x.cur) ? ' on' : '') + (Number(x.active) ? '' : ' off') + '"' +
+           ' href="./review.html?t=' + x.token + '"' +
+           ' title="V' + x.ver + (Number(x.n_open) ? ' — ' + x.n_open + ' góp ý chưa xử lý' : '') + '">V' + x.ver +
+           (Number(x.n_open) ? '<i>' + x.n_open + '</i>' : '') + '</a>';
+  }).join('') + '<button class="vcmp" onclick="cmpOpen()">So sánh 2 bản</button>';
+}
+
+function cmpOpen(ms) {
+  if (!VERS || VERS.length < 2) { toast('Video này mới chỉ có 1 phiên bản.'); return; }
+  var ov = document.getElementById('cmpov');
+  if (!ov) {
+    ov = document.createElement('div'); ov.id = 'cmpov'; ov.className = 'cmpov';
+    ov.innerHTML =
+      '<div class="cmphd"><b>So sánh phiên bản</b>' +
+      '<select id="cmpSL"></select><span class="ar">↔</span><select id="cmpSR"></select>' +
+      '<label class="lk"><input type="checkbox" id="cmpLk" checked /> Khoá thời gian</label>' +
+      '<button class="vb" onclick="cmpTog()">▶ Phát / Dừng</button>' +
+      '<button class="vb" onclick="cmpClose()">✕ Đóng</button></div>' +
+      '<div class="cmpbd">' +
+      '<div class="cmpc"><div class="cmpt" id="cmpTL"></div><video id="cmpL" playsinline preload="metadata" controls controlslist="nodownload" muted></video></div>' +
+      '<div class="cmpc"><div class="cmpt" id="cmpTR"></div><video id="cmpR" playsinline preload="metadata" controls controlslist="nodownload"></video></div>' +
+      '</div>';
+    document.body.appendChild(ov);
+    document.getElementById('cmpLk').onchange = function () { CMPLOCK = this.checked; };
+    document.getElementById('cmpSL').onchange = function () { cmpLoad(0, this.value); };
+    document.getElementById('cmpSR').onchange = function () { cmpLoad(1, this.value); };
+  }
+  var opt = VERS.map(function (x) {
+    return '<option value="' + x.token + '">V' + x.ver + (Number(x.active) ? '' : ' (đã tắt)') + '</option>';
+  }).join('');
+  document.getElementById('cmpSL').innerHTML = opt;
+  document.getElementById('cmpSR').innerHTML = opt;
+  var newer = LATEST || VERS[VERS.length - 1].token;
+  var older = VERS[0].token;
+  if (older === newer && VERS.length > 1) older = VERS[VERS.length - 2].token;
+  document.getElementById('cmpSL').value = older;
+  document.getElementById('cmpSR').value = newer;
+  CMP = { l: document.getElementById('cmpL'), r: document.getElementById('cmpR'), m: null, raf: 0, at: (Number(ms) || 0) / 1000 };
+  CMP.l.muted = true;
+  cmpBind(CMP.l); cmpBind(CMP.r);
+  cmpLoad(0, older); cmpLoad(1, newer);
+  ov.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  CMP.raf = requestAnimationFrame(cmpTick);
+}
+
+function cmpLoad(side, tok) {
+  if (!CMP) return;
+  var v = side ? CMP.r : CMP.l, x = null, i;
+  for (i = 0; i < VERS.length; i++) if (VERS[i].token === tok) x = VERS[i];
+  var t = el(side ? 'cmpTR' : 'cmpTL');
+  if (t) t.textContent = 'V' + (x ? x.ver : '?') + (x && x.file_name ? ' · ' + x.file_name : '') + (side ? '  (bản mới)' : '  (bản cũ · tắt tiếng)');
+  var at = CMP.at || 0;
+  v.src = verUrl(tok);
+  v.addEventListener('loadedmetadata', function once() {
+    v.removeEventListener('loadedmetadata', once);
+    if (at > 0 && at < (v.duration || 1e9)) { CMPQ = Date.now(); v.currentTime = at; }
+  });
+}
+
+function cmpBind(v) {
+  if (v.__cb) return; v.__cb = 1;
+  ['play', 'pause', 'seeking', 'ratechange'].forEach(function (ev) {
+    v.addEventListener(ev, function () { if (CMP && Date.now() - CMPQ > 350) CMP.m = v; });
+  });
+}
+
+function cmpTick() {
+  if (!CMP) return;
+  var m = CMP.m || CMP.l, o = (m === CMP.l) ? CMP.r : CMP.l;
+  if (CMPLOCK && m.readyState > 0 && o.readyState > 0) {
+    if (Math.abs(o.currentTime - m.currentTime) > 0.35 && m.currentTime < (o.duration || 1e9)) { CMPQ = Date.now(); o.currentTime = m.currentTime; }
+    if (!m.paused && o.paused) { CMPQ = Date.now(); o.play().catch(function () {}); }
+    if (m.paused && !o.paused)  { CMPQ = Date.now(); o.pause(); }
+    if (o.playbackRate !== m.playbackRate) o.playbackRate = m.playbackRate;
+  }
+  CMP.raf = requestAnimationFrame(cmpTick);
+}
+
+function cmpTog() {
+  if (!CMP) return;
+  var m = CMP.m || CMP.l;
+  if (m.paused) m.play().catch(function () {}); else m.pause();
+}
+
+function cmpClose() {
+  var ov = document.getElementById('cmpov'); if (!ov) return;
+  if (CMP) {
+    try { CMP.l.pause(); CMP.r.pause(); } catch (e) {}
+    if (CMP.raf) cancelAnimationFrame(CMP.raf);
+    CMP.l.removeAttribute('src'); CMP.r.removeAttribute('src');
+    try { CMP.l.load(); CMP.r.load(); } catch (e) {}
+    CMP = null;
+  }
+  ov.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && CMP) cmpClose(); });
+
 function boot() {
   v = el('v'); cv = el('draw'); cx = cv.getContext('2d'); fi = el('fi');
   if (!T) { fail('Thiếu mã liên kết.'); return; }
   api('open').then(function (d) {
     INFO = d; ADMIN = d.admin ? 1 : 0;
+    VERS = d.versions || []; LATEST = d.latest || ''; verPaint();
     el('root').style.display = '';
     el('ttl').textContent = d.title || d.file_name;
     el('note').textContent = d.note || '';
@@ -400,6 +538,7 @@ function renderCm() {
     if (ADMIN && ac && mb) { ac = ac.replace('<div class="acts">', '<div class="acts">' + mb.replace(/<\/?div[^>]*>/g, '')); mb = ''; }
     return '<div class="cm' + (Number(c.resolved) ? ' done' : '') + '" id="cm' + c.id + '">' +
       '<div class="top"><button class="ts" onclick="seek(' + c.t_ms + ')">' + fmt(c.t_ms) + '</button>' +
+      ((LATEST && LATEST !== T) ? '<button class="tsn" onclick="cmpOpen(' + c.t_ms + ')" title="Xem mốc này trên bản mới nhất, so sánh với bản đang xem">↗ bản mới</button>' : '') +
       '<span class="au">' + esc(c.author) + '</span><span class="dt">' + esc((c.created_at || '').slice(5, 16)) + '</span></div>' +
       (c.body ? '<div class="bd">' + esc(c.body) + '</div>' : '') + ed + im + mb + ac + '</div>';
   }).join('');

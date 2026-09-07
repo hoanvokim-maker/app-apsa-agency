@@ -177,7 +177,7 @@
 
 <script>
 var API = './api/review-api.php';
-var ROWS = [], STACK = [], PICK = null;
+var ROWS = [], STACK = [], PICK = null; var NEWPAR = 0;   /* APSA1826 */
 
 function el(i) { return document.getElementById(i); }
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -200,6 +200,7 @@ function load() {
 }
 
 function render() {
+  renCss();   /* APSA1826: dam bao co CSS cua pill phien ban */
   var q = (el('q').value || '').trim().toLowerCase();
   var V = ROWS.filter(function (r) {
     return !q || ((r.title || '') + ' ' + (r.file_name || '')).toLowerCase().indexOf(q) >= 0;
@@ -210,7 +211,7 @@ function render() {
   el('tb').innerHTML = V.map(function (r) {
     var n = Number(r.n_cmt) || 0, o = Number(r.n_open) || 0;
     return '<tr>' +
-      '<td><div class="ttl">' + esc(r.title) + '</div><div class="fn">' + esc(r.file_name) +
+      '<td><div class="ttl">' + (Number(r.ver) > 1 ? '<span class="vpill">V' + Number(r.ver) + '</span>' : '') + esc(r.title) + '</div><div class="fn">' + esc(r.file_name) +
         (Number(r.file_size) ? ' · ' + mb(r.file_size) : '') + '</div>' +
         (r.note ? '<div class="fn">' + esc(r.note) + '</div>' : '') + '</td>' +
       '<td>' + esc(r.created_by) + '</td>' +
@@ -221,6 +222,7 @@ function render() {
         '<button class="vb sm" onclick="cp(\'' + r.token + '\', this)">📋 Copy link</button>' +
         '<a class="vb sm" href="./review.html?t=' + r.token + '" target="_blank" rel="noopener">↗ Mở</a>' +
         '<button class="vb sm" onclick="tg(' + r.id + ',' + (Number(r.active) ? 0 : 1) + ')">' + (Number(r.active) ? 'Tắt' : 'Bật') + '</button>' +
+        '<button class="vb sm" onclick="newVer(' + r.id + ')" title="Tải lên bản chỉnh sửa mới của video này">+ Bản mới</button>' +
         '<button class="vb sm" onclick="ren(' + r.id + ')">✎ Sửa</button>' +
       '<button class="vb sm" onclick="del(' + r.id + ')">Xóa</button>' +
       '</div></td></tr>';
@@ -233,6 +235,7 @@ function renCss() {
   st.id = 'ren-css';
   st.textContent =
     '.ren-ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;' +
+    '.vpill{display:inline-block;background:#dff20d;color:#111;font-size:10px;font-weight:800;letter-spacing:.04em;padding:1px 6px;border-radius:5px;margin-right:7px;vertical-align:1px}' +
     'justify-content:center;z-index:9999;padding:16px}' +
     '.ren-bx{background:#161a20;border:1px solid #2b3138;border-radius:14px;padding:18px 20px;' +
     'width:min(560px,100%);box-shadow:0 18px 50px rgba(0,0,0,.5)}' +
@@ -296,11 +299,27 @@ function del(id) {
 
 /* ── trình duyệt SharePoint ───────────────────────────── */
 function openNew() {
+  NEWPAR = 0; nvTitle('Tạo link duyệt video');
   PICK = null; STACK = [];
   el('nTitle').value = ''; el('nNote').value = '';
   el('ovNew').classList.add('open');
   browse('', '');
 }
+/* APSA1826: tao ban moi (version) cua 1 video da co */
+function nvTitle(t) { var h = el('ovNew').querySelector('h2'); if (h) h.textContent = t; }
+function newVer(id) {
+  var r = null, i;
+  for (i = 0; i < ROWS.length; i++) if (Number(ROWS[i].id) === Number(id)) r = ROWS[i];
+  if (!r) return;
+  NEWPAR = Number(id);
+  PICK = null; STACK = [];
+  el('nTitle').value = r.title || '';
+  el('nNote').value  = r.note || '';
+  el('ovNew').classList.add('open');
+  nvTitle('Bản mới (V' + ((Number(r.ver) || 1) + 1) + ') của: ' + (r.title || r.file_name || ''));
+  browse('', '');
+}
+
 function closeNew() { el('ovNew').classList.remove('open'); }
 function crumb() {
   var h = '<a onclick="jump(-1)">🏠 Gốc</a>';
@@ -338,7 +357,7 @@ function hit(i) {
 function mk() {
   if (!PICK) { toast('Chọn một file video trước.'); return; }
   var b = el('bMk'); b.disabled = true; b.textContent = 'Đang tạo…';
-  api('create', { item_id: PICK.id, name: PICK.name, size: PICK.size, title: el('nTitle').value, note: el('nNote').value })
+  api('create', { item_id: PICK.id, name: PICK.name, size: PICK.size, title: el('nTitle').value, note: el('nNote').value, parent: NEWPAR })
     .then(function (d) {
       b.disabled = false; b.textContent = 'Tạo link';
       closeNew(); load();
