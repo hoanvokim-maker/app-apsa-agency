@@ -32,7 +32,7 @@ function pm_groups()
     return array(
         array(
             'key' => 'project', 'name' => 'Dự án & Báo giá', 'def' => 2,
-            'mods' => array(35, 32, 97, 26),
+            'mods' => array(35, 32, 103, 97, 26),
             'pages' => array('assignments.html', 'quotation.html', 'bao-gia.html', 'chi-phi.html', 'ratecard.html'),
             'note' => 'Làm việc · Báo giá & Nghiệm thu · Chi phí thực tế · Rate Card',
             'needs' => array('partner'),
@@ -345,6 +345,7 @@ function pm_mods()
     if ($m !== null) return $m;
     $m = array(
         array('id' =>  32, 'name' => 'Báo giá & Nghiệm thu',  'page' => 'quotation.html',          'grp' => 'project'),
+        array('id' => 103, 'name' => 'Xem tiền Báo giá / Nghiệm thu', 'page' => '',           'grp' => 'project'),
         array('id' =>  35, 'name' => 'Làm việc',              'page' => 'assignments.html',        'grp' => 'project'),
         array('id' =>  97, 'name' => 'Chi phí thực tế',       'page' => 'chi-phi.html',            'grp' => 'project'),
         array('id' =>  26, 'name' => 'Rate Card',             'page' => 'ratecard.html',           'grp' => 'project'),

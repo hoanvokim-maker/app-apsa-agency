@@ -8,6 +8,7 @@
     .then(res => {
       if (!res.ok) throw new Error();
       window.__APSA_USER = res.data;
+      try { pvApply(); pvLoad(); } catch (e) {}
       document.documentElement.style.visibility = 'visible';
     })
     .catch(() => {
@@ -896,6 +897,12 @@ table.chktbl td.chk-p{ width:74px; text-align:center; }
 table.chktbl th:nth-last-child(2){ width:74px; }
 /* APSA1812: input date an cua bo chon ngay khong duoc an theo opacity cua dong */
 table.chktbl input.dmy-h{ opacity:0 !important; }
+/* APSA1822: che thong tin tien cua du an voi vi tri khong duoc cap quyen */
+body.nofin #quoSec,
+body.nofin .sumbox,
+body.nofin #btnXl{ display:none !important; }
+body.nofin table.t thead th:nth-child(11), body.nofin table.t tbody td:nth-child(11),
+body.nofin table.t thead th:nth-child(12), body.nofin table.t tbody td:nth-child(12){ display:none !important; }
 .lprog{ display:flex; align-items:center; gap:7px; }
 .lpbar{ position:relative; flex:1; min-width:34px; height:5px; border-radius:99px; background:rgba(255,255,255,.08); overflow:hidden; }
 .lpbar > i{ position:absolute; left:0; top:0; bottom:0; border-radius:99px; background:var(--accent,#dff20d); box-shadow:0 0 6px rgba(223,242,13,.6); }
@@ -2221,6 +2228,26 @@ function asgDup(i){
   renderAsg(); markDirty();
   try { toast(src.kind === 'group' ? ('Đã nhân đôi nhóm — ' + len + ' dòng') : 'Đã nhân đôi dòng', 'ok'); } catch (x) {}
 }
+/* APSA1822: an hien phan Bao gia / Nghiem thu theo quyen module 103 (perm.php) */
+var PV_ALLOW = null;          /* null = chua biet, 1 = duoc xem, 0 = bi an */
+function pvCanSeeQuo(){
+  const u = window.__APSA_USER || {};
+  if (String(u.role || '').toLowerCase() === 'admin') return true;
+  if (PV_ALLOW === null) return true;                 /* chua tai xong -> khong an nham */
+  return PV_ALLOW === 1;
+}
+function pvApply(){ document.body.classList.toggle('nofin', !pvCanSeeQuo()); }
+async function pvLoad(){
+  try {
+    const r = await fetch('./api/settings-api.php?action=perm-me', { credentials: 'same-origin' });
+    const j = await r.json();
+    if (j && j.admin) PV_ALLOW = 1;
+    else if (j && j.mperm) PV_ALLOW = (Number(j.mperm['103'] || 0) > 0) ? 1 : 0;
+    else PV_ALLOW = null;
+  } catch (e) { PV_ALLOW = null; }
+  pvApply();
+}
+
 /* APSA1813: cum dong/mo rieng cho Checklist va Bao gia */
 var AP_SEC_OPEN = { chk: true, quo: true };
 function apToggleSec(k, force){
@@ -2345,7 +2372,12 @@ function asgAdd(kind){
   ASG.push({ kind: (kind === 'group' ? 'group' : 'item'), name: '', user_id: 0, supplier_id: 0, due_date: '', status: 'todo', priority: 0 });
   renderAsg(); markDirty();
 }
-function asgDel(i){ ASG.splice(i, 1); renderAsg(); markDirty(); }
+/* APSA1821: xoa nhom thi xoa luon cac dong ben trong */
+function asgDel(i){
+  const n = (ASG[i] && ASG[i].kind === 'group') ? asgBlockLen(i) : 1;
+  ASG.splice(i, n); renderAsg(); markDirty();
+  if (n > 1) { try { toast('Đã xoá nhóm và ' + (n - 1) + ' dòng bên trong'); } catch (e) {} }
+}
 
 /* --- uu tien cho tung dong checklist --- */
 function chkPrioBtn(a, i){
@@ -2432,7 +2464,12 @@ function expAddGroup(){
   toggleExp(true); renderExp(); markDirty();
 }
 function expAddItem(){ EXP.push(expBlank()); toggleExp(true); renderExp(); markDirty(); }
-function expDel(i){ EXP.splice(i, 1); renderExp(); markDirty(); }
+/* APSA1821: xoa nhom chi phi thi xoa luon cac dong ben trong */
+function expDel(i){
+  const n = (EXP[i] && EXP[i].kind === 'group') ? expBlockLen(i) : 1;
+  EXP.splice(i, n); renderExp(); markDirty();
+  if (n > 1) { try { toast('Đã xoá nhóm chi phí và ' + (n - 1) + ' dòng bên trong'); } catch (e) {} }
+}
 
 /* ── Keo tha sap xep dong chi phi thuc te ── */
 var EXP_DRAG = -1;
@@ -2826,7 +2863,13 @@ function addRow(kind, data){
   const inputs = document.querySelectorAll('#qbody tr:last-child input');
   if (inputs[0]) inputs[0].focus();
 }
-function delRow(i){ EDIT.items.splice(i,1); renderRows(); markDirty(); }
+/* APSA1821: xoa nhom hang muc thi xoa luon cac dong ben trong */
+function delRow(i){
+  const it = EDIT.items[i];
+  const n = (it && it.kind === 'section') ? blockLen(i) : 1;
+  EDIT.items.splice(i, n); renderRows(); markDirty();
+  if (n > 1) { try { toast('Đã xoá nhóm và ' + (n - 1) + ' dòng bên trong'); } catch (e) {} }
+}
 /* Nhân đôi: ở dòng nhóm thì chép nguyên nhóm (nhóm + các hạng mục bên dưới),
    ở dòng thường thì chỉ chép đúng dòng đó. Bản sao chèn ngay sau bản gốc. */
 function dupRow(i){

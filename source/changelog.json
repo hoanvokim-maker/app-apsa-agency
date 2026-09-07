@@ -1,5 +1,5 @@
 {
-    "version": "1.8.20",
+    "version": "1.8.21",
     "updated": "2026-09-07",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-05",
             "note": "Phiên bản 1.8",
             "items": [
+                {
+                    "d": "2026-09-07",
+                    "v": "1.8.21",
+                    "t": "xoa nhom keo theo cac dong; phan quyen xem tien Bao gia/Nghiem thu theo vi tri; thong bao Zalo dung ten loai don (Work From Somewhere)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-07",
                     "v": "1.8.20",

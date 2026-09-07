@@ -133,7 +133,7 @@ function fail($msg, $code=400) { http_response_code($code); echo json_encode(['o
 
 function currentUser($pdo) {
     if (empty($_SESSION['user_id'])) return null;
-    $st = $pdo->prepare("SELECT id, username, display_name, role, active, avatar FROM `app_users` WHERE id = ? AND active = 1");
+    $st = $pdo->prepare("SELECT id, username, display_name, role, active, avatar, position FROM `app_users` WHERE id = ? AND active = 1");
     $st->execute([$_SESSION['user_id']]);
     $u = $st->fetch();
     return $u ?: null;

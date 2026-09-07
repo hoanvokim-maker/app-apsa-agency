@@ -547,6 +547,28 @@ function lv_notify_table()
 
 /** Gui thong bao. Loi o day KHONG duoc lam hong nghiep vu chinh. */
 require_once __DIR__ . '/zalo.php';   /* APSA127-ZALO */
+/* APSA1823: loai don khong phai la nghi (vd Work From Somewhere) thi khong goi la "nghi" */
+function lv_is_absence($k)
+{
+    $s = mb_strtolower((string) $k . ' ' . lv_type_label($k), 'UTF-8');
+    if (mb_strpos($s, 'work_from') !== false) return false;
+    if (mb_strpos($s, 'work from') !== false) return false;
+    if (mb_strpos($s, 'wfh') !== false)       return false;
+    return true;
+}
+
+/* Danh tu trong cau: "don nghi" hoac "don Work From Somewhere" */
+function lv_doc_noun($k)
+{
+    return lv_is_absence($k) ? 'đơn nghỉ' : ('đơn ' . lv_type_label($k));
+}
+
+/* Tieu de thong bao khi co don moi */
+function lv_new_title($k)
+{
+    return (lv_is_absence($k) ? 'Đơn nghỉ mới: ' : 'Đăng ký mới: ') . lv_type_label($k);
+}
+
 function lv_notify($userId, $kind, $title, $body, $url)
 {
     if (function_exists('zb_push')) zb_push(lv_pdo(), $userId, $kind, $title, $body, $url);
@@ -896,8 +918,10 @@ case 'save':
 
     $row  = lv_row($newId);
     $tl   = lv_types();
-    $body = $ME['name'] . ' xin nghỉ ' . rtrim(rtrim(number_format($days, 1, ',', ''), '0'), ',')
-          . ' ngày (' . $tl[$type] . '): ' . lv_range_text($row);
+    $dayTxt = rtrim(rtrim(number_format($days, 1, ',', ''), '0'), ',');
+    $body   = lv_is_absence($type)
+            ? ($ME['name'] . ' xin nghỉ ' . $dayTxt . ' ngày (' . $tl[$type] . '): ' . lv_range_text($row))
+            : ($ME['name'] . ' đăng ký ' . lv_type_label($type) . ' ' . $dayTxt . ' ngày: ' . lv_range_text($row));
     /* Admin + leader cua team nguoi xin nghi */
     $lvTo = lv_admin_ids();
     foreach (lv_lead_ids(isset($ME['pos']) ? $ME['pos'] : '') as $lvLid) {
@@ -905,7 +929,7 @@ case 'save':
     }
     foreach ($lvTo as $aid) {
         if ($aid === $ME['id']) continue;
-        lv_notify($aid, 'leave_new', 'Đơn nghỉ mới: ' . $tl[$type] . ' — ' . $ME['name'], $body, '/leave.html?id=' . $newId);
+        lv_notify($aid, 'leave_new', lv_new_title($type) . ' — ' . $ME['name'], $body, '/leave.html?id=' . $newId);
     }
 
     lv_out(array('ok' => true, 'id' => $newId, 'days' => $days, 'row' => lv_shape($row)));
@@ -937,7 +961,7 @@ case 'cancel':
 
     if ((int) $r['user_id'] !== $ME['id']) {
         lv_notify((int) $r['user_id'], 'leave_canceled', 'Đã huỷ: ' . lv_type_label($r['leave_type']) . ' — ' . $r['user_name'],
-            $ME['name'] . ' đã huỷ đơn nghỉ ' . lv_range_text($r) . ' của bạn.', '/leave.html?id=' . $id);
+            $ME['name'] . ' đã huỷ ' . lv_doc_noun($r['leave_type']) . ' ' . lv_range_text($r) . ' của bạn.', '/leave.html?id=' . $id);
     }
 
     lv_out(array('ok' => true, 'message' => 'Đã huỷ đơn.' . $calNote, 'row' => lv_shape(lv_row($id))));
@@ -985,7 +1009,7 @@ case 'approve':
     }
 
     lv_notify((int) $r['user_id'], 'leave_approved', 'Đã duyệt: ' . lv_type_label($r['leave_type']) . ' — ' . $r['user_name'],
-        $ME['name'] . ' đã duyệt đơn nghỉ ' . lv_range_text($r) . ' của bạn.', '/leave.html?id=' . $id);
+        $ME['name'] . ' đã duyệt ' . lv_doc_noun($r['leave_type']) . ' ' . lv_range_text($r) . ' của bạn.', '/leave.html?id=' . $id);
 
     lv_out(array(
         'ok'       => true,
@@ -1020,7 +1044,7 @@ case 'reject':
     $st->execute(array($ME['id'], $ME['name'], $now, $note, $now, $id));
 
     lv_notify((int) $r['user_id'], 'leave_rejected', 'Từ chối: ' . lv_type_label($r['leave_type']) . ' — ' . $r['user_name'],
-        $ME['name'] . ' đã từ chối đơn nghỉ ' . lv_range_text($r) . '. Lý do: ' . $note, '/leave.html?id=' . $id);
+        $ME['name'] . ' đã từ chối ' . lv_doc_noun($r['leave_type']) . ' ' . lv_range_text($r) . '. Lý do: ' . $note, '/leave.html?id=' . $id);
 
     lv_out(array('ok' => true, 'message' => 'Đã từ chối đơn.' . $calNote, 'row' => lv_shape(lv_row($id))));
     break;
