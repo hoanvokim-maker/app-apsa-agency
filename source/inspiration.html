@@ -200,7 +200,8 @@ kbd{ background:var(--bg3); border:1px solid var(--border); border-radius:5px; p
 /* ─── Modal ─── */
 .ov{
   display:none; position:fixed; inset:0; background:rgba(0,0,0,.78); backdrop-filter:blur(8px);
-  z-index:300; align-items:center; justify-content:center; padding:24px; overflow-y:auto;
+  /* APSA1820: phai cao hon lightbox (.lb z-index:500) de mo duoc modal Sua tu trong lightbox */
+  z-index:600; align-items:center; justify-content:center; padding:24px; overflow-y:auto;
 }
 .ov.open{ display:flex; }
 /* Modal tên & xác nhận phải nằm trên cả lightbox (z-index 500) */
@@ -265,7 +266,9 @@ kbd{ background:var(--bg3); border:1px solid var(--border); border-radius:5px; p
 }
 .lb.open{ display:flex; flex-direction:column; }
 .lb-head{
-  height:54px; flex-shrink:0; display:flex; align-items:center; gap:12px; padding:0 18px;
+  height:54px; flex-shrink:0; display:flex; align-items:center; gap:12px;
+  /* APSA1820: chua cho nut menu noi (#apsaHam) khong de len nut Sua */
+  padding:0 66px 0 18px;
   border-bottom:1px solid var(--border);
 }
 .lb-head .ttl{ flex:1; font-size:14px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }

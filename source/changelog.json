@@ -1,5 +1,5 @@
 {
-    "version": "1.8.19",
+    "version": "1.8.20",
     "updated": "2026-09-07",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-05",
             "note": "Phiên bản 1.8",
             "items": [
+                {
+                    "d": "2026-09-07",
+                    "v": "1.8.20",
+                    "t": "inspiration: fix toolbar lightbox bi nut menu de len + modal Sua bi khuat duoi lightbox",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-07",
                     "v": "1.8.19",
