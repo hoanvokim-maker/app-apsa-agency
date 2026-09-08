@@ -1,5 +1,5 @@
 {
-    "version": "1.8.26",
+    "version": "1.8.27",
     "updated": "2026-09-08",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-05",
             "note": "Phiên bản 1.8",
             "items": [
+                {
+                    "d": "2026-09-08",
+                    "v": "1.8.27",
+                    "t": "module Kho cong ty: so tai san thiet bi + phieu muon/tra, hang ky gui (standee/tai lieu/in an) voi phieu nhap-xuat va ton tu tinh",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-08",
                     "v": "1.8.26",
