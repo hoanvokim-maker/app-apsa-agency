@@ -1,12 +1,18 @@
 {
-    "version": "1.8.25",
-    "updated": "2026-09-07",
+    "version": "1.8.26",
+    "updated": "2026-09-08",
     "releases": [
         {
             "v": "1.8",
             "date": "2026-09-05",
             "note": "Phiên bản 1.8",
             "items": [
+                {
+                    "d": "2026-09-08",
+                    "v": "1.8.26",
+                    "t": "session 30 ngay: chuyen noi luu session ra khoi /tmp (tmpfiles don sau 10 ngay), perm.php luon boot qua session-boot",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-07",
                     "v": "1.8.25",

@@ -146,7 +146,11 @@ function pm_me()
 {
     static $me = false;
     if ($me !== false) return $me;
-    if (session_status() !== PHP_SESSION_ACTIVE) @session_start();
+    /* APSA1828: luon boot session qua session-boot de giu han 30 ngay */
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        if (is_file(__DIR__ . '/session-boot.php')) require_once __DIR__ . '/session-boot.php';
+        if (session_status() !== PHP_SESSION_ACTIVE) @session_start();
+    }
     $uid = (int) ($_SESSION['user_id'] ?? 0);
     if ($uid <= 0) { $me = null; return $me; }
     try {

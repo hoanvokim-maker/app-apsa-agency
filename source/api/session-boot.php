@@ -22,11 +22,20 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     //    Nếu dùng thư mục mặc định dùng chung, garbage collector của server có thể
     //    xoá file session sau ~24 phút (session.gc_maxlifetime mặc định = 1440s),
     //    khiến user bị đăng xuất dù cookie vẫn còn hạn.
-    $apsaSessDir = rtrim(sys_get_temp_dir(), '/\\') . DIRECTORY_SEPARATOR . 'apsa-sessions';
-    if (!is_dir($apsaSessDir)) { @mkdir($apsaSessDir, 0700, true); }
-    if (is_dir($apsaSessDir) && is_writable($apsaSessDir)) {
-        @session_save_path($apsaSessDir);
-    }
+    /* APSA1828: KHONG luu session trong /tmp - systemd-tmpfiles don /tmp sau 10 ngay
+   nen user se bi dang xuat som du cookie con han 30 ngay. Uu tien thu muc rieng
+   ngoai docroot, chi fallback ve /tmp neu khong tao duoc. */
+$apsaSessDir = '';
+foreach (array(
+    dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'apsa-sessions',
+    rtrim(sys_get_temp_dir(), '/\\') . DIRECTORY_SEPARATOR . 'apsa-sessions',
+) as $apsaCand) {
+    if (!is_dir($apsaCand)) { @mkdir($apsaCand, 0700, true); }
+    if (is_dir($apsaCand) && is_writable($apsaCand)) { $apsaSessDir = $apsaCand; break; }
+}
+if ($apsaSessDir !== '') {
+    @session_save_path($apsaSessDir);
+}
 
     // 2) Session sống 30 ngày ở cả 2 phía: server (gc) và trình duyệt (cookie).
     @ini_set('session.gc_maxlifetime', (string)APSA_SESSION_TTL);
