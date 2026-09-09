@@ -82,7 +82,7 @@ function pm_groups()
         ),
         array(
             'key' => 'tools', 'name' => 'Công cụ chung', 'def' => 2,
-            'mods' => array(105, 1, 28),
+            'mods' => array(105, 106, 1, 28),
             'pages' => array('event-qr-generator.html', 'qr-tool.html', 'tracking.html'),
             'note' => 'Quản lý Link · Badminton · các công cụ lẻ',
             'needs' => array(),
@@ -372,6 +372,7 @@ function pm_mods()
         array('id' =>  91, 'name' => 'Xin nghỉ phép',         'page' => 'leave.html',              'grp' => 'hr'),
         array('id' =>  94, 'name' => 'Policy công ty',        'page' => 'policy.html',             'grp' => 'hr'),
         array('id' => 105, 'name' => 'Kho công ty',         'page' => 'warehouse.html',       'grp' => 'tools'),
+        array('id' => 106, 'name' => 'Thư viện Speaker', 'page' => 'speakers.html',      'grp' => 'tools'),
         array('id' =>   1, 'name' => 'Quản lý Link',          'page' => 'event-qr-generator.html', 'grp' => 'tools'),
         array('id' =>  28, 'name' => 'APSA Badminton',        'page' => 'badminton/index.html',    'grp' => 'tools'),
         array('id' =>  93, 'name' => 'Thông báo Zalo',        'page' => 'zalo.html',               'grp' => 'notify'),
