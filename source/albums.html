@@ -322,6 +322,16 @@ h3.sec{ font-size:13px; font-weight:700; text-transform:uppercase; letter-spacin
       <button class="hbtn" onclick="copyLink()"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-copy"/></svg> Chép link</button>
     </div>
 
+    <div class="linkbox" style="flex-wrap:wrap">
+      <span class="xs" style="color:var(--text3)">ẢNH TỪ GOOGLE DRIVE</span>
+      <input type="text" id="fDrive" placeholder="Dán link thư mục Drive — Chia sẻ: Bất kỳ ai có đường liên kết"
+             style="flex:1 1 320px;min-width:220px;font:inherit;font-size:13px;background:var(--bg3,#141414);color:var(--text,#e6e9ee);border:1px solid var(--border,#2b3138);border-radius:9px;padding:8px 11px" />
+      <button class="hbtn" onclick="gdScan()">Kiểm tra</button>
+      <button class="hbtn primary" id="gdBtn" onclick="gdSync()">Đồng bộ ảnh</button>
+      <button class="hbtn" onclick="gdClear()">Gỡ ảnh Drive</button>
+      <span class="xs" id="gdMsg" style="flex:1 1 100%;opacity:.7;line-height:1.5"></span>
+    </div>
+
     <div class="drop" id="drop" onclick="document.getElementById('fileInput').click()">
       <div class="e"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-upload"/></svg></div>
       <h4>Kéo ảnh vào đây hoặc bấm để chọn</h4>
@@ -478,6 +488,7 @@ async function openAlbum(id){
     CUR = d.album; CUR_PHOTOS = d.photos;
     $('fTitle').value = CUR.title || '';
     $('fNote').value  = CUR.note || '';
+      $('fDrive').value = CUR.drive_url || ''; gdSet(CUR.drive_url ? 'Album này lấy ảnh từ Google Drive.' : '');
     $('shareLink').textContent = shareUrl(CUR.token);
     $('edHint').innerHTML = CUR_PHOTOS.length + ' ảnh · <svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-eye"/></svg> ' + (CUR.views || 0) + ' lượt xem';
     renderPhotos();
@@ -495,7 +506,9 @@ function renderPhotos(){
   $('pempty').style.display = CUR_PHOTOS.length ? 'none' : '';
   $('pgrid').innerHTML = CUR_PHOTOS.map(p =>
     '<div class="pcell' + (p.picks ? ' picked' : '') + '">' +
-      '<img src="' + esc(p.thumb) + '" loading="lazy" alt="" />' +
+      '<a href="' + esc(p.url) + '" target="_blank" rel="noopener" style="display:block;width:100%;height:100%" onclick="event.stopPropagation()">' +
+        '<img src="' + esc(p.thumb) + '" loading="lazy" alt="" /></a>' +
+      (p.src === 'gd' ? '<span class="sp" style="position:absolute;left:6px;top:6px;background:rgba(0,0,0,.6);color:#8ec0ff;font-size:9.5px;font-weight:800;letter-spacing:.06em;padding:2px 6px;border-radius:99px">DRIVE</span>' : '') +
       '<button class="del" title="Xoá ảnh" onclick="delPhoto(' + p.id + ')"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-trash"/></svg></button>' +
       '<div class="ov"><span><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-heart"/></svg> ' + (p.likes || 0) + '</span>' +
         (p.picks ? '<span>✓ ' + p.picks + '</span>' : '') +
@@ -510,6 +523,54 @@ async function saveAlbum(){
     toast('✓ Đã lưu album');
   } catch(e){ toast(e.message, 'err'); }
 }
+/* ═════ APSA1831 · Ảnh lấy từ link Google Drive ═════ */
+function gdSet(m){ const e = $('gdMsg'); if (e) e.textContent = m || ''; }
+
+async function gdScan(){
+  const u = $('fDrive').value.trim();
+  if (!u) { toast('Chưa dán link thư mục Google Drive', 'err'); return; }
+  gdSet('Đang đọc thư mục Drive…');
+  try {
+    const d = await api('gd-scan', { body: { id: CUR.id, url: u } });
+    gdSet('Thư mục có ' + d.total + ' ảnh · ' + d.new + ' ảnh chưa có trong album'
+          + (d.sample && d.sample.length ? ' · VD: ' + d.sample.slice(0, 3).join(', ') : ''));
+  } catch (e) { gdSet(''); toast(e.message, 'err'); }
+}
+
+async function gdSync(){
+  const u = $('fDrive').value.trim();
+  if (!u) { toast('Chưa dán link thư mục Google Drive', 'err'); return; }
+  const aid = CUR.id, b = $('gdBtn');
+  b.disabled = true;
+  let added = 0, failed = 0, removed = 0, total = 0, guard = 0;
+  try {
+    while (guard++ < 500) {
+      const d = await api('gd-sync', { body: { id: aid, url: u } });
+      added += d.added; failed += d.failed; removed += d.removed; total = d.total;
+      bar(Math.round(100 * (total - d.left) / Math.max(total, 1)));
+      gdSet('Đang tạo thumbnail… còn ' + d.left + '/' + total);
+      if (d.done) break;
+    }
+    gdSet('Xong · ' + total + ' ảnh trong thư mục · thêm mới ' + added
+          + (removed ? ' · gỡ ' + removed : '') + (failed ? ' · lỗi ' + failed : ''));
+    toast('✓ Đã đồng bộ ảnh từ Google Drive');
+    const _m = $('gdMsg').textContent;
+    await openAlbum(aid);
+    gdSet(_m);
+  } catch (e) { gdSet(''); toast(e.message, 'err'); }
+  b.disabled = false; bar(100);
+}
+
+function gdClear(){
+  const aid = CUR.id;
+  confirmBox('Gỡ ảnh Drive?', 'Chỉ gỡ các ảnh lấy từ Google Drive ra khỏi album này. Ảnh gốc trên Drive không bị xoá.', async () => {
+    try {
+      const d = await api('gd-clear', { body: { id: aid } });
+      toast(d.message); $('fDrive').value = ''; await openAlbum(aid);
+    } catch (e) { toast(e.message, 'err'); }
+  });
+}
+
 function copyLink(){ copyOne(CUR.token); }
 function openShare(){ window.open(shareUrl(CUR.token), '_blank'); }
 function delPhoto(id){

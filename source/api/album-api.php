@@ -169,7 +169,11 @@ function loadPhotos($pdo, $album, $visitor = '') {
     $out = [];
     foreach ($rows as $r) {
         $out[] = [
-            'id' => (int)$r['id'], 'url' => photoUrl($album, $r['file']), 'thumb' => photoUrl($album, $r['thumb']),
+            'id' => (int)$r['id'], 'url'   => (($r['src'] ?? 'up') === 'gd') ? gd_view_url($r['gd_id']) : photoUrl($album, $r['file']),
+                'dl'    => (($r['src'] ?? 'up') === 'gd') ? gd_dl_url($r['gd_id'])   : photoUrl($album, $r['file']),
+                'src'   => $r['src'] ?? 'up', 'gd_id' => $r['gd_id'] ?? '',
+                'thumb' => (($r['src'] ?? 'up') === 'gd' && (string) $r['thumb'] === '')
+                             ? gd_thumb_url($r['gd_id'], 800) : photoUrl($album, $r['thumb']),
             'w' => (int)$r['w'], 'h' => (int)$r['h'], 'bytes' => (int)$r['bytes'],
             'caption' => $r['caption'], 'likes' => (int)$r['likes'], 'picks' => (int)$r['picks'], 'notes' => (int)$r['notes'],
             'liked' => in_array((int)$r['id'], $mine['likes'], true),
@@ -179,6 +183,152 @@ function loadPhotos($pdo, $album, $visitor = '') {
     }
     return $out;
 }
+
+/* ══════════ APSA1831 · Album lay anh tu link Google Drive ══════════
+   Chi luu thumbnail nho tren server, anh goc van nam tren Drive.     */
+
+function gd_folder_id($url)
+{
+    $u = trim((string) $url);
+    if ($u === '') return '';
+    if (preg_match('#/folders/([A-Za-z0-9_-]{10,})#', $u, $m)) return $m[1];
+    if (preg_match('#[?&]id=([A-Za-z0-9_-]{10,})#', $u, $m)) return $m[1];
+    if (stripos($u, 'http') === 0) return '';
+    if (preg_match('#^[A-Za-z0-9_-]{25,}$#', $u) && preg_match('#[A-Z0-9]#', $u)) return $u;
+    return '';
+}
+
+function gd_fetch($url, $timeout = 25)
+{
+    $ch = curl_init($url);
+    curl_setopt_array($ch, array(
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_MAXREDIRS      => 6,
+        CURLOPT_TIMEOUT        => $timeout,
+        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_USERAGENT      => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
+        CURLOPT_HTTPHEADER     => array('Accept-Language: vi,en-US;q=0.8'),
+    ));
+    $b = curl_exec($ch);
+    $c = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    return array('code' => $c, 'body' => (string) $b);
+}
+
+/** Doc danh sach file trong 1 folder Drive cong khai (khong can API key) */
+function gd_list_folder($fid)
+{
+    $r = gd_fetch('https://drive.google.com/embeddedfolderview?id=' . urlencode($fid) . '#grid');
+    if ($r['code'] !== 200 || $r['body'] === '') return array();
+
+    $out   = array();
+    $seen  = array();
+    $parts = explode('id="entry-', $r['body']);
+    array_shift($parts);
+    foreach ($parts as $p) {
+        $id = substr($p, 0, strcspn($p, '"'));
+        if (!preg_match('#^[A-Za-z0-9_-]{15,}$#', $id) || isset($seen[$id])) continue;
+        $seen[$id] = 1;
+        $name = '';
+        if (preg_match('#flip-entry-title[^>]*>(.*?)<#s', $p, $m)) {
+            $name = html_entity_decode(trim(strip_tags($m[1])), ENT_QUOTES, 'UTF-8');
+        }
+        $mime = '';
+        if (preg_match('#drive-thirdparty\.googleusercontent\.com/\d+/type/([A-Za-z0-9.+_-]+/[A-Za-z0-9.+_-]+)#', $p, $m)) {
+            $mime = strtolower($m[1]);
+        }
+        $out[] = array('id' => $id, 'name' => $name, 'mime' => $mime);
+    }
+    return $out;
+}
+
+function gd_is_image($f)
+{
+    $mime = (string) $f['mime'];
+    if (strpos($mime, 'vnd.google-apps.folder') !== false) return false;
+    if (strpos($mime, 'image/') === 0) return true;
+    if ($mime !== '' && strpos($mime, 'image') === false) return false;
+    return (bool) preg_match('#\.(jpe?g|png|webp|gif|heic|heif|tiff?|bmp)$#i', (string) $f['name']);
+}
+
+function gd_list_images($fid)
+{
+    $out = array();
+    foreach (gd_list_folder($fid) as $f) if (gd_is_image($f)) $out[] = $f;
+    usort($out, function ($a, $b) { return strnatcasecmp($a['name'], $b['name']); });
+    return $out;
+}
+
+function gd_view_url($id)  { return 'https://drive.google.com/thumbnail?id=' . $id . '&sz=w1600'; }
+function gd_dl_url($id)    { return 'https://drive.google.com/uc?export=download&id=' . $id; }
+function gd_thumb_url($id, $w = 800) { return 'https://drive.google.com/thumbnail?id=' . $id . '&sz=w' . (int) $w; }
+
+/** Tai thumbnail ve server, nen lai cho nhe. Tra ve [ten_file, w, h, bytes] hoac null */
+function gd_save_thumb($dir, $id)
+{
+    $base = 'gd-' . substr(preg_replace('/[^A-Za-z0-9_-]/', '', $id), 0, 40);
+    foreach (array(800, 640, 400) as $w) {
+        $r = gd_fetch(gd_thumb_url($id, $w), 20);
+        if ($r['code'] !== 200 || strlen($r['body']) < 600) continue;
+        $inf = @getimagesizefromstring($r['body']);
+        if (!$inf || $inf[0] < 40) continue;
+
+        if (function_exists('imagecreatefromstring')) {
+            $im = @imagecreatefromstring($r['body']);
+            if ($im) {
+                $gi = function_exists('gd_info') ? gd_info() : array();
+                if (!empty($gi['WebP Support']) && function_exists('imagewebp')) {
+                    $fn = $base . '.webp';
+                    if (@imagewebp($im, $dir . '/' . $fn, 74)) {
+                        imagedestroy($im); @chmod($dir . '/' . $fn, 0644);
+                        return array($fn, (int) $inf[0], (int) $inf[1], (int) @filesize($dir . '/' . $fn));
+                    }
+                }
+                $fn = $base . '.jpg';
+                if (@imagejpeg($im, $dir . '/' . $fn, 78)) {
+                    imagedestroy($im); @chmod($dir . '/' . $fn, 0644);
+                    return array($fn, (int) $inf[0], (int) $inf[1], (int) @filesize($dir . '/' . $fn));
+                }
+                imagedestroy($im);
+            }
+        }
+
+        $ext = ($inf[2] === IMAGETYPE_PNG) ? 'png' : (($inf[2] === IMAGETYPE_WEBP) ? 'webp' : 'jpg');
+        $fn  = $base . '.' . $ext;
+        if (@file_put_contents($dir . '/' . $fn, $r['body']) === false) return null;
+        @chmod($dir . '/' . $fn, 0644);
+        return array($fn, (int) $inf[0], (int) $inf[1], strlen($r['body']));
+    }
+    return null;
+}
+
+/** Them cot moi neu chua co (idempotent) */
+function gd_migrate($pdo)
+{
+    $cols = array(
+        'album_albums' => array(
+            'drive_url' => "ALTER TABLE `album_albums` ADD COLUMN `drive_url` VARCHAR(400) NOT NULL DEFAULT ''",
+            'drive_id'  => "ALTER TABLE `album_albums` ADD COLUMN `drive_id`  VARCHAR(64)  NOT NULL DEFAULT ''",
+            'synced_at' => "ALTER TABLE `album_albums` ADD COLUMN `synced_at` TIMESTAMP NULL DEFAULT NULL",
+        ),
+        'album_photos' => array(
+            'src'   => "ALTER TABLE `album_photos` ADD COLUMN `src`   VARCHAR(8)  NOT NULL DEFAULT 'up'",
+            'gd_id' => "ALTER TABLE `album_photos` ADD COLUMN `gd_id` VARCHAR(64) NOT NULL DEFAULT ''",
+        ),
+    );
+    foreach ($cols as $tbl => $adds) {
+        foreach ($adds as $col => $sql) {
+            $q = $pdo->prepare("SELECT COUNT(*) FROM information_schema.COLUMNS
+                                 WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?");
+            $q->execute(array($tbl, $col));
+            if ((int) $q->fetchColumn() === 0) { try { $pdo->exec($sql); } catch (Exception $e) {} }
+        }
+    }
+}
+
+gd_migrate($pdo);
 
 switch ($action) {
 
@@ -285,8 +435,8 @@ case 'photo-delete': {
     $st->execute([$id]);
     $p = $st->fetch();
     if (!$p) a_fail('Không tìm thấy ảnh', 404);
-    @unlink(ALBUM_DIR . '/' . $p['token'] . '/' . $p['file']);
-    @unlink(ALBUM_DIR . '/' . $p['token'] . '/' . $p['thumb']);
+    if ((string) $p['file'] !== '') @unlink(ALBUM_DIR . '/' . $p['token'] . '/' . $p['file']);
+    if ((string) $p['thumb'] !== '') @unlink(ALBUM_DIR . '/' . $p['token'] . '/' . $p['thumb']);
     $pdo->prepare("DELETE FROM album_photos WHERE id = ?")->execute([$id]);
     $pdo->prepare("DELETE FROM album_likes WHERE photo_id = ?")->execute([$id]);
     $pdo->prepare("DELETE FROM album_picks WHERE photo_id = ?")->execute([$id]);
@@ -324,6 +474,123 @@ case 'feedback': {
 }
 
 // ══════════ CÔNG KHAI (khách xem bằng link) ══════════
+
+// APSA1831 - dong bo album tu Google Drive
+case 'gd-scan': {
+    $a = albumById($pdo, $B['id'] ?? 0);
+    if (!$a) a_fail('Không tìm thấy album', 404);
+    $raw = trim((string) ($B['url'] ?? $a['drive_url']));
+    $fid = gd_folder_id($raw);
+    if ($fid === '') a_fail(stripos($raw, 'google.') === false
+        ? 'Đây không phải link Google Drive. Hãy dán link thư mục dạng https://drive.google.com/drive/folders/...'
+        : 'Link Drive này không phải link thư mục. Mở thư mục trên Drive rồi copy link trên thanh địa chỉ.');
+    $files = gd_list_images($fid);
+    if (!$files) a_fail('Không đọc được thư mục Drive. Mở folder, bấm Chia sẻ, chọn "Bất kỳ ai có đường liên kết" (Người xem), rồi thử lại.');
+
+    $have = [];
+    $q = $pdo->prepare("SELECT gd_id FROM album_photos WHERE album_id = ? AND gd_id <> ''");
+    $q->execute([(int) $a['id']]);
+    foreach ($q->fetchAll(PDO::FETCH_COLUMN) as $g) $have[$g] = 1;
+    $new = 0;
+    foreach ($files as $f) if (!isset($have[$f['id']])) $new++;
+
+    a_ok([
+        'folder_id' => $fid,
+        'total'     => count($files),
+        'new'       => $new,
+        'sample'    => array_slice(array_column($files, 'name'), 0, 6),
+    ]);
+}
+
+case 'gd-clear': {
+    $a = albumById($pdo, $B['id'] ?? 0);
+    if (!$a) a_fail('Không tìm thấy album', 404);
+    $dir = ALBUM_DIR . '/' . $a['token'];
+    $q = $pdo->prepare("SELECT id, thumb FROM album_photos WHERE album_id = ? AND src = 'gd'");
+    $q->execute([(int) $a['id']]);
+    $n = 0;
+    foreach ($q->fetchAll() as $r) {
+        if ($r['thumb'] !== '') @unlink($dir . '/' . $r['thumb']);
+        $pdo->prepare("DELETE FROM album_likes WHERE photo_id = ?")->execute([(int) $r['id']]);
+        $pdo->prepare("DELETE FROM album_picks WHERE photo_id = ?")->execute([(int) $r['id']]);
+        $pdo->prepare("DELETE FROM album_notes WHERE photo_id = ?")->execute([(int) $r['id']]);
+        $pdo->prepare("DELETE FROM album_photos WHERE id = ?")->execute([(int) $r['id']]);
+        $n++;
+    }
+    $pdo->prepare("UPDATE album_albums SET drive_url = '', drive_id = '', synced_at = NULL WHERE id = ?")
+        ->execute([(int) $a['id']]);
+    a_ok(['message' => 'Đã gỡ ' . $n . ' ảnh Drive khỏi album.']);
+}
+
+case 'gd-sync': {
+    @set_time_limit(120);
+    $a = albumById($pdo, $B['id'] ?? 0);
+    if (!$a) a_fail('Không tìm thấy album', 404);
+    $raw = trim((string) ($B['url'] ?? $a['drive_url']));
+    $fid = gd_folder_id($raw);
+    if ($fid === '') a_fail('Link Google Drive không hợp lệ.');
+    $files = gd_list_images($fid);
+    if (!$files) a_fail('Không đọc được thư mục Drive. Hãy chia sẻ folder ở chế độ "Bất kỳ ai có đường liên kết".');
+
+    $dir = ALBUM_DIR . '/' . $a['token'];
+    if (!is_dir($dir) && !@mkdir($dir, 0755, true)) a_fail('Không tạo được thư mục ảnh', 500);
+
+    $pdo->prepare("UPDATE album_albums SET drive_url = ?, drive_id = ? WHERE id = ?")
+        ->execute([$raw, $fid, (int) $a['id']]);
+
+    $have = [];
+    $q = $pdo->prepare("SELECT id, gd_id, thumb, sort_order FROM album_photos WHERE album_id = ? AND gd_id <> ''");
+    $q->execute([(int) $a['id']]);
+    foreach ($q->fetchAll() as $r) $have[$r['gd_id']] = $r;
+
+    $ins = $pdo->prepare("INSERT INTO album_photos (album_id, file, thumb, w, h, bytes, caption, sort_order, src, gd_id)
+                          VALUES (?, '', ?, ?, ?, ?, ?, ?, 'gd', ?)");
+    $upd = $pdo->prepare("UPDATE album_photos SET thumb = ?, w = ?, h = ?, bytes = ?, sort_order = ? WHERE id = ?");
+    $srt = $pdo->prepare("UPDATE album_photos SET sort_order = ? WHERE id = ?");
+
+    $limit = 8; $done = 0; $left = 0; $added = 0; $fail = 0; $ord = 0; $ids = [];
+    foreach ($files as $f) {
+        $ord++;
+        $ids[] = $f['id'];
+        $row = isset($have[$f['id']]) ? $have[$f['id']] : null;
+        $ok  = $row && $row['thumb'] !== '' && is_file($dir . '/' . $row['thumb']);
+        if ($ok) {
+            if ((int) $row['sort_order'] !== $ord) $srt->execute([$ord, (int) $row['id']]);
+            continue;
+        }
+        if ($done >= $limit) { $left++; continue; }
+        $done++;
+        $t   = gd_save_thumb($dir, $f['id']);
+        $cap = mb_substr((string) $f['name'], 0, 300);
+        if ($t) {
+            if ($row) $upd->execute([$t[0], $t[1], $t[2], $t[3], $ord, (int) $row['id']]);
+            else    { $ins->execute([(int) $a['id'], $t[0], $t[1], $t[2], $t[3], $cap, $ord, $f['id']]); $added++; }
+        } else {
+            $fail++;
+            if (!$row) { $ins->execute([(int) $a['id'], '', 0, 0, 0, $cap, $ord, $f['id']]); $added++; }
+        }
+    }
+
+    $removed = 0;
+    if ($left === 0) {
+        foreach ($have as $gid => $row) {
+            if (in_array($gid, $ids, true)) continue;
+            if ($row['thumb'] !== '') @unlink($dir . '/' . $row['thumb']);
+            $pdo->prepare("DELETE FROM album_likes WHERE photo_id = ?")->execute([(int) $row['id']]);
+            $pdo->prepare("DELETE FROM album_picks WHERE photo_id = ?")->execute([(int) $row['id']]);
+            $pdo->prepare("DELETE FROM album_notes WHERE photo_id = ?")->execute([(int) $row['id']]);
+            $pdo->prepare("DELETE FROM album_photos WHERE id = ?")->execute([(int) $row['id']]);
+            $removed++;
+        }
+        $pdo->prepare("UPDATE album_albums SET synced_at = NOW(), updated_at = NOW() WHERE id = ?")->execute([(int) $a['id']]);
+    }
+
+    a_ok([
+        'total' => count($files), 'added' => $added, 'failed' => $fail,
+        'removed' => $removed, 'left' => $left, 'done' => $left === 0,
+    ]);
+}
+
 case 'view': {
     $a = albumByToken($pdo, $_GET['k'] ?? '');
     if (!$a) a_fail('Album không tồn tại hoặc đã bị gỡ', 404);

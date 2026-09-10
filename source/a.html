@@ -258,7 +258,7 @@ function slideHtml(p, i){
       '<button class="b like' + (p.liked ? ' on' : '') + '" onclick="like(' + i + ')"><span class="ic">' + SVG.heart(p.liked) + '</span><span class="n">' + (p.likes || '') + '</span></button>' +
       '<button class="b note' + (p.my_note ? ' on' : '') + '" onclick="openSheet(' + i + ')"><span class="ic">' + SVG.note(!!p.my_note) + '</span><span class="n"></span></button>' +
       '<button class="b pick' + (p.picked ? ' on' : '') + '" onclick="pick(' + i + ')"><span class="ic">' + SVG.pick(p.picked) + '</span><span class="n"></span></button>' +
-      '<a class="b dl" href="' + esc(p.url) + '" download onclick="event.stopPropagation()"><span class="ic">' + SVG.down + '</span><span class="n"></span></a>' +
+      '<a class="b dl" href="' + esc(p.dl || p.url) + '" download onclick="event.stopPropagation()"><span class="ic">' + SVG.down + '</span><span class="n"></span></a>' +
     '</div></div>';
 }
 
