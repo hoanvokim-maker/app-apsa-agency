@@ -184,7 +184,8 @@
   function mount() {
     var css = document.createElement('style');
     css.textContent =
-      '.pywrap{display:flex;flex-direction:column;gap:3px;align-items:stretch}' +
+      '.pywrap{display:flex;flex-direction:column;gap:3px;align-items:stretch;min-width:136px}' +
+      '.pywrap .pbtn{display:flex;align-items:center;justify-content:center;width:100%;min-height:30px;padding:0 10px;border-radius:9px;font-size:11.5px;font-weight:700;line-height:1}' +
       'span.pbtn{display:block;text-align:center;font-size:11.5px;font-weight:700;padding:4px 8px;border-radius:8px;' +
       'border:1px solid rgba(255,255,255,.14);color:#9aa0a6;background:rgba(255,255,255,.03)}' +
       '.pysm{font:inherit;font-size:11px;font-weight:700;padding:3px 7px;border-radius:7px;cursor:pointer;' +

@@ -128,10 +128,12 @@
   .ib:hover { color: var(--text); background: var(--bg4); border-color: var(--border); }
   .ib.del:hover { color: #ffb3b3; border-color: rgba(255,77,77,.35); }
   .ib.off { opacity: .3; cursor: not-allowed; }
-    /* APSA1843: nut QR to hon + chu thich duoi ma QR */
-    .ib.qrbig { width: 54px; height: 54px; border-radius: 14px; font-size: 24px; line-height: 1;
-      color: #dff20d; border-color: rgba(223,242,13,.42); background: rgba(223,242,13,.07); }
-    .ib.qrbig:hover { color: #dff20d; background: rgba(223,242,13,.15); border-color: rgba(223,242,13,.7); }
+    /* APSA1844: hang nut thao tac deu nhau, nut QR noi bat bang mau */
+    .ib { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px;
+      border-radius: 11px; padding: 0; }
+    .ib svg { display: block; }
+    .ib.qrbig { color: #dff20d; border-color: rgba(223,242,13,.40); background: rgba(223,242,13,.07); }
+    .ib.qrbig:hover { color: #dff20d; background: rgba(223,242,13,.15); border-color: rgba(223,242,13,.66); }
     .ib.qrbig.off { color: var(--text3); background: transparent; border-color: var(--border); }
     #qCap { margin-top: 10px; text-align: center; }
     #qCap .qc-a { font-size: 16px; font-weight: 800; color: #dff20d; }
@@ -852,9 +854,9 @@ el('mDel').addEventListener('click', function (e) { if (e.target === this) this.
 
 load();
 </script>
-<script src="/chi-phi-group.js?v=7"></script>
-<script src="/exp-pay.js?v=4"></script>
-<script src="/exp-due.js?v=6"></script>
+<script src="/chi-phi-group.js?v=8"></script>
+<script src="/exp-pay.js?v=5"></script>
+<script src="/exp-due.js?v=7"></script>
 <script src="/exp-acb.js?v=3"></script>
 <script>
 /* APSA1835: cac add-on (chi-phi-group / exp-due...) boc lai render(), nen mo khoan da tra 7 ngay sau cung */

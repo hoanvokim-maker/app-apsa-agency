@@ -165,7 +165,7 @@
     'tr.due-orange > td:first-child{box-shadow:inset 3px 0 0 #f97316}' +
     'tr.due-red:hover > td{background:rgba(239,68,68,.32)!important}' +
     'tr.due-orange:hover > td{background:rgba(249,115,22,.26)!important}' +
-    '.pydue{display:block;margin-top:4px;font-size:10.5px;line-height:1.3;' +
+    '.pydue{display:block;margin-top:1px;text-align:center;font-size:10.5px;line-height:1.3;' +
     'color:var(--text3,#777);white-space:nowrap}' +
     '.pydue.due-red{color:#fca5a5;font-weight:600}' +
     '.pydue.due-orange{color:#fdba74;font-weight:600}' +
@@ -338,7 +338,7 @@
   css.textContent =
     'tr.rowlock input.pin{cursor:not-allowed;opacity:.7}' +
     'tr.rowlock button.ib[onclick^="openEdit"],' +
-    'tr.rowlock button.ib[onclick^="askDel"]{display:none}';
+    'tr.rowlock button.ib[onclick^="askDel"]{visibility:hidden}';
   (document.head || document.documentElement).appendChild(css);
   if (document.readyState !== 'loading') setTimeout(lockRows, 1000);
 })();

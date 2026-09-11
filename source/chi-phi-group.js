@@ -209,7 +209,7 @@
       '<td class="num"><b>' + fmt(amt(r)) + '</b></td>' +
       '<td>' + (window.payCell ? window.payCell(r) : '') + '</td>' +
       '<td style="white-space:nowrap;text-align:right">' +
-        '<button class="ib qrbig' + (canQr ? '' : ' off') + '" title="' + (canQr ? 'Mã QR chuyển khoản' : (masked ? 'Không có quyền xem STK' : 'Chưa có số tài khoản')) + '" onclick="openQr(' + r.id + ')">▦</button>' +
+        '<button class="ib qrbig' + (canQr ? '' : ' off') + '" title="' + (canQr ? 'Mã QR chuyển khoản' : (masked ? 'Không có quyền xem STK' : 'Chưa có số tài khoản')) + '" onclick="openQr(' + r.id + ')"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20h.01"/></svg></button>' +
         '<button class="ib" title="Sửa" onclick="openEdit(' + r.id + ')">✎</button>' +
         '<button class="ib del" title="Xoá" onclick="askDel(' + r.id + ')">🗑</button>' +
       '</td></tr>';
