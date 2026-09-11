@@ -72,30 +72,21 @@
   function redraw() { if (window.render) window.render(); }
 
   /* ── ô trạng thái ─────────────────────────────────────── */
-  window.payCell = function (r) {
-    var p = PINFO[String(r.id)] || {};
-    var paid = Number(r.paid) === 1;
-    var h = '<div class="pywrap">';
+    window.payCell = function (r) {
+  /* APSA1843: chi con 1 o trang thai - cac thao tac (yeu cau TT / dinh kem UNC) nam trong dialog QR */
+  var p = PINFO[String(r.id)] || {};
+  var h = '<div class="pywrap">';
+  if (Number(r.paid) === 1) {
+    h += '<button class="pbtn on" title="' + esc('Da tra - ' + (p.paid_by || '') + (p.paid_at ? ' - ' + dt(p.paid_at) : '') + ' - bam de bo danh dau') + '" onclick="payUnmark(' + r.id + ')">\u2713 \u0110\xe3 tr\u1ea3</button>';
+  } else if (p.pay_req_at) {
+    h += '<span class="pbtn req" title="' + esc('Da yeu cau boi ' + (p.pay_req_by || '') + ' - ' + dt(p.pay_req_at)) + '">\u26a1 \u0110\xe3 y\xeau c\u1ea7u</span>';
+  } else {
+    h += '<span class="pbtn">Ch\u01b0a tr\u1ea3</span>';
+  }
+  return h + '</div>';
+};
+  window.payInfoOf = function (id) { return PINFO[String(id)] || {}; };
 
-    if (paid) {
-      h += '<button class="pbtn on" title="' + esc('Đã trả · ' + (p.paid_by || '') + (p.paid_at ? ' · ' + dt(p.paid_at) : '') + ' — bấm để bỏ đánh dấu') +
-           '" onclick="payUnmark(' + r.id + ')">✓ Đã trả</button>';
-      h += Number(p.has_proof)
-        ? '<button class="pysm ok" title="' + esc('Xem Ủy nhiệm chi: ' + (p.proof_name || '')) + '" onclick="payProof(' + r.id + ')">📎 Xem UNC</button>'
-        : '<button class="pysm up" title="Đính kèm Ủy nhiệm chi" onclick="payMark(' + r.id + ')">📎 Thêm UNC</button>';
-      return h + '</div>';
-    }
-
-    if (p.pay_req_at) {
-      h += '<span class="pbtn req" title="' + esc('Đã yêu cầu bởi ' + (p.pay_req_by || '') + ' · ' + dt(p.pay_req_at)) + '">⏳ Đã yêu cầu</span>';
-      h += '<button class="pysm" title="Gửi lại yêu cầu qua Zalo" onclick="payReq(' + r.id + ',1)">↻ Gửi lại</button>';
-    } else {
-      h += '<span class="pbtn">Chưa trả</span>';
-      h += '<button class="pysm go" title="Gửi yêu cầu thanh toán qua Zalo" onclick="payReq(' + r.id + ',0)">⚡ Yêu cầu TT</button>';
-    }
-    h += '<button class="pysm up" title="Đã chuyển khoản rồi — đính kèm Ủy nhiệm chi" onclick="payMark(' + r.id + ')">📎 Đã CK</button>';
-    return h + '</div>';
-  };
 
   /* ── gửi yêu cầu thanh toán ───────────────────────────── */
   window.payReq = function (id, again) {

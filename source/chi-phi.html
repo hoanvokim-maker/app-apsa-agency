@@ -128,6 +128,16 @@
   .ib:hover { color: var(--text); background: var(--bg4); border-color: var(--border); }
   .ib.del:hover { color: #ffb3b3; border-color: rgba(255,77,77,.35); }
   .ib.off { opacity: .3; cursor: not-allowed; }
+    /* APSA1843: nut QR to hon + chu thich duoi ma QR */
+    .ib.qrbig { width: 54px; height: 54px; border-radius: 14px; font-size: 24px; line-height: 1;
+      color: #dff20d; border-color: rgba(223,242,13,.42); background: rgba(223,242,13,.07); }
+    .ib.qrbig:hover { color: #dff20d; background: rgba(223,242,13,.15); border-color: rgba(223,242,13,.7); }
+    .ib.qrbig.off { color: var(--text3); background: transparent; border-color: var(--border); }
+    #qCap { margin-top: 10px; text-align: center; }
+    #qCap .qc-a { font-size: 16px; font-weight: 800; color: #dff20d; }
+    #qCap .qc-i { margin-top: 6px; font-size: 13px; line-height: 1.45; color: var(--text); word-break: break-word; }
+    #qCap .qc-i b { display: block; font-size: 10px; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--text3); margin-bottom: 3px; }
   .ck { width: 15px; height: 15px; accent-color: var(--green); cursor: pointer; }
   .empty { padding: 54px 20px; text-align: center; color: var(--text3); font-size: 13px; }
   .empty b { display: block; color: var(--text2); font-size: 15px; font-weight: 700; margin-bottom: 6px; }
@@ -316,7 +326,8 @@
     </div>
     <div class="modal-acts">
       <button class="btn" onclick="closeQr()">Đóng</button>
-      <button class="btn" id="qUncView" style="display:none" onclick="qrUncView()">📎 Xem UNC</button>
+      <button class="btn" id="qReq" style="display:none" onclick="qrReq()">⚡ Yêu cầu TT</button>
+          <button class="btn" id="qUncView" style="display:none" onclick="qrUncView()">📎 Xem UNC</button>
       <input type="file" id="qUnc" accept="image/png,image/jpeg,image/webp,application/pdf" style="display:none" onchange="qrUncPick(this)" />
       <button class="btn primary" id="qPaid" onclick="document.getElementById('qUnc').click()">📎 Đính kèm UNC &amp; đánh dấu đã trả</button>
     </div>
@@ -708,8 +719,9 @@ function doDel() {
 /* ── QR ──────────────────────────────────────────────────── */
 function openQr(id) {
   var r = byId(id); if (!r) return;
-  if (Number(r.bank_masked) === 1) { toast('Số tài khoản cá nhân chỉ Admin xem được.', true); return; }
-  if (!r.bank_account) { toast('Khoản chi này chưa có số tài khoản — chọn người nhận trước.', true); return; }
+  /* APSA1843: khong chan nua - van mo dialog de yeu cau TT / dinh kem UNC */
+  var noStk = Number(r.bank_masked) === 1;
+  var noAcc = !noStk && !r.bank_account;
   qrRow = r;
   var B = window.EXP_BANKS || [];
   var bin = (window.expFindBin ? window.expFindBin(r.bank_name) : '') || '';
@@ -729,6 +741,22 @@ function openQr(id) {
   var hasP = Number(r.has_proof) === 1 || !!r.proof_file;   /* APSA1834: UNC */
   el('qPaid').style.display    = hasP ? 'none' : 'inline-flex';   /* APSA1838: 1 nut = dinh kem UNC + da tra */
   el('qUncView').style.display = hasP ? 'inline-flex' : 'none';
+  /* APSA1843: dua thao tac tu dong chi vao dialog QR */
+  var pi = (typeof window.payInfoOf === 'function') ? window.payInfoOf(r.id) : {};
+  var reqAt = pi.pay_req_at || r.pay_req_at || '';
+  var bq = el('qReq');
+  if (bq) {
+    bq.style.display = Number(r.paid) === 1 ? 'none' : 'inline-flex';
+    bq.textContent = reqAt ? '\u21bb G\u1eedi l\u1ea1i y\xeau c\u1ea7u' : '\u26a1 Y\xeau c\u1ea7u TT';
+    bq.title = reqAt ? 'G\u1eedi l\u1ea1i y\xeau c\u1ea7u thanh to\xe1n qua Zalo' : 'G\u1eedi y\xeau c\u1ea7u thanh to\xe1n qua Zalo';
+    bq.setAttribute('data-again', reqAt ? '1' : '0');
+  }
+  el('qPaid').textContent = Number(r.paid) === 1
+    ? '\ud83d\udcce \u0110\xednh k\xe8m UNC'
+    : '\ud83d\udcce \u0110\xednh k\xe8m UNC & \u0111\xe1nh d\u1ea5u \u0111\xe3 tr\u1ea3';
+  ['qBank', 'qAcc', 'qName'].forEach(function (i) {
+    var e = el(i); if (e && e.parentNode) e.parentNode.style.display = noStk ? 'none' : '';
+  });
   el('qUnc').value = '';
   el('mQr').classList.toggle('qr-pers', pers);
   el('mQr').classList.toggle('qr-corp', !pers);
@@ -736,6 +764,17 @@ function openQr(id) {
   el('qSub').appendChild(tg);
   el('mQr').classList.add('on');
   qrDraw();
+  if (noStk || noAcc) {
+    el('qImg').innerHTML = '<div class="ac-e">' + (noStk
+      ? 'Kh\xf4ng c\xf3 quy\u1ec1n xem s\u1ed1 t\xe0i kho\u1ea3n.'
+      : 'Kho\u1ea3n chi n\xe0y ch\u01b0a c\xf3 s\u1ed1 t\xe0i kho\u1ea3n.') +
+      '<br/>V\u1eabn c\xf3 th\u1ec3 y\xeau c\u1ea7u TT ho\u1eb7c \u0111\xednh k\xe8m UNC.</div>';
+  }
+}
+function qrReq() {
+  if (!qrRow || typeof window.payReq !== 'function') return;
+  var b = el('qReq');
+  window.payReq(qrRow.id, b && b.getAttribute('data-again') === '1' ? 1 : 0);
 }
 function closeQr() { el('mQr').classList.remove('on'); qrRow = null; }
 function qrDraw() {
@@ -813,9 +852,9 @@ el('mDel').addEventListener('click', function (e) { if (e.target === this) this.
 
 load();
 </script>
-<script src="/chi-phi-group.js?v=6"></script>
-<script src="/exp-pay.js?v=3"></script>
-<script src="/exp-due.js?v=5"></script>
+<script src="/chi-phi-group.js?v=7"></script>
+<script src="/exp-pay.js?v=4"></script>
+<script src="/exp-due.js?v=6"></script>
 <script src="/exp-acb.js?v=3"></script>
 <script>
 /* APSA1835: cac add-on (chi-phi-group / exp-due...) boc lai render(), nen mo khoan da tra 7 ngay sau cung */

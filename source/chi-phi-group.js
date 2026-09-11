@@ -209,7 +209,7 @@
       '<td class="num"><b>' + fmt(amt(r)) + '</b></td>' +
       '<td>' + (window.payCell ? window.payCell(r) : '') + '</td>' +
       '<td style="white-space:nowrap;text-align:right">' +
-        '<button class="ib' + (canQr ? '' : ' off') + '" title="' + (canQr ? 'Mã QR chuyển khoản' : (masked ? 'Không có quyền xem STK' : 'Chưa có số tài khoản')) + '" onclick="openQr(' + r.id + ')">▦</button>' +
+        '<button class="ib qrbig' + (canQr ? '' : ' off') + '" title="' + (canQr ? 'Mã QR chuyển khoản' : (masked ? 'Không có quyền xem STK' : 'Chưa có số tài khoản')) + '" onclick="openQr(' + r.id + ')">▦</button>' +
         '<button class="ib" title="Sửa" onclick="openEdit(' + r.id + ')">✎</button>' +
         '<button class="ib del" title="Xoá" onclick="askDel(' + r.id + ')">🗑</button>' +
       '</td></tr>';

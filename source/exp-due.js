@@ -245,6 +245,23 @@
     qrPng();
   }
 
+  /* APSA1843: chu thich duoi ma QR - so tien + noi dung chuyen khoan */
+  function qrCap() {
+    var wrap = document.getElementById('qImg'); if (!wrap) return;
+    var old = document.getElementById('qCap'); if (old && old.parentNode) old.parentNode.removeChild(old);
+    var img = wrap.querySelector('img'); if (!img || !img.parentNode) return;
+    var gv = function (i) { var e = document.getElementById(i); return e ? String(e.value || '').trim() : ''; };
+    var hesc = function (t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
+    var amt = gv('qAmt'), info = gv('qInfo');
+    var h = (amt ? '<div class="qc-a">' + hesc(amt) + ' \u0111</div>' : '') +
+            (info ? '<div class="qc-i"><b>N\u1ed9i dung chuy\u1ec3n kho\u1ea3n</b>' + hesc(info) + '</div>' : '');
+    if (!h) return;
+    var d = document.createElement('div');
+    d.id = 'qCap';
+    d.innerHTML = h;
+    img.parentNode.insertBefore(d, img.nextSibling);
+  }
+
   var _open = window.openQr;
   if (typeof _open === 'function') {
     window.openQr = function () {
@@ -257,7 +274,7 @@
   if (typeof _draw === 'function') {
     window.qrDraw = function () {
       var out = _draw.apply(this, arguments);
-      setTimeout(qrPng, 0);
+      setTimeout(function () { qrPng(); qrCap(); }, 0);
       return out;
     };
   }
