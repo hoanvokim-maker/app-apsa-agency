@@ -87,7 +87,11 @@
     for (var g = 0; g < good.length; g++) {
       var x = good[g];
       var bk = map[String(x.bank_name).trim()];
-      var ct = noDia((x.code || '') + ' ' + (x.name || x.payee_name || '')).toUpperCase().slice(0, 45);
+      /* APSA1840: lay dung dong Noi dung thanh toan (pay_memo); ca nhan chua co thi mac dinh */
+      var pers = x.payee_type === 'user' || (x.payee_type === 'sup' && String(x.payee_kind || '') === 'person');
+      var memo = String(x.pay_memo || '').trim();
+      if (!memo) memo = pers ? 'Vo Kim Hoan chuyen khoan' : ((x.code || '') + ' ' + (x.name || x.payee_name || ''));
+      var ct = noDia(memo).toUpperCase().replace(/[^A-Z0-9 \-\.\/]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 45);
       aoa.push([g + 1, noDia(x.bank_holder || x.payee_name), bk ? bk.code : '',
         digits(x.bank_account), '', money(x), ct]);
     }

@@ -627,6 +627,7 @@ function rowHtml(r, showWho) {
   const acts = [];
   const mine = (r.user_id === ME.id);
   if (r.status === 'pending' && mine)        acts.push('<button class="btn sm" onclick="openForm(' + r.id + ')">Sửa</button>');
+  if (r.status === 'approved' && (mine || IS_ADMIN)) acts.push('<button class="btn sm" onclick="openForm(' + r.id + ')" title="Đổi ngày nghỉ đã duyệt">Đổi ngày</button>');   /* APSA1841 */
   if (r.status === 'pending' && IS_ADMIN)    acts.push('<button class="btn sm primary" onclick="openDecide(' + r.id + ',\'approve\')">Duyệt</button>');
   if (r.status === 'pending' && IS_ADMIN)    acts.push('<button class="btn sm danger" onclick="openDecide(' + r.id + ',\'reject\')">Từ chối</button>');
   if (r.status === 'pending' && mine)        acts.push('<button class="btn sm danger" onclick="cancelReq(' + r.id + ')">Huỷ</button>');
@@ -727,9 +728,9 @@ async function saveForm() {
   const btn = document.getElementById('fSave');
   btn.disabled = true;
   try {
-    await api('save', { body: body });
+    const _sv = await api('save', { body: body });
     closeModal();
-    toast(EDIT ? 'Đã lưu thay đổi.' : 'Đã gửi đơn — chờ Admin duyệt.');
+    toast((EDIT && _sv && _sv.message && _sv.message !== 'Đã lưu.') ? _sv.message : EDIT ? 'Đã lưu thay đổi.' : 'Đã gửi đơn — chờ Admin duyệt.');
     await reloadAll();
   } catch (e) { toast(e.message, true); }
   btn.disabled = false;

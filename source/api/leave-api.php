@@ -893,7 +893,12 @@ case 'save':
         $r = lv_row($id);
         if (!$r) lv_fail('Không tìm thấy đơn.', 404);
         if ((int) $r['user_id'] !== $ME['id'] && !lv_is_admin()) lv_fail('Bạn chỉ sửa được đơn của mình.', 403);
-        if ($r['status'] !== 'pending') lv_fail('Đơn đã được xử lý, không sửa được nữa.', 423);
+        /* APSA1841: cho phep doi ngay ca khi don da duoc duyet */
+        if ($r['status'] !== 'pending' && $r['status'] !== 'approved') lv_fail('Đơn đã huỷ / từ chối, không sửa được nữa.', 423);
+        $wasApproved = ($r['status'] === 'approved');
+        $oldTxt      = lv_range_text($r);
+        $changed     = ($r['start_date'] !== $sDate || $r['end_date'] !== $eDate
+                     || $r['start_part'] !== $sPart || $r['end_part'] !== $ePart || $r['leave_type'] !== $type);
 
         $st = lv_pdo()->prepare(
             'UPDATE leave_requests SET leave_type=?, start_date=?, start_part=?, end_date=?, end_part=?,
@@ -901,7 +906,47 @@ case 'save':
         );
         $st->execute(array($type, $sDate, $sPart, $eDate, $ePart, $skipWe, $days, $reason, $handover, $now, $id));
 
-        lv_out(array('ok' => true, 'id' => $id, 'days' => $days, 'row' => lv_shape(lv_row($id))));
+        $msg = 'Đã lưu.';
+        if ($wasApproved && $changed) {
+            /* go lich Outlook cu (neu co) */
+            if ($r['cal_event_id'] !== '' && function_exists('mg_enabled') && mg_enabled()) {
+                try { mg_delete_event($r['cal_event_id']); } catch (Exception $e) {}
+            }
+            lv_pdo()->prepare("UPDATE leave_requests SET cal_event_id='', cal_status='', cal_link='' WHERE id=?")->execute(array($id));
+            $newRow = lv_row($id);
+            $newTxt = lv_range_text($newRow);
+
+            if (lv_is_admin()) {
+                /* Admin tu doi ngay: giu trang thai da duyet, day lai lich */
+                if (function_exists('mg_enabled') && mg_enabled()) {
+                    $cal = lv_push_calendar($newRow);
+                    lv_save_cal_result($id, $cal);
+                }
+                if ((int) $r['user_id'] !== $ME['id']) {
+                    lv_notify((int) $r['user_id'], 'leave_approved',
+                        'Đã đổi ngày ' . lv_doc_noun($type) . ' — ' . $r['user_name'],
+                        $ME['name'] . ' đã đổi ' . lv_doc_noun($type) . ' của bạn: ' . $oldTxt . ' → ' . $newTxt . ' (vẫn được duyệt).',
+                        '/leave.html?id=' . $id);
+                }
+                $msg = 'Đã đổi ngày và cập nhật lịch.';
+            } else {
+                /* Nhan vien doi ngay: quay ve cho duyet lai, bao Admin + leader */
+                lv_pdo()->prepare("UPDATE leave_requests SET status='pending', decided_by=NULL, decided_by_name='', decided_at=NULL, decide_note='' WHERE id=?")
+                        ->execute(array($id));
+                $lvTo = lv_admin_ids();
+                foreach (lv_lead_ids(isset($ME['pos']) ? $ME['pos'] : '') as $lvLid) {
+                    if (!in_array($lvLid, $lvTo, true)) $lvTo[] = $lvLid;
+                }
+                foreach ($lvTo as $aid) {
+                    if ($aid === $ME['id']) continue;
+                    lv_notify($aid, 'leave_new', 'Đổi ngày ' . lv_doc_noun($type) . ' — ' . $ME['name'],
+                        $ME['name'] . ' đổi ' . lv_doc_noun($type) . ' đã duyệt: ' . $oldTxt . ' → ' . $newTxt . '. Cần duyệt lại.',
+                        '/leave.html?id=' . $id);
+                }
+                $msg = 'Đã đổi ngày. Đơn chuyển về chờ duyệt lại.';
+            }
+        }
+        lv_out(array('ok' => true, 'id' => $id, 'days' => $days, 'message' => $msg, 'row' => lv_shape(lv_row($id))));
     }
 
     $st = lv_pdo()->prepare(
