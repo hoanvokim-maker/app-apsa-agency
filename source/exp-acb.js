@@ -80,7 +80,7 @@
     var miss = [];
     for (var m = 0; m < names.length; m++) if (!map[names[m]] || !map[names[m]].code) miss.push(names[m]);
 
-    try { await loadXlsx(); } catch (e) { say(e.message, 'err'); return; }
+    /* APSA1842: file .xls dung dinh dang mau ACB duoc tao o server (api/acb-xls.php); SheetJS chi la du phong */
 
     var aoa = [['TIÊU ĐỀ'],
       ['STT', 'Tên đơn vị thụ hưởng', 'Mã ngân hàng', 'Số tài khoản nhận', 'Số thẻ (ACB)', 'Số tiền', 'Nội dung']];
@@ -98,14 +98,32 @@
     aoa.push([]);
     aoa.push([NOTE]);
 
-    var ws = window.XLSX.utils.aoa_to_sheet(aoa);
-    ws['!cols'] = [{ wch: 6 }, { wch: 32 }, { wch: 14 }, { wch: 28 }, { wch: 7 }, { wch: 17 }, { wch: 26 }];
-    ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }];
-    var wb = window.XLSX.utils.book_new();
-    window.XLSX.utils.book_append_sheet(wb, ws, 'Chi Lo');
     var d = new Date();
     var pad = function (n) { return (n < 10 ? '0' : '') + n; };
-    window.XLSX.writeFile(wb, 'ACB_CHI_' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '.xlsx');
+    var fname = 'ACB_CHI_' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate());
+    var okXls = false;
+    try {
+      var resp = await fetch('./api/acb-xls.php', { method: 'POST', credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rows: aoa.slice(2, 2 + good.length) }) });
+      var ctype = String(resp.headers.get('content-type') || '');
+      if (ctype.indexOf('json') >= 0) { var jj = await resp.json(); throw new Error(jj.error || jj.message || 'Loi tao file'); }
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      var blob = await resp.blob();
+      var lnk = document.createElement('a'); var bu = URL.createObjectURL(blob);
+      lnk.href = bu; lnk.download = fname + '.xls'; document.body.appendChild(lnk); lnk.click();
+      setTimeout(function () { document.body.removeChild(lnk); URL.revokeObjectURL(bu); }, 3000);
+      okXls = true;
+    } catch (e) { console.warn('acb-xls: dung du phong SheetJS', e); }
+    if (!okXls) {
+      try { await loadXlsx(); } catch (e) { say(e.message, 'err'); return; }
+      var ws = window.XLSX.utils.aoa_to_sheet(aoa);
+      ws['!cols'] = [{ wch: 6 }, { wch: 32 }, { wch: 14 }, { wch: 28 }, { wch: 7 }, { wch: 17 }, { wch: 26 }];
+      ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }];
+      var wb = window.XLSX.utils.book_new();
+      window.XLSX.utils.book_append_sheet(wb, ws, 'Chi Lo');
+              window.XLSX.writeFile(wb, fname + '.xlsx');
+    }
 
     var msg = 'Đã xuất ' + good.length + ' dòng';
     if (noPayee.length) msg += ' · bỏ qua ' + noPayee.length + ' dòng chưa gán người nhận';
