@@ -1,5 +1,5 @@
 {
-    "version": "1.9.9",
+    "version": "1.9.10",
     "updated": "2026-09-11",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-11",
             "note": "Phiên bản 1.9",
             "items": [
+                {
+                    "d": "2026-09-11",
+                    "v": "1.9.10",
+                    "t": "Bao gia - Rate Card picker: tim khong dau va khong ke thu tu tu, them nhom Tat ca + VFR, an hang da xoa, hien so hang muc",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-11",
                     "v": "1.9.9",

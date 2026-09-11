@@ -3345,23 +3345,28 @@ case 'duplicate': {
 }
 
 case 'ratecard': {
-    $sheet = preg_replace('/[^a-z]/', '', (string)($_GET['sheet'] ?? 'media'));
-    if ($sheet === '') $sheet = 'media';
-    try {
-        $st = $pdo->prepare("SELECT id, cat_code, cat_vn, cat_en, item_vn, item_en, desc_vn, desc_en,
-                                    unit_vn, unit_en, basic, standard, premium
-                               FROM ratecard_items WHERE sheet_key = ? ORDER BY cat_code ASC, sort_order ASC");
-        $st->execute([$sheet]);
-        $rows = $st->fetchAll();
-    } catch (PDOException $e) { $rows = []; }
-    foreach ($rows as &$r) {
-        $r['id']       = (int)$r['id'];
-        $r['basic']    = (float)$r['basic'];
-        $r['standard'] = (float)$r['standard'];
-        $r['premium']  = (float)$r['premium'];
-    }
-    unset($r);
-    q_ok($rows);
+        /* APSA1845: sheet=all lay het moi nhom; bo qua hang da xoa */
+        $sheet = preg_replace('/[^a-z]/', '', (string)($_GET['sheet'] ?? 'media'));
+        if ($sheet === '') $sheet = 'media';
+        $all = ($sheet === 'all');
+        try {
+            $sql = "SELECT id, sheet_key, cat_code, cat_vn, cat_en, item_vn, item_en, desc_vn, desc_en,
+                           unit_vn, unit_en, basic, standard, premium
+                    FROM ratecard_items WHERE deleted_at IS NULL"
+                 . ($all ? "" : " AND sheet_key = ?")
+                 . " ORDER BY sheet_key ASC, cat_code ASC, sort_order ASC";
+            $st = $pdo->prepare($sql);
+            $st->execute($all ? array() : array($sheet));
+            $rows = $st->fetchAll();
+        } catch (PDOException $e) { $rows = []; }
+        foreach ($rows as &$r) {
+            $r['id']       = (int)$r['id'];
+            $r['basic']    = (float)$r['basic'];
+            $r['standard'] = (float)$r['standard'];
+            $r['premium']  = (float)$r['premium'];
+        }
+        unset($r);
+        q_ok($rows);
 }
 
 /* ── Tạo file .eml (mail nháp Outlook, đính kèm sẵn Excel) ────────── */

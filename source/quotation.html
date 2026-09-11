@@ -1424,11 +1424,13 @@ table.chktbl th:last-child{ width:34px; }
       <div class="fg">
         <label>Nhóm bảng giá</label>
         <select id="rcSheet" onchange="loadRc()">
-          <option value="media">Media</option>
-          <option value="event">Event</option>
-          <option value="design">Design</option>
-          <option value="printing">Printing</option>
-        </select>
+            <option value="all">— Tất cả nhóm —</option>
+            <option value="media">Media</option>
+            <option value="event">Event</option>
+            <option value="design">Design</option>
+            <option value="printing">Printing</option>
+            <option value="vfr">VFR Products</option>
+          </select>
       </div>
       <div class="fg">
         <label>Hạng giá</label>
@@ -1439,7 +1441,7 @@ table.chktbl th:last-child{ width:34px; }
         </select>
       </div>
     </div>
-    <div class="fg"><label>Tìm hạng mục</label><input type="text" id="rcQ" oninput="renderRc()" placeholder="VD: quay phim, photographer, livestream..." /></div>
+    <div class="fg"><label>Tìm hạng mục <span id="rcCount" style="float:right;font-weight:600;opacity:.7"></span></label><input type="text" id="rcQ" oninput="renderRc()" placeholder="Gõ có dấu hay không dấu đều được — VD: man hinh led, quay phim" /></div>
     <div class="rc-list" id="rcList"></div>
   </div>
 </div>
@@ -4966,27 +4968,46 @@ async function openRc(){
   await loadRc();
 }
 function closeRc(){ document.getElementById('rcOv').classList.remove('open'); }
+/* APSA1845: tim khong dau, khong ke thu tu tu, tim ca nhom/DVT/mo ta */
+const RC_SHEETS = { media: 'Media', event: 'Sự kiện', design: 'Thiết kế', printing: 'In ấn', vfr: 'VFR' };
+function rcNorm(s){
+  s = String(s == null ? '' : s).toLowerCase();
+  if (s.normalize) s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return s.replace(/đ/g, 'd').replace(/[^a-z0-9]+/g, ' ').trim();
+}
 async function loadRc(){
   const sheet = document.getElementById('rcSheet').value;
   document.getElementById('rcList').innerHTML = '<div class="rc-item"><span class="n">Đang tải…</span></div>';
   try { RC = await api(API, 'ratecard', { query: '&sheet=' + sheet }); }
   catch(e){ RC = []; }
+  RC.forEach(r => {
+    r._hay = rcNorm([r.item_vn, r.item_en, r.cat_code, r.cat_vn, r.cat_en,
+                     r.desc_vn, r.desc_en, r.unit_vn, r.unit_en,
+                     RC_SHEETS[r.sheet_key] || '', r.sheet_key || ''].join(' '));
+  });
   renderRc();
 }
 function renderRc(){
-  const q = document.getElementById('rcQ').value.toLowerCase().trim();
+  const toks = rcNorm(document.getElementById('rcQ').value).split(' ').filter(Boolean);
   const tier = document.getElementById('rcTier').value;
-  const rows = RC.filter(r => {
-    if (!q) return true;
-    return ((r.item_vn||'') + ' ' + (r.item_en||'') + ' ' + (r.cat_vn||'') + ' ' + (r.desc_vn||'')).toLowerCase().includes(q);
-  }).slice(0, 200);
-  document.getElementById('rcList').innerHTML = rows.length ? rows.map((r,i) =>
-    '<div class="rc-item" onclick="pickRc(' + r.id + ')">' +
+  const multi = document.getElementById('rcSheet').value === 'all';
+  const hit = RC.filter(r => toks.every(t => (r._hay || '').indexOf(t) >= 0));
+  const rows = hit.slice(0, 400);
+  const cnt = document.getElementById('rcCount');
+  if (cnt) cnt.textContent = !RC.length ? ''
+    : (hit.length === RC.length ? RC.length + ' hạng mục' : hit.length + '/' + RC.length + ' hạng mục');
+  document.getElementById('rcList').innerHTML = rows.length ? rows.map(r => {
+    const price = Number(r[tier]) || 0;
+    const sub = [multi ? (RC_SHEETS[r.sheet_key] || r.sheet_key || '') : '',
+                 r.cat_vn || r.cat_en || '',
+                 r.unit_vn ? 'ĐVT: ' + r.unit_vn : ''].filter(Boolean).join(' · ');
+    return '<div class="rc-item" onclick="pickRc(' + r.id + ')">' +
       '<div class="n"><b>' + esc(r.item_vn || r.item_en) + '</b>' +
-        '<div class="xs">' + esc(r.cat_vn || r.cat_en || '') + (r.unit_vn ? ' · ĐVT: ' + esc(r.unit_vn) : '') + '</div></div>' +
-      '<div class="p">' + fmt(r[tier]) + ' đ</div>' +
-    '</div>').join('')
-    : '<div class="rc-item"><span class="n xs">Không tìm thấy hạng mục nào.</span></div>';
+      (sub ? '<div class="xs">' + esc(sub) + '</div>' : '') + '</div>' +
+      '<div class="p">' + (price ? fmt(price) + ' đ' : '<span class="xs">chưa có giá</span>') + '</div>' +
+    '</div>';
+  }).join('')
+  : '<div class="rc-item"><span class="n xs">Không tìm thấy hạng mục nào — thử gõ ít từ hơn hoặc chọn nhóm “Tất cả”.</span></div>';
 }
 function pickRc(id){
   const r = RC.find(x => x.id === id); if (!r) return;
