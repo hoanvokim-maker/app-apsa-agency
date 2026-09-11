@@ -210,8 +210,8 @@
       '<td>' + (window.payCell ? window.payCell(r) : '') + '</td>' +
       '<td style="white-space:nowrap;text-align:right">' +
         '<button class="ib qrbig' + (canQr ? '' : ' off') + '" title="' + (canQr ? 'Mã QR chuyển khoản' : (masked ? 'Không có quyền xem STK' : 'Chưa có số tài khoản')) + '" onclick="openQr(' + r.id + ')"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20h.01"/></svg></button>' +
-        '<button class="ib" title="Sửa" onclick="openEdit(' + r.id + ')">✎</button>' +
-        '<button class="ib del" title="Xoá" onclick="askDel(' + r.id + ')">🗑</button>' +
+        '<button class="ib" title="Sửa" onclick="openEdit(' + r.id + ')"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2.12 2.12 0 0 0-3-3L5 17v3z"/><path d="M13.5 6.5l4 4"/></svg></button>' +
+        '<button class="ib del" title="Xoá" onclick="askDel(' + r.id + ')"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M10 4h4a1 1 0 0 1 1 1v2H9V5a1 1 0 0 1 1-1z"/><path d="M6 7l1 12.1A2 2 0 0 0 9 21h6a2 2 0 0 0 2-1.9L18 7"/><path d="M10 11.5v6M14 11.5v6"/></svg></button>' +
       '</td></tr>';
   }
 

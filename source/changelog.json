@@ -1,5 +1,5 @@
 {
-    "version": "1.9.8",
+    "version": "1.9.9",
     "updated": "2026-09-11",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-11",
             "note": "Phiên bản 1.9",
             "items": [
+                {
+                    "d": "2026-09-11",
+                    "v": "1.9.9",
+                    "t": "Chi phi: icon Sua/Xoa doi sang SVG cung bo voi icon QR, 3 nut thang hang tuyet doi",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-11",
                     "v": "1.9.8",
