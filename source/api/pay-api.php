@@ -54,6 +54,67 @@ function py_me(PDO $pdo) {
         return $st->fetch() ?: null;
     } catch (PDOException $e) { return null; }
 }
+/* APSA1839: link cong khai co token (khong can dang nhap) de Zalo tai anh UNC */
+function py_proof_token($id, $file)
+{
+    $sec = (defined('DB_PASS') ? DB_PASS : '') . '|apsa-unc-v1';
+    return substr(hash_hmac('sha256', (int) $id . '|' . (string) $file, $sec), 0, 32);
+}
+if ((isset($_GET['action']) ? (string) $_GET['action'] : '') === 'proof-pub') {
+    $pid = (int) (isset($_GET['id']) ? $_GET['id'] : 0);
+    $tok = (string) (isset($_GET['t']) ? $_GET['t'] : '');
+    $st  = $pdo->prepare("SELECT proof_file, proof_name, proof_mime FROM `quotation_expenses` WHERE id = ?");
+    $st->execute(array($pid));
+    $pr  = $st->fetch();
+    if (!$pr || !$pr['proof_file'] || $tok === '' || !hash_equals(py_proof_token($pid, $pr['proof_file']), $tok)) { http_response_code(404); exit('not found'); }
+    $pp = PY_DIR . '/' . $pr['proof_file'];
+    if (!is_file($pp)) { http_response_code(404); exit('not found'); }
+    header('Content-Type: ' . ($pr['proof_mime'] ?: 'application/octet-stream'));
+    header('Content-Length: ' . filesize($pp));
+    header('Content-Disposition: inline; filename="' . preg_replace('/[^\w.\- ]/u', '', $pr['proof_name'] ?: basename($pp)) . '"');
+    header('Cache-Control: private, max-age=600');
+    readfile($pp);
+    exit;
+}
+
+/* APSA1839: bao Zalo cho nguoi tao khoan chi: da thanh toan + kem anh UNC */
+function py_notify_paid(PDO $pdo, $id, $fname, $mime, $now, $byName)
+{
+    try {
+        if (!function_exists('zb_api') || !function_exists('zb_send')) return;
+        $st = $pdo->prepare("SELECT e.*, q.code AS q_code, q.title AS q_title FROM `quotation_expenses` e
+                              LEFT JOIN `quotations` q ON q.id = e.quotation_id WHERE e.id = ?");
+        $st->execute(array((int) $id));
+        $r = $st->fetch();
+        if (!$r) return;
+        $uid = (int) (isset($r['created_by']) ? $r['created_by'] : 0);
+        if ($uid <= 0) return;
+        $u = $pdo->prepare("SELECT zalo_chat_id, display_name FROM `app_users` WHERE id = ? AND active = 1");
+        $u->execute(array($uid));
+        $u = $u->fetch();
+        if (!$u || trim((string) $u['zalo_chat_id']) === '') return;
+
+        $pub = 'https://app.apsa.agency/api/pay-api.php?action=proof-pub&id=' . (int) $id . '&t=' . py_proof_token($id, $fname);
+        $lines = array(
+            '✅ Đã thanh toán — có UNC đính kèm',
+            'Dự án: ' . $r['q_code'] . ($r['q_title'] ? ' — ' . $r['q_title'] : ''),
+            'Hạng mục: ' . $r['name'],
+        );
+        if ($r['payee_name']) $lines[] = 'Người nhận: ' . $r['payee_name'];
+        $lines[] = 'Số tiền: ' . py_money(py_amount($r));
+        $lines[] = 'Người thanh toán: ' . $byName . ' · ' . date('d/m/Y H:i', strtotime($now));
+        $lines[] = '';
+        $lines[] = 'File UNC: ' . $pub;
+        $text = implode("\n", $lines);
+
+        $res = null;
+        if (strpos((string) $mime, 'image/') === 0) {
+            $res = zb_api('sendPhoto', array('chat_id' => $u['zalo_chat_id'], 'photo' => $pub, 'caption' => $text));
+        }
+        if (!$res || empty($res['ok'])) zb_send($u['zalo_chat_id'], $text);
+    } catch (Exception $e) {} catch (Throwable $e) {}
+}
+
 $ME = py_me($pdo);
 if (!$ME) py_fail('Bạn cần đăng nhập.', 401);
 $MENAME = $ME['display_name'] ?: $ME['username'];
@@ -206,6 +267,7 @@ case 'paid': {
         $up->execute(array($now, $MENAME, $fname, py_s($f['name'] ?? '', 200), $mime, $id));
         $done[] = $id;
     }
+    foreach ($done as $nid) py_notify_paid($pdo, (int) $nid, $fname, $mime, $now, $MENAME);   /* APSA1839 */
     py_ok(array('ids' => $done, 'paid_at' => $now, 'paid_by' => $MENAME,
         'proof_name' => py_s($f['name'] ?? '', 200), 'proof_mime' => $mime));
 }
