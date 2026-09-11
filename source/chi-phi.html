@@ -269,6 +269,16 @@
   </div>
 </div>
 
+<style>
+  /* APSA1833: mau dialog QR theo loai nguoi nhan - doanh nghiep xanh duong, ca nhan tim */
+  #mQr.qr-corp .modal{ background:linear-gradient(165deg,#173f86 0%,#10285a 45%,#0b1530 100%) !important; border:1px solid rgba(120,175,255,.65) !important; box-shadow:0 24px 70px rgba(40,110,255,.35); }
+  #mQr.qr-corp h2{ color:#8ec0ff; }
+  #mQr.qr-pers .modal{ background:linear-gradient(165deg,#4a1f8f 0%,#2c1458 45%,#170b2e 100%) !important; border:1px solid rgba(185,140,255,.65) !important; box-shadow:0 24px 70px rgba(140,80,255,.35); }
+  #mQr.qr-pers h2{ color:#c9a6ff; }
+  #mQr .qr-tag{ display:inline-block; margin-left:8px; padding:2px 9px; border-radius:99px; font-size:10px; font-weight:800; letter-spacing:.08em; vertical-align:middle; }
+  #mQr.qr-corp .qr-tag{ background:rgba(90,160,255,.18); color:#8ec0ff; }
+  #mQr.qr-pers .qr-tag{ background:rgba(170,120,255,.18); color:#c9a6ff; }
+</style>
 <div class="mask" id="mQr">
   <div class="modal" style="max-width:640px">
     <h2>Chuyển khoản</h2>
@@ -656,6 +666,11 @@ function openQr(id) {
       : noDia(r.code + ' ' + (r.name || '')).trim();
   el('qSub').textContent = r.code + ' · ' + (r.payee_name || '') + ' · ' + fmt(amt(r)) + ' đ';
   el('qPaid').style.display = Number(r.paid) === 1 ? 'none' : 'inline-flex';
+  var pers = r.payee_type === 'user' || (r.payee_type === 'sup' && String(r.payee_kind || '') === 'person');
+  el('mQr').classList.toggle('qr-pers', pers);
+  el('mQr').classList.toggle('qr-corp', !pers);
+  var tg = document.createElement('span'); tg.className = 'qr-tag'; tg.textContent = pers ? 'CÁ NHÂN' : 'DOANH NGHIỆP';
+  el('qSub').appendChild(tg);
   el('mQr').classList.add('on');
   qrDraw();
 }

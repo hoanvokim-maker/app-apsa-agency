@@ -1,5 +1,5 @@
 {
-    "version": "1.9.0",
+    "version": "1.9.1",
     "updated": "2026-09-11",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-11",
             "note": "Phiên bản 1.9",
             "items": [
+                {
+                    "d": "2026-09-11",
+                    "v": "1.9.1",
+                    "t": "QR chuyen khoan: dialog xanh duong cho NCC doanh nghiep, tim cho ca nhan (nhan vien / freelancer / NCC ca nhan)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-11",
                     "v": "1.9.0",

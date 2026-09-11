@@ -2290,7 +2290,8 @@ case 'assign-status': {
 // ===== Trang Chi phi thuc te toan cong ty (chi Admin) =====
 case 'exp-all': {
     q_need_cap(97, 'view');
-    $st = $pdo->query("SELECT e.*, q.code, q.title, q.client_name, q.quotation_date, q.status
+    $st = $pdo->query("SELECT e.*, q.code, q.title, q.client_name, q.quotation_date, q.status,
+               (SELECT s.kind FROM `ratecard_suppliers` s WHERE s.id = e.payee_id AND e.payee_type = 'sup' LIMIT 1) AS payee_kind
         FROM `quotation_expenses` e
         JOIN `quotations` q ON q.id = e.quotation_id
         WHERE e.kind = 'item' AND q.deleted_at IS NULL" . qc_hide_and() . "
