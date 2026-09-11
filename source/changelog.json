@@ -1,5 +1,5 @@
 {
-    "version": "1.9.1",
+    "version": "1.9.2",
     "updated": "2026-09-11",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-11",
             "note": "Phiên bản 1.9",
             "items": [
+                {
+                    "d": "2026-09-11",
+                    "v": "1.9.2",
+                    "t": "Chi phi: nut Dinh kem UNC trong dialog QR; khoan da tra 7 ngay dua len tren de tai UNC; noi dung CK mac dinh cho ca nhan; ai cung sua duoc noi dung CK",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-11",
                     "v": "1.9.1",

@@ -217,6 +217,27 @@
     <button class="btn primary" onclick="openAdd()">+ Khoản chi</button>
   </div>
 
+  <style>
+    /* APSA1835: khoan da thanh toan 7 ngay qua - tai UNC nhanh */
+    .rp{ margin:0 0 14px; border:1px solid rgba(74,222,128,.35); border-radius:14px; background:linear-gradient(180deg,rgba(74,222,128,.07),rgba(74,222,128,.02)); overflow:hidden; }
+    .rp-h{ display:flex; align-items:center; gap:10px; padding:11px 16px; cursor:pointer; user-select:none; }
+    .rp-h b{ font-size:12px; letter-spacing:.09em; text-transform:uppercase; color:#4ade80; }
+    .rp-h .n{ font-size:11px; opacity:.6; }
+    .rp-h .spacer{ flex:1; }
+    .rp-h .tg{ font-size:11px; opacity:.55; }
+    .rp table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+    .rp td{ padding:8px 14px; border-top:1px solid rgba(255,255,255,.06); vertical-align:middle; }
+    .rp td.d{ white-space:nowrap; opacity:.7; font-variant-numeric:tabular-nums; width:96px; }
+    .rp td.a{ text-align:right; white-space:nowrap; font-weight:700; font-variant-numeric:tabular-nums; }
+    .rp td.b{ text-align:right; white-space:nowrap; width:1%; }
+    .rp .who{ font-weight:700; }
+    .rp .sub{ font-size:11px; opacity:.55; }
+    .rp .btn.sm{ padding:5px 10px; font-size:11.5px; }
+    .rp .btn.unc{ border-color:rgba(74,222,128,.55); color:#4ade80; }
+    .rp .btn.unc:hover{ background:#4ade80; color:#111; }
+    .rp.off table{ display:none; }
+  </style>
+  <div id="recentPaid"></div>
   <div class="card" id="view"></div>
 </div>
 
@@ -295,6 +316,9 @@
     </div>
     <div class="modal-acts">
       <button class="btn" onclick="closeQr()">Đóng</button>
+      <button class="btn" id="qUncView" style="display:none" onclick="qrUncView()">📎 Xem UNC</button>
+      <button class="btn" id="qUncBtn" onclick="document.getElementById('qUnc').click()">📎 Đính kèm UNC</button>
+      <input type="file" id="qUnc" accept="image/png,image/jpeg,image/webp,application/pdf" style="display:none" onchange="qrUncPick(this)" />
       <button class="btn primary" id="qPaid" onclick="qrMarkPaid()">✓ Đã chuyển — đánh dấu đã trả</button>
     </div>
   </div>
@@ -420,7 +444,42 @@ function th(k, t, cls) {
          esc(t) + '<span class="ar">' + (on ? (DIR > 0 ? '▲' : '▼') : '↕') + '</span></th>';
 }
 
+/* ===== APSA1835: cac khoan da thanh toan trong 7 ngay -> dua len tren, tai UNC gui NCC ===== */
+var RP_OPEN = (function(){ try { return localStorage.getItem('cp_rp') !== '0'; } catch(e){ return true; } })();
+function rpToggle(){ RP_OPEN = !RP_OPEN; try { localStorage.setItem('cp_rp', RP_OPEN ? '1' : '0'); } catch(e){} renderRecentPaid(); }
+function rpDate(r){ var d = String(r.paid_at || r.pay_date || '').slice(0,10); return d; }
+function rpAttach(id){ qrRow = byId(id); if (!qrRow) return; el('qUnc').value = ''; el('qUnc').click(); }
+function renderRecentPaid(){
+  var box = el('recentPaid'); if (!box) return;
+  var lim = new Date(); lim.setDate(lim.getDate() - 7);
+  var lims = lim.getFullYear() + '-' + String(lim.getMonth()+1).padStart(2,'0') + '-' + String(lim.getDate()).padStart(2,'0');
+  var L = ROWS.filter(function(r){ return Number(r.paid) === 1 && rpDate(r) >= lims; })
+              .sort(function(a,b){ return String(b.paid_at||b.pay_date||'').localeCompare(String(a.paid_at||a.pay_date||'')); });
+  if (!L.length) { box.innerHTML = ''; return; }
+  var tot = 0, nUnc = 0;
+  L.forEach(function(r){ tot += amt(r); if (Number(r.has_proof) === 1 || r.proof_file) nUnc++; });
+  box.innerHTML =
+    '<div class="rp' + (RP_OPEN ? '' : ' off') + '">' +
+      '<div class="rp-h" onclick="rpToggle()"><b>✓ Đã thanh toán 7 ngày qua</b>' +
+        '<span class="n">' + L.length + ' khoản · ' + fmt(tot) + ' đ · ' + nUnc + '/' + L.length + ' có UNC</span>' +
+        '<span class="spacer"></span><span class="tg">' + (RP_OPEN ? 'Thu gọn ▴' : 'Mở rộng ▾') + '</span></div>' +
+      '<table><tbody>' + L.map(function(r){
+        var hasP = Number(r.has_proof) === 1 || !!r.proof_file;
+        var d = rpDate(r), dd = d ? d.split('-').reverse().join('/') : '';
+        return '<tr>' +
+          '<td class="d">' + esc(dd) + '</td>' +
+          '<td><div class="who">' + esc(r.payee_name || r.name || '') + '</div>' +
+              '<div class="sub">' + esc(r.code || '') + (r.title ? ' · ' + esc(r.title) : '') + (r.name && r.payee_name ? ' · ' + esc(r.name) : '') + '</div></td>' +
+          '<td class="a">' + fmt(amt(r)) + ' đ</td>' +
+          '<td class="b">' + (hasP
+              ? '<a class="btn sm unc" href="./api/pay-api.php?action=proof&id=' + r.id + '" download onclick="event.stopPropagation()">⬇ Tải UNC</a>'
+              : '<button class="btn sm" onclick="rpAttach(\'' + r.id + '\')">📎 Đính kèm UNC</button>') +
+          '</td></tr>';
+      }).join('') + '</tbody></table>' +
+    '</div>';
+}
 function render() {
+  renderRecentPaid();
   var V = view().slice().sort(cmp), i, r, h = '';
   var tot = 0, paid = 0;
   ROWS.forEach(function (x) { var a = amt(x); tot += a; if (Number(x.paid) === 1) paid += a; });
@@ -661,12 +720,17 @@ function openQr(id) {
   el('qAcc').value  = r.bank_account || '';
   el('qName').value = r.bank_holder || r.payee_name || '';
   el('qAmt').value  = amt(r);
+  var pers = r.payee_type === 'user' || (r.payee_type === 'sup' && String(r.payee_kind || '') === 'person');
+  /* APSA1836: ca nhan -> noi dung CK mac dinh */
   el('qInfo').value = r.pay_memo
       ? noDia(r.pay_memo).trim()
-      : noDia(r.code + ' ' + (r.name || '')).trim();
+      : (pers ? 'Vo Kim Hoan chuyen khoan' : noDia(r.code + ' ' + (r.name || '')).trim());
   el('qSub').textContent = r.code + ' · ' + (r.payee_name || '') + ' · ' + fmt(amt(r)) + ' đ';
   el('qPaid').style.display = Number(r.paid) === 1 ? 'none' : 'inline-flex';
-  var pers = r.payee_type === 'user' || (r.payee_type === 'sup' && String(r.payee_kind || '') === 'person');
+  var hasP = Number(r.has_proof) === 1 || !!r.proof_file;   /* APSA1834: UNC */
+  el('qUncBtn').style.display  = hasP ? 'none' : 'inline-flex';
+  el('qUncView').style.display = hasP ? 'inline-flex' : 'none';
+  el('qUnc').value = '';
   el('mQr').classList.toggle('qr-pers', pers);
   el('mQr').classList.toggle('qr-corp', !pers);
   var tg = document.createElement('span'); tg.className = 'qr-tag'; tg.textContent = pers ? 'CÁ NHÂN' : 'DOANH NGHIỆP';
@@ -684,6 +748,41 @@ function qrDraw() {
           '&accountName=' + encodeURIComponent(nm);
   el('qImg').innerHTML = '<img class="qr-img" src="' + u + '" alt="QR" />' +
     '<a href="' + u + '" target="_blank" rel="noopener" style="font-size:11px;color:var(--text3)">Mở ảnh QR</a>';
+}
+/* ===== APSA1834: dinh kem UNC (uy nhiem chi) ngay trong dialog QR ===== */
+function qrUncView() { if (!qrRow) return; window.open('./api/pay-api.php?action=proof&id=' + qrRow.id, '_blank', 'noopener'); }
+function qrUncPick(inp) {
+  var f = inp.files && inp.files[0];
+  if (!f || !qrRow) return;
+  if (!/^(image\/(png|jpeg|webp)|application\/pdf)$/.test(f.type)) { toast('Chỉ nhận ảnh PNG/JPG/WEBP hoặc file PDF.', true); inp.value = ''; return; }
+  if (f.size > 12 * 1024 * 1024) { toast('File quá lớn (tối đa 12MB).', true); inp.value = ''; return; }
+  var b = el('qUncBtn'); b.disabled = true; b.textContent = 'Đang tải UNC…';
+  var done = function (data) {
+    fetch('./api/pay-api.php?action=paid', { method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: [qrRow.id], file: { name: f.name, data: data } }) })
+      .then(function (r) { return r.json().catch(function () { return {}; }); })
+      .then(function (j) {
+        if (!j || j.ok === false) throw new Error((j && j.error) || 'Không lưu được UNC.');
+        closeQr(); toast('Đã đính kèm UNC và đánh dấu đã trả'); load();
+      })
+      .catch(function (e) { toast(e.message, true); })
+      .then(function () { b.disabled = false; b.textContent = '📎 Đính kèm UNC'; inp.value = ''; });
+  };
+  if (f.type === 'application/pdf') {
+    var rd = new FileReader(); rd.onload = function () { done(rd.result); }; rd.readAsDataURL(f); return;
+  }
+  /* anh: thu nho ve toi da 2000px, JPEG 0.86 cho nhe */
+  var url = URL.createObjectURL(f), im = new Image();
+  im.onload = function () {
+    var w = im.naturalWidth, h = im.naturalHeight, k = Math.min(1, 2000 / Math.max(w, h));
+    var c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k);
+    var g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(im, 0, 0, c.width, c.height);
+    URL.revokeObjectURL(url);
+    done(c.toDataURL('image/jpeg', 0.86));
+  };
+  im.onerror = function () { URL.revokeObjectURL(url); var rd = new FileReader(); rd.onload = function () { done(rd.result); }; rd.readAsDataURL(f); };
+  im.src = url;
 }
 function qrMarkPaid() {
   if (!qrRow) return;
@@ -719,5 +818,12 @@ load();
 <script src="/exp-pay.js?v=3"></script>
 <script src="/exp-due.js?v=5"></script>
 <script src="/exp-acb.js?v=1"></script>
+<script>
+/* APSA1835: cac add-on (chi-phi-group / exp-due...) boc lai render(), nen mo khoan da tra 7 ngay sau cung */
+(function(){
+  var _r = window.render;
+  window.render = function(){ var o = _r ? _r.apply(this, arguments) : undefined; try { renderRecentPaid(); } catch(e){} return o; };
+})();
+</script>
 </body>
 </html>

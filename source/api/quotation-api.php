@@ -2308,7 +2308,11 @@ case 'quo-lite': {
 }
 
 case 'exp-row-save': {
-    q_need_cap(97, 'edit');
+    /* APSA1837: rieng noi dung chuyen khoan (pay_memo) thi moi nhan vien da dang nhap deu sua duoc */
+    $memoOnly = array_key_exists('pay_memo', $B)
+             && count(array_diff(array_keys($B), array('id', 'pay_memo', 'action'))) === 0;
+    if ($memoOnly) { if (!currentUser($pdo)) q_fail('Chưa đăng nhập.', 401); }
+    else q_need_cap(97, 'edit');
     $id = (int) ($B['id'] ?? 0);
     if ($id > 0) {
             $q_ph = $pdo->prepare("SELECT paid FROM `quotation_expenses` WHERE id = ?");
