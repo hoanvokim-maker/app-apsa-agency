@@ -479,6 +479,7 @@ case 'feedback': {
 case 'gd-scan': {
     $a = albumById($pdo, $B['id'] ?? 0);
     if (!$a) a_fail('Không tìm thấy album', 404);
+    if (!empty($a['deleted_at'])) a_fail('Album đang nằm trong thùng rác. Khôi phục album trước khi đồng bộ Drive.', 400);
     $raw = trim((string) ($B['url'] ?? $a['drive_url']));
     $fid = gd_folder_id($raw);
     if ($fid === '') a_fail(stripos($raw, 'google.') === false
@@ -505,6 +506,7 @@ case 'gd-scan': {
 case 'gd-clear': {
     $a = albumById($pdo, $B['id'] ?? 0);
     if (!$a) a_fail('Không tìm thấy album', 404);
+    if (!empty($a['deleted_at'])) a_fail('Album đang nằm trong thùng rác. Khôi phục album trước khi đồng bộ Drive.', 400);
     $dir = ALBUM_DIR . '/' . $a['token'];
     $q = $pdo->prepare("SELECT id, thumb FROM album_photos WHERE album_id = ? AND src = 'gd'");
     $q->execute([(int) $a['id']]);
@@ -526,6 +528,7 @@ case 'gd-sync': {
     @set_time_limit(120);
     $a = albumById($pdo, $B['id'] ?? 0);
     if (!$a) a_fail('Không tìm thấy album', 404);
+    if (!empty($a['deleted_at'])) a_fail('Album đang nằm trong thùng rác. Khôi phục album trước khi đồng bộ Drive.', 400);
     $raw = trim((string) ($B['url'] ?? $a['drive_url']));
     $fid = gd_folder_id($raw);
     if ($fid === '') a_fail('Link Google Drive không hợp lệ.');

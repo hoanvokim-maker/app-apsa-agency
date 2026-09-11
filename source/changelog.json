@@ -1,12 +1,18 @@
 {
-    "version": "1.8.28",
-    "updated": "2026-09-09",
+    "version": "1.8.29",
+    "updated": "2026-09-11",
     "releases": [
         {
             "v": "1.8",
             "date": "2026-09-05",
             "note": "Phiên bản 1.8",
             "items": [
+                {
+                    "d": "2026-09-11",
+                    "v": "1.8.29",
+                    "t": "Album tu link Google Drive (thumbnail WebP luu server, anh goc tren Drive, khach van tim/chon/ghi chu) + sidebar ghim mo rong / thu gon",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-09",
                     "v": "1.8.28",

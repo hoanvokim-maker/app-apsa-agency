@@ -412,6 +412,16 @@
       ' font-family:"Oxanium",-apple-system,BlinkMacSystemFont,sans-serif;' +
       ' transition:width .18s cubic-bezier(.4,0,.2,1); }' +
     '#apsaSide *{ box-sizing:border-box; }' +
+    /* APSA1832: ghim sidebar mo rong / thu gon */
+    'body.as-pin{ padding-left:214px; }' +
+    'body.as-pin #apsaSide{ width:214px; box-shadow:none; }' +
+    'body.as-pin #apsaSide .as-txt{ opacity:1; }' +
+    'body.as-pin #apsaSide .as-grp::before{ opacity:0; }' +
+    'body.as-pin #apsaSide .as-gl{ opacity:1; }' +
+    '#apsaSide .as-pin{ flex:0 0 auto; height:44px; border:0; border-top:1px solid rgba(255,255,255,.07); background:transparent; color:#8b93a1; cursor:pointer; font:inherit; font-size:12.5px; }' +
+    '#apsaSide .as-pin svg{ transition:transform .18s; }' +
+    'body.as-pin #apsaSide .as-pin svg{ transform:rotate(180deg); }' +
+    '@media (max-width:760px){ body.as-pin{ padding-left:46px; } body.as-pin #apsaSide{ width:46px; } body.as-pin #apsaSide .as-txt{ opacity:0; } #apsaSide .as-pin{ display:none; } }' +
     '#apsaSide:hover{ width:214px; box-shadow:16px 0 40px rgba(0,0,0,.7); }' +
     '#apsaSide .as-txt{ opacity:0; white-space:nowrap; transition:opacity .13s; }' +
     '#apsaSide:hover .as-txt{ opacity:1; }' +
@@ -734,6 +744,19 @@ function paintBell() {
     return ALIAS[f] || f;
   }
 
+  /* APSA1832: ghim sidebar */
+  var PIN_KEY = 'apsa_side_pin';
+  function pinApply() {
+    var on = false; try { on = localStorage.getItem(PIN_KEY) === '1'; } catch (e) {}
+    document.body.classList.toggle('as-pin', on);
+    var b = document.getElementById('apsaPin');
+    if (b) { var t = b.querySelector('.as-txt'); if (t) t.textContent = on ? 'Thu gọn menu' : 'Mở rộng menu'; }
+  }
+  function pinToggle() {
+    var on = !document.body.classList.contains('as-pin');
+    try { localStorage.setItem(PIN_KEY, on ? '1' : '0'); } catch (e) {}
+    pinApply();
+  }
   function paint(list) {
     var nav = document.getElementById('apsaSide');
     if (!nav) return;
@@ -762,7 +785,11 @@ function paintBell() {
              '<span class="as-txt">' + n.name + '</span></a>';
     }
     h += '</div>';
+    h += '<button type="button" class="as-item as-pin" id="apsaPin" title="Ghim / thu gọn menu">' +
+         '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>' +
+         '<span class="as-txt">Mở rộng menu</span></button>';
     nav.innerHTML = h;
+    pinApply();
   }
 
   function build() {
@@ -785,6 +812,7 @@ function paintBell() {
 
     nav.addEventListener('click', function (e) {
       if (e.target.closest && e.target.closest('#apsaBell')) { e.preventDefault(); openNotif(); }
+      if (e.target.closest && e.target.closest('#apsaPin'))  { e.preventDefault(); pinToggle(); }
     });
     ensureHam();
     pullNotif();
