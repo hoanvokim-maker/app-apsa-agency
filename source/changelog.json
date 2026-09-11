@@ -1,5 +1,5 @@
 {
-    "version": "1.9.2",
+    "version": "1.9.3",
     "updated": "2026-09-11",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-11",
             "note": "Phiên bản 1.9",
             "items": [
+                {
+                    "d": "2026-09-11",
+                    "v": "1.9.3",
+                    "t": "Dialog QR: gop thanh 1 nut Dinh kem UNC va danh dau da tra",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-11",
                     "v": "1.9.2",

@@ -317,9 +317,8 @@
     <div class="modal-acts">
       <button class="btn" onclick="closeQr()">Đóng</button>
       <button class="btn" id="qUncView" style="display:none" onclick="qrUncView()">📎 Xem UNC</button>
-      <button class="btn" id="qUncBtn" onclick="document.getElementById('qUnc').click()">📎 Đính kèm UNC</button>
       <input type="file" id="qUnc" accept="image/png,image/jpeg,image/webp,application/pdf" style="display:none" onchange="qrUncPick(this)" />
-      <button class="btn primary" id="qPaid" onclick="qrMarkPaid()">✓ Đã chuyển — đánh dấu đã trả</button>
+      <button class="btn primary" id="qPaid" onclick="document.getElementById('qUnc').click()">📎 Đính kèm UNC &amp; đánh dấu đã trả</button>
     </div>
   </div>
 </div>
@@ -728,7 +727,7 @@ function openQr(id) {
   el('qSub').textContent = r.code + ' · ' + (r.payee_name || '') + ' · ' + fmt(amt(r)) + ' đ';
   el('qPaid').style.display = Number(r.paid) === 1 ? 'none' : 'inline-flex';
   var hasP = Number(r.has_proof) === 1 || !!r.proof_file;   /* APSA1834: UNC */
-  el('qUncBtn').style.display  = hasP ? 'none' : 'inline-flex';
+  el('qPaid').style.display    = hasP ? 'none' : 'inline-flex';   /* APSA1838: 1 nut = dinh kem UNC + da tra */
   el('qUncView').style.display = hasP ? 'inline-flex' : 'none';
   el('qUnc').value = '';
   el('mQr').classList.toggle('qr-pers', pers);
@@ -756,7 +755,7 @@ function qrUncPick(inp) {
   if (!f || !qrRow) return;
   if (!/^(image\/(png|jpeg|webp)|application\/pdf)$/.test(f.type)) { toast('Chỉ nhận ảnh PNG/JPG/WEBP hoặc file PDF.', true); inp.value = ''; return; }
   if (f.size > 12 * 1024 * 1024) { toast('File quá lớn (tối đa 12MB).', true); inp.value = ''; return; }
-  var b = el('qUncBtn'); b.disabled = true; b.textContent = 'Đang tải UNC…';
+  var b = el('qPaid'); b.disabled = true; b.textContent = 'Đang tải UNC…';
   var done = function (data) {
     fetch('./api/pay-api.php?action=paid', { method: 'POST', credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
@@ -767,7 +766,7 @@ function qrUncPick(inp) {
         closeQr(); toast('Đã đính kèm UNC và đánh dấu đã trả'); load();
       })
       .catch(function (e) { toast(e.message, true); })
-      .then(function () { b.disabled = false; b.textContent = '📎 Đính kèm UNC'; inp.value = ''; });
+      .then(function () { b.disabled = false; b.textContent = '📎 Đính kèm UNC & đánh dấu đã trả'; inp.value = ''; });
   };
   if (f.type === 'application/pdf') {
     var rd = new FileReader(); rd.onload = function () { done(rd.result); }; rd.readAsDataURL(f); return;
