@@ -140,7 +140,13 @@
 .cmpt{font-size:11.5px;opacity:.7;margin-bottom:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cmpc video{width:100%;flex:1;min-height:0;background:#000;border-radius:10px;object-fit:contain}
 @media (max-width:860px){.cmpbd{grid-template-columns:1fr;grid-template-rows:1fr 1fr}}
-</style>
+    /* APSA1849 */
+    .mk.prev { background: #7aa2ff; opacity: .55; }
+    .cm.prev { opacity: .72; border-style: dashed; }
+    .cm.prev .ts { background: rgba(122,162,255,.14); border-color: rgba(122,162,255,.45); color: #a9c3ff; }
+    .pvh { margin: 16px 0 8px; padding-top: 12px; font-size: 10.5px; font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; color: #7aa2ff; border-top: 1px dashed rgba(122,162,255,.35); }
+  </style>
 </head>
 <body>
 
@@ -492,7 +498,7 @@ function seek(ms) { v.pause(); v.currentTime = ms / 1000; window.scrollTo({ top:
 /* ── góp ý ─────────────────────────────────────────────── */
 function loadCm() {
   api('comments').then(function (d) {
-    CM = d.rows || []; ADMIN = d.admin ? 1 : 0; renderCm(); paintTl();
+    CM = d.rows || []; ADMIN = d.admin ? 1 : 0; loadPrevCm();
   }).catch(function (e) { toast(e.message); });
 }
 function edtFmt(v) {
@@ -524,10 +530,46 @@ function cedit(id) {
       .catch(function (e) { b.disabled = false; b.textContent = 'Lưu'; toast(e.message); });
   };
 }
+/* APSA1849: xem ban moi van thay moc + gop y ban truoc de doi chieu */
+var PREV = null, PREVCM = [], PREVTOK = '';
+function prevVer() {
+  if (!VERS || VERS.length < 2) return null;
+  var cur = null, best = null, i;
+  for (i = 0; i < VERS.length; i++) if (Number(VERS[i].cur)) cur = VERS[i];
+  if (!cur) return null;
+  for (i = 0; i < VERS.length; i++) {
+    var x = VERS[i];
+    if (Number(x.ver) < Number(cur.ver) && (!best || Number(x.ver) > Number(best.ver))) best = x;
+  }
+  return best;
+}
+function loadPrevCm() {
+  PREV = prevVer();
+  if (!PREV) { PREVCM = []; PREVTOK = ''; renderCm(); paintTl(); return; }
+  if (PREVTOK === PREV.token) { renderCm(); paintTl(); return; }
+  fetch(API + '?action=comments&t=' + encodeURIComponent(PREV.token) + '&ok=' + encodeURIComponent(OKEY),
+        { credentials: 'same-origin' })
+    .then(function (r) { return r.json(); })
+    .then(function (j) { PREVCM = (j && j.ok && j.data && j.data.rows) ? j.data.rows : []; PREVTOK = PREV.token; })
+    .catch(function () { PREVCM = []; })
+    .then(function () { renderCm(); paintTl(); });
+}
+function prevHtml() {
+  if (!PREV || !PREVCM.length) return '';
+  return '<div class="pvh">G\u00f3p \u00fd b\u1ea3n V' + PREV.ver + ' \u2014 ' + PREVCM.length + ' m\u1ee5c (tham kh\u1ea3o)</div>' +
+    PREVCM.map(function (c) {
+      return '<div class="cm prev">' +
+        '<div class="top"><button class="ts" onclick="seek(' + c.t_ms + ')">' + fmt(c.t_ms) + '</button>' +
+        '<span class="au">' + esc(c.author) + '</span>' +
+        (Number(c.resolved) ? '<span class="dt">\u0111\u00e3 x\u1eed l\u00fd</span>' : '') + '</div>' +
+        (c.body ? '<div class="bd">' + esc(c.body) + '</div>' : '') +
+      '</div>';
+    }).join('');
+}
 function renderCm() {
   var open = CM.filter(function (c) { return !Number(c.resolved); }).length;
   el('lh').textContent = 'Góp ý — ' + CM.length + ' mục' + (open ? ' · ' + open + ' chưa xử lý' : '');
-  if (!CM.length) { el('cl').innerHTML = '<div class="empty">Chưa có góp ý nào.<br />Dừng video tại giây cần góp ý rồi bấm “Góp ý tại giây này”.</div>'; return; }
+  if (!CM.length) { el('cl').innerHTML = '<div class="empty">Chưa có góp ý nào.<br />Dừng video tại giây cần góp ý rồi bấm “Góp ý tại giây này”.</div>' + prevHtml(); return; }
   el('cl').innerHTML = CM.map(function (c) {
     var im = Number(c.has_img) ? '<img class="att" src="' + API + '?action=img&t=' + encodeURIComponent(T) + '&id=' + c.id +
       '" onclick="lb(this.src)" alt="" />' : '';
@@ -541,16 +583,26 @@ function renderCm() {
       ((LATEST && LATEST !== T) ? '<button class="tsn" onclick="cmpOpen(' + c.t_ms + ')" title="Xem mốc này trên bản mới nhất, so sánh với bản đang xem">↗ bản mới</button>' : '') +
       '<span class="au">' + esc(c.author) + '</span><span class="dt">' + esc((c.created_at || '').slice(5, 16)) + '</span></div>' +
       (c.body ? '<div class="bd">' + esc(c.body) + '</div>' : '') + ed + im + mb + ac + '</div>';
-  }).join('');
+  }).join('') + prevHtml();
 }
 function paintTl() {
   var t = el('tl'); Array.prototype.slice.call(t.querySelectorAll('.mk')).forEach(function (m) { m.remove(); });
-  if (!v.duration) return;
+  /* APSA1849: chua co duration thi ve lai khi video bao metadata */
+  if (!v.duration) { v.addEventListener('loadedmetadata', paintTl, { once: true }); return; }
   CM.forEach(function (c) {
     var d = document.createElement('div');
     d.className = 'mk' + (Number(c.resolved) ? ' done' : '');
     d.style.left = (c.t_ms / 1000 / v.duration * 100) + '%';
     d.title = fmt(c.t_ms) + ' · ' + c.author;
+    d.onclick = function (e) { e.stopPropagation(); seek(c.t_ms); };
+    t.appendChild(d);
+  });
+  /* APSA1849: moc gop y cua ban truoc (mau khac) de doi chieu */
+  if (PREV && PREVCM.length) PREVCM.forEach(function (c) {
+    var d = document.createElement('div');
+    d.className = 'mk prev';
+    d.style.left = (c.t_ms / 1000 / v.duration * 100) + '%';
+    d.title = 'V' + PREV.ver + ' \u00b7 ' + fmt(c.t_ms) + ' \u00b7 ' + c.author;
     d.onclick = function (e) { e.stopPropagation(); seek(c.t_ms); };
     t.appendChild(d);
   });
