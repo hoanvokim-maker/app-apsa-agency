@@ -1589,7 +1589,7 @@ CREATE TABLE `crm_audit_log` (
   KEY `idx_customer` (`customer_id`),
   KEY `idx_created` (`created_at`),
   KEY `idx_company_id` (`company_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=177 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=178 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1774,6 +1774,7 @@ INSERT INTO `crm_audit_log` VALUES (173,5,24,NULL,NULL,'customer','update','Cậ
 INSERT INTO `crm_audit_log` VALUES (174,5,24,NULL,NULL,'customer','update','Cập nhật khách hàng Phạm Tiến Đạt (Organon)',NULL,'Harris','2026-09-07 03:26:02');
 INSERT INTO `crm_audit_log` VALUES (175,5,28,NULL,NULL,'customer','update','Cập nhật khách hàng Huỳnh Kim Chi (Organon)',NULL,'Harris','2026-09-07 03:26:14');
 INSERT INTO `crm_audit_log` VALUES (176,5,72,NULL,NULL,'customer','create','Thêm khách hàng Phạm Trâm Anh (Organon)',NULL,'Harris','2026-09-07 03:27:27');
+INSERT INTO `crm_audit_log` VALUES (177,1,12,NULL,NULL,'customer','update','Cập nhật khách hàng Nguyễn Minh Tin (AstraZeneca Việt Nam)',NULL,'Harris','2026-09-12 11:28:43');
 /*!40000 ALTER TABLE `crm_audit_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1879,7 +1880,7 @@ INSERT INTO `crm_customers` VALUES (8,4,'Harris','','APSA','','','Đồng bộ t
 INSERT INTO `crm_customers` VALUES (9,5,'Lê Thị Lan Anh','Commercial Operation Specialist','Organon','','thi.lan.anh.thi.lan.anh@organon.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Lan Anh',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-26 14:28:11');
 INSERT INTO `crm_customers` VALUES (10,1,'Phan Gia Huy','R&I BU','AstraZeneca Việt Nam','0782434433','giahuy.phan@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Anh Huy RIGI',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-27 07:24:38');
 INSERT INTO `crm_customers` VALUES (11,1,'Huỳnh Khánh Thiên Nga','','AstraZeneca Việt Nam','090 9360456','khanhthiennga.huynh1@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Chị Nga',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-27 07:22:08');
-INSERT INTO `crm_customers` VALUES (12,1,'Nguyễn Minh Tín','Associate Brand Manager · ONCO-SC','AstraZeneca Việt Nam','0834 589 678','minhtin.nguyen@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Minh Tin',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-26 14:28:10');
+INSERT INTO `crm_customers` VALUES (12,1,'Nguyễn Minh Tin','Associate Brand Manager · ONCO-SC','AstraZeneca Việt Nam','0834 589 678','minhtin.nguyen@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Minh Tin',1,'Harris',NULL,'2026-08-20 18:59:05','2026-09-12 11:28:43');
 INSERT INTO `crm_customers` VALUES (13,6,'Lưu Vĩnh Khang','Senior Product Manager, Hematology - Specialty Care, J&J Innovative Medicine','Johnson&Johnson','0907881913','VLuu2@ITS.JNJ.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Anh Khang ONCO',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-26 14:28:11');
 INSERT INTO `crm_customers` VALUES (14,1,'Nguyễn Nữ Diệu Anh','CME CVRM','AstraZeneca Việt Nam','+84 38 546 0214','nudieuanh.nguyen@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Chị Diệu Anh CVRM',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-26 14:28:10');
 INSERT INTO `crm_customers` VALUES (15,1,'Hứa Thị Quang Duy','R&I BU (RIGI)','AstraZeneca Việt Nam','0906 125 947','thiquangduy.hua@astrazeneca.com','Đồng bộ từ manage.apsa.agency · Biệt danh: Chị Duy RIGI',1,'Harris',NULL,'2026-08-20 18:59:05','2026-08-27 07:36:27');

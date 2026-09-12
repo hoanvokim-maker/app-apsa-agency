@@ -1053,7 +1053,8 @@ table.chktbl th:last-child{ width:34px; }
       </div>
       <div class="f">
         <label>Người liên hệ</label>
-        <select id="fltPic" onchange="applyFilters()"><option value="">Tất cả người liên hệ</option></select>
+        <input id="fltPic" list="picList" autocomplete="off" placeholder="Tất cả người liên hệ" oninput="applyFilters()" onchange="applyFilters()" onkeydown="if(event.key==='Escape'){this.value='';applyFilters();}" />
+        <datalist id="picList"></datalist>
       </div>
       <div class="f">
         <label>Thời gian</label>
@@ -1625,24 +1626,28 @@ function rangeBounds(){
 }
 
 /* APSA1850: bo loc theo nguoi lien he */
+const PIC_NONE = '(Chưa có người liên hệ)';
+function picNoAcc(x){
+  var t = (x == null ? '' : String(x));
+  if (t.normalize) t = t.normalize('NFD').replace(new RegExp('[' + String.fromCharCode(768) + '-' + String.fromCharCode(879) + ']', 'g'), '');
+  return t.replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase().trim();
+}
 function picName(r){ return ((r && r.contact_name) || '').trim(); }
 function fillPicOptions(){
   const pc = document.getElementById('fltPic'); if (!pc) return;
+  const dl = document.getElementById('picList'); if (!dl) return;
   const co = (document.getElementById('fltCo') || {}).value || '';
   const pool = LIST.filter(r => !co || ((r.company_name || r.client_name || '').trim() === co));
-  const cur = pc.value;
   const names = [...new Set(pool.map(picName).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'vi'));
   const hasNone = pool.some(r => !picName(r));
-  pc.innerHTML = '<option value="">Tất cả người liên hệ</option>'
-    + names.map(n => '<option value="' + esc(n) + '">' + esc(n) + '</option>').join('')
-    + (hasNone ? '<option value="__none">(Chưa có người liên hệ)</option>' : '');
-  pc.value = (cur === '__none') ? (hasNone ? '__none' : '') : (names.indexOf(cur) >= 0 ? cur : '');
+  dl.innerHTML = names.map(n => '<option value="' + esc(n) + '"></option>').join('')
+    + (hasNone ? '<option value="(Chưa có người liên hệ)"></option>' : '');
 }
 
 function applyFilters(){
   fillPicOptions();
   const co   = document.getElementById('fltCo').value;
-  const pic  = document.getElementById('fltPic').value;
+  const pic  = (document.getElementById('fltPic').value || '').trim();
   const kind = document.getElementById('fltKind').value;
   const liq  = document.getElementById('fltLiq').value;
   const stt = document.getElementById('fltStatus').value;
@@ -1655,7 +1660,7 @@ function applyFilters(){
   VIEW = LIST.filter(r => {
     if (kind && (r.kind || '') !== kind) return false;
     if (co && (r.company_name || r.client_name || '').trim() !== co) return false;
-      if (pic) { const pn = picName(r); if (pic === '__none' ? pn !== '' : pn !== pic) return false; }
+      if (pic) { const pn = picName(r); if (pic === PIC_NONE ? pn !== '' : picNoAcc(pn).indexOf(picNoAcc(pic)) < 0) return false; }
     if (stt === '__done') { if (!DONE_SET.includes(r.status)) return false; }
     else if (stt === '__pending') { if (!PENDING_LIQ_SET.includes(r.status)) return false; }
     else if (stt && r.status !== stt) return false;

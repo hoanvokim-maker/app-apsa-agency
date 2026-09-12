@@ -1,5 +1,5 @@
 {
-    "version": "1.9.14",
+    "version": "1.9.15",
     "updated": "2026-09-12",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-11",
             "note": "Phiên bản 1.9",
             "items": [
+                {
+                    "d": "2026-09-12",
+                    "v": "1.9.15",
+                    "t": "Bao gia: bo loc Nguoi lien he doi thanh o go tim (goi y datalist, khong dau, khop mot phan)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-12",
                     "v": "1.9.14",
