@@ -1052,6 +1052,10 @@ table.chktbl th:last-child{ width:34px; }
         <select id="fltCo" onchange="applyFilters()"><option value="">Tất cả công ty</option></select>
       </div>
       <div class="f">
+        <label>Người liên hệ</label>
+        <select id="fltPic" onchange="applyFilters()"><option value="">Tất cả người liên hệ</option></select>
+      </div>
+      <div class="f">
         <label>Thời gian</label>
         <select id="fltRange" onchange="applyFilters()"><option value="">Tất cả</option></select>
       </div>
@@ -1584,6 +1588,7 @@ function fillFilterOptions(){
   const names = [...new Set(LIST.map(r => (r.company_name || r.client_name || '').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'vi'));
   co.innerHTML = '<option value="">Tất cả công ty</option>' + names.map(n => '<option value="' + esc(n) + '">' + esc(n) + '</option>').join('');
   if (names.includes(cur)) co.value = cur;
+  fillPicOptions();
 
   const stt = document.getElementById('fltStatus');
   const curS = stt.value;
@@ -1619,8 +1624,25 @@ function rangeBounds(){
   return ['',''];
 }
 
+/* APSA1850: bo loc theo nguoi lien he */
+function picName(r){ return ((r && r.contact_name) || '').trim(); }
+function fillPicOptions(){
+  const pc = document.getElementById('fltPic'); if (!pc) return;
+  const co = (document.getElementById('fltCo') || {}).value || '';
+  const pool = LIST.filter(r => !co || ((r.company_name || r.client_name || '').trim() === co));
+  const cur = pc.value;
+  const names = [...new Set(pool.map(picName).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'vi'));
+  const hasNone = pool.some(r => !picName(r));
+  pc.innerHTML = '<option value="">Tất cả người liên hệ</option>'
+    + names.map(n => '<option value="' + esc(n) + '">' + esc(n) + '</option>').join('')
+    + (hasNone ? '<option value="__none">(Chưa có người liên hệ)</option>' : '');
+  pc.value = (cur === '__none') ? (hasNone ? '__none' : '') : (names.indexOf(cur) >= 0 ? cur : '');
+}
+
 function applyFilters(){
+  fillPicOptions();
   const co   = document.getElementById('fltCo').value;
+  const pic  = document.getElementById('fltPic').value;
   const kind = document.getElementById('fltKind').value;
   const liq  = document.getElementById('fltLiq').value;
   const stt = document.getElementById('fltStatus').value;
@@ -1633,6 +1655,7 @@ function applyFilters(){
   VIEW = LIST.filter(r => {
     if (kind && (r.kind || '') !== kind) return false;
     if (co && (r.company_name || r.client_name || '').trim() !== co) return false;
+      if (pic) { const pn = picName(r); if (pic === '__none' ? pn !== '' : pn !== pic) return false; }
     if (stt === '__done') { if (!DONE_SET.includes(r.status)) return false; }
     else if (stt === '__pending') { if (!PENDING_LIQ_SET.includes(r.status)) return false; }
     else if (stt && r.status !== stt) return false;
@@ -1783,7 +1806,7 @@ function sortBy(key){
 }
 
 function resetFilters(){
-  ['fltCo','fltRange','fltLiq','fltStatus','fltKind'].forEach(id => document.getElementById(id).value = '');
+  ['fltCo','fltPic','fltRange','fltLiq','fltStatus','fltKind'].forEach(id => document.getElementById(id).value = '');
   ['fltMin','fltMax','fltFrom','fltTo'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('fltDatesWrap').style.display = 'none';
   SORT = { key: 'date', dir: -1 };

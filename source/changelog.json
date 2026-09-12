@@ -1,5 +1,5 @@
 {
-    "version": "1.9.13",
+    "version": "1.9.14",
     "updated": "2026-09-12",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-11",
             "note": "Phiên bản 1.9",
             "items": [
+                {
+                    "d": "2026-09-12",
+                    "v": "1.9.14",
+                    "t": "Bao gia: them bo loc Nguoi lien he (loc theo cong ty da chon, co muc chua co nguoi lien he)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-12",
                     "v": "1.9.13",
