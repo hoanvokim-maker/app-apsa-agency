@@ -216,7 +216,7 @@ case 'save': {
             $st->execute($f);
         } else {
             $st = $pdo->prepare("INSERT INTO `ratecard_suppliers`
-                                 (`kind`,`name`,`contact`,`address`,`phone`,`phone2`,`email`,`tax_code`,`region`,`position`,`bank_name`,`bank_branch`,`bank_account`,`bank_holder`,`note`,`active`,`position`,`updated_by`)
+                                 (`kind`,`name`,`contact`,`address`,`phone`,`phone2`,`email`,`tax_code`,`region`,`bank_name`,`bank_branch`,`bank_account`,`bank_holder`,`note`,`active`,`position`,`updated_by`)
                                  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             $st->execute($f);
             $id = (int) $pdo->lastInsertId();

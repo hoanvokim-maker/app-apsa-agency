@@ -2275,8 +2275,8 @@ case 'assign-status': {
     $stOwn->execute([$id]);
     $ownId = (int) $stOwn->fetchColumn();
     $meId  = (is_array($ME) && isset($ME['id'])) ? (int) $ME['id'] : 0;
-    if ($ownId > 0 && $ownId !== $meId && !qc_is_admin())
-        q_fail('Chỉ người được giao mới cập nhật được trạng thái công việc này.', 403);
+    /* APSA1847: moi nhan vien dang nhap deu cap nhat duoc trang thai cong viec */
+        if (!$meId) q_fail('Chưa đăng nhập.', 401);
     $pdo->prepare("UPDATE `quotation_assignees` SET status = ? WHERE id = ?")
         ->execute([q_asgStatus($B['status'] ?? 'todo'), $id]);
     $st = $pdo->prepare("SELECT quotation_id FROM `quotation_assignees` WHERE id = ?");
