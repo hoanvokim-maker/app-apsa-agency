@@ -109,7 +109,8 @@
   tbody tr.sel td { outline: 1px solid rgba(223,242,13,.45); outline-offset: -1px; }
   td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .nm { font-weight: 700; }
-  .sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .sub.who { opacity: .8; }
+    .sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
     .byu { display:inline-flex; align-items:center; gap:3px; margin-top:3px; padding:1px 6px; border-radius:999px; font-size:10px; font-weight:600; letter-spacing:.2px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); color:var(--text3); }
     .byu-i { opacity:.6; font-weight:700; }
   .qcode { font-weight: 700; color: var(--text); text-decoration: none; }
@@ -855,7 +856,7 @@ el('mDel').addEventListener('click', function (e) { if (e.target === this) this.
 
 load();
 </script>
-<script src="/chi-phi-group.js?v=9"></script>
+<script src="/chi-phi-group.js?v=10"></script>
 <script src="/exp-pay.js?v=5"></script>
 <script src="/exp-due.js?v=7"></script>
 <script src="/exp-acb.js?v=3"></script>

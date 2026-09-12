@@ -80,38 +80,57 @@ if ((isset($_GET['action']) ? (string) $_GET['action'] : '') === 'proof-pub') {
 /* APSA1839: bao Zalo cho nguoi tao khoan chi: da thanh toan + kem anh UNC */
 function py_notify_paid(PDO $pdo, $id, $fname, $mime, $now, $byName)
 {
+    /* APSA1848: bao Zalo cho nguoi them dong chi phi + nguoi tao du an + admin */
     try {
         if (!function_exists('zb_api') || !function_exists('zb_send')) return;
-        $st = $pdo->prepare("SELECT e.*, q.code AS q_code, q.title AS q_title FROM `quotation_expenses` e
-                              LEFT JOIN `quotations` q ON q.id = e.quotation_id WHERE e.id = ?");
+        $st = $pdo->prepare("SELECT e.*, q.code AS q_code, q.title AS q_title, q.created_by AS q_by
+                             FROM `quotation_expenses` e
+                             LEFT JOIN `quotations` q ON q.id = e.quotation_id WHERE e.id = ?");
         $st->execute(array((int) $id));
         $r = $st->fetch();
         if (!$r) return;
+
+        $ids = array();
         $uid = (int) (isset($r['created_by']) ? $r['created_by'] : 0);
-        if ($uid <= 0) return;
-        $u = $pdo->prepare("SELECT zalo_chat_id, display_name FROM `app_users` WHERE id = ? AND active = 1");
-        $u->execute(array($uid));
-        $u = $u->fetch();
-        if (!$u || trim((string) $u['zalo_chat_id']) === '') return;
+        if ($uid > 0) $ids[] = $uid;
+        $qby = trim((string) (isset($r['q_by']) ? $r['q_by'] : ''));
+        if ($qby !== '') {
+            $sq = $pdo->prepare("SELECT id FROM `app_users` WHERE active = 1 AND display_name = ? LIMIT 1");
+            $sq->execute(array($qby));
+            $qid = (int) $sq->fetchColumn();
+            if ($qid > 0) $ids[] = $qid;
+        }
+        foreach ($pdo->query("SELECT id FROM `app_users` WHERE active = 1 AND role = 'admin'") as $ad)
+            $ids[] = (int) $ad['id'];
+        $ids = array_values(array_unique(array_filter($ids)));
+        if (!$ids) return;
 
         $pub = 'https://app.apsa.agency/api/pay-api.php?action=proof-pub&id=' . (int) $id . '&t=' . py_proof_token($id, $fname);
         $lines = array(
-            '✅ Đã thanh toán — có UNC đính kèm',
-            'Dự án: ' . $r['q_code'] . ($r['q_title'] ? ' — ' . $r['q_title'] : ''),
-            'Hạng mục: ' . $r['name'],
+            "\xE2\x9C\x85 Da thanh toan - co UNC dinh kem",
+            'Du an: ' . $r['q_code'] . ($r['q_title'] ? ' - ' . $r['q_title'] : ''),
+            'Hang muc: ' . $r['name'],
         );
-        if ($r['payee_name']) $lines[] = 'Người nhận: ' . $r['payee_name'];
-        $lines[] = 'Số tiền: ' . py_money(py_amount($r));
-        $lines[] = 'Người thanh toán: ' . $byName . ' · ' . date('d/m/Y H:i', strtotime($now));
+        if ($r['payee_name']) $lines[] = 'Nguoi nhan: ' . $r['payee_name'];
+        $lines[] = 'So tien: ' . py_money(py_amount($r));
+        if (!empty($r['created_by_name'])) $lines[] = 'Nguoi them khoan chi: ' . $r['created_by_name'];
+        if ($qby !== '') $lines[] = 'Nguoi tao du an: ' . $qby;
+        $lines[] = 'Nguoi thanh toan: ' . $byName . ' - ' . date('d/m/Y H:i', strtotime($now));
         $lines[] = '';
         $lines[] = 'File UNC: ' . $pub;
         $text = implode("\n", $lines);
 
-        $res = null;
-        if (strpos((string) $mime, 'image/') === 0) {
-            $res = zb_api('sendPhoto', array('chat_id' => $u['zalo_chat_id'], 'photo' => $pub, 'caption' => $text));
+        $sel = $pdo->prepare("SELECT zalo_chat_id FROM `app_users` WHERE id = ? AND active = 1");
+        foreach ($ids as $one) {
+            $sel->execute(array($one));
+            $chat = trim((string) $sel->fetchColumn());
+            if ($chat === '') continue;
+            $res = null;
+            if (strpos((string) $mime, 'image/') === 0) {
+                $res = zb_api('sendPhoto', array('chat_id' => $chat, 'photo' => $pub, 'caption' => $text));
+            }
+            if (!$res || empty($res['ok'])) zb_send($chat, $text);
         }
-        if (!$res || empty($res['ok'])) zb_send($u['zalo_chat_id'], $text);
     } catch (Exception $e) {} catch (Throwable $e) {}
 }
 

@@ -15,7 +15,7 @@
       r = V[i];
       k = r.code || ('#' + r.quotation_id);
       if (!m[k]) {
-        m[k] = { code: k, title: r.title, client: r.client_name, date: r.quotation_date,
+        m[k] = { code: k, title: r.title, client: r.client_name, date: r.quotation_date, by: r.quo_by || '',
                  rows: [], tot: 0, paid: 0 };
         out.push(m[k]);
       }
@@ -200,7 +200,9 @@
       '<td style="white-space:nowrap;color:var(--text3)">' + esc(dmy(r.quotation_date)) + '</td>' +
       '<td style="color:var(--text3)">·</td>' +
       '<td><span class="nm">' + esc(r.name) + '</span>' +
-        (r.description ? '<div class="sub">' + esc(r.description) + '</div>' : '') + '</td>' +
+        (r.description ? '<div class="sub">' + esc(r.description) + '</div>' : '') +
+      /* APSA1848: ai them dong chi phi nay */
+      (r.created_by_name ? '<div class="sub who">Th\u00eam b\u1edfi ' + esc(r.created_by_name) + '</div>' : '') + '</td>' +
       '<td class="pcell">' + payeeCell(r) + '</td>' +
       '<td class="num">' + fmt(r.qty) + '</td>' +
       '<td style="color:var(--text2)">' + esc(r.unit || '') + '</td>' +
@@ -229,6 +231,7 @@
         '<span class="gtitle">' + esc(g.title || '') + '</span>' +
         '<span class="gname">' + esc(g.client || '') + '</span>' +
         '<span class="gdate">' + esc(dmy(g.date)) + '</span>' +
+        (g.by ? '<span class="gname">\u00b7 T\u1ea1o b\u1edfi ' + esc(g.by) + '</span>' : '') +
         '<span class="spacer"></span>' +
         '<span class="gn">' + g.rows.length + ' khoản</span>' +
         (due > 0 ? '<span class="gdue">Chưa trả ' + fmt(due) + ' đ</span>' : '<span class="gok">✓ Đã trả đủ</span>') +
