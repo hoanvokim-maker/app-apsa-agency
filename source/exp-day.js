@@ -75,7 +75,7 @@
 /* ---- khoa dong chi phi da tra (quotation.html) ---- */
 (function () {
   'use strict';
-  var SEL = 'td:not(.exp-paidc):not(.exp-actc) input, td:not(.exp-paidc):not(.exp-actc) select';
+  var SEL = 'td:not(.exp-paidc):not(.exp-actc) input:not(.exp-desc), td:not(.exp-paidc):not(.exp-actc) select';
   function lockRows() {
     var box = document.getElementById('expWrap');
     if (!box) return;
@@ -87,6 +87,9 @@
       var paid = Number(r.paid) === 1;
       if (paid) trs[i].classList.add('exp-locked');
       else trs[i].classList.remove('exp-locked');
+      /* APSA1851: dong da tra van cho sua Mo ta */
+      var dsc = trs[i].querySelector('input.exp-desc');
+      if (dsc) { dsc.readOnly = false; dsc.disabled = false; dsc.title = paid ? 'Đã trả — chỉ sửa được mô tả' : ''; }
       var f = trs[i].querySelectorAll(SEL);
       for (var j = 0; j < f.length; j++) {
         if (f[j].tagName === 'SELECT' || f[j].type === 'date' || f[j].type === 'checkbox') f[j].disabled = paid;
@@ -111,7 +114,7 @@
   var st = document.createElement('style');
   st.textContent =
     'tr.exp-locked > td{background:rgba(255,255,255,.035)}' +
-    'tr.exp-locked input,tr.exp-locked select{cursor:not-allowed;opacity:.72}' +
+    'tr.exp-locked input:not(.exp-desc),tr.exp-locked select{cursor:not-allowed;opacity:.72}' +
     'tr.exp-locked button[onclick*="expDel"]{display:none}';
   (document.head || document.documentElement).appendChild(st);
 })();

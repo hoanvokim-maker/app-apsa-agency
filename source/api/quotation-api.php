@@ -2496,6 +2496,11 @@ case 'expenses-save': {
         $qOld = $pdo->prepare("SELECT id FROM `quotation_expenses` WHERE quotation_id = ?");
         $qOld->execute([$qid]);
         foreach ($qOld->fetchAll(PDO::FETCH_COLUMN) as $oid) $old[(int) $oid] = true;
+        /* APSA1851: dong da thanh toan chi cho phep sua Mo ta */
+        $paidRow = array();
+        $qPd = $pdo->prepare("SELECT * FROM `quotation_expenses` WHERE quotation_id = ? AND paid = 1");
+        $qPd->execute([$qid]);
+        foreach ($qPd->fetchAll(PDO::FETCH_ASSOC) as $pr0) $paidRow[(int)$pr0['id']] = $pr0;
 
         $ins = $pdo->prepare(
             "INSERT INTO `quotation_expenses`
@@ -2536,6 +2541,15 @@ case 'expenses-save': {
                 q_dateOf($r),
             );
             $rid = (int)($r['id'] ?? 0);
+            if ($rid > 0 && isset($paidRow[$rid])) {
+                /* APSA1851: giu nguyen so lieu da thanh toan */
+                $pr = $paidRow[$rid];
+                $v[2] = $pr['name']; $v[4] = $pr['qty']; $v[5] = $pr['unit'];
+                $v[6] = $pr['price']; $v[7] = $pr['vat_percent']; $v[9] = $pr['src_id'];
+                $v[10] = 1; $v[11] = $pr['payee_type']; $v[12] = $pr['payee_id'];
+                $v[13] = $pr['payee_name']; $v[14] = $pr['bank_name'];
+                $v[15] = $pr['bank_account']; $v[16] = $pr['bank_holder']; $v[17] = $pr['pay_date'];
+            }
             if ($rid > 0 && isset($old[$rid])) {
                 $u = $v; $u[] = $rid; $u[] = $qid;
                 $upd->execute($u);
@@ -2549,6 +2563,7 @@ case 'expenses-save': {
             }
         }
         $gone = array_diff(array_keys($old), array_keys($keep));
+        $gone = array_diff($gone, array_keys($paidRow));  /* APSA1851: khong xoa dong da tra */
         if ($gone) {
             $pdo->prepare("DELETE FROM `quotation_expenses` WHERE quotation_id = ? AND id IN ("
                 . implode(',', array_map('intval', $gone)) . ")")->execute([$qid]);
