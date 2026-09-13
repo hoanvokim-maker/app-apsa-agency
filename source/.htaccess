@@ -3,6 +3,9 @@
     RewriteEngine On
     RewriteRule ^u/([A-Za-z0-9_-]{3,32})/?$ /u.php?c=$1 [L,QSA]
     # Trang duyet video: render <title> + og:* phia server
+    # Frame Avatar: link ngan /f/<slug>
+    RewriteRule ^f/([A-Za-z0-9_-]{1,80})/?$ /f.php?e=$1 [L,QSA]
+    RewriteRule ^f\.html$ /f.php [L,QSA]
     RewriteRule ^review\.html$ /review.php [L,QSA]
     # Playlist duyet video: render <title> + og:* phia server
     RewriteRule ^playlist\.html$ /playlist.php [L,QSA]

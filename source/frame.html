@@ -38,7 +38,7 @@
   .b-soon { background: #2a3a52; color: #9ec7ff; }
   .b-end  { background: #3a2a2a; color: #ff9e9e; }
   .b-off  { background: #2a2a2a; color: #999; }
-  .fa-slug { font-size: 12px; color: var(--text2, #9a9a9a); margin-top: 5px; word-break: break-all; }
+  .fa-slug { font-size: 13px; color: #d4d4d4; margin-top: 6px; word-break: break-all; letter-spacing: .01em; }
   .fa-meta { font-size: 12px; color: var(--text2, #9a9a9a); margin-top: 9px; line-height: 1.7; }
   .fa-stat { display: flex; gap: 16px; margin-top: 11px; padding-top: 11px; border-top: 1px solid var(--line, #262626); }
   .fa-st b { display: block; font-size: 17px; font-weight: 700; }
@@ -204,7 +204,9 @@ function stateOf(e) {
   if (e.end_at && t > e.end_at) return ['b-end', 'Hết hạn', 'off'];
   return ['b-live', 'Đang chạy', ''];
 }
-function pubUrl(slug) { return location.origin + '/f.html' + Q + 'e=' + encodeURIComponent(slug); }
+function pubUrl(slug) { return location.origin + '/f/' + encodeURIComponent(slug); }
+/* APSA1856: hien thi link gon, bo https:// cho de doc */
+function pubShort(slug) { return location.host + '/f/' + slug; }
 
 async function load() {
   try {
@@ -227,7 +229,7 @@ function cardHtml(e) {
   return '<div class="fa-card ' + s[2] + '">' +
     '<div class="fa-top"><div class="fa-name">' + esc(e.name) + '</div>' +
       '<span class="fa-badge ' + s[0] + '">' + s[1] + '</span></div>' +
-    '<div class="fa-slug">' + esc(pubUrl(e.slug)) + '</div>' +
+    '<div class="fa-slug">' + esc(pubShort(e.slug)) + '</div>' +
     '<div class="fa-meta"><svg class="ic" viewBox="0 0 24 24"><use href="#g-calendar"/></svg> ' + esc(dates) + '<br><svg class="ic" viewBox="0 0 24 24"><use href="#g-image"/></svg> ' + (e.n_frames || 0) + ' khung</div>' +
     '<div class="fa-stat">' +
       '<div class="fa-st"><b>' + (e.views || 0) + '</b><span>lượt mở trang</span></div>' +

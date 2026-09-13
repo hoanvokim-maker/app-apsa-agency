@@ -115,8 +115,21 @@
 
 <script>
 var Q = String.fromCharCode(63);
-var API = './api/frame-api.php';
-var SLUG = new URLSearchParams(location.search).get('e') || '';
+var API = '/api/frame-api.php';
+
+/* APSA1857: may tinh -> tai thang file ve; dien thoai -> mo bang chia se de luu vao Anh */
+var IS_TOUCH = (function () {
+  try { if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return true; } catch (e) {}
+  return /Android|iPhone|iPad|iPod|Mobile|Silk/i.test(navigator.userAgent || '');
+})();
+
+/* APSA1857: lay slug tu ?e= hoac tu link ngan /f/<slug> */
+var SLUG = (function () {
+  var q = new URLSearchParams(location.search).get('e') || '';
+  if (q) return q;
+  var m = /^\/f\/([A-Za-z0-9_-]{1,80})\/?$/.exec(location.pathname || '');
+  return m ? decodeURIComponent(m[1]) : '';
+})();
 var EV = null, FRAMES = [], filter = 'all';
 var curFrame = null, frameImg = null, photo = null;
 var tx = 0, ty = 0, sc = 1, rot = 0;
@@ -328,7 +341,7 @@ el('saveBtn').addEventListener('click', async function () {
   var name = fileName();
   var file = null;
   try { file = new File([blobOut], name, { type: 'image/png' }); } catch (e) { file = null; }
-  if (file && navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
+  if (IS_TOUCH && file && navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
     try {
       await navigator.share({ files: [file], title: EV.name });
       countUse();
@@ -353,6 +366,15 @@ function countUse() {
 el('backBtn').addEventListener('click', function () {
   el('done').classList.remove('on');
 });
+
+/* APSA1857: doi nhan nut + huong dan theo thiet bi */
+(function () {
+  if (IS_TOUCH) return;
+  var bt = document.getElementById('saveBtn');
+  var ht = document.getElementById('saveHint');
+  if (bt) bt.innerHTML = bt.innerHTML.replace('Lưu ảnh', 'Tải ảnh về máy');
+  if (ht) ht.innerHTML = 'Ảnh PNG sẽ được tải về thư mục <b>Downloads</b> của máy.';
+})();
 
 boot();
 </script>
