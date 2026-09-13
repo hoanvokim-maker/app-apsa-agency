@@ -2141,7 +2141,7 @@ CREATE TABLE `frame_events` (
 
 LOCK TABLES `frame_events` WRITE;
 /*!40000 ALTER TABLE `frame_events` DISABLE KEYS */;
-INSERT INTO `frame_events` VALUES (2,'blood-cancer-awareness','Blood-Cancer-Awareness','','2026-09-13','2026-10-22',1,12,0,'Harris','2026-09-13 15:14:49');
+INSERT INTO `frame_events` VALUES (2,'blood-cancer-awareness','Blood-Cancer-Awareness','','2026-09-13','2026-10-22',1,16,2,'Harris','2026-09-13 15:14:49');
 /*!40000 ALTER TABLE `frame_events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2174,8 +2174,8 @@ CREATE TABLE `frame_items` (
 
 LOCK TABLES `frame_items` WRITE;
 /*!40000 ALTER TABLE `frame_items` DISABLE KEYS */;
-INSERT INTO `frame_items` VALUES (4,2,'blood tree1','1:1','uploads/frames/2/f2-7dbc9b073e0d.png',900,900,1,0,'2026-09-13 15:15:52');
-INSERT INTO `frame_items` VALUES (5,2,'blood tree2','1:1','uploads/frames/2/f2-2b83252b6db9.png',900,900,2,0,'2026-09-13 15:15:52');
+INSERT INTO `frame_items` VALUES (4,2,'blood tree1','1:1','uploads/frames/2/f2-7dbc9b073e0d.png',900,900,1,1,'2026-09-13 15:15:52');
+INSERT INTO `frame_items` VALUES (5,2,'blood tree2','1:1','uploads/frames/2/f2-2b83252b6db9.png',900,900,2,1,'2026-09-13 15:15:52');
 INSERT INTO `frame_items` VALUES (6,2,'blood tree3','1:1','uploads/frames/2/f2-84f4f67000c7.png',900,900,3,0,'2026-09-13 15:15:52');
 INSERT INTO `frame_items` VALUES (7,2,'ribbon 1','1:1','uploads/frames/2/f2-1d370762ea92.png',900,900,4,0,'2026-09-13 15:15:52');
 INSERT INTO `frame_items` VALUES (8,2,'ribbon 2','1:1','uploads/frames/2/f2-404cc29a49f1.png',900,900,5,0,'2026-09-13 15:15:52');

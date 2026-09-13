@@ -1,7 +1,20 @@
 {
-    "version": "1.9.22",
+    "version": "2.0.0",
     "updated": "2026-09-13",
     "releases": [
+        {
+            "v": "2.0",
+            "date": "2026-09-13",
+            "note": "Phiên bản 2.0",
+            "items": [
+                {
+                    "d": "2026-09-13",
+                    "v": "2.0.0",
+                    "t": "Mốc phiên bản 2.0 — chốt toàn bộ tính năng nhánh 1.9 (nhật ký hoạt động, khoá chi phí đã trả, Frame Avatar, đồng bộ giao diện)",
+                    "by": "mee53661"
+                }
+            ]
+        },
         {
             "v": "1.9",
             "date": "2026-09-11",
