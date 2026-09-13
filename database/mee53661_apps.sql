@@ -707,7 +707,7 @@ CREATE TABLE `app_notifications` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `idx_user` (`user_id`,`is_read`,`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=103 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -810,6 +810,8 @@ INSERT INTO `app_notifications` VALUES (99,1,'project_closed','Đã đóng dự 
 INSERT INTO `app_notifications` VALUES (100,1,'project_closed','Đã đóng dự án 13032026-38','Harris vừa đóng dự án “AZ-R&I-Saphnelo-Launching”. Từ giờ không ai sửa được cho tới khi Admin mở lại.','https://app.apsa.agency/quotation.html?q=13032026-38','Harris',1,'2026-09-11 05:30:53');
 INSERT INTO `app_notifications` VALUES (101,1,'leave_new','Đổi ngày đơn nghỉ — Thảo Lý','Thảo Lý đổi đơn nghỉ đã duyệt: 17/10/2026 → 19/09/2026. Cần duyệt lại.','/leave.html?id=18','Thảo Lý',1,'2026-09-11 07:04:41');
 INSERT INTO `app_notifications` VALUES (102,3,'leave_approved','Đã duyệt: Phép năm — Thảo Lý','Harris đã duyệt đơn nghỉ 19/09/2026 của bạn.','/leave.html?id=18','Harris',1,'2026-09-11 07:10:54');
+INSERT INTO `app_notifications` VALUES (103,1,'leave_new','Đăng ký mới: Work From Somewhere — Thảo Lý','Thảo Lý đăng ký Work From Somewhere 1 ngày: 14/09/2026','/leave.html?id=22','Thảo Lý',0,'2026-09-13 14:11:31');
+INSERT INTO `app_notifications` VALUES (104,3,'leave_approved','Đã duyệt: Work From Somewhere — Thảo Lý','Harris đã duyệt đơn Work From Somewhere 14/09/2026 của bạn.','/leave.html?id=22','Harris',0,'2026-09-13 14:21:35');
 /*!40000 ALTER TABLE `app_notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -939,7 +941,7 @@ CREATE TABLE `app_users` (
 
 LOCK TABLES `app_users` WRITE;
 /*!40000 ALTER TABLE `app_users` DISABLE KEYS */;
-INSERT INTO `app_users` VALUES (1,'admin','$2y$10$tgjxDVP41TkZC7QgOnnIbuaB8HFuMpI8iZCJQTqih1BFPVh6ksnU2','Harris','admin',1,'2026-08-05 16:47:25','2026-09-13 01:56:09','2026-09-13 01:56:09','account','inhouse',1,'0939399755','','','4a984eea65a98cf7d5b8','Harris Vo','2026-08-26 11:54:06',NULL,NULL,'Võ Kim Hoàn','Techcombank','390317301221','VO KIM HOAN','',NULL,'sloth');
+INSERT INTO `app_users` VALUES (1,'admin','$2y$10$tgjxDVP41TkZC7QgOnnIbuaB8HFuMpI8iZCJQTqih1BFPVh6ksnU2','Harris','admin',1,'2026-08-05 16:47:25','2026-09-13 14:41:57','2026-09-13 14:41:57','account','inhouse',1,'0939399755','','','4a984eea65a98cf7d5b8','Harris Vo','2026-08-26 11:54:06',NULL,NULL,'Võ Kim Hoàn','Techcombank','390317301221','VO KIM HOAN','',NULL,'sloth');
 INSERT INTO `app_users` VALUES (3,'thaoly','$2y$10$apwNXhmb03WC5brdnZnV2unSiF6fKbehZHlK2/lojsPd4MtBAB3LS','Thảo Lý','member',1,'2026-08-11 04:37:01','2026-09-08 03:42:54','2026-09-08 03:42:54','account','inhouse',1,'0359151858‬','','','639651dd5d97b4c9ed86','Nguyên Thảo','2026-08-26 12:00:43',NULL,NULL,'Lý Nguyễn Nguyên Thảo','VietinBank','0359151858','LY NGUYEN NGUYEN THAO','',NULL,'cat');
 INSERT INTO `app_users` VALUES (4,'trangdo','$2y$10$1Dj1IZCt0H6BNWX/DmN0LulFIoMya7pYPc0PedQJmsleIOSfIFfni','Trang Đỗ','member',1,'2026-08-11 04:37:51','2026-09-12 04:37:22','2026-09-12 04:37:22','admin','inhouse',1,'0899144286','','','4235f4df0980e0deb991','Trang','2026-08-26 12:08:03',NULL,NULL,'Đỗ Thảo Trang','Vietcombank','0071001172146','DO THAO TRANG','','','whale');
 INSERT INTO `app_users` VALUES (5,'nhattan','$2y$10$W8tp/Ef.JYD/V.XURuNJseFsfThk2KGlZM71rxdupY6chvGTv9Ep.','Nhật Tân','member',1,'2026-08-11 04:38:13','2026-09-08 01:48:49','2026-09-08 01:48:49','account','inhouse',1,'0901975356‬','','','61f88bb9bff556ab0fe4','Nhật Tân','2026-08-26 12:00:09',NULL,NULL,'Nguyễn Nhật Tân','TPBank','0901975356','NGUYEN NHAT TAN','',NULL,'');
@@ -1077,7 +1079,7 @@ CREATE TABLE `badminton_registrations` (
   PRIMARY KEY (`id`),
   KEY `idx_category` (`category`),
   KEY `idx_created` (`created_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1096,6 +1098,7 @@ INSERT INTO `badminton_registrations` VALUES (10,'doi_nam_nu','Organon','Đào N
 INSERT INTO `badminton_registrations` VALUES (11,'doi_nam_nu','Organon','Nguyễn Hoàng Tân','Đậu Đặng Minh Hằng','0703182210',NULL,'171.236.49.215','2026-08-25 05:37:24');
 INSERT INTO `badminton_registrations` VALUES (12,'doi_nam','Friends','Lê Quang Trí','Lê Quang Minh','0983111079',NULL,'27.74.138.16','2026-08-28 11:16:39');
 INSERT INTO `badminton_registrations` VALUES (13,'doi_nam_nu','AstraZeneca','Trình Đức Thụ','Nguyễn Thị Thanh Phương','0389964956',NULL,'171.253.250.58','2026-09-11 08:36:43');
+INSERT INTO `badminton_registrations` VALUES (14,'doi_nam_nu','Friends','Phạm Hoàng Huyền Trân','TBC','0983111079',NULL,'171.232.188.170','2026-09-13 14:49:18');
 /*!40000 ALTER TABLE `badminton_registrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2129,7 +2132,7 @@ CREATE TABLE `frame_events` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `u_slug` (`slug`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2138,6 +2141,7 @@ CREATE TABLE `frame_events` (
 
 LOCK TABLES `frame_events` WRITE;
 /*!40000 ALTER TABLE `frame_events` DISABLE KEYS */;
+INSERT INTO `frame_events` VALUES (2,'blood-cancer-awareness','Blood-Cancer-Awareness','','2026-09-13','2026-10-22',1,5,0,'Harris','2026-09-13 15:14:49');
 /*!40000 ALTER TABLE `frame_events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2161,7 +2165,7 @@ CREATE TABLE `frame_items` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `k_ev` (`event_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2170,6 +2174,11 @@ CREATE TABLE `frame_items` (
 
 LOCK TABLES `frame_items` WRITE;
 /*!40000 ALTER TABLE `frame_items` DISABLE KEYS */;
+INSERT INTO `frame_items` VALUES (4,2,'blood tree1','1:1','uploads/frames/2/f2-7dbc9b073e0d.png',900,900,1,0,'2026-09-13 15:15:52');
+INSERT INTO `frame_items` VALUES (5,2,'blood tree2','1:1','uploads/frames/2/f2-2b83252b6db9.png',900,900,2,0,'2026-09-13 15:15:52');
+INSERT INTO `frame_items` VALUES (6,2,'blood tree3','1:1','uploads/frames/2/f2-84f4f67000c7.png',900,900,3,0,'2026-09-13 15:15:52');
+INSERT INTO `frame_items` VALUES (7,2,'ribbon 1','1:1','uploads/frames/2/f2-1d370762ea92.png',900,900,4,0,'2026-09-13 15:15:52');
+INSERT INTO `frame_items` VALUES (8,2,'ribbon 2','1:1','uploads/frames/2/f2-404cc29a49f1.png',900,900,5,0,'2026-09-13 15:15:52');
 /*!40000 ALTER TABLE `frame_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2398,7 +2407,7 @@ CREATE TABLE `leave_requests` (
   KEY `ix_user` (`user_id`),
   KEY `ix_status` (`status`),
   KEY `ix_start` (`start_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2423,6 +2432,7 @@ INSERT INTO `leave_requests` VALUES (18,3,'Thảo Lý','','annual','2026-09-19',
 INSERT INTO `leave_requests` VALUES (19,7,'Anh Thư','account3@apsa.agency','other','2026-09-07','pm','2026-09-07','pm',1,0.5,'em xin về sớm tầm 4h chìu do nhà có tang','','approved',1,'Harris','2026-09-06 23:59:51','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABV6TjJAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABV6TjJAAA%3D&exvsurl=1&path=/calendar/item','2026-09-06 22:49:56','2026-09-06 23:59:52');
 INSERT INTO `leave_requests` VALUES (20,9,'Tiên Tiên','','work_from_home','2026-09-07','full','2026-09-07','full',1,1.0,'đau bụng tháng + đừ người ạ','tiên vẫn làm bình thường ở nhà','approved',1,'Harris','2026-09-07 06:29:43','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABV6TjLAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABV6TjLAAA%3D&exvsurl=1&path=/calendar/item','2026-09-07 06:09:42','2026-09-07 06:29:44');
 INSERT INTO `leave_requests` VALUES (21,7,'Anh Thư','account3@apsa.agency','work_from_home','2026-09-08','full','2026-09-08','full',1,1.0,'nhà có việc','','approved',1,'Harris','2026-09-08 10:36:33','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABV6TjSAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABV6TjSAAA%3D&exvsurl=1&path=/calendar/item','2026-09-08 05:29:24','2026-09-08 10:36:38');
+INSERT INTO `leave_requests` VALUES (22,3,'Thảo Lý','','work_from_home','2026-09-14','full','2026-09-14','full',1,1.0,'Chiều 1h45 em có mặt ở J&J nhe','','approved',1,'Harris','2026-09-13 21:21:34','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABahF4hAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABahF4hAAA%3D&exvsurl=1&path=/calendar/item','2026-09-13 21:11:31','2026-09-13 21:21:35');
 /*!40000 ALTER TABLE `leave_requests` ENABLE KEYS */;
 UNLOCK TABLES;
 

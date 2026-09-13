@@ -1,5 +1,5 @@
 {
-    "version": "1.9.19",
+    "version": "1.9.20",
     "updated": "2026-09-13",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-11",
             "note": "Phiên bản 1.9",
             "items": [
+                {
+                    "d": "2026-09-13",
+                    "v": "1.9.20",
+                    "t": "Frame Avatar: doi icon emoji sang icon SVG dong bo; trang cong khai f.html bo cuc 2 cot (khung trai - anh phai) tren may tinh, dien thoai anh tren khung duoi",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-13",
                     "v": "1.9.19",
