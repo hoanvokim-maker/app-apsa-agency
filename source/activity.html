@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script>
+  document.documentElement.style.visibility = 'hidden';
+  fetch('./api/auth-api.php?action=me', { credentials: 'same-origin' })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(res => {
+      if (!res.ok) throw new Error();
+      window.__APSA_USER = res.data;
+      document.documentElement.style.visibility = 'visible';
+    })
+    .catch(() => {
+      location.replace('./login.html?next=' + encodeURIComponent(location.pathname + location.search));
+    });
+</script>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=1">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=1">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#dff20d">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nhật ký hoạt động — APSA</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #000000; --bg2: #0b0b0b; --bg3: #141414; --bg4: #1c1c1c;
+      --border: rgba(255,255,255,0.08); --border-h: rgba(255,255,255,0.16);
+      --text: #ffffff; --text2: #9a9a9a; --text3: #5e5e5e;
+      --accent: #dff20d; --accent2: #c9dd00; --glow: rgba(223,242,13,0.28);
+      --green: #dff20d; --orange: #ffffff; --pink: #c9dd00;
+      --cyan: #ffffff; --yellow: #dff20d; --red: #ff4d4d;
+      --r: 11px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Oxanium', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(0,0,0,0.9); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      height: 60px; padding: 0 28px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo img { height: 26px; filter: brightness(0) invert(1); opacity: .9; display: block; }
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      color: var(--text2); text-decoration: none; font-size: 13px; font-weight: 500;
+      padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); transition: all .2s;
+    }
+    .back-btn:hover { color: var(--text); border-color: var(--border-h); }
+
+    /* ── PAGE HEAD ── */
+    .page-head { padding: 32px 28px 20px; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+    .page-head h1 { font-size: 26px; font-weight: 800; letter-spacing: -.5px; }
+    .page-head p  { font-size: 13px; color: var(--text2); margin-top: 4px; }
+    .head-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip { background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 14px; font-size: 12px; color: var(--text2); }
+    .chip strong { color: var(--text); }
+
+    /* ── TOOLBAR ── */
+    .toolbar { padding: 0 28px 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .search-wrap { position: relative; flex: 1; min-width: 200px; max-width: 340px; }
+    .search-wrap svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text3); pointer-events: none; }
+    .search-input { width: 100%; background: var(--bg2); border: 1px solid var(--border); border-radius: 9px; padding: 8px 12px 8px 34px; color: var(--text); font-size: 13px; font-family: inherit; outline: none; transition: border-color .2s; }
+    .search-input:focus { border-color: rgba(223,242,13,.5); }
+    .search-input::placeholder { color: var(--text3); }
+    .fsel { background: var(--bg2); border: 1px solid var(--border); border-radius: 9px; padding: 8px 12px; color: var(--text2); font-size: 13px; font-family: inherit; outline: none; cursor: pointer; }
+    .fsel:focus { border-color: rgba(223,242,13,.4); }
+    .ml { margin-left: auto; }
+    .btn { padding: 8px 15px; border-radius: 9px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; border: none; transition: all .2s; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-p { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; box-shadow: 0 0 12px var(--glow); }
+    .btn-p:hover { transform: translateY(-1px); box-shadow: 0 4px 18px var(--glow); }
+    .btn-g { background: var(--bg2); border: 1px solid var(--border); color: var(--text2); }
+    .btn-g:hover { color: var(--text); border-color: var(--border-h); }
+
+    /* ── TABLE ── */
+    .tbl-wrap { padding: 0 28px 40px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 700px; }
+    thead tr { border-bottom: 1px solid var(--border); }
+    th { padding: 9px 14px; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: .9px; text-transform: uppercase; color: var(--text3); white-space: nowrap; }
+    td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tbody tr:hover td { background: rgba(255,255,255,.02); }
+    tbody tr:last-child td { border-bottom: none; }
+
+    /* platform pill */
+    .plat-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 11px; border-radius: 20px; font-size: 12px; font-weight: 600;
+      background: var(--pill-bg, var(--bg3)); color: var(--pill-fg, var(--text2));
+      white-space: nowrap;
+    }
+
+    /* username cell */
+    .user-cell { display: flex; align-items: center; gap: 8px; }
+    .user-val { font-weight: 500; color: var(--text); font-size: 13px; word-break: break-all; }
+    .copy-btn {
+      flex-shrink: 0; width: 26px; height: 26px; border-radius: 6px;
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text3); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: all .15s;
+    }
+    .copy-btn:hover { color: var(--accent2); border-color: var(--accent); }
+
+    /* password cell */
+    .pw-cell { display: flex; align-items: center; gap: 6px; }
+    .pw-dots { font-size: 14px; letter-spacing: 2px; color: var(--text3); user-select: none; }
+    .pw-val  { font-size: 13px; color: var(--text); font-family: monospace; word-break: break-all; }
+    .eye-btn {
+      flex-shrink: 0; width: 26px; height: 26px; border-radius: 6px;
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text3); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: all .15s;
+    }
+    .eye-btn:hover { color: var(--text); border-color: var(--border-h); }
+
+    /* assigned chips */
+    .assigned-wrap { display: flex; flex-wrap: wrap; gap: 4px; }
+    .person-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 20px; padding: 2px 9px 2px 4px;
+      font-size: 12px; color: var(--text2);
+    }
+    .person-chip .dot { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #fff; flex-shrink: 0; }
+
+    /* action buttons */
+    .row-act { display: flex; gap: 5px; }   /* APSA1852: doi ten de khong dinh .act cua theme.css */
+    .ico-btn { height: 30px; padding: 0 10px; border-radius: 8px; background: var(--bg3); border: 1px solid var(--border); color: var(--text2); cursor: pointer; display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; font-family: inherit; white-space: nowrap; transition: all .15s; }
+    .ico-btn:hover { border-color: var(--border-h); color: var(--text); background: var(--bg4); }
+    .ico-btn.del:hover { background: rgba(255,77,77,.12); border-color: rgba(255,77,77,.3); color: var(--red); }
+
+    .note-text { font-size: 11px; color: var(--text3); max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* ── MODAL ── */
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.72); backdrop-filter: blur(8px); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+    .overlay.open { display: flex; }
+    .modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 18px; padding: 28px; width: 100%; max-width: 500px; max-height: 92vh; overflow-y: auto; position: relative; }
+    .modal::-webkit-scrollbar { width: 4px; }
+    .modal::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 4px; }
+    .modal-x { position: absolute; top: 14px; right: 14px; width: 28px; height: 28px; border-radius: 50%; background: var(--bg3); border: 1px solid var(--border); color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 15px; transition: all .2s; }
+    .modal-x:hover { color: var(--text); }
+    .modal h2 { font-size: 17px; font-weight: 700; margin-bottom: 3px; }
+    .modal-sub { font-size: 12px; color: var(--text2); margin-bottom: 22px; }
+    .sec-title { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text3); margin: 18px 0 10px; padding-bottom: 7px; border-bottom: 1px solid var(--border); }
+    .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .fg { margin-bottom: 10px; }
+    .fg label { display: block; font-size: 11px; font-weight: 600; color: var(--text2); margin-bottom: 5px; }
+    .fg input, .fg select, .fg textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 9px; padding: 9px 12px; color: var(--text); font-size: 13px; font-family: inherit; outline: none; transition: border-color .2s; }
+    .fg input:focus, .fg select:focus, .fg textarea:focus { border-color: rgba(223,242,13,.5); }
+    .fg input::placeholder, .fg textarea::placeholder { color: var(--text3); }
+    .fg textarea { resize: none; }
+
+    /* password input with toggle */
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 38px; }
+    .pw-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text3); cursor: pointer; padding: 0; display: flex; }
+    .pw-toggle:hover { color: var(--text); }
+
+    /* assigned people */
+    .people-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+    .person-row { display: flex; align-items: center; gap: 8px; background: var(--bg3); border: 1px solid var(--border); border-radius: 9px; padding: 8px 10px; }
+    .person-row input { flex: 1; background: none; border: none; color: var(--text); font-size: 13px; font-family: inherit; outline: none; }
+    .person-row input::placeholder { color: var(--text3); }
+    .person-row select { flex: 1; background: none; border: none; color: var(--text); font-size: 13px; font-family: inherit; outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; }
+    .person-row select option { background: var(--bg3); color: var(--text); }
+    .person-row select option[value=""] { color: var(--text3); }
+    .person-color { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; cursor: pointer; border: 2px solid rgba(255,255,255,.2); }
+    .remove-person { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 16px; line-height: 1; padding: 0 2px; transition: color .15s; }
+    .remove-person:hover { color: var(--red); }
+    .add-person-btn { display: flex; align-items: center; gap: 6px; background: var(--bg3); border: 1px dashed var(--border); border-radius: 9px; padding: 8px 12px; font-size: 12px; color: var(--text3); cursor: pointer; width: 100%; transition: all .2s; font-family: inherit; }
+    .add-person-btn:hover { border-color: var(--accent); color: var(--accent2); }
+
+    .modal-foot { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+
+    /* ── PLATFORM COLORS ── */
+    /* defined inline via data */
+
+    /* ── EMPTY ── */
+    .empty { text-align: center; padding: 56px 24px; color: var(--text3); }
+    .empty .ico { font-size: 44px; margin-bottom: 10px; }
+    .empty p { font-size: 14px; }
+
+    /* ── TOAST ── */
+    .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(70px); background: var(--bg3); border: 1px solid var(--border); border-radius: 30px; padding: 9px 18px; font-size: 13px; color: var(--text); transition: transform .28s cubic-bezier(.34,1.56,.64,1); z-index: 999; pointer-events: none; white-space: nowrap; }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 640px) {
+      .page-head, .toolbar, .tbl-wrap { padding-left: 16px; padding-right: 16px; }
+      .frow { grid-template-columns: 1fr; }
+    }
+  </style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/theme.css?v=23" />
+<script src="/apsa-ui.js?v=40"></script>
+  <script src="/perm-guard.js?v=3"></script>
+
+<style>
+.alog td{ vertical-align:top; }
+.alog .tm{ white-space:nowrap; color:var(--text2); font-size:12px; }
+.alog .who{ font-weight:700; white-space:nowrap; }
+.alog .dt{ color:var(--text3); font-size:12px; word-break:break-word; }
+.area-tag{ display:inline-block; font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; white-space:nowrap; }
+.area-quotation{ color:#dff20d; background:rgba(223,242,13,.12); border:1px solid rgba(223,242,13,.3); }
+.area-checklist{ color:#7aa2ff; background:rgba(122,162,255,.12); border:1px solid rgba(122,162,255,.3); }
+.area-expense{ color:#ff9f40; background:rgba(255,159,64,.12); border:1px solid rgba(255,159,64,.3); }
+.area-review{ color:#c792ea; background:rgba(199,146,234,.12); border:1px solid rgba(199,146,234,.3); }
+.area-liq{ color:#4ade80; background:rgba(74,222,128,.12); border:1px solid rgba(74,222,128,.3); }
+.area-ratecard{ color:#22d3ee; background:rgba(34,211,238,.12); border:1px solid rgba(34,211,238,.3); }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="./index.html">
+    <img src="./Logo rectange.png" alt="APSA" onerror="this.style.display='none'" />
+  </a>
+  <a class="back-btn" href="./index.html">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Trang chủ
+  </a>
+</header>
+<div class="page-head">
+  <div>
+    <h1>Nhật ký hoạt động</h1>
+    <p>Mọi thay đổi của nhân viên trên dự án, báo giá, nghiệm thu, rate card, checklist và chi phí đều được ghi lại.</p>
+  </div>
+  <div class="head-chips">
+    <div class="chip">Tổng: <strong id="cTotal">0</strong> lượt</div>
+    <div class="chip">Đang xem: <strong id="cShown">0</strong></div>
+  </div>
+</div>
+
+<div class="card filters" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px;margin-bottom:14px">
+  <input id="fQ" placeholder="Tìm mã dự án, người dùng, nội dung…" style="flex:1;min-width:230px;height:34px;border-radius:9px;padding:0 12px" />
+  <select id="fArea" style="height:34px;border-radius:9px;padding:0 10px">
+    <option value="all">Tất cả nhóm</option>
+    <option value="quotation">Dự án / Báo giá</option>
+    <option value="checklist">Checklist</option>
+    <option value="expense">Chi phí</option>
+    <option value="review">Duyệt báo giá</option>
+    <option value="liq">Nghiệm thu</option>
+    <option value="ratecard">Rate card</option>
+  </select>
+  <select id="fUser" style="height:34px;border-radius:9px;padding:0 10px"><option value="">Tất cả người dùng</option></select>
+  <input type="date" id="fFrom" style="height:34px;border-radius:9px;padding:0 10px" />
+  <input type="date" id="fTo" style="height:34px;border-radius:9px;padding:0 10px" />
+  <button class="btn" onclick="resetFlt()">Xoá lọc</button>
+</div>
+
+<div class="card" style="padding:0;overflow:auto">
+  <table class="alog" style="width:100%;border-collapse:collapse">
+    <thead>
+      <tr>
+        <th style="width:150px">Thời gian</th>
+        <th style="width:150px">Người thực hiện</th>
+        <th style="width:130px">Nhóm</th>
+        <th style="width:210px">Thao tác</th>
+        <th style="width:230px">Dự án</th>
+        <th>Chi tiết</th>
+      </tr>
+    </thead>
+    <tbody id="tb"></tbody>
+  </table>
+  <div id="emptyState" class="empty hidden" style="padding:28px;text-align:center">Chưa có hoạt động nào khớp bộ lọc.</div>
+  <div style="padding:12px;text-align:center">
+    <button class="btn" id="moreBtn" onclick="loadMore()" style="display:none">Xem thêm</button>
+  </div>
+</div>
+
+<script>
+const API = './api/quotation-api.php';
+const AREA_VN = { quotation:'Dự án / Báo giá', checklist:'Checklist', expense:'Chi phí', review:'Duyệt báo giá', liq:'Nghiệm thu', ratecard:'Rate card' };
+let OFF = 0, TOTAL = 0, SHOWN = 0, BUSY = false;
+
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function el(id){ return document.getElementById(id); }
+function fmtTime(s){
+  if (!s) return '—';
+  const d = new Date(String(s).replace(' ', 'T'));
+  if (isNaN(d)) return esc(s);
+  const p = n => String(n).padStart(2, '0');
+  return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+function qs(){
+  const u = new URLSearchParams();
+  u.set('action', 'activity');
+  u.set('limit', '100');
+  u.set('offset', String(OFF));
+  const q = el('fQ').value.trim();      if (q) u.set('q', q);
+  const a = el('fArea').value;          if (a && a !== 'all') u.set('area', a);
+  const us = el('fUser').value;         if (us) u.set('user', us);
+  const f = el('fFrom').value;          if (f) u.set('from', f);
+  const t = el('fTo').value;            if (t) u.set('to', t);
+  return u.toString();
+}
+function rowHtml(r){
+  const ar = r.area || '';
+  const code = r.quo_code ? '<a href="./quotation.html?q=' + encodeURIComponent(r.quo_code) + '">' + esc(r.quo_code) + '</a>' : '—';
+  const tt = r.quo_title ? '<div class="dt">' + esc(r.quo_title) + '</div>' : '';
+  return '<tr>'
+    + '<td class="tm">' + fmtTime(r.created_at) + '</td>'
+    + '<td class="who">' + esc(r.user_name || ('#' + (r.user_id || 0))) + '</td>'
+    + '<td><span class="area-tag area-' + esc(ar) + '">' + esc(AREA_VN[ar] || ar || '—') + '</span></td>'
+    + '<td>' + esc(r.label || r.action || '') + '</td>'
+    + '<td>' + code + tt + '</td>'
+    + '<td class="dt">' + esc(r.detail || '') + '</td>'
+    + '</tr>';
+}
+async function load(reset){
+  if (BUSY) return; BUSY = true;
+  if (reset) { OFF = 0; SHOWN = 0; el('tb').innerHTML = ''; }
+  try {
+    const res = await fetch(API + '?' + qs(), { credentials: 'same-origin' });
+    const d = await res.json();
+    if (!d.ok) throw new Error(d.error || 'Không tải được nhật ký');
+    const rows = d.data.rows || [];
+    TOTAL = Number(d.data.total || 0);
+    el('tb').insertAdjacentHTML('beforeend', rows.map(rowHtml).join(''));
+    SHOWN += rows.length; OFF += rows.length;
+    el('cTotal').textContent = TOTAL.toLocaleString('vi-VN');
+    el('cShown').textContent = SHOWN.toLocaleString('vi-VN');
+    el('emptyState').classList.toggle('hidden', SHOWN > 0);
+    el('moreBtn').style.display = (SHOWN < TOTAL) ? '' : 'none';
+    if (!el('fUser').dataset.filled && d.data.users) {
+      el('fUser').insertAdjacentHTML('beforeend', d.data.users
+        .map(u => '<option value="' + esc(u.user_id) + '">' + esc(u.user_name || ('#' + u.user_id)) + ' (' + esc(u.n) + ')</option>').join(''));
+      el('fUser').dataset.filled = '1';
+    }
+  } catch (e) {
+    el('tb').innerHTML = '<tr><td colspan="6" style="padding:20px;color:#ff6b6b">' + esc(e.message) + '</td></tr>';
+  }
+  BUSY = false;
+}
+function loadMore(){ load(false); }
+function resetFlt(){
+  ['fQ','fFrom','fTo'].forEach(i => el(i).value = '');
+  el('fArea').value = 'all'; el('fUser').value = '';
+  load(true);
+}
+let TMR = null;
+['fQ'].forEach(i => el(i).addEventListener('input', () => { clearTimeout(TMR); TMR = setTimeout(() => load(true), 300); }));
+['fArea','fUser','fFrom','fTo'].forEach(i => el(i).addEventListener('change', () => load(true)));
+(function(){
+  const u = new URLSearchParams(location.search);
+  if (u.get('qid')) { /* mo tu 1 du an cu the */ }
+  load(true);
+})();
+</script>
+</body>
+</html>

@@ -18,8 +18,9 @@
 
 require_once __DIR__ . '/db-config.php';
 require_once __DIR__ . '/session-boot.php';
+require_once __DIR__ . '/act-log.php';   /* APSA1854: nhat ky hoat dong */
 
-function q_ok($data)             { header('Content-Type: application/json; charset=utf-8'); echo json_encode(['ok' => true, 'data' => $data], JSON_UNESCAPED_UNICODE); exit; }
+function q_ok($data)             { al_auto(); header('Content-Type: application/json; charset=utf-8'); echo json_encode(['ok' => true, 'data' => $data], JSON_UNESCAPED_UNICODE); exit; }
 function q_fail($msg, $code=400) { header('Content-Type: application/json; charset=utf-8'); http_response_code($code); echo json_encode(['ok'=>false,'error'=>$msg], JSON_UNESCAPED_UNICODE); exit; }
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
@@ -2644,6 +2645,37 @@ case 'expenses-import': {
 }
 
 // Trang Làm việc: danh sách DỰ ÁN đang thực hiện + người thực hiện của từng dự án
+/* APSA1854: nhat ky hoat dong */
+case 'activity': {
+    if (!qc_is_admin()) q_fail('Chỉ quản trị viên xem được nhật ký.', 403);
+    al_migrate($pdo);
+    $w = array('1=1'); $p = array();
+    $uid = (int)($_GET['user'] ?? 0);   if ($uid > 0) { $w[] = 'a.user_id = ?'; $p[] = $uid; }
+    $ar = trim((string)($_GET['area'] ?? ''));
+    if ($ar !== '' && $ar !== 'all') { $w[] = 'a.area = ?'; $p[] = $ar; }
+    $qid = (int)($_GET['qid'] ?? 0);    if ($qid > 0) { $w[] = 'a.quotation_id = ?'; $p[] = $qid; }
+    $fr = trim((string)($_GET['from'] ?? '')); if ($fr !== '') { $w[] = 'a.created_at >= ?'; $p[] = $fr . ' 00:00:00'; }
+    $to = trim((string)($_GET['to'] ?? ''));   if ($to !== '') { $w[] = 'a.created_at <= ?'; $p[] = $to . ' 23:59:59'; }
+    $kw = trim((string)($_GET['q'] ?? ''));
+    if ($kw !== '') {
+        $w[] = '(a.quo_code LIKE ? OR a.label LIKE ? OR a.detail LIKE ? OR a.user_name LIKE ?)';
+        $lk = '%' . $kw . '%'; $p[] = $lk; $p[] = $lk; $p[] = $lk; $p[] = $lk;
+    }
+    $lim = (int)($_GET['limit'] ?? 200); if ($lim < 1 || $lim > 1000) $lim = 200;
+    $off = (int)($_GET['offset'] ?? 0);  if ($off < 0) $off = 0;
+    $wh = implode(' AND ', $w);
+    $st = $pdo->prepare("SELECT a.*, q.title AS quo_title FROM `activity_log` a"
+        . " LEFT JOIN `quotations` q ON q.id = a.quotation_id"
+        . " WHERE " . $wh . " ORDER BY a.id DESC LIMIT " . $lim . " OFFSET " . $off);
+    $st->execute($p);
+    $rows = $st->fetchAll();
+    $cs = $pdo->prepare("SELECT COUNT(*) FROM `activity_log` a WHERE " . $wh);
+    $cs->execute($p);
+    $us = $pdo->query("SELECT user_id, user_name, COUNT(*) n FROM `activity_log`"
+        . " WHERE user_id > 0 GROUP BY user_id, user_name ORDER BY user_name")->fetchAll();
+    q_ok(array('rows' => $rows, 'total' => (int)$cs->fetchColumn(), 'users' => $us));
+}
+al_migrate($pdo);   /* APSA1854: bang nhat ky co san truoc khi truy van */
 case 'project-board': {
     global $Q_STATUS;
     // Nhóm trạng thái cho trang Làm việc
@@ -2696,7 +2728,8 @@ case 'project-board': {
                    GREATEST(
                      COALESCE(q.updated_at, q.created_at, q.quotation_date),
                      COALESCE((SELECT MAX(ax.updated_at) FROM `quotation_assignees` ax WHERE ax.quotation_id = q.id), '1000-01-01'),
-                     COALESCE((SELECT MAX(ex.updated_at) FROM `quotation_expenses` ex WHERE ex.quotation_id = q.id), '1000-01-01')
+                     COALESCE((SELECT MAX(ex.updated_at) FROM `quotation_expenses` ex WHERE ex.quotation_id = q.id), '1000-01-01'),
+                     COALESCE((SELECT MAX(lg.created_at) FROM `activity_log` lg WHERE lg.quotation_id = q.id), '1000-01-01')
                    ) AS last_update,
                    q.client_name, q.company_id, q.src_link, q.has_liquidation,
                    c.name AS company_name

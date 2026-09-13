@@ -387,6 +387,7 @@
     { ico: 'rise',    name: 'Better Me',          url: './betterme.html', id: 102 },
       { ico: 'policy', name: 'Policy công ty', url: './policy.html', id: 94 },
     { ico: 'shield',  name: 'Quản lý User',      url: './users.html', id: 27 },
+    { ico: 'policy',  name: 'Nhật ký hoạt động', url: './activity.html', id: 104, admin: true },
     { ico: 'gear',    name: 'Cài đặt hệ thống',  url: './settings.html', id: 92, admin: true },
     { ico: 'chat',    name: 'Thông báo Zalo',    url: './zalo.html', id: 93 },
     { ico: 'trophy',  name: 'Badminton',         url: './badminton/index.html', id: 28 }

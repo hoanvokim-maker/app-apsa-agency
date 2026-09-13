@@ -7,12 +7,13 @@
  */
 require_once __DIR__ . '/db-config.php';
 require_once __DIR__ . '/session-boot.php';
+require_once __DIR__ . '/act-log.php';   /* APSA1854 */
 require_once __DIR__ . '/zalo.php';
 
 define('PY_DIR', dirname(__DIR__) . '/uploads/uy-nhiem-chi');
 define('PY_MAX', 12 * 1024 * 1024);
 
-function py_ok($d = array())   { header('Content-Type: application/json; charset=utf-8'); echo json_encode(array('ok' => true, 'data' => $d), JSON_UNESCAPED_UNICODE); exit; }
+function py_ok($d = array())   { al_auto2('expense', al_pay_labels()); header('Content-Type: application/json; charset=utf-8'); echo json_encode(array('ok' => true, 'data' => $d), JSON_UNESCAPED_UNICODE); exit; }
 function py_fail($m, $c = 400) { header('Content-Type: application/json; charset=utf-8'); http_response_code($c); echo json_encode(array('ok' => false, 'error' => $m), JSON_UNESCAPED_UNICODE); exit; }
 function py_s($v, $n = 255)    { return mb_substr(trim((string) $v), 0, $n); }
 function py_money($n)          { return number_format((float) $n, 0, ',', '.') . ' đ'; }

@@ -29,8 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
 
 require_once __DIR__ . '/db-config.php';
 require_once __DIR__ . '/session-boot.php';
+require_once __DIR__ . '/act-log.php';   /* APSA1854 */
 
-function ok($data)             { echo json_encode(['ok' => true, 'data' => $data], JSON_UNESCAPED_UNICODE); exit; }
+function ok($data)             { al_auto2('ratecard', al_rc_labels()); echo json_encode(['ok' => true, 'data' => $data], JSON_UNESCAPED_UNICODE); exit; }
 function fail($msg, $code=400) { http_response_code($code); echo json_encode(['ok'=>false,'error'=>$msg], JSON_UNESCAPED_UNICODE); exit; }
 
 function body_json() {
