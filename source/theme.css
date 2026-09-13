@@ -6,6 +6,8 @@
    ============================================================ */
 
 :root{
+  /* APSA1852: menu xo cua select/date theo nen toi */
+  color-scheme: dark;
   --bg:#000000; --bg2:#0b0b0b; --bg3:#141414; --bg4:#2b2b2b;
   --border:rgba(255,255,255,.10);
   --border-hover:rgba(223,242,13,.55);
@@ -497,3 +499,6 @@ input[type="week"]:hover::-webkit-calendar-picker-indicator,
 input[type="time"]:hover::-webkit-calendar-picker-indicator { opacity: 1; }
 input[type="date"], input[type="datetime-local"], input[type="month"],
 input[type="week"], input[type="time"] { color-scheme: dark; }
+
+/* APSA1852: tien ich an phan tu dung chung toan app */
+.hidden{ display:none !important; }

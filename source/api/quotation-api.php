@@ -2692,6 +2692,12 @@ case 'project-board': {
                    q.priority,
                    (SELECT 1 FROM `quotation_pins` pn
                      WHERE pn.quotation_id = q.id AND pn.user_id = " . $meIdPin . ") AS pinned,
+                   /* APSA1853: lan cap nhat gan nhat cua du an */
+                   GREATEST(
+                     COALESCE(q.updated_at, q.created_at, q.quotation_date),
+                     COALESCE((SELECT MAX(ax.updated_at) FROM `quotation_assignees` ax WHERE ax.quotation_id = q.id), '1000-01-01'),
+                     COALESCE((SELECT MAX(ex.updated_at) FROM `quotation_expenses` ex WHERE ex.quotation_id = q.id), '1000-01-01')
+                   ) AS last_update,
                    q.client_name, q.company_id, q.src_link, q.has_liquidation,
                    c.name AS company_name
               FROM `quotations` q

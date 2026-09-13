@@ -229,6 +229,12 @@ header{
 .pcard:hover{ border-color:var(--border-hover); }
 .pcard.open{ border-color:rgba(223,242,13,.35); }
 .pcard.late{ border-color:rgba(255,77,77,.35); }
+/* APSA1853: du an lau khong cap nhat */
+.pcard.stale1{ border-color:rgba(255,159,64,.55); box-shadow:inset 3px 0 0 #ff9f40; }
+.pcard.stale2{ border-color:rgba(255,77,77,.65); box-shadow:inset 3px 0 0 #ff4d4d; }
+.stale-tag{ font-size:11px; font-weight:700; padding:1px 8px; border-radius:999px; margin-left:8px; white-space:nowrap; vertical-align:middle; }
+.stale1 .stale-tag{ color:#ff9f40; background:rgba(255,159,64,.12); border:1px solid rgba(255,159,64,.35); }
+.stale2 .stale-tag{ color:#ff6b6b; background:rgba(255,77,77,.12); border:1px solid rgba(255,77,77,.35); }
 
 .phead{
   display:grid; grid-template-columns:minmax(0,1fr) 210px 150px 128px 34px;
@@ -381,7 +387,7 @@ table.asg col.c-stat{ width:132px; }
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/theme.css?v=22" />
+<link rel="stylesheet" href="/theme.css?v=23" />
 <script src="/apsa-ui.js?v=39"></script>
   <script src="/perm-guard.js?v=3"></script>
 <style>
@@ -682,11 +688,11 @@ function cardHtml(r){
     r.quotation_date ? dmy(r.quotation_date) : '',
     r.event_date ? 'Event: ' + r.event_date : ''
   ].filter(Boolean);
-  return '<div class="pcard' + (OPEN.has(r.id) ? ' open' : '') + (r.task_overdue ? ' late' : '') + '" id="pc' + r.id + '">' +
+  return '<div class="pcard' + (OPEN.has(r.id) ? ' open' : '') + (r.task_overdue ? ' late' : '') + staleCls(r) + '" id="pc' + r.id + '">' +
     '<div class="phead" onclick="toggle(' + r.id + ')">' +
       '<div class="pmain">' +
         '<div class="ptop"><span class="pcode">' + esc(r.code || '#' + r.id) + '</span>' +
-          '<span class="pttl">' + esc(r.title || '—') + '</span></div>' +
+          '<span class="pttl">' + esc(r.title || '—') + '</span>' + staleTag(r) + '</div>' +
         (sub.length ? '<div class="psub">' + sub.map(s => '<span>' + esc(s) + '</span>').join('<span>·</span>') + '</div>' : '') +
       '</div>' +
       '<div>' + teamHtml(r) + '</div>' +
@@ -701,6 +707,28 @@ function cardHtml(r){
         (r.src_link ? '<a class="openbtn" href="' + esc(r.src_link) + '" target="_blank" rel="noopener">File dự án ↗</a>' : '') +
       '</div>' +
     '</div></div>';
+}
+
+/* APSA1853: canh bao du an lau khong cap nhat */
+const STALE_CLOSED = ['done','paid','lost','dong_du_an'];
+function staleDays(r){
+  const raw = r && r.last_update ? String(r.last_update) : '';
+  if (!raw) return 0;
+  const t = Date.parse(raw.replace(' ', 'T'));
+  if (!t || isNaN(t)) return 0;
+  const d = Math.floor((Date.now() - t) / 86400000);
+  return d > 0 ? d : 0;
+}
+function staleCls(r){
+  if (STALE_CLOSED.indexOf(r.status) >= 0) return '';
+  const d = staleDays(r);
+  if (d >= 20) return ' stale2';
+  if (d >= 10) return ' stale1';
+  return '';
+}
+function staleTag(r){
+  if (!staleCls(r)) return '';
+  return '<span class="stale-tag">' + staleDays(r) + ' ngày chưa cập nhật</span>';
 }
 
 function render(){
