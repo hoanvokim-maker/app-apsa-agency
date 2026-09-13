@@ -74,6 +74,11 @@
   .fr{ padding:5px; border-radius:10px; }
   .fr .nm{ font-size:10px; margin-top:4px; }
 }
+.topwrap{ max-width:560px; margin:0 auto; padding:16px 16px 2px; }
+.topwrap a{ display:inline-block; line-height:0; }
+.topwrap img{ height:26px; width:auto; display:block; }
+@media (min-width:900px){ .topwrap{ max-width:1040px; } }
+@media (max-width:899px){ .topwrap img{ height:21px; } }
 </style>
 </head>
 <body>
@@ -86,6 +91,11 @@
 <g id="f-magic"><path d="m12 3 1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="m18 15 .9 2.1L21 18l-2.1.9L18 21l-.9-2.1L15 18l2.1-.9z"/></g>
 </defs></svg>
 
+<div class="topwrap">
+  <a href="https://apsa.agency" target="_blank" rel="noopener">
+    <img src="/logo-apsa.png" alt="APSA" />
+  </a>
+</div>
 <div class="wrap" id="app"><div class="msg">Đang tải…</div></div>
 
 <div class="done" id="done">
