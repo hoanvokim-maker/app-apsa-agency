@@ -502,3 +502,17 @@ input[type="week"], input[type="time"] { color-scheme: dark; }
 
 /* APSA1852: tien ich an phan tu dung chung toan app */
 .hidden{ display:none !important; }
+
+/* APSA1855: chuan hoa chieu cao moi dropdown toan he thong */
+:root{ --sel-h: 28px; }
+select{
+  height: var(--sel-h) !important;
+  min-height: var(--sel-h) !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  line-height: 26px !important;
+}
+select[multiple], select[size]{
+  height: auto !important; min-height: 0 !important; line-height: normal !important;
+  padding-top: 6px !important; padding-bottom: 6px !important;
+}
