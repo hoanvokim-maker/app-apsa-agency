@@ -200,6 +200,9 @@ table.pt td{ padding:6px 10px; border-top:1px solid var(--border); background:tr
   background:rgba(57,255,136,.12); border:1px solid rgba(57,255,136,.35); border-radius:8px; padding:5px 10px; }
 .mlhint{ font-size:11.5px; color:var(--text3); line-height:1.55; margin:-4px 0 14px; }
 #ctOv .mlact .btn{ width:auto; min-width:118px; padding:10px 18px; }
+/* APSA1864 */
+.sumcard .r.usdline span, .r.usdline span{ color:var(--text2); }
+.r.usdline .usdrate{ font-size:10px; color:var(--text3); font-weight:400; margin-left:8px; letter-spacing:0; text-transform:none; }
 .mlact{ display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; margin-top:4px; }
 .srcfg{ grid-column:1 / -1; }
 .srcrow{ display:flex; gap:8px; align-items:stretch; }
@@ -1173,7 +1176,7 @@ table.chktbl th:last-child{ width:34px; }
         <div class="fg"><label>Email khách hàng</label><input type="text" id="fEmail" /></div>
 
         <div class="fg"><label>MST khách hàng</label><input type="text" id="fTax" /></div>
-        <div class="fg span2"><label>Địa chỉ khách hàng</label><input type="text" id="fAddr" /></div>
+        <div class="fg span2 hidden"><label>Địa chỉ khách hàng</label><input type="text" id="fAddr" /></div>
         <div class="fg" id="fgEvFrom"><label>Ngày dự án — Từ ngày</label><input type="date" id="fEventFrom" onchange="qEvFix()" /></div>
         <div class="fg" id="fgEvTo"><label>Đến ngày</label><input type="date" id="fEventTo" onchange="qEvFix()" /><a id="calLink" href="#" target="_blank" rel="noopener" style="display:none;font-size:11px;color:#2563eb;text-decoration:none;margin-top:4px" title="Mở sự kiện trên lịch Outlook"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Đã tạo lịch Outlook ↗</a></div>
 
@@ -3758,6 +3761,15 @@ function renderTotals(){
   }
   if (t.showVat) h += line('VAT (' + t.vatP + '%)', t.vat, a ? a.vat : 0);
   h += line('TOTAL ' + esc(cur), t.total, a ? a.total : 0, true);
+  /* APSA1864: quy doi USD theo ty gia trong Cai dat he thong */
+  const uRate = Number((window.__APSA_ST || {}).usd_rate) || 0;
+  if (uRate > 0) {
+    const uFmt = (n) => '$' + (n / uRate).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    h += '<div class="r usdline"><span>TOTAL USD <span class="usdrate">1 USD = ' + fmt(Math.round(uRate)) + '</span></span>' +
+         '<span>' + uFmt(t.total) + '</span>' +
+         (liq ? '<span class="c2">' + uFmt(a ? a.total : 0) + '</span><span class="c3"></span>' : '') +
+         '</div>';
+  }
   document.getElementById('sumcard').innerHTML = h;
   if (typeof renderExpTotals === 'function') renderExpTotals();
 }

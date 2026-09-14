@@ -591,6 +591,7 @@ case 'public':
         'work_days'   => array_map('intval', array_keys(st_work_days())),
         'font_sizes'  => st_json('ui.font_sizes', array('default' => 12.5, 'large' => 14, 'max' => 15)),
         'company'     => st_json('company.info', array()),
+        'usd_rate'    => (float) st_get('finance.usd_rate', 0),   /* APSA1864 */
     ));
     break;
 
@@ -749,6 +750,7 @@ case 'all':
         'leave_types'   => $lt,
         'holidays'      => $hol,
         'vn_years'      => vnh_years(),
+        'usd_rate'       => (float) st_get('finance.usd_rate', 0),   /* APSA1864 */
         'default_quota' => (float) st_get('leave.default_quota', 14),
         'work_days'     => array_map('intval', array_keys(st_work_days())),
         'work_hours'    => st_json('leave.work_hours', array('am_start'=>'08:30','am_end'=>'12:00','pm_start'=>'13:30','pm_end'=>'17:30')),
@@ -760,6 +762,13 @@ case 'all':
 /* ---- Luu nhom cai dat chung ---- */
 case 'save-general':
     s_admin();
+
+    /* APSA1864: ty gia USD dung chung cho toan app */
+    if (isset($B['usd_rate'])) {
+        $r = (float) $B['usd_rate'];
+        if ($r < 0 || $r > 1000000) s_fail('Tỷ giá USD không hợp lệ.');
+        s_put('finance.usd_rate', (string) $r);
+    }
 
     if (isset($B['default_quota'])) {
         $q = (float) $B['default_quota'];

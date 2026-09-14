@@ -660,6 +660,19 @@
       <div class="fg" style="margin-top:14px"><label>Tài khoản ngân hàng</label><input type="text" id="coBank" placeholder="Số tài khoản — Tên ngân hàng — Chi nhánh" /></div>
       <div class="acts-row"><button class="btn primary" onclick="saveGeneral(['company'])">Lưu thông tin</button></div>
     </div>
+
+    <div class="card">
+      <h2>Tỷ giá USD</h2>
+      <div class="hint">Dùng để quy đổi báo giá sang USD. Chỉ hiển thị trong app để tham chiếu — file Excel gửi khách vẫn giữ nguyên VND.</div>
+      <div class="grid3">
+        <div class="fg">
+          <label>1 USD = ? VND</label>
+          <input type="number" id="usdRate" step="1" min="0" placeholder="Ví dụ: 25400" />
+          <div class="sub">Để trống hoặc 0 thì app sẽ không hiện cột USD.</div>
+        </div>
+      </div>
+      <div class="acts-row"><button class="btn primary" onclick="saveGeneral(['usd_rate'])">Lưu tỷ giá</button></div>
+    </div>
   </div>
 </div>
 
@@ -872,6 +885,7 @@ function paintHolidays() {
 function paintCompany() {
   const c = D.company || {};
   document.getElementById('coName').value    = c.name    || '';
+  document.getElementById('usdRate').value = D.usd_rate || '';   /* APSA1864 */
   document.getElementById('coTax').value     = c.tax     || '';
   document.getElementById('coEmail').value   = c.email   || '';
   document.getElementById('coPhone').value   = c.phone   || '';
@@ -1071,6 +1085,7 @@ async function saveGeneral(parts) {
     };
   }
   if (parts.includes('default_quota')) body.default_quota = parseFloat(document.getElementById('quota').value);
+  if (parts.includes('usd_rate')) body.usd_rate = parseFloat(document.getElementById('usdRate').value) || 0;
   if (parts.includes('work_days')) {
     body.work_days = [...document.querySelectorAll('#wdRow input:checked')].map(i => Number(i.value));
     if (!body.work_days.length) return toast('Chọn ít nhất một ngày làm việc.', true);

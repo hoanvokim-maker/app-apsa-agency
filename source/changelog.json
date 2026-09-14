@@ -1,5 +1,5 @@
 {
-    "version": "2.0.5",
+    "version": "2.0.6",
     "updated": "2026-09-14",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-13",
             "note": "Phiên bản 2.0",
             "items": [
+                {
+                    "d": "2026-09-14",
+                    "v": "2.0.6",
+                    "t": "Bao gia: bo o Dia chi tren form (MA ve canh VAT); them Ty gia USD trong Cai dat he thong va dong TOTAL USD trong o tong ket",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-14",
                     "v": "2.0.5",
