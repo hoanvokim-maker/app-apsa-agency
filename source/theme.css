@@ -516,3 +516,12 @@ select[multiple], select[size]{
   height: auto !important; min-height: 0 !important; line-height: normal !important;
   padding-top: 6px !important; padding-bottom: 6px !important;
 }
+
+/* APSA1862: cac dropdown dạng pill (trạng thái dự án) có padding riêng —
+   không ép chiều cao 28px nữa vì sẽ làm chữ bị cắt, không đọc được. */
+select[class*="stt"],
+select#fStatus {
+  height: auto !important;
+  min-height: 0 !important;
+  line-height: 1.2 !important;
+}
