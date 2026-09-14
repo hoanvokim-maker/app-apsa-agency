@@ -281,25 +281,15 @@
 <div class="page-head">
   <div>
     <h1>Kho Font</h1>
-    <p>Các bộ font APSA hay dùng — cả team đều tải lên, sửa và xoá được.</p>
+    <p>Font APSA hay dùng — nhập tên, kéo file zip của bộ font vào là xong.</p>
   </div>
-  <button class="btn-primary" onclick="openEdit(0)">+ Thêm bộ font</button>
+  <button class="btn-primary" onclick="openNew()">+ Thêm bộ font</button>
 </div>
 
 <div class="fbar">
   <div class="f grow">
     <label>Tìm</label>
-    <input id="q" type="text" placeholder="Tên font, nhà cung cấp, tag..." oninput="render()" />
-  </div>
-  <div class="f">
-    <label>Bản quyền</label>
-    <select id="fLic" onchange="render()">
-      <option value="">Tất cả</option>
-      <option value="free">Miễn phí</option>
-      <option value="paid">Đã mua</option>
-      <option value="client">Khách cấp</option>
-      <option value="other">Khác</option>
-    </select>
+    <input id="q" type="text" placeholder="Tên bộ font..." oninput="render()" />
   </div>
   <div class="f grow">
     <label>Chữ xem thử</label>
@@ -315,53 +305,20 @@
 <div id="grid" class="fgrid"></div>
 <div id="fempty" class="fempty hidden"></div>
 
-<div class="overlay" id="ovEdit" onclick="outClose(event,'ovEdit')">
+<div class="overlay" id="ovNew" onclick="outClose(event,'ovNew')">
   <div class="modal">
-    <button class="modal-x" onclick="closeOv('ovEdit')">×</button>
-    <h2 id="eTitle">Thêm bộ font</h2>
-    <p class="modal-sub">Thông tin chung của bộ font. File chữ thêm ở bước sau.</p>
-    <div class="frow frow2">
-      <div class="fg"><label>Tên bộ font *</label><input id="eName" type="text" placeholder="Ví dụ: Montserrat" /></div>
+    <button class="modal-x" onclick="closeOv('ovNew')">×</button>
+    <h2 id="nTitle">Thêm bộ font</h2>
+    <p class="modal-sub" id="nSub">Nhập tên bộ font rồi kéo file .zip vào. Hệ thống tự bung các file chữ bên trong để xem thử.</p>
+    <div class="frow frow2" id="nNameRow">
+      <div class="fg"><label>Tên bộ font *</label><input id="nName" type="text" placeholder="Ví dụ: Montserrat" /></div>
     </div>
-    <div class="frow">
-      <div class="fg"><label>Nhà cung cấp / tác giả</label><input id="eFoundry" type="text" placeholder="Google Fonts, SVN..." /></div>
-      <div class="fg"><label>Bản quyền</label>
-        <select id="eLic">
-          <option value="">Chưa rõ</option>
-          <option value="free">Miễn phí</option>
-          <option value="paid">Đã mua</option>
-          <option value="client">Khách cấp</option>
-          <option value="other">Khác</option>
-        </select>
-      </div>
-    </div>
-    <div class="frow frow2">
-      <div class="fg"><label>Link nguồn</label><input id="eSource" type="text" placeholder="https://..." /></div>
-    </div>
-    <div class="frow frow2">
-      <div class="fg"><label>Tag</label><input id="eTags" type="text" placeholder="sans, tiêu đề, tiếng Việt..." /></div>
-    </div>
-    <div class="frow frow2">
-      <div class="fg"><label>Ghi chú</label><textarea id="eNote" rows="2" placeholder="Dùng cho dự án nào, lưu ý khi dùng..."></textarea></div>
-    </div>
-    <div class="modal-foot">
-      <button class="mini" onclick="closeOv('ovEdit')">Huỷ</button>
-      <button class="btn-primary" id="eSave" onclick="saveFam()">Lưu</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="ovUp" onclick="outClose(event,'ovUp')">
-  <div class="modal">
-    <button class="modal-x" onclick="closeOv('ovUp')">×</button>
-    <h2 id="uTitle">Thêm file font</h2>
-    <p class="modal-sub">Nhận .ttf .otf .ttc .woff .woff2 và .zip — tối đa 120 MB mỗi file. Kiểu chữ được đoán từ tên file, sửa lại được.</p>
-    <div class="drop" id="drop">Kéo thả file font vào đây hoặc bấm để chọn</div>
-    <input type="file" id="fileInput" multiple accept=".ttf,.otf,.ttc,.woff,.woff2,.zip" class="hidden" />
+    <div class="drop" id="drop">Kéo thả file .zip vào đây — hoặc bấm để chọn</div>
+    <input type="file" id="fileInput" multiple accept=".zip,.ttf,.otf,.ttc,.woff,.woff2" class="hidden" />
     <div class="uplist" id="uplist"></div>
     <div class="modal-foot">
-      <button class="mini" onclick="closeOv('ovUp')">Đóng</button>
-      <button class="btn-primary" id="uGo" onclick="doUpload()">Tải lên</button>
+      <button class="mini" onclick="closeOv('ovNew')">Huỷ</button>
+      <button class="btn-primary" id="nSave" onclick="saveNew()">Lưu</button>
     </div>
   </div>
 </div>
@@ -369,17 +326,14 @@
 <div class="toast" id="toast"></div>
 
 <script>
-/* APSA1858: Kho Font — ca team deu upload / sua / xoa duoc */
+/* APSA1859: Kho Font — don gian: ten font + file zip la xong. Ca team deu co quyen. */
 var API = '/api/font-api.php';
-var LIST = [], ME = null, FACE = {}, PICK = {}, QUEUE = [];
-var EDIT_ID = 0, UP_FAM = 0;
-var LICN = { free: 'Miễn phí', paid: 'Đã mua', client: 'Khách cấp', other: 'Khác' };
+var LIST = [], FACE = {}, PICK = {}, QUEUE = [], FAM = 0;
 var ICO = {
-  dl:   '<svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg>',
-  pen:  '<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>',
-  tr:   '<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></svg>',
-  up:   '<svg viewBox="0 0 24 24"><path d="M12 19V7m0 0l-4 4m4-4l4 4M4 5h16"/></svg>',
-  zip:  '<svg viewBox="0 0 24 24"><path d="M4 7h16v13H4zM4 7l2-3h12l2 3M12 11v5"/></svg>'
+  dl:  '<svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg>',
+  pen: '<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>',
+  tr:  '<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></svg>',
+  up:  '<svg viewBox="0 0 24 24"><path d="M12 19V7m0 0l-4 4m4-4l4 4M4 5h16"/></svg>'
 };
 
 function el(i) { return document.getElementById(i); }
@@ -421,17 +375,6 @@ function face(fid) {
   }
   return nm;
 }
-function guessStyle(name) {
-  var b = String(name || '').replace(/\.[^.]+$/, '').replace(/[_.]+/g, '-');
-  var p = b.split('-');
-  var t = p.length > 1 ? p[p.length - 1] : '';
-  t = t.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/\s+/g, ' ').trim();
-  var k = 'thin|extra|ultra|semi|demi|light|book|regular|normal|medium|bold|black|heavy|italic|oblique|condensed|expanded|variable|hairline';
-  if (t && new RegExp('^(' + k + ')( (' + k + '))*$', 'i').test(t)) {
-    return t.toLowerCase().replace(/\b\w/g, function (c) { return c.toUpperCase(); });
-  }
-  return /\.zip$/i.test(name || '') ? 'Cả bộ (zip)' : 'Regular';
-}
 function applySample() {
   var s = el('size').value;
   el('szv').textContent = s + 'px';
@@ -442,29 +385,20 @@ function applySample() {
 }
 
 function load() {
-  return api('list', {}).then(function (d) {
-    LIST = d.rows || []; ME = d.me || null; render();
-  }).catch(function (e) { toast(e.message); });
+  return api('list', {}).then(function (d) { LIST = d.rows || []; render(); })
+    .catch(function (e) { toast(e.message); });
 }
 
 function render() {
   var q = noAcc((el('q').value || '').trim());
-  var lic = el('fLic').value;
-  var rows = LIST.filter(function (r) {
-    if (lic && (r.licence || 'other') !== lic) return false;
-    if (!q) return true;
-    var hay = noAcc([r.name, r.foundry, r.tags, r.note].join(' '));
-    if (hay.indexOf(q) >= 0) return true;
-    return (r.files || []).some(function (f) { return noAcc(f.style + ' ' + f.orig).indexOf(q) >= 0; });
-  });
+  var rows = LIST.filter(function (r) { return !q || noAcc(r.name).indexOf(q) >= 0; });
   el('grid').innerHTML = rows.map(card).join('');
   var em = el('fempty');
   if (rows.length) {
     em.classList.add('hidden');
   } else {
     em.classList.remove('hidden');
-    em.innerHTML = LIST.length
-      ? 'Không có bộ font nào khớp với bộ lọc.'
+    em.innerHTML = LIST.length ? 'Không tìm thấy bộ font nào.'
       : 'Chưa có bộ font nào. Bấm <b>+ Thêm bộ font</b> để bắt đầu.';
   }
   applySample();
@@ -472,45 +406,27 @@ function render() {
 
 function card(r) {
   var files = r.files || [];
-  var pid = PICK[r.id] || r.preview_id || 0;
-  var pv;
-  if (pid) {
-    pv = '<div class="fc-prev"><span style="font-family:\'' + face(pid) + '\',var(--font-body)"></span></div>';
-  } else {
-    pv = '<div class="fc-prev miss">Chưa có file xem thử được (chỉ hỗ trợ ttf / otf / woff / woff2)</div>';
-  }
-  var lk = (r.licence || '').toLowerCase();
-  var chip = LICN[lk] ? '<span class="lic ' + lk + '">' + LICN[lk] + '</span>' : '';
-  var sub = [];
-  if (r.foundry) sub.push(esc(r.foundry));
-  if (r.tags) sub.push(esc(r.tags));
-  var sts = files.map(function (f) {
-    var on = (f.id === pid) ? ' on' : '';
-    var nm = f.web
-      ? '<span class="nm" title="Xem thử kiểu này" onclick="pick(' + r.id + ',' + f.id + ')">' + esc(f.style) + '</span>'
-      : '<span class="nm" style="cursor:default">' + esc(f.style) + '</span>';
-    return '<span class="st' + on + '" title="' + esc(f.orig) + ' · ' + kb(f.bytes) + '">' + nm +
-      '<span class="ext">' + esc(f.ext) + '</span>' +
-      '<button title="Tải file" onclick="dl(' + f.id + ')">' + ICO.dl + '</button>' +
-      '<button title="Sửa tên kiểu chữ" onclick="renFile(' + f.id + ',this)">' + ICO.pen + '</button>' +
-      '<button class="del" title="Xoá file" onclick="delFile(' + f.id + ',this)">' + ICO.tr + '</button></span>';
+  var web = files.filter(function (f) { return f.web; });
+  var pid = PICK[r.id] || r.preview_id || (web[0] ? web[0].id : 0);
+  var pv = pid
+    ? '<div class="fc-prev"><span style="font-family:\'' + face(pid) + '\',var(--font-body)"></span></div>'
+    : '<div class="fc-prev miss">Chưa xem thử được — file zip không có chữ dạng ttf / otf / woff.</div>';
+  var sts = web.map(function (f) {
+    return '<span class="st' + (f.id === pid ? ' on' : '') + '" title="' + esc(f.orig) + ' · ' + kb(f.bytes) + '">' +
+      '<span class="nm" onclick="pick(' + r.id + ',' + f.id + ')">' + esc(f.style) + '</span></span>';
   }).join('');
-  if (!files.length) sts = '<span class="fc-sub">Chưa có file nào.</span>';
-
+  var pack = files.filter(function (f) { return f.ext === 'zip'; })[0];
   return '<div class="fcard">' +
-    '<div class="fc-top"><div class="fc-name">' + esc(r.name) +
-      (sub.length ? '<div class="fc-sub">' + sub.join(' · ') + '</div>' : '') +
-    '</div>' + chip + '</div>' +
+    '<div class="fc-top"><div class="fc-name">' + esc(r.name) + '</div></div>' +
     pv +
-    '<div class="styles">' + sts + '</div>' +
-    (r.note ? '<div class="fc-sub">' + esc(r.note) + '</div>' : '') +
+    (sts ? '<div class="styles">' + sts + '</div>' : '') +
     '<div class="fc-foot">' +
-      '<div class="fc-meta">' + files.length + ' file · ' + kb(r.bytes) +
+      '<div class="fc-meta">' + (web.length ? web.length + ' kiểu chữ · ' : '') + kb(r.bytes) +
         (r.by ? ' · thêm bởi ' + esc(r.by) : '') + '</div>' +
-      '<button class="mini" onclick="openUp(' + r.id + ')">' + ICO.up + 'Thêm file</button>' +
-      (files.length ? '<button class="mini" onclick="dlZip(' + r.id + ')">' + ICO.zip + 'Tải cả bộ</button>' : '') +
-      (r.source ? '<a class="mini" href="' + esc(r.source) + '" target="_blank" rel="noopener">Nguồn</a>' : '') +
-      '<button class="mini" onclick="openEdit(' + r.id + ')">' + ICO.pen + 'Sửa</button>' +
+      (pack ? '<button class="mini" onclick="dl(' + pack.id + ')">' + ICO.dl + 'Tải bộ font</button>'
+            : (files.length ? '<button class="mini" onclick="dlZip(' + r.id + ')">' + ICO.dl + 'Tải bộ font</button>' : '')) +
+      '<button class="mini" onclick="addMore(' + r.id + ')">' + ICO.up + 'Thêm file</button>' +
+      '<button class="mini" onclick="rename(' + r.id + ')">' + ICO.pen + 'Đổi tên</button>' +
       '<button class="mini danger" onclick="delFam(' + r.id + ')">' + ICO.tr + 'Xoá</button>' +
     '</div></div>';
 }
@@ -519,10 +435,7 @@ function pick(fam, fid) {
   PICK[fam] = fid;
   render();
   var f = LIST.filter(function (r) { return r.id === fam; })[0];
-  if (f && f.preview_id !== fid) {
-    f.preview_id = fid;
-    api('set-preview', { file_id: fid }).catch(function () {});
-  }
+  if (f && f.preview_id !== fid) { f.preview_id = fid; api('set-preview', { file_id: fid }).catch(function () {}); }
 }
 function dl(fid)    { window.location.href = API + '?action=download&id=' + fid; }
 function dlZip(fam) { window.location.href = API + '?action=zip&id=' + fam; }
@@ -530,109 +443,78 @@ function dlZip(fam) { window.location.href = API + '?action=zip&id=' + fam; }
 function closeOv(id) { el(id).classList.remove('open'); }
 function outClose(e, id) { if (e.target === el(id)) closeOv(id); }
 
-function openEdit(id) {
-  EDIT_ID = id;
-  var r = LIST.filter(function (x) { return x.id === id; })[0] || {};
-  el('eTitle').textContent = id ? 'Sửa bộ font' : 'Thêm bộ font';
-  el('eName').value    = r.name || '';
-  el('eFoundry').value = r.foundry || '';
-  el('eLic').value     = r.licence || '';
-  el('eSource').value  = r.source || '';
-  el('eTags').value    = r.tags || '';
-  el('eNote').value    = r.note || '';
-  el('ovEdit').classList.add('open');
-  setTimeout(function () { el('eName').focus(); }, 60);
+function openNew() {
+  FAM = 0; QUEUE = [];
+  el('nTitle').textContent = 'Thêm bộ font';
+  el('nSub').textContent = 'Nhập tên bộ font rồi kéo file .zip vào. Hệ thống tự bung các file chữ bên trong để xem thử.';
+  el('nNameRow').classList.remove('hidden');
+  el('nName').value = '';
+  drawQueue();
+  el('ovNew').classList.add('open');
+  setTimeout(function () { el('nName').focus(); }, 60);
 }
 
-function saveFam() {
-  var isNew = !EDIT_ID;
-  var b = {
-    id: EDIT_ID, name: el('eName').value, foundry: el('eFoundry').value,
-    licence: el('eLic').value, source: el('eSource').value,
-    tags: el('eTags').value, note: el('eNote').value
-  };
-  if (!b.name.trim()) { toast('Chưa nhập tên bộ font'); return; }
-  el('eSave').disabled = true;
-  api('save', b).then(function (d) {
-    closeOv('ovEdit');
-    return load().then(function () {
-      toast(isNew ? 'Đã tạo bộ font' : 'Đã lưu');
-      if (isNew) openUp(d.id);
-    });
-  }).catch(function (e) { toast(e.message); })
-    .then(function () { el('eSave').disabled = false; });
-}
-
-function delFam(id) {
+function addMore(id) {
   var r = LIST.filter(function (x) { return x.id === id; })[0];
   if (!r) return;
-  var n = (r.files || []).length;
-  if (!confirm('Xoá bộ font "' + r.name + '"' + (n ? ' và ' + n + ' file bên trong' : '') + '? Không khôi phục được.')) return;
-  api('delete', { id: id }).then(function () { toast('Đã xoá bộ font'); return load(); })
-    .catch(function (e) { toast(e.message); });
-}
-
-function renFile(fid, btn) {
-  var cur = btn.parentNode.querySelector('.nm').textContent;
-  var v = prompt('Tên kiểu chữ:', cur);
-  if (v === null) return;
-  v = v.trim();
-  if (!v) { toast('Chưa nhập kiểu chữ'); return; }
-  api('file-save', { id: fid, style: v }).then(function () { toast('Đã đổi tên'); return load(); })
-    .catch(function (e) { toast(e.message); });
-}
-
-function delFile(fid, btn) {
-  var nm = btn.parentNode.getAttribute('title') || '';
-  if (!confirm('Xoá file ' + nm + ' ?')) return;
-  api('file-delete', { id: fid }).then(function () { toast('Đã xoá file'); return load(); })
-    .catch(function (e) { toast(e.message); });
-}
-
-function openUp(fam) {
-  UP_FAM = fam; QUEUE = [];
-  var r = LIST.filter(function (x) { return x.id === fam; })[0];
-  el('uTitle').textContent = r ? 'Thêm file — ' + r.name : 'Thêm file font';
+  FAM = id; QUEUE = [];
+  el('nTitle').textContent = 'Thêm file — ' + r.name;
+  el('nSub').textContent = 'Kéo thêm file .zip hoặc file chữ vào bộ font này.';
+  el('nNameRow').classList.add('hidden');
   drawQueue();
-  el('ovUp').classList.add('open');
+  el('ovNew').classList.add('open');
 }
 
 function addFiles(fs) {
   [].forEach.call(fs, function (f) {
-    if (!/\.(ttf|otf|ttc|woff2?|zip)$/i.test(f.name)) { toast('Bỏ qua ' + f.name + ' (sai định dạng)'); return; }
-    QUEUE.push({ f: f, style: guessStyle(f.name), st: '' });
+    if (!/\.(zip|ttf|otf|ttc|woff2?)$/i.test(f.name)) { toast('Bỏ qua ' + f.name + ' (sai định dạng)'); return; }
+    QUEUE.push({ f: f, st: '' });
   });
   drawQueue();
+  if (!FAM && !el('nName').value.trim() && QUEUE.length) {
+    el('nName').value = QUEUE[0].f.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim();
+  }
 }
 
 function drawQueue() {
-  el('uplist').innerHTML = QUEUE.map(function (q, i) {
+  el('uplist').innerHTML = QUEUE.map(function (q) {
     var c = q.st === 'ok' ? ' ok' : (q.st && q.st !== '...' ? ' er' : '');
     return '<div class="uprow"><span class="nm" title="' + esc(q.f.name) + '">' + esc(q.f.name) + '</span>' +
-      '<input value="' + esc(q.style) + '" onchange="QUEUE[' + i + '].style=this.value" placeholder="Kiểu chữ" />' +
       '<span class="stt' + c + '">' + esc(q.st || kb(q.f.size)) + '</span></div>';
   }).join('');
-  el('uGo').disabled = !QUEUE.length;
 }
 
-function doUpload() {
-  if (!QUEUE.length) return;
-  el('uGo').disabled = true;
-  var i = 0;
-  var step = function () {
-    if (i >= QUEUE.length) {
+function saveNew() {
+  var name = (el('nName').value || '').trim();
+  if (!FAM && !name) { toast('Chưa nhập tên bộ font'); return; }
+  el('nSave').disabled = true;
+  var start = FAM
+    ? Promise.resolve(FAM)
+    : api('save', { id: 0, name: name }).then(function (d) { return d.id; });
+  start.then(function (fid) {
+    if (!QUEUE.length) {
+      closeOv('ovNew');
+      return load().then(function () { toast('Đã tạo bộ font'); });
+    }
+    return sendAll(fid).then(function () {
       return load().then(function () {
         var bad = QUEUE.filter(function (q) { return q.st !== 'ok'; }).length;
-        toast(bad ? 'Đã tải xong, ' + bad + ' file lỗi' : 'Đã tải lên ' + QUEUE.length + ' file');
-        if (!bad) closeOv('ovUp');
-        el('uGo').disabled = false;
+        toast(bad ? 'Đã tải xong, ' + bad + ' file lỗi' : 'Đã xong');
+        if (!bad) closeOv('ovNew');
       });
-    }
+    });
+  }).catch(function (e) { toast(e.message); })
+    .then(function () { el('nSave').disabled = false; });
+}
+
+function sendAll(fid) {
+  var i = 0;
+  var step = function () {
+    if (i >= QUEUE.length) return Promise.resolve();
     var q = QUEUE[i];
     q.st = '...'; drawQueue();
     var fd = new FormData();
-    fd.append('family_id', UP_FAM);
-    fd.append('style', q.style);
+    fd.append('family_id', fid);
     fd.append('file', q.f);
     return fetch(API + '?action=upload', { method: 'POST', body: fd })
       .then(function (r) { return r.json(); })
@@ -640,7 +522,26 @@ function doUpload() {
       .catch(function () { q.st = 'lỗi mạng'; })
       .then(function () { i++; drawQueue(); return step(); });
   };
-  step();
+  return step();
+}
+
+function rename(id) {
+  var r = LIST.filter(function (x) { return x.id === id; })[0];
+  if (!r) return;
+  var v = prompt('Tên bộ font:', r.name);
+  if (v === null) return;
+  v = v.trim();
+  if (!v) { toast('Chưa nhập tên'); return; }
+  api('save', { id: id, name: v }).then(function () { toast('Đã đổi tên'); return load(); })
+    .catch(function (e) { toast(e.message); });
+}
+
+function delFam(id) {
+  var r = LIST.filter(function (x) { return x.id === id; })[0];
+  if (!r) return;
+  if (!confirm('Xoá bộ font "' + r.name + '"? Không khôi phục được.')) return;
+  api('delete', { id: id }).then(function () { toast('Đã xoá'); return load(); })
+    .catch(function (e) { toast(e.message); });
 }
 
 (function boot() {
@@ -654,9 +555,7 @@ function doUpload() {
     d.addEventListener(ev, function (e) { e.preventDefault(); d.classList.remove('on'); });
   });
   d.addEventListener('drop', function (e) { if (e.dataTransfer) addFiles(e.dataTransfer.files); });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') { closeOv('ovEdit'); closeOv('ovUp'); }
-  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeOv('ovNew'); });
   load();
 })();
 </script>

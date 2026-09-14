@@ -246,7 +246,39 @@ case 'upload':
     $rel = 'uploads/fonts/' . $famId . '/' . $stored;
     $pdo->prepare('UPDATE `font_files` SET `path` = ? WHERE `id` = ?')->execute(array($rel, $fid));
     $pdo->prepare('UPDATE `font_families` SET `updated_at` = ? WHERE `id` = ?')->execute(array($NOW, $famId));
-    ok(array('file_id' => $fid, 'family_id' => $famId, 'style' => $style, 'ext' => $ext, 'web' => $isWeb));
+    /* APSA1859: file zip -> tu bung file chu ben trong de xem thu duoc */
+    $made = 0;
+    if ($ext === 'zip' && class_exists('ZipArchive')) {
+        $za = new ZipArchive();
+        if ($za->open($dir . '/' . $stored) === true) {
+            $ins = $pdo->prepare('INSERT INTO `font_files` (`family_id`,`style`,`ext`,`orig_name`,`path`,`bytes`,`is_web`,`user_id`,`user_name`,`created_at`) VALUES (?,?,?,?,?,?,1,?,?,?)');
+            for ($i = 0; $i < $za->numFiles && $made < 60; $i++) {
+                $nm = $za->getNameIndex($i);
+                if ($nm === false || substr($nm, -1) === '/') continue;
+                if (strpos($nm, '__MACOSX') === 0) continue;
+                $bn = basename($nm);
+                if ($bn === '' || $bn[0] === '.') continue;
+                $e2 = strtolower(pathinfo($bn, PATHINFO_EXTENSION));
+                if (!in_array($e2, FT_WEB, true)) continue;
+                $s2 = $za->statIndex($i);
+                if (!$s2 || $s2['size'] <= 0 || $s2['size'] > 30 * 1024 * 1024) continue;
+                $data = $za->getFromIndex($i);
+                if ($data === false || $data === '') continue;
+                $ins->execute(array($famId, ft_guess_style($bn), $e2, mb_substr($bn, 0, 255), '', strlen($data), (int) $me['id'], $me['display_name'], $NOW));
+                $nid = (int) $pdo->lastInsertId();
+                $sf  = $nid . '_' . ft_safe(pathinfo($bn, PATHINFO_FILENAME)) . '.' . $e2;
+                if (@file_put_contents($dir . '/' . $sf, $data) === false) {
+                    $pdo->prepare('DELETE FROM `font_files` WHERE `id` = ?')->execute(array($nid));
+                    continue;
+                }
+                @chmod($dir . '/' . $sf, 0644);
+                $pdo->prepare('UPDATE `font_files` SET `path` = ? WHERE `id` = ?')->execute(array('uploads/fonts/' . $famId . '/' . $sf, $nid));
+                $made++;
+            }
+            $za->close();
+        }
+    }
+    ok(array('file_id' => $fid, 'family_id' => $famId, 'style' => $style, 'ext' => $ext, 'web' => $isWeb, 'extracted' => $made));
 
 case 'file-save':
     $fid   = (int) (isset($B['id']) ? $B['id'] : 0);
