@@ -1,5 +1,5 @@
 {
-    "version": "2.0.7",
+    "version": "2.0.8",
     "updated": "2026-09-14",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-13",
             "note": "Phiên bản 2.0",
             "items": [
+                {
+                    "d": "2026-09-14",
+                    "v": "2.0.8",
+                    "t": "Danh sach bao gia: pill Trang thai vua khit chu nhu cot Loai, khong con keo dai bang nhau",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-14",
                     "v": "2.0.7",

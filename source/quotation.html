@@ -1967,6 +1967,43 @@ async function changeStatus(id, el){
     renderRows2ThenStats();
   } catch(e){ toast(e.message, 'err'); load(); }
 }
+/* APSA1866: pill trang thai vua khit chu (nhu cot Loai), khong keo dai bang nhau */
+function fitStt(sel){
+  if (!sel || !sel.options || !sel.options.length) return;
+  var probe = document.getElementById('__sttProbe');
+  if (!probe) {
+    probe = document.createElement('span');
+    probe.id = '__sttProbe';
+    probe.style.cssText = 'position:absolute;top:-9999px;left:-9999px;visibility:hidden;white-space:nowrap;';
+    document.body.appendChild(probe);
+  }
+  var cs = window.getComputedStyle(sel);
+  probe.style.fontFamily    = cs.fontFamily;
+  probe.style.fontSize      = cs.fontSize;
+  probe.style.fontWeight    = cs.fontWeight;
+  probe.style.letterSpacing = cs.letterSpacing;
+  probe.style.textTransform = cs.textTransform;
+  var o = sel.options[sel.selectedIndex];
+  probe.textContent = o ? o.text : '';
+  sel.style.width = Math.ceil(probe.offsetWidth + 37) + 'px';
+}
+function fitAllStt(){
+  var els = document.querySelectorAll('select.stt');
+  for (var i = 0; i < els.length; i++) fitStt(els[i]);
+}
+(function(){
+  var tb = document.getElementById('tbody');
+  if (!tb) return;
+  try {
+    new MutationObserver(function(){ fitAllStt(); }).observe(tb, { childList: true });
+  } catch (e) {}
+  document.addEventListener('change', function(e){
+    var t = e.target;
+    if (t && t.classList && t.classList.contains('stt')) fitStt(t);
+  });
+  fitAllStt();
+})();
+
 function renderRows2ThenStats(){ fillFilterOptions(); applyFilters(); }
 
 function liqCell(r){
