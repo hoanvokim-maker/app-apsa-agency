@@ -1,5 +1,5 @@
 {
-    "version": "2.0.8",
+    "version": "2.0.9",
     "updated": "2026-09-14",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-13",
             "note": "Phiên bản 2.0",
             "items": [
+                {
+                    "d": "2026-09-14",
+                    "v": "2.0.9",
+                    "t": "Chuan hoa chieu cao 28px cho tat ca select toan he thong, ke ca dropdown dang pill (Trang thai du an va cot Trang thai o danh sach bao gia)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-14",
                     "v": "2.0.8",

@@ -517,11 +517,14 @@ select[multiple], select[size]{
   padding-top: 6px !important; padding-bottom: 6px !important;
 }
 
-/* APSA1862: cac dropdown dạng pill (trạng thái dự án) có padding riêng —
-   không ép chiều cao 28px nữa vì sẽ làm chữ bị cắt, không đọc được. */
-select[class*="stt"],
-select#fStatus {
-  height: auto !important;
-  min-height: 0 !important;
-  line-height: 1.2 !important;
+/* APSA1867: moi <select> trong he thong deu cao 28px - ke ca dropdown dang pill
+   (Trang thai du an, cot Trang thai o danh sach bao gia). Bo padding doc rieng
+   cua pill de chu khong bi cat, giu nguyen padding ngang cho mui ten. */
+html select[class*='stt'],
+html select#fStatus {
+  height: var(--sel-h) !important;
+  min-height: var(--sel-h) !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  line-height: 26px !important;
 }
