@@ -199,6 +199,7 @@ table.pt td{ padding:6px 10px; border-top:1px solid var(--border); background:tr
 .mlfiles .att{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; color:#9dffc0;
   background:rgba(57,255,136,.12); border:1px solid rgba(57,255,136,.35); border-radius:8px; padding:5px 10px; }
 .mlhint{ font-size:11.5px; color:var(--text3); line-height:1.55; margin:-4px 0 14px; }
+#ctOv .mlact .btn{ width:auto; min-width:118px; padding:10px 18px; }
 .mlact{ display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; margin-top:4px; }
 .srcfg{ grid-column:1 / -1; }
 .srcrow{ display:flex; gap:8px; align-items:stretch; }
@@ -658,7 +659,7 @@ table.q tbody tr.dragblock td{ background:rgba(223,242,13,.05); }
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/theme.css?v=24" />
-<script src="/apsa-ui.js?v=41"></script>
+<script src="/apsa-ui.js?v=42"></script>
   <script src="/perm-guard.js?v=3"></script>
 <script src="/exp-qr.js?v=10"></script>
 <script src="/exp-day.js?v=6"></script>
@@ -1166,7 +1167,7 @@ table.chktbl th:last-child{ width:34px; }
         </div>
         <div class="fg">
           <label>Người liên hệ</label>
-          <select id="fCt" data-combo data-ph="Gõ tên người liên hệ…" onchange="onCtChange()"><option value="">— Không chọn —</option></select>
+          <select id="fCt" data-combo data-ph="Gõ tên người liên hệ…" data-create="openNewContact" data-create-label="+ Tạo người liên hệ mới" onchange="onCtChange()"><option value="">— Không chọn —</option></select>
         </div>
         <div class="fg"><label>Tên khách hàng (in trên báo giá)</label><input type="text" id="fClient" /></div>
         <div class="fg"><label>Email khách hàng</label><input type="text" id="fEmail" /></div>
@@ -1338,6 +1339,24 @@ table.chktbl th:last-child{ width:34px; }
 </div>
 
 <!-- ══════════ MỜI REVIEW ══════════ -->
+<!-- ========== NGƯỜI LIÊN HỆ MỚI ========== -->
+<div class="ov" id="ctOv" onclick="if(event.target===this)closeNewContact()">
+  <div class="modal" style="max-width:520px">
+    <button class="x" onclick="closeNewContact()"><svg class="ic" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <h2><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-people"/></svg> Thêm người liên hệ</h2>
+    <p class="sub" id="ctSub">Lưu vào danh bạ khách hàng của công ty đang chọn.</p>
+    <div class="fg"><label>Họ tên *</label><input type="text" id="ctName" placeholder="VD: Trần Bảo Châu" /></div>
+    <div class="fg"><label>Phòng ban / chức vụ</label><input type="text" id="ctDept" placeholder="VD: CME ONCO, Marketing, KACD..." /></div>
+    <div class="fg"><label>Email</label><input type="text" id="ctEmail" placeholder="ten@congty.com" /></div>
+    <div class="fg"><label>Điện thoại</label><input type="text" id="ctPhone" placeholder="09..." /></div>
+    <div class="fg"><label>Ghi chú</label><input type="text" id="ctNote" placeholder="Không bắt buộc" /></div>
+    <div class="mlact">
+      <button class="btn ghost" onclick="closeNewContact()">Huỷ</button>
+      <button class="btn" id="ctOk" onclick="saveNewContact()">Lưu người liên hệ</button>
+    </div>
+  </div>
+</div>
+
 <div class="ov" id="reqOv" onclick="if(event.target===this)closeReq()">
   <div class="modal" style="max-width:520px">
     <button class="x" onclick="closeReq()"><svg class="ic" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
@@ -2901,6 +2920,44 @@ async function loadCompanies(){
       COMPANIES.map(c => '<option value="' + c.id + '">' + esc(c.name) + '</option>').join('');
   } catch(e){ COMPANIES = []; }
 }
+/* APSA1861: tao nhanh nguoi lien he ngay tu o tim kiem */
+function openNewContact(text){
+  const coid = Number(document.getElementById('fCo').value) || 0;
+  if(!coid){ toast('Chọn công ty khách hàng trước đã nhé', 'err'); return; }
+  const co = COMPANIES.find(x => x.id === coid);
+  document.getElementById('ctSub').textContent = 'Lưu vào danh bạ của ' + (co ? co.name : 'công ty đang chọn') + '.';
+  document.getElementById('ctName').value  = (text || '').trim();
+  document.getElementById('ctDept').value  = '';
+  document.getElementById('ctEmail').value = '';
+  document.getElementById('ctPhone').value = '';
+  document.getElementById('ctNote').value  = '';
+  document.getElementById('ctOv').classList.add('open');
+  setTimeout(() => document.getElementById('ctName').focus(), 60);
+}
+function closeNewContact(){ document.getElementById('ctOv').classList.remove('open'); }
+async function saveNewContact(){
+  const coid = Number(document.getElementById('fCo').value) || 0;
+  const name = document.getElementById('ctName').value.trim();
+  if(!coid){ toast('Chọn công ty khách hàng trước đã nhé', 'err'); return; }
+  if(!name){ toast('Chưa nhập họ tên', 'err'); return; }
+  const btn = document.getElementById('ctOk');
+  btn.disabled = true;
+  try{
+    const d = await api(CRM, 'customer-save', { body: {
+      id: 0, company_id: coid, name: name, active: 1,
+      dept:  document.getElementById('ctDept').value.trim(),
+      email: document.getElementById('ctEmail').value.trim(),
+      phone: document.getElementById('ctPhone').value.trim(),
+      note:  document.getElementById('ctNote').value.trim()
+    }});
+    closeNewContact();
+    await loadContacts(coid, d.id);
+    document.getElementById('fCt').dispatchEvent(new Event('change', { bubbles: true }));
+    toast('Đã thêm ' + name, 'ok');
+  }catch(e){ toast(e.message, 'err'); }
+  btn.disabled = false;
+}
+
 async function loadContacts(coid, selected){
   const sel = document.getElementById('fCt');
   sel.innerHTML = '<option value="">— Không chọn —</option>';

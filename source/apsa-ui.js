@@ -1141,6 +1141,7 @@ function pullHome() {
       '.apsa-cb-it:hover{ background:rgba(255,255,255,.06); color:#fff; }' +
       '.apsa-cb-it.on{ background:rgba(223,242,13,.14); color:#eaff6b; }' +
       '.apsa-cb-it b{ color:#dff20d; font-weight:700; }' +
+      '.apsa-cb-new{ color:#dff20d; font-weight:700; border-top:1px solid rgba(255,255,255,.08); margin-top:4px; padding-top:9px; border-radius:0; }' +
       '.apsa-cb-no{ padding:12px 10px; font-size:12.5px; color:#5e5e5e; text-align:center; }';
   }
 
@@ -1214,11 +1215,27 @@ function pullHome() {
       var all = [].slice.call(sel.options);
       rows = q ? all.filter(function (o) { return flat(o.text).indexOf(q) >= 0; }) : all;
       cur = rows.length ? 0 : -1;
-      list.innerHTML = rows.length
+      var html = rows.length
         ? rows.map(function (o, i) {
             return '<div class="apsa-cb-it' + (i === cur ? ' on' : '') + '" data-i="' + i + '">' + mark(o.text, q) + '</div>';
           }).join('')
-        : '<div class="apsa-cb-no">Không tìm thấy</div>';
+        : '';
+      /* APSA1861: cho phep tao moi ngay trong o tim kiem */
+      var mk = sel.getAttribute('data-create');
+      var raw = (inp.value || '').trim();
+      if (mk && raw) {
+        rows = rows.concat([{ __new: true, text: raw, value: '' }]);
+        var ni = rows.length - 1;
+        if (cur < 0) cur = ni;
+        var lb = sel.getAttribute('data-create-label') || '+ Tạo mới';
+        html += '<div class="apsa-cb-it apsa-cb-new' + (cur === ni ? ' on' : '') + '" data-i="' + ni + '">' +
+                lb + ': “' + raw.replace(/[&<>"]/g, function (ch) {
+                  return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch];
+                }) + '”</div>';
+      } else if (!rows.length) {
+        html = '<div class="apsa-cb-no">Không tìm thấy</div>';
+      }
+      list.innerHTML = html;
     }
 
     function highlight() {
@@ -1245,6 +1262,12 @@ function pullHome() {
     function pick(i) {
       var o = rows[i];
       if (!o) return;
+      if (o.__new) {
+        close(true);
+        var mkfn = window[sel.getAttribute('data-create')];
+        if (typeof mkfn === 'function') mkfn(o.text || '', sel);
+        return;
+      }
       sel.value = o.value;
       inp.value = o.text;
       close(false);
