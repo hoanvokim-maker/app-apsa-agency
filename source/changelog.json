@@ -1,12 +1,18 @@
 {
-    "version": "2.0.0",
-    "updated": "2026-09-13",
+    "version": "2.0.1",
+    "updated": "2026-09-14",
     "releases": [
         {
             "v": "2.0",
             "date": "2026-09-13",
             "note": "Phiên bản 2.0",
             "items": [
+                {
+                    "d": "2026-09-14",
+                    "v": "2.0.1",
+                    "t": "Module Kho Font: quan ly bo font APSA hay dung - upload / sua / xoa, xem thu chu bang chinh font do, tai ca bo dang zip. Ca team deu co quyen.",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-13",
                     "v": "2.0.0",
