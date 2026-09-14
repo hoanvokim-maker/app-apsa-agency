@@ -78,7 +78,7 @@ CREATE TABLE `activity_log` (
   KEY `k_quo` (`quotation_id`),
   KEY `k_user` (`user_id`),
   KEY `k_area` (`area`)
-) ENGINE=InnoDB AUTO_INCREMENT=87 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=91 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -164,6 +164,10 @@ INSERT INTO `activity_log` VALUES (79,'2026-09-14 10:25:25',4,'Trang Đỗ','quo
 INSERT INTO `activity_log` VALUES (80,'2026-09-14 10:25:25',4,'Trang Đỗ','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
 INSERT INTO `activity_log` VALUES (81,'2026-09-14 10:25:26',4,'Trang Đỗ','quotation','close-state','Đổi trạng thái đóng',284,'25082026-152','',NULL);
 INSERT INTO `activity_log` VALUES (82,'2026-09-14 10:26:07',4,'Trang Đỗ','quotation','close-state','Đổi trạng thái đóng',296,'04092026-159','',NULL);
+INSERT INTO `activity_log` VALUES (87,'2026-09-14 12:57:45',1,'Harris','font','save','Thêm / sửa bộ font',0,'','','id: 0 · name: Gontserrat');
+INSERT INTO `activity_log` VALUES (88,'2026-09-14 12:57:46',1,'Harris','font','upload','Tải file font lên',0,'','','action: upload · family_id: 3');
+INSERT INTO `activity_log` VALUES (89,'2026-09-14 12:58:07',1,'Harris','font','save','Thêm / sửa bộ font',0,'','','id: 0 · name: Microsoft Aptos');
+INSERT INTO `activity_log` VALUES (90,'2026-09-14 12:58:07',1,'Harris','font','upload','Tải file font lên',0,'','','action: upload · family_id: 4');
 /*!40000 ALTER TABLE `activity_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -914,7 +918,7 @@ INSERT INTO `app_settings` VALUES ('leave.default_quota','12','2026-08-25 16:16:
 INSERT INTO `app_settings` VALUES ('leave.work_days','[1,2,3,4,5,6]','2026-08-25 16:13:31','');
 INSERT INTO `app_settings` VALUES ('leave.work_hours','{\"am_start\":\"09:30\",\"am_end\":\"12:00\",\"pm_start\":\"13:30\",\"pm_end\":\"18:00\"}','2026-08-25 16:07:08','Harris');
 INSERT INTO `app_settings` VALUES ('ui.font_sizes','{\"default\":12,\"large\":15,\"max\":16}','2026-09-05 00:49:59','Harris');
-INSERT INTO `app_settings` VALUES ('ui.sidebar','{\"order\":[35,32,26,31,29,30,95,96,97,98,99,17,18,34,25,23,100,101,1,90,91,102,94,27,92,93,28],\"hidden\":[],\"layout\":[{\"g\":\"Công việc\"},{\"m\":35},{\"m\":32},{\"m\":26},{\"g\":\"Khách hàng\"},{\"m\":31},{\"m\":29},{\"m\":30},{\"m\":95},{\"m\":96},{\"m\":97},{\"m\":98},{\"m\":99},{\"g\":\"Nội dung\"},{\"m\":17},{\"m\":18},{\"m\":34},{\"m\":25},{\"m\":23},{\"m\":100},{\"m\":101},{\"g\":\"Tiện ích\"},{\"m\":1},{\"m\":90},{\"m\":91},{\"m\":102},{\"m\":94},{\"m\":27},{\"m\":92},{\"m\":93},{\"m\":28}]}','2026-09-05 14:54:26','Harris');
+INSERT INTO `app_settings` VALUES ('ui.sidebar','{\"order\":[35,32,26,31,29,30,95,96,97,98,99,17,18,107,34,25,23,100,101,1,90,91,102,94,27,92,93,28,105,106,104],\"hidden\":[],\"layout\":[{\"g\":\"Công việc\"},{\"m\":35},{\"m\":32},{\"m\":26},{\"g\":\"Khách hàng\"},{\"m\":31},{\"m\":29},{\"m\":30},{\"m\":95},{\"m\":96},{\"m\":97},{\"m\":98},{\"m\":99},{\"g\":\"Nội dung\"},{\"m\":17},{\"m\":18},{\"m\":107},{\"m\":34},{\"m\":25},{\"m\":23},{\"m\":100},{\"m\":101},{\"g\":\"Tiện ích\"},{\"m\":1},{\"m\":90},{\"m\":91},{\"m\":102},{\"m\":94},{\"m\":27},{\"m\":92},{\"m\":93},{\"m\":28},{\"m\":105},{\"m\":106},{\"m\":104}]}','2026-09-14 13:07:32','Harris');
 /*!40000 ALTER TABLE `app_settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2205,7 +2209,7 @@ CREATE TABLE `font_families` (
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_font_name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2214,6 +2218,8 @@ CREATE TABLE `font_families` (
 
 LOCK TABLES `font_families` WRITE;
 /*!40000 ALTER TABLE `font_families` DISABLE KEYS */;
+INSERT INTO `font_families` VALUES (3,'Gontserrat','','','','','',0,1,'Harris','2026-09-14 12:57:45','2026-09-14 12:57:46');
+INSERT INTO `font_families` VALUES (4,'Microsoft Aptos','','','','','',0,1,'Harris','2026-09-14 12:58:07','2026-09-14 12:58:07');
 /*!40000 ALTER TABLE `font_families` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2238,7 +2244,7 @@ CREATE TABLE `font_files` (
   `created_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `k_fam` (`family_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2247,6 +2253,54 @@ CREATE TABLE `font_files` (
 
 LOCK TABLES `font_files` WRITE;
 /*!40000 ALTER TABLE `font_files` DISABLE KEYS */;
+INSERT INTO `font_files` VALUES (7,3,'Cả bộ (zip)','zip','gontserrat.zip','uploads/fonts/3/7_gontserrat.zip',1370928,0,1,'Harris','2026-09-14 12:57:46');
+INSERT INTO `font_files` VALUES (8,3,'Black','ttf','Gontserrat-Black.ttf','uploads/fonts/3/8_Gontserrat-Black.ttf',167844,1,1,'Harris','2026-09-14 12:57:46');
+INSERT INTO `font_files` VALUES (9,3,'Black Italic','ttf','Gontserrat-BlackItalic.ttf','uploads/fonts/3/9_Gontserrat-BlackItalic.ttf',167240,1,1,'Harris','2026-09-14 12:57:46');
+INSERT INTO `font_files` VALUES (10,3,'Bold','ttf','Gontserrat-Bold.ttf','uploads/fonts/3/10_Gontserrat-Bold.ttf',164672,1,1,'Harris','2026-09-14 12:57:46');
+INSERT INTO `font_files` VALUES (11,3,'Bold Italic','ttf','Gontserrat-BoldItalic.ttf','uploads/fonts/3/11_Gontserrat-BoldItalic.ttf',172132,1,1,'Harris','2026-09-14 12:57:46');
+INSERT INTO `font_files` VALUES (12,3,'Extra Bold','ttf','Gontserrat-ExtraBold.ttf','uploads/fonts/3/12_Gontserrat-ExtraBold.ttf',164552,1,1,'Harris','2026-09-14 12:57:46');
+INSERT INTO `font_files` VALUES (13,3,'Extra Bold Italic','ttf','Gontserrat-ExtraBoldItalic.ttf','uploads/fonts/3/13_Gontserrat-ExtraBoldItalic.ttf',168400,1,1,'Harris','2026-09-14 12:57:46');
+INSERT INTO `font_files` VALUES (14,3,'Extra Light','ttf','Gontserrat-ExtraLight.ttf','uploads/fonts/3/14_Gontserrat-ExtraLight.ttf',169612,1,1,'Harris','2026-09-14 12:57:46');
+INSERT INTO `font_files` VALUES (15,3,'Extra Light Italic','ttf','Gontserrat-ExtraLightItalic.ttf','uploads/fonts/3/15_Gontserrat-ExtraLightItalic.ttf',170928,1,1,'Harris','2026-09-14 12:57:46');
+INSERT INTO `font_files` VALUES (16,3,'Italic','ttf','Gontserrat-Italic.ttf','uploads/fonts/3/16_Gontserrat-Italic.ttf',168116,1,1,'Harris','2026-09-14 12:57:46');
+INSERT INTO `font_files` VALUES (17,3,'Light','ttf','Gontserrat-Light.ttf','uploads/fonts/3/17_Gontserrat-Light.ttf',165120,1,1,'Harris','2026-09-14 12:57:46');
+INSERT INTO `font_files` VALUES (18,3,'Light Italic','ttf','Gontserrat-LightItalic.ttf','uploads/fonts/3/18_Gontserrat-LightItalic.ttf',168592,1,1,'Harris','2026-09-14 12:57:46');
+INSERT INTO `font_files` VALUES (19,3,'Medium','ttf','Gontserrat-Medium.ttf','uploads/fonts/3/19_Gontserrat-Medium.ttf',165668,1,1,'Harris','2026-09-14 12:57:46');
+INSERT INTO `font_files` VALUES (20,3,'Medium Italic','ttf','Gontserrat-MediumItalic.ttf','uploads/fonts/3/20_Gontserrat-MediumItalic.ttf',169616,1,1,'Harris','2026-09-14 12:57:46');
+INSERT INTO `font_files` VALUES (21,3,'Regular','ttf','Gontserrat-Regular.ttf','uploads/fonts/3/21_Gontserrat-Regular.ttf',163692,1,1,'Harris','2026-09-14 12:57:46');
+INSERT INTO `font_files` VALUES (22,3,'Semi Bold','ttf','Gontserrat-SemiBold.ttf','uploads/fonts/3/22_Gontserrat-SemiBold.ttf',165224,1,1,'Harris','2026-09-14 12:57:46');
+INSERT INTO `font_files` VALUES (23,3,'Semi Bold Italic','ttf','Gontserrat-SemiBoldItalic.ttf','uploads/fonts/3/23_Gontserrat-SemiBoldItalic.ttf',169356,1,1,'Harris','2026-09-14 12:57:46');
+INSERT INTO `font_files` VALUES (24,3,'Thin','ttf','Gontserrat-Thin.ttf','uploads/fonts/3/24_Gontserrat-Thin.ttf',165060,1,1,'Harris','2026-09-14 12:57:46');
+INSERT INTO `font_files` VALUES (25,3,'Thin Italic','ttf','Gontserrat-ThinItalic.ttf','uploads/fonts/3/25_Gontserrat-ThinItalic.ttf',169296,1,1,'Harris','2026-09-14 12:57:46');
+INSERT INTO `font_files` VALUES (26,4,'Cả bộ (zip)','zip','Microsoft Aptos Fonts.zip','uploads/fonts/4/26_Microsoft-Aptos-Fonts.zip',2979784,0,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (27,4,'Regular','ttf','Aptos.ttf','uploads/fonts/4/27_Aptos.ttf',220832,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (28,4,'Black','ttf','Aptos-Black.ttf','uploads/fonts/4/28_Aptos-Black.ttf',221476,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (29,4,'Italic','ttf','Aptos-Black-Italic.ttf','uploads/fonts/4/29_Aptos-Black-Italic.ttf',229832,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (30,4,'Bold','ttf','Aptos-Bold.ttf','uploads/fonts/4/30_Aptos-Bold.ttf',221408,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (31,4,'Italic','ttf','Aptos-Bold-Italic.ttf','uploads/fonts/4/31_Aptos-Bold-Italic.ttf',228688,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (32,4,'Regular','ttf','Aptos-Display.ttf','uploads/fonts/4/32_Aptos-Display.ttf',221152,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (33,4,'Bold','ttf','Aptos-Display-Bold.ttf','uploads/fonts/4/33_Aptos-Display-Bold.ttf',221872,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (34,4,'Italic','ttf','Aptos-Display-Bold-Italic.ttf','uploads/fonts/4/34_Aptos-Display-Bold-Italic.ttf',229140,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (35,4,'Italic','ttf','Aptos-Display-Italic.ttf','uploads/fonts/4/35_Aptos-Display-Italic.ttf',228264,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (36,4,'Extra Bold','ttf','Aptos-ExtraBold.ttf','uploads/fonts/4/36_Aptos-ExtraBold.ttf',221904,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (37,4,'Italic','ttf','Aptos-ExtraBold-Italic.ttf','uploads/fonts/4/37_Aptos-ExtraBold-Italic.ttf',229244,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (38,4,'Italic','ttf','Aptos-Italic.ttf','uploads/fonts/4/38_Aptos-Italic.ttf',227868,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (39,4,'Light','ttf','Aptos-Light.ttf','uploads/fonts/4/39_Aptos-Light.ttf',219484,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (40,4,'Italic','ttf','Aptos-Light-Italic.ttf','uploads/fonts/4/40_Aptos-Light-Italic.ttf',226696,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (41,4,'Regular','ttf','Aptos-Mono.ttf','uploads/fonts/4/41_Aptos-Mono.ttf',98244,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (42,4,'Bold','ttf','Aptos-Mono-Bold.ttf','uploads/fonts/4/42_Aptos-Mono-Bold.ttf',98812,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (43,4,'Italic','ttf','Aptos-Mono-Bold-Italic.ttf','uploads/fonts/4/43_Aptos-Mono-Bold-Italic.ttf',102668,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (44,4,'Italic','ttf','Aptos-Mono-Italic.ttf','uploads/fonts/4/44_Aptos-Mono-Italic.ttf',102144,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (45,4,'Regular','ttf','Aptos-Narrow.ttf','uploads/fonts/4/45_Aptos-Narrow.ttf',238584,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (46,4,'Bold','ttf','Aptos-Narrow-Bold.ttf','uploads/fonts/4/46_Aptos-Narrow-Bold.ttf',238116,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (47,4,'Italic','ttf','Aptos-Narrow-Bold-Italic.ttf','uploads/fonts/4/47_Aptos-Narrow-Bold-Italic.ttf',250316,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (48,4,'Italic','ttf','Aptos-Narrow-Italic.ttf','uploads/fonts/4/48_Aptos-Narrow-Italic.ttf',248844,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (49,4,'Semi Bold','ttf','Aptos-SemiBold.ttf','uploads/fonts/4/49_Aptos-SemiBold.ttf',221020,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (50,4,'Italic','ttf','Aptos-SemiBold-Italic.ttf','uploads/fonts/4/50_Aptos-SemiBold-Italic.ttf',228000,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (51,4,'Regular','ttf','Aptos-Serif.ttf','uploads/fonts/4/51_Aptos-Serif.ttf',202436,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (52,4,'Bold','ttf','Aptos-Serif-Bold.ttf','uploads/fonts/4/52_Aptos-Serif-Bold.ttf',202740,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (53,4,'Italic','ttf','Aptos-Serif-Bold-Italic.ttf','uploads/fonts/4/53_Aptos-Serif-Bold-Italic.ttf',223316,1,1,'Harris','2026-09-14 12:58:07');
+INSERT INTO `font_files` VALUES (54,4,'Italic','ttf','Aptos-Serif-Italic.ttf','uploads/fonts/4/54_Aptos-Serif-Italic.ttf',222964,1,1,'Harris','2026-09-14 12:58:07');
 /*!40000 ALTER TABLE `font_files` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2280,7 +2334,7 @@ CREATE TABLE `frame_events` (
 
 LOCK TABLES `frame_events` WRITE;
 /*!40000 ALTER TABLE `frame_events` DISABLE KEYS */;
-INSERT INTO `frame_events` VALUES (2,'blood-cancer-awareness','Blood-Cancer-Awareness','','2026-09-13','2026-10-22',1,24,5,'Harris','2026-09-13 15:14:49');
+INSERT INTO `frame_events` VALUES (2,'blood-cancer-awareness','Blood-Cancer-Awareness','','2026-09-13','2026-10-22',1,25,5,'Harris','2026-09-13 15:14:49');
 /*!40000 ALTER TABLE `frame_events` ENABLE KEYS */;
 UNLOCK TABLES;
 

@@ -17,7 +17,7 @@ const FT_ALLOW = array('ttf', 'otf', 'ttc', 'woff', 'woff2', 'zip');
 const FT_WEB   = array('ttf', 'otf', 'woff', 'woff2');
 
 $action = (string) (isset($_GET['action']) ? $_GET['action'] : (isset($_POST['action']) ? $_POST['action'] : ''));
-$IS_BIN = in_array($action, array('file', 'download', 'zip'), true);
+$IS_BIN = in_array($action, array('file', 'download', 'zip', 'zip-all'), true);
 if ($action === 'upload' || $IS_BIN) {
     $B = array_merge($_GET, $_POST);
 } else {
@@ -376,6 +376,63 @@ case 'zip':
     }
     $zip->close();
     $out = ft_safe($fam['name']) . '.zip';
+    while (ob_get_level()) ob_end_clean();
+    header('Content-Type: application/zip');
+    header('Content-Length: ' . filesize($tmp));
+    header('Content-Disposition: attachment; filename="' . $out . '"');
+    header('X-Content-Type-Options: nosniff');
+    readfile($tmp);
+    @unlink($tmp);
+    exit;
+
+case 'zip-all':
+    /* APSA1860: tai toan bo kho font trong 1 file zip */
+    if (!class_exists('ZipArchive')) { http_response_code(500); exit('ZipArchive not available'); }
+    @set_time_limit(600);
+    $fams = $pdo->query('SELECT `id`, `name` FROM `font_families` ORDER BY `name` ASC')->fetchAll();
+    if (!$fams) { http_response_code(404); exit('Kho font dang trong'); }
+    $base  = realpath($UPDIR);
+    $byFam = array();
+    $q = $pdo->query('SELECT `family_id`, `orig_name`, `path`, `ext` FROM `font_files` ORDER BY `family_id` ASC, `style` ASC');
+    foreach ($q->fetchAll() as $r) {
+        $real = realpath($ROOT . '/' . $r['path']);
+        if (!$real || !$base || strpos($real, $base) !== 0 || !is_file($real)) continue;
+        $r['_real'] = $real;
+        $fid = (int) $r['family_id'];
+        if (!isset($byFam[$fid])) $byFam[$fid] = array();
+        $byFam[$fid][] = $r;
+    }
+    /* moi bo font: uu tien file zip goc, khong co thi lay cac file chu */
+    $pick = array(); $total = 0;
+    foreach ($byFam as $fid => $rows) {
+        $zips = array();
+        foreach ($rows as $r) if ($r['ext'] === 'zip') $zips[] = $r;
+        $use = $zips ? $zips : $rows;
+        foreach ($use as $r) $total += (int) filesize($r['_real']);
+        $pick[$fid] = $use;
+    }
+    if (!$pick) { http_response_code(404); exit('Kho font chua co file nao'); }
+    if ($total > 1500 * 1024 * 1024) { http_response_code(413); exit('Kho font qua lon de tai 1 lan, vui long tai tung bo'); }
+
+    $tmp = tempnam(sys_get_temp_dir(), 'apsafall');
+    $zip = new ZipArchive();
+    if ($zip->open($tmp, ZipArchive::OVERWRITE) !== true) { http_response_code(500); exit('Zip failed'); }
+    $seen = array();
+    foreach ($fams as $f) {
+        $fid = (int) $f['id'];
+        if (empty($pick[$fid])) continue;
+        $folder = ft_safe($f['name']);
+        $only   = (count($pick[$fid]) === 1 && $pick[$fid][0]['ext'] === 'zip');
+        foreach ($pick[$fid] as $r) {
+            $nm  = $r['orig_name'] !== '' ? basename($r['orig_name']) : basename($r['_real']);
+            $ent = $only ? ($folder . '.zip') : ($folder . '/' . $nm);
+            $k   = strtolower($ent);
+            if (isset($seen[$k])) { $ent = $folder . '/' . (++$seen[$k]) . '-' . $nm; } else { $seen[$k] = 1; }
+            $zip->addFile($r['_real'], $ent);
+        }
+    }
+    $zip->close();
+    $out = 'APSA-Kho-Font-' . date('Ymd') . '.zip';
     while (ob_get_level()) ob_end_clean();
     header('Content-Type: application/zip');
     header('Content-Length: ' . filesize($tmp));

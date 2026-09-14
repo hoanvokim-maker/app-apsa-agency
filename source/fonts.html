@@ -256,6 +256,7 @@
     .uprow .stt { font-size:10px; color:var(--text3); min-width:56px; text-align:right; }
     .uprow .stt.ok { color:#8ce99a; }
     .uprow .stt.er { color:var(--red); }
+    .ph-act { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
     .fempty { text-align:center; padding:54px 16px; color:var(--text3); font-size:12px; }
     @media (max-width:640px) {
       .fgrid { grid-template-columns:1fr; }
@@ -283,7 +284,10 @@
     <h1>Kho Font</h1>
     <p>Font APSA hay dùng — nhập tên, kéo file zip của bộ font vào là xong.</p>
   </div>
-  <button class="btn-primary" onclick="openNew()">+ Thêm bộ font</button>
+  <div class="ph-act">
+    <button class="mini hidden" id="dlAll" onclick="dlAll()"></button>
+    <button class="btn-primary" onclick="openNew()">+ Thêm bộ font</button>
+  </div>
 </div>
 
 <div class="fbar">
@@ -389,6 +393,15 @@ function load() {
     .catch(function (e) { toast(e.message); });
 }
 
+/* dung luong thuc su se tai ve: uu tien file zip goc cua tung bo */
+function packBytes(x) {
+  var fs = x.files || [];
+  var z = fs.filter(function (f) { return f.ext === 'zip'; });
+  var use = z.length ? z : fs, n = 0;
+  use.forEach(function (f) { n += (f.bytes || 0); });
+  return n;
+}
+
 function render() {
   var q = noAcc((el('q').value || '').trim());
   var rows = LIST.filter(function (r) { return !q || noAcc(r.name).indexOf(q) >= 0; });
@@ -400,6 +413,15 @@ function render() {
     em.classList.remove('hidden');
     em.innerHTML = LIST.length ? 'Không tìm thấy bộ font nào.'
       : 'Chưa có bộ font nào. Bấm <b>+ Thêm bộ font</b> để bắt đầu.';
+  }
+  var all = 0, nf = 0;
+  LIST.forEach(function (x) { all += packBytes(x); nf += (x.files || []).length; });
+  var b = el('dlAll');
+  if (nf) {
+    b.classList.remove('hidden');
+    b.innerHTML = ICO.dl + 'Tải tất cả (' + LIST.length + ' bộ · ' + kb(all) + ')';
+  } else {
+    b.classList.add('hidden');
   }
   applySample();
 }
@@ -439,6 +461,13 @@ function pick(fam, fid) {
 }
 function dl(fid)    { window.location.href = API + '?action=download&id=' + fid; }
 function dlZip(fam) { window.location.href = API + '?action=zip&id=' + fam; }
+function dlAll() {
+  var all = 0;
+  LIST.forEach(function (x) { all += packBytes(x); });
+  if (all > 1500 * 1024 * 1024) { toast('Kho font hơn 1,5 GB — tải từng bộ giúp anh nhé'); return; }
+  toast('Đang gói file, chờ chút...');
+  window.location.href = API + '?action=zip-all';
+}
 
 function closeOv(id) { el(id).classList.remove('open'); }
 function outClose(e, id) { if (e.target === el(id)) closeOv(id); }
