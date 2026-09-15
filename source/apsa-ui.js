@@ -342,6 +342,7 @@
     var sv = b.querySelector('svg'), tx = b.querySelector('.as-txt');
     if (sv) sv.innerHTML = (next === 'light') ? I.sun : I.moon;
     if (tx) tx.textContent = (next === 'light') ? 'Nền tối' : 'Nền sáng';
+  b.setAttribute('aria-checked', next === 'light' ? 'true' : 'false');
   }, true);
 
   var I = {
@@ -820,9 +821,10 @@ function paintBell() {
     }
     h += '</div>';
     /* APSA1879: nut doi nen sang / toi */
-    h += '<button type="button" class="as-item" id="apsaTheme" title="Đổi nền sáng / tối">' +
+    h += '<button type="button" class="as-item" id="apsaTheme" role="switch" aria-checked="' + (AD_isLight() ? 'true' : 'false') + '" title="Đổi nền sáng / tối">' +
          '<svg viewBox="0 0 24 24" aria-hidden="true">' + (AD_isLight() ? I.sun : I.moon) + '</svg>' +
-         '<span class="as-txt">' + (AD_isLight() ? 'Nền tối' : 'Nền sáng') + '</span></button>';
+         '<span class="as-txt">' + (AD_isLight() ? 'Nền tối' : 'Nền sáng') + '</span>' +
+         '<span class="as-sw" aria-hidden="true"><span class="kn"></span></span></button>';
     h += '<button type="button" class="as-item as-pin" id="apsaPin" title="Ghim / thu gọn menu">' +
          '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>' +
          '<span class="as-txt">Mở rộng menu</span></button>';

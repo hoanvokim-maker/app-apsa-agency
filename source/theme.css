@@ -745,3 +745,51 @@ html[data-theme="light"] .stt-paid{
 html[data-theme="light"] .stt-liq_sent{
   background:#57574f !important; color:#ffffff !important; border-color:#45453f !important;
 }
+
+/* APSA1882 - nen dong nhom hang muc (truoc day la mau toi viet cung) */
+:root{
+  --grp1:#25290f; --grp2:#161d2b; --grp3:#2b2113; --grp-h:#282828;
+  --secbtn:#241c0c; --secbtn-h:#2e2410; --secbtn-bd:#4a3a12;
+}
+html[data-theme="light"]{
+  --grp1:#f6f1e6; --grp2:#eef1f6; --grp3:#f7f0e8; --grp-h:#f0f0ee;
+  --secbtn:#f9f2e8; --secbtn-h:#f1e7d8; --secbtn-bd:#e0cfb4;
+}
+
+/* APSA1883 - nen sang: xam nhat hon, them gradient va grain cho do sau */
+html[data-theme="light"] body{
+  background-color:#ffffff !important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.42'/%3E%3C/svg%3E"), linear-gradient(180deg,#ffffff 0%,#fdfdfc 45%,#f6f6f4 100%) !important;
+  background-repeat:repeat, no-repeat !important;
+  background-size:180px 180px, 100% 100% !important;
+  background-attachment:fixed, fixed !important;
+  background-blend-mode:soft-light, normal !important;
+}
+html[data-theme="light"]{
+  --w07:rgba(0,0,0,.028); --w09:rgba(0,0,0,.035);
+  --w10:rgba(0,0,0,.045); --w12:rgba(0,0,0,.055);
+  --w18:rgba(0,0,0,.09);
+  --bg3:#fafaf9; --bg4:#f2f2f0; --panel:#fcfcfb; --panel2:#f6f6f4;
+}
+
+/* APSA1884 - nut doi nen: cong tac gat thay vi muc menu thuong */
+#apsaTheme{ display:flex; align-items:center; }
+#apsaTheme .as-sw{
+  margin-left:auto; flex:0 0 32px; width:32px; height:18px; border-radius:999px;
+  background:var(--w18); border:1px solid var(--border); position:relative;
+  transition:background .18s ease, border-color .18s ease;
+}
+#apsaTheme .as-sw .kn{
+  position:absolute; top:2px; left:2px; width:12px; height:12px; border-radius:50%;
+  background:var(--text2); display:block;
+  transition:transform .18s ease, background .18s ease;
+}
+html[data-theme="light"] #apsaTheme .as-sw{
+  background:var(--accent-fill); border-color:var(--accent);
+}
+html[data-theme="light"] #apsaTheme .as-sw .kn{
+  transform:translateX(14px); background:#ffffff;
+}
+/* thanh ben thu gon thi an cong tac, giong nhu nhan chu */
+#apsaSide .as-sw{ opacity:0; transition:opacity .13s ease; }
+#apsaSide:hover .as-sw, body.as-pin #apsaSide .as-sw{ opacity:1; }

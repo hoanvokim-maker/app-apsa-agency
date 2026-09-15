@@ -400,7 +400,7 @@ table.q textarea:focus{ border-color:var(--a55) !important; background:var(--bg3
 table.q tbody tr.sec textarea{ font-weight:800; }
 table.q tr.chg textarea{ color:var(--red-soft2); }
 table.q tbody tr.sec td{ background:var(--ink1) !important; border-top:1px solid var(--w12) !important; }
-table.q tbody tr.sec:hover td{ background:#282828 !important; }
+table.q tbody tr.sec:hover td{ background:var(--grp-h) !important; }
 table.q tbody tr.sec input{ font-weight:800; }
 table.q input{ width:100%; background:transparent; border:1px solid transparent; border-radius:7px; padding:6px 8px;
   color:var(--text); font-size:12.5px; font-family:inherit; outline:none; transition:.15s; }
@@ -661,8 +661,8 @@ table.q tbody tr.dragblock td{ background:var(--a05); }
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/theme.css?v=36" />
-<script src="/apsa-ui.js?v=50"></script>
+<link rel="stylesheet" href="/theme.css?v=38" />
+<script src="/apsa-ui.js?v=52"></script>
   <script src="/perm-guard.js?v=3"></script>
 <script src="/exp-qr.js?v=10"></script>
 <script src="/exp-day.js?v=6"></script>
@@ -697,7 +697,7 @@ select#fStatus option{background:var(--bg3);color:var(--ink4);font-weight:600;te
 .qc-btn{display:inline-flex;align-items:center;gap:6px}
 .qc-btn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 
-.qc-bn{border:1px solid #4a3a12;background:linear-gradient(180deg,#211a09,#191408);
+.qc-bn{border:1px solid var(--secbtn-bd);background:linear-gradient(180deg,#211a09,#191408);
   border-radius:14px;padding:16px 18px;margin:0 0 16px;display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
 .qc-bn .ic{width:36px;height:36px;border-radius:10px;background:#2b2110;display:grid;place-items:center;flex:none}
 .qc-bn .ic svg{width:18px;height:18px;stroke:var(--warn2);fill:none;stroke-width:2;stroke-linecap:round}
@@ -709,8 +709,8 @@ select#fStatus option{background:var(--bg3);color:var(--ink4);font-weight:600;te
   padding:9px 16px;cursor:pointer;white-space:nowrap}
 .qc-bn button.pri{background:var(--accent-fill);color:var(--bg-card)}
 .qc-bn button.pri:hover{background:#eaff2b}
-.qc-bn button.sec{background:#241c0c;color:var(--warn2);border:1px solid #4a3a12}
-.qc-bn button.sec:hover{background:#2e2410}
+.qc-bn button.sec{background:var(--secbtn);color:var(--warn2);border:1px solid var(--secbtn-bd)}
+.qc-bn button.sec:hover{background:var(--secbtn-h)}
 .qc-bn button:disabled{opacity:.5;cursor:default}
 
 .qc-reqs{width:100%;margin-top:12px;border-top:1px solid #362a10;padding-top:12px}
@@ -801,9 +801,9 @@ table.q tbody tr.g1>td{background:rgba(var(--a-rgb),.042)}
 table.q tbody tr.g2>td{background:var(--blue-wash)}
 table.q tbody tr.g3>td{background:rgba(255,159,10,.048)}
 table.q tbody tr.sec.g0 td{background:var(--ink1) !important}
-table.q tbody tr.sec.g1 td{background:#25290f !important}
-table.q tbody tr.sec.g2 td{background:#161d2b !important}
-table.q tbody tr.sec.g3 td{background:#2b2113 !important}
+table.q tbody tr.sec.g1 td{background:var(--grp1) !important}
+table.q tbody tr.sec.g2 td{background:var(--grp2) !important}
+table.q tbody tr.sec.g3 td{background:var(--grp3) !important}
 table.q tbody tr.g0>td:first-child{border-left:3px solid rgba(var(--w-rgb),.20)}
 table.q tbody tr.g1>td:first-child{border-left:3px solid var(--accent)}
 table.q tbody tr.g2>td:first-child{border-left:3px solid #5aa0ff}
@@ -838,9 +838,9 @@ table.exptbl tbody tr.eg1>td{background:rgba(var(--a-rgb),.042)}
 table.exptbl tbody tr.eg2>td{background:var(--blue-wash)}
 table.exptbl tbody tr.eg3>td{background:rgba(255,159,10,.048)}
 table.exptbl tbody tr.gr.eg0>td{background:var(--ink1)}
-table.exptbl tbody tr.gr.eg1>td{background:#25290f}
-table.exptbl tbody tr.gr.eg2>td{background:#161d2b}
-table.exptbl tbody tr.gr.eg3>td{background:#2b2113}
+table.exptbl tbody tr.gr.eg1>td{background:var(--grp1)}
+table.exptbl tbody tr.gr.eg2>td{background:var(--grp2)}
+table.exptbl tbody tr.gr.eg3>td{background:var(--grp3)}
 table.exptbl tbody tr.eg0>td:first-child{border-left:3px solid rgba(var(--w-rgb),.20)}
 table.exptbl tbody tr.eg1>td:first-child{border-left:3px solid var(--accent)}
 table.exptbl tbody tr.eg2>td:first-child{border-left:3px solid #5aa0ff}
