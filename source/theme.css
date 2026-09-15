@@ -181,7 +181,7 @@ header{
 }
 .btn:not(.ghost):not(.danger):hover,
 .btn-primary:hover,.hbtn.primary:hover,.fb-btn:hover{
-  background:#eaff4a !important;
+  background:var(--btn-hover, #eaff4a) !important;  /* APSA1894 */
   box-shadow:0 0 30px rgba(var(--a-rgb),.34) !important;
   transform:translateY(-1px);
 }
@@ -917,3 +917,16 @@ html body table.chktbl tr.it.late select.asgst-review,
 html body table.chktbl tr.it.soon select.asgst-review { color:var(--as-rev) !important;   border-color:var(--as-rev-bd) !important; }
 html body table.chktbl tr.it.late select.asgst-done,
 html body table.chktbl tr.it.soon select.asgst-done   { color:var(--as-done) !important;  border-color:var(--as-done-bd) !important; }
+
+/* ---- APSA1894 — Mau hover cua nut chinh ----
+   Truoc day hard-code #eaff4a (vang neon). O nen sang, chu van la trang nen
+   hover xong khong doc duoc. Tach thanh token rieng cho tung theme. */
+:root{ --btn-hover:#eaff4a; }
+html[data-theme="light"]{ --btn-hover:#a8441f; }
+html[data-theme="light"] .btn:not(.ghost):not(.danger):hover,
+html[data-theme="light"] .btn-primary:hover,
+html[data-theme="light"] .hbtn.primary:hover,
+html[data-theme="light"] .fb-btn:hover{
+  color:#ffffff !important;
+  border-color:var(--btn-hover) !important;
+}
