@@ -1,5 +1,5 @@
 {
-    "version": "2.0.35",
+    "version": "2.0.36",
     "updated": "2026-09-15",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-13",
             "note": "Phiên bản 2.0",
             "items": [
+                {
+                    "d": "2026-09-15",
+                    "v": "2.0.36",
+                    "t": "APSA1899 light mode: 48 rule cho CSS do file .js chen (hang nhom chi phi, dropdown apsa-cb-list, toast...); theme.css v50",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-15",
                     "v": "2.0.35",

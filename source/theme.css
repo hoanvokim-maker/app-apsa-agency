@@ -938,3 +938,55 @@ html[data-theme="light"] .mbox .btn-add:hover,
 html[data-theme="light"] .mbox button[type="submit"]:hover{
   color:#ffffff !important;
 }
+
+/* ---- APSA1899 — light mode cho CSS do file .js chen vao ---- */
+html[data-theme="light"] #adAsk button.pri{ background:#d97757 !important; color:#ffffff !important; }
+html[data-theme="light"] .apsa-nt{ background:#fafaf9 !important; }
+html[data-theme="light"] .apsa-nt .ti{ background:#f2f2f0 !important; }
+html[data-theme="light"] .apsa-cb-list{ background:#fafaf9 !important; }
+html[data-theme="light"] tbody tr.grp td{ background:#fafaf9 !important; }
+html[data-theme="light"] tbody tr.grp:hover td{ background:#fafaf9 !important; }
+html[data-theme="light"] .chev:hover{ color:#3a3a34 !important; }
+html[data-theme="light"] .pac{ background:#fafaf9 !important; }
+html[data-theme="light"] .pac-i{ color:#3a3a34 !important; }
+html[data-theme="light"] .exp-ac{ background:#fafaf9 !important; }
+html[data-theme="light"] .exp-ac-i{ color:#3a3a34 !important; }
+html[data-theme="light"] .exp-ac-new{ background:#fafaf9 !important; }
+html[data-theme="light"] .exp-np{ background:#fafaf9 !important; }
+html[data-theme="light"] .exp-np-f{ background:#fafaf9 !important; }
+html[data-theme="light"] .exp-np-msg{ color:#b3261e !important; }
+html[data-theme="light"] .pydue.due-red{ color:#b3261e !important; }
+html[data-theme="light"] .pydue.due-orange{ color:#a8441f !important; }
+html[data-theme="light"] #statDue .v{ color:#a8441f !important; }
+html[data-theme="light"] #statDue.late .v{ color:#b3261e !important; }
+html[data-theme="light"] #statDue .sub b{ color:#b3261e !important; }
+html[data-theme="light"] .expmemo-bx{ background:#fafaf9 !important; }
+html[data-theme="light"] .expmemo-ta{ background:#fafaf9 !important; }
+html[data-theme="light"] .expmemo-err{ color:#b3261e !important; }
+html[data-theme="light"] .pysm:hover{ color:#3a3a34 !important; }
+html[data-theme="light"] .pysm.go{ color:#d97757 !important; }
+html[data-theme="light"] .pysm.up,
+html[data-theme="light"] .pysm.ok{ color:#157a3d !important; }
+html[data-theme="light"] .pbtn.req{ color:#d97757 !important; }
+html[data-theme="light"] .pydlg{ background:#fafaf9 !important; }
+html[data-theme="light"] .pydlg .s{ color:#3a3a34 !important; }
+html[data-theme="light"] .pydrop{ color:#3a3a34 !important; }
+html[data-theme="light"] .pyfile{ color:#d97757 !important; }
+html[data-theme="light"] .pyb{ background:#fafaf9 !important; color:#3a3a34 !important; }
+html[data-theme="light"] .pyb.p{ background:#d97757 !important; color:#ffffff !important; }
+html[data-theme="light"] .exp-payee-sel option,
+html[data-theme="light"] .exp-payee-sel optgroup{ background:#fafaf9 !important; color:#3a3a34 !important; }
+html[data-theme="light"] .expqr-l select option{ background:#fafaf9 !important; color:#3a3a34 !important; }
+html[data-theme="light"] .unc-box{ background:#fafaf9 !important; color:#3a3a34 !important; }
+html[data-theme="light"] .unc-b{ background:#f2f2f0 !important; color:#3a3a34 !important; }
+html[data-theme="light"] .unc-b:hover{ background:#f2f2f0 !important; }
+html[data-theme="light"] .unc-b.danger{ color:#b3261e !important; }
+html[data-theme="light"] #pgDeny{ background:#fafaf9 !important; color:#3a3a34 !important; }
+html[data-theme="light"] #pgDeny a{ color:#3a3a34 !important; }
+html[data-theme="light"] .pmcf{ background:#fafaf9 !important; }
+html[data-theme="light"] .pmcf b{ color:#a8441f !important; }
+html[data-theme="light"] #p-perm .pmtag{ color:#a8441f !important; }
+html[data-theme="light"] #p-perm .btn.dg{ background:#b3261e !important; color:#ffffff !important; }
+html[data-theme="light"] #p-perm .btn.dg:hover{ background:#b3261e !important; color:#ffffff !important; }
+html[data-theme="light"] .shbtn.dg{ color:#b3261e !important; }
+html[data-theme="light"] .supt .xr:hover{ color:#b3261e !important; }
