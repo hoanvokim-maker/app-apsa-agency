@@ -1131,6 +1131,34 @@ function q_notify_due(PDO $pdo, $rowId)
     } catch (Exception $e) { } catch (Throwable $e) { }
 }
 
+/* APSA1872: ten file Excel = tien to + ma bao gia + tieu de.
+   Quotation cho bao gia, LIQUIDATION cho nghiem thu. Tra ve ten KHONG co duoi. */
+function q_xlsx_name($isLiq, $code, $title)
+{
+    $t = (string) $title;
+    /* Bo dau tieng Viet (iconv//TRANSLIT khong xu ly duoc tieng Viet) */
+    $vf = 'àáạảãâầấậẩẫăằắặẳẵ' . 'èéẹẻẽêềếệểễ' . 'ìíịỉĩ'
+        . 'òóọỏõôồốộổỗơờớợởỡ' . 'ùúụủũưừứựửữ' . 'ỳýỵỷỹ' . 'đ';
+    $vt = str_repeat('a', 17) . str_repeat('e', 11) . str_repeat('i', 5)
+        . str_repeat('o', 17) . str_repeat('u', 11) . str_repeat('y', 5) . 'd';
+    $vc = preg_split('//u', $vf, -1, PREG_SPLIT_NO_EMPTY);
+    $map = array();
+    foreach ($vc as $k => $ch) {
+        if (!isset($vt[$k])) break;
+        $map[$ch] = $vt[$k];
+        $map[mb_strtoupper($ch, 'UTF-8')] = strtoupper($vt[$k]);
+    }
+    $t = strtr($t, $map);
+    $t = preg_replace('/[^A-Za-z0-9 \-_]+/', ' ', $t);
+    $t = trim(preg_replace('/\s+/', ' ', $t));
+    $c = trim(preg_replace('/[^A-Za-z0-9\-_]+/', '-', (string) $code), '-');
+    $n = ($isLiq ? 'LIQUIDATION' : 'Quotation')
+       . ($c !== '' ? ' ' . $c : '')
+       . ($t !== '' ? ' ' . $t : '');
+    $n = trim(preg_replace('/\s+/', ' ', $n));
+    return $n !== '' ? $n : 'Quotation';
+}
+
 function q_expStamp(PDO $pdo, $rowId) {
     global $ME;
     $rowId = (int) $rowId;
@@ -2060,7 +2088,8 @@ case 'share-xlsx': {
 
     $name  = $q['code'] ? $q['code'] : ('bao-gia-' . (int) $sh['quotation_id']);
     $name  = trim(preg_replace('/[^A-Za-z0-9\-_]+/', '-', $name), '-');
-    $fname = ($isLiq ? 'APSA-LIQUIDATION-' : 'APSA-QUOTATION-') . $name . '-' . date('Ymd') . '.xlsx';
+    $fname = q_xlsx_name($isLiq, ($q['code'] ? $q['code'] : ('bao-gia-' . (int) $sh['quotation_id'])),
+                        (isset($q['title']) ? $q['title'] : '')) . '.xlsx';   /* APSA1872 */
 
     while (ob_get_level()) { ob_end_clean(); }
     header('X-Robots-Tag: noindex, nofollow', true);
@@ -3573,7 +3602,7 @@ case 'export': {
 
     $name = $q['code'] ? $q['code'] : ('bao-gia-' . $id);
     $name = preg_replace('/[^A-Za-z0-9\-_]+/', '-', $name);
-    $base  = ($withLiq ? 'APSA-LIQUIDATION-' : 'APSA-QUOTATION-') . trim($name, '-') . '-' . date('Ymd');
+    $base  = q_xlsx_name($withLiq, ($q['code'] ? $q['code'] : ('bao-gia-' . $id)), (isset($q['title']) ? $q['title'] : ''));   /* APSA1872 */
     $fname = $base . '.xlsx';
 
     // Nghiệm thu: nếu có file đính kèm (chứng từ từng dòng / PO) thì đóng gói .zip

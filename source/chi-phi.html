@@ -354,7 +354,7 @@
 <script>
 var API = './api/quotation-api.php';
 var ROWS = [], QUOS = [], PAY = { sup: [], user: [] };
-var FQ = '', FST = 'all', FTY = 'all';
+var FQ = '', FST = 'soon', FTY = 'all';   /* APSA1871: mac dinh xem Can chuan bi 7 ngay */
 var SORT = 'date', DIR = -1, SEL = {}, editing = null, delId = 0, qrRow = null, qTimer = null;
 
 function el(id) { return document.getElementById(id); }
@@ -858,7 +858,7 @@ load();
 </script>
 <script src="/chi-phi-group.js?v=10"></script>
 <script src="/exp-pay.js?v=5"></script>
-<script src="/exp-due.js?v=7"></script>
+<script src="/exp-due.js?v=8"></script>
 <script src="/exp-acb.js?v=3"></script>
 <script>
 /* APSA1835: cac add-on (chi-phi-group / exp-due...) boc lai render(), nen mo khoan da tra 7 ngay sau cung */

@@ -253,7 +253,10 @@
     var gv = function (i) { var e = document.getElementById(i); return e ? String(e.value || '').trim() : ''; };
     var hesc = function (t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
     var amt = gv('qAmt'), info = gv('qInfo');
-    var h = (amt ? '<div class="qc-a">' + hesc(amt) + ' \u0111</div>' : '') +
+    /* APSA1870: so tien duoi ma QR co dau cham phan cach nghin cho de doc */
+    var amtF = String(amt).replace(/[^0-9]/g, '');
+    amtF = amtF ? amtF.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : String(amt);
+    var h = (amt ? '<div class="qc-a">' + hesc(amtF) + ' \u0111</div>' : '') +
             (info ? '<div class="qc-i"><b>N\u1ed9i dung chuy\u1ec3n kho\u1ea3n</b>' + hesc(info) + '</div>' : '');
     if (!h) return;
     var d = document.createElement('div');
