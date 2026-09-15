@@ -1,5 +1,5 @@
 {
-    "version": "2.0.12",
+    "version": "2.0.13",
     "updated": "2026-09-15",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-13",
             "note": "Phiên bản 2.0",
             "items": [
+                {
+                    "d": "2026-09-15",
+                    "v": "2.0.13",
+                    "t": "Canh bao thay doi chua luu khi dong hop thoai cho 10 module; Gan day giu 20 du an",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-15",
                     "v": "2.0.12",
