@@ -404,7 +404,12 @@ html[data-theme="light"] {
         #p-menu .mbb:hover { color: var(--text); border-color: rgba(var(--w-rgb),.26); }
         #p-menu .mbacts { margin-top: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         #p-menu .mbmsg { font-size: 12px; color: #dff20d; }
-      </style>
+      
+/* ---- APSA1897 — sua chu mau sang hard-code cho nen trang ---- */
+html[data-theme="light"] .banner.warn{ color:#a8441f !important; }
+html[data-theme="light"] #toast.err{ color:#b3261e !important; }
+html[data-theme="light"] #p-menu .mbmsg{ color:#d97757 !important; }
+</style>
 
       <div class="mblist" id="mbList"></div>
       <div class="mbacts">
