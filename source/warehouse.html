@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/theme.css?v=48" />
+  <link rel="stylesheet" href="/theme.css?v=49" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -50,7 +50,7 @@ html[data-theme="light"] {
   --border-h: rgba(194,84,47,.55);
   --text: #3a3a34;
   --text2: #57574f;
-  --text3: #87877e;
+  --text3: #6e6e66;
   --green: #d97757;
   --pink: #d97757;
   --red: #b3261e;
@@ -188,7 +188,7 @@ html[data-theme="light"] {
   .whtabs { display:flex; gap:8px; margin:18px 0 0; flex-wrap:wrap; }
   .whtab { padding:8px 18px; border:1px solid var(--border,#2b3138); border-radius:99px; background:transparent;
            color:var(--text2,#c9ced6); font:inherit; font-size:13px; font-weight:700; letter-spacing:.02em; cursor:pointer; }
-  .whtab:hover { border-color:#4a535e; color:#fff; }
+  .whtab:hover { border-color:#4a535e; color:var(--text); }
   .whtab.on { background:var(--accent,#dff20d); border-color:var(--accent,#dff20d); color:#111; }
   .whpane { display:none; }
   .whpane.on { display:block; }
@@ -229,7 +229,7 @@ html[data-theme="light"] {
   .whact { display:flex; gap:5px; justify-content:flex-end; flex-wrap:wrap; }
   .wb { font:inherit; font-size:11.5px; font-weight:600; padding:5px 10px; border-radius:8px;
         border:1px solid var(--border,#2b3138); background:transparent; color:var(--text2,#c9ced6); cursor:pointer; white-space:nowrap; }
-  .wb:hover { border-color:#4a535e; color:#fff; }
+  .wb:hover { border-color:#4a535e; color:var(--text); }
   .wb.go { border-color:rgba(223,242,13,.5); color:#dff20d; }
   .wb.go:hover { background:var(--accent,#dff20d); color:#111; }
   .wb.dg:hover { border-color:#ff6b6b; color:#ff8a8a; }
