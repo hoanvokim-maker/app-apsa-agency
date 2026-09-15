@@ -451,7 +451,7 @@ html body select#fStatus:hover {
   .modal .btn.primary, .modal .btn-add, .modal button[type="submit"],
   .mbox .btn.primary, .mbox .btn-add, .mbox button[type="submit"] {
     border-radius: 10px !important;
-    padding: 13px 20px !important;
+    padding: 0 20px !important;  /* APSA1904: bo padding doc de nut vua 28px */
     font-size: 14px !important;
     font-weight: 800 !important;
     background: var(--accent-fill) !important;
@@ -469,7 +469,7 @@ html body select#fStatus:hover {
   .modal .btn-cancel, .modal .btn:not(.primary):not(.btn-add):not(.danger):not(.dg),
   .mbox .btn-cancel, .mbox .btn:not(.primary):not(.btn-add):not(.danger):not(.dg) {
     border-radius: 10px !important;
-    padding: 13px 20px !important;
+    padding: 0 20px !important;  /* APSA1904: bo padding doc de nut vua 28px */
     font-size: 13.5px !important;
     font-weight: 700 !important;
   }
@@ -998,3 +998,24 @@ html[data-theme="light"] [fill="#dff20d"], html[data-theme="light"] [fill="#DFF2
 html[data-theme="light"] [fill="#c9dd00"], html[data-theme="light"] [fill="#eaff4a"]{ fill:#c2542f !important; }
 html[data-theme="light"] [stroke="#dff20d"], html[data-theme="light"] [stroke="#DFF20D"],
 html[data-theme="light"] [stroke="#c9dd00"], html[data-theme="light"] [stroke="#eaff4a"]{ stroke:#c2542f !important; }
+
+/* ---- APSA1904b — bao dam chieu cao 28px thang moi rule padding co san ----
+   Lap lai ten lop de nang do uu tien cho hon cac rule :not() trong khoi modal. */
+html body .btn.btn.btn.btn.btn,
+html body .hbtn.hbtn.hbtn.hbtn.hbtn,
+html body .btn-primary.btn-primary.btn-primary.btn-primary.btn-primary,
+html body .modal .btn.btn.btn.btn.btn,
+html body .mbox .btn.btn.btn.btn.btn,
+html body .dlg .btn.btn.btn.btn.btn,
+html body .modal button.btn.btn.btn.btn,
+html body .mbox button.btn.btn.btn.btn,
+html body .dlg button.btn.btn.btn.btn {
+  height: 28px !important;
+  min-height: 28px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  line-height: 26px !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}

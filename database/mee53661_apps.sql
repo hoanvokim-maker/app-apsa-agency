@@ -78,7 +78,7 @@ CREATE TABLE `activity_log` (
   KEY `k_quo` (`quotation_id`),
   KEY `k_user` (`user_id`),
   KEY `k_area` (`area`)
-) ENGINE=InnoDB AUTO_INCREMENT=987 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=989 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1061,6 +1061,8 @@ INSERT INTO `activity_log` VALUES (983,'2026-09-15 23:15:45',1,'Harris','quotati
 INSERT INTO `activity_log` VALUES (984,'2026-09-15 23:15:45',1,'Harris','quotation','close-state','Đổi trạng thái đóng',182,'04112025-235','',NULL);
 INSERT INTO `activity_log` VALUES (985,'2026-09-15 23:15:50',1,'Harris','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
 INSERT INTO `activity_log` VALUES (986,'2026-09-15 23:15:50',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (987,'2026-09-15 23:26:02',1,'Harris','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (988,'2026-09-15 23:26:03',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
 /*!40000 ALTER TABLE `activity_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -10027,7 +10029,7 @@ CREATE TABLE `short_links` (
 LOCK TABLES `short_links` WRITE;
 /*!40000 ALTER TABLE `short_links` DISABLE KEYS */;
 INSERT INTO `short_links` VALUES (4,'5u7jeW','https://www.apple.com','PsO - North Forum',1,1,1,'2026-09-14 17:45:05',1,'Harris','2026-09-03 23:18:52','2026-09-14 17:45:05');
-INSERT INTO `short_links` VALUES (5,'5N6dhv','https://teams.microsoft.com/meet/370646826013533?p=eN6qLd5FCOMnp0kxuu','SpA-South',1,1,6,'2026-09-15 21:23:46',1,'Harris','2026-09-03 23:20:03','2026-09-15 21:23:46');
+INSERT INTO `short_links` VALUES (5,'5N6dhv','https://teams.microsoft.com/meet/370646826013533?p=eN6qLd5FCOMnp0kxuu','SpA-South',1,1,7,'2026-09-15 23:25:48',1,'Harris','2026-09-03 23:20:03','2026-09-15 23:25:48');
 INSERT INTO `short_links` VALUES (6,'gJsJSG','https://www.apple.com','SpA-North',1,1,0,NULL,1,'Harris','2026-09-03 23:20:53','2026-09-03 23:20:53');
 INSERT INTO `short_links` VALUES (7,'df2RDa','https://booklet.apsa.agency/?s=tan','BOOKLET FOR SPEAKER',1,1,4,'2026-09-09 11:12:08',6,'Can Kim','2026-09-08 11:23:03','2026-09-09 11:12:08');
 /*!40000 ALTER TABLE `short_links` ENABLE KEYS */;
