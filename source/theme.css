@@ -654,7 +654,7 @@ html[data-theme="light"]{
   --border:rgba(0,0,0,.14); --border-hover:rgba(194,84,47,.55);
 
   /* --- chu --- */
-  --text:#2f2f2b; --text2:#57574f; --text3:#87877e;
+  --text:#3a3a34; --text2:#57574f; --text3:#87877e;
 
   /* --- cam: mau nhan duy nhat --- */
   --accent:#c2542f; --accent2:#a8441f; --accent-soft:#a8441f;
@@ -686,7 +686,7 @@ html[data-theme="light"]{
   --a14:rgba(194,84,47,.14); --a50:rgba(194,84,47,.5);
   --a55:rgba(194,84,47,.55);
 
-  --ink1:#f1f1ef; --ink2:#e8e8e6; --ink3:#6e6e66; --ink4:#2a2a26;
+  --ink1:#f1f1ef; --ink2:#e8e8e6; --ink3:#6e6e66; --ink4:#3a3a34;
   --scrim6:rgba(0,0,0,.4); --scrim7:rgba(0,0,0,.48); --scrim75:rgba(0,0,0,.52);
   --shadow:rgba(0,0,0,.10);
 }
