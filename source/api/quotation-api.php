@@ -550,6 +550,11 @@ if (!q_hasColumn($pdo, 'quotation_expenses', 'created_by')) {
 if (!q_hasColumn($pdo, 'quotation_expenses', 'pay_date')) {
     q_mig($pdo, "ALTER TABLE `quotation_expenses` ADD COLUMN `pay_date` DATE NULL DEFAULT NULL");
 }
+if (!q_hasColumn($pdo, 'quotations', 'save_rev')) {
+    q_mig($pdo, "ALTER TABLE `quotations`
+        ADD COLUMN `save_rev` INT NOT NULL DEFAULT 0
+        COMMENT 'APSA1876: so lan luu bao gia, dung de chong 2 nguoi ghi de nhau'");
+}
 if (!q_hasColumn($pdo, 'quotation_expenses', 'due_notified_at')) {
     q_mig($pdo, "ALTER TABLE `quotation_expenses`
         ADD COLUMN `due_notified_at` DATETIME NULL DEFAULT NULL
@@ -2992,6 +2997,18 @@ case 'save': {
     ];
     if ($data['title'] === '') q_fail('Vui lòng nhập tiêu đề báo giá');
 
+        /* APSA1876: chong 2 nguoi cung sua ghi de nhau.
+           save_rev chi tang khi LUU bao gia (khong tinh upload file, doi trang thai,
+           ghim, an...) nen chi canh bao dung luc co nguoi that su ghi de noi dung. */
+        if ($id && isset($B['client_rev']) && $B['client_rev'] !== '' && $B['client_rev'] !== null) {
+            $rq = $pdo->prepare("SELECT save_rev FROM `quotations` WHERE id = ?");
+            $rq->execute(array($id));
+            $srvR = (int) $rq->fetchColumn();
+            if ($srvR !== (int) $B['client_rev']) {
+                q_fail('STALE|ban tren server rev ' . $srvR, 409);
+            }
+        }
+
     // Mã báo giá ddMMyyyy-N: tự sinh khi tạo mới, giữ nguyên khi sửa, không cho trùng
     if ($id) {
         $old = $pdo->prepare("SELECT code FROM quotations WHERE id = ?");
@@ -3008,7 +3025,7 @@ case 'save': {
         if ($id) {
             $st = $pdo->prepare("UPDATE quotations SET kind=?, code=?, title=?, company_id=?, customer_id=?, client_name=?, client_email=?,
                                    client_tax=?, client_address=?, quotation_date=?, event_date=?, event_from=?, event_to=?, currency=?, ma_percent=?,
-                                   vat_percent=?, show_ma=?, show_vat=?, note=?, status=?, src_link=?, has_liquidation=?, liq_date=? WHERE id=?");
+                                   vat_percent=?, show_ma=?, show_vat=?, note=?, status=?, src_link=?, has_liquidation=?, liq_date=?, save_rev=save_rev+1 WHERE id=?");
             $st->execute(array_merge(array_values($data), [$id]));
         } else {
             $st = $pdo->prepare("INSERT INTO quotations (kind, code, title, company_id, customer_id, client_name, client_email,
@@ -3074,6 +3091,7 @@ case 'save': {
     $q = loadQuotation($pdo, $id);
     $its = loadItems($pdo, $id);
     q_ok(['id' => $id, 'code' => $q['code'], 'message' => 'Đã lưu báo giá', 'totals' => calcTotals($q, $its),
+          'save_rev'   => (int) (isset($q['save_rev']) ? $q['save_rev'] : 0),
           'liq_totals' => calcLiqTotals($q, $its)]);
 }
 

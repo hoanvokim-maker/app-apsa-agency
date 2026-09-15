@@ -3903,6 +3903,7 @@ function fillActualFromQuote(){
 function copyActual(){
   const n = fillActualFromQuote();
   renderRows();
+  if (n) markDirty();   /* APSA1877: chep sang nghiem thu cung phai tinh la co thay doi de tu luu */
   toast(n ? ('Đã chép ' + n + ' dòng sang nghiệm thu') : 'Các dòng đều đã có số liệu nghiệm thu', n ? 'ok' : 'err');
 }
 async function exportLiq(){
@@ -3956,11 +3957,14 @@ function collect(){
 
 async function saveQuote(silent, quiet){
   const body = collect();
+  /* APSA1876: gui kem so lan luu (save_rev) cua ban dang mo de server phat hien ghi de */
+  body.client_rev = (EDIT && EDIT.save_rev !== undefined && EDIT.save_rev !== null) ? EDIT.save_rev : '';
   if (!body.title) { toast('Nhập tiêu đề báo giá', 'err'); return 0; }
   const btn = document.getElementById('btnSave'); btn.disabled = true;
   try {
     const d = await api(API, 'save', { body });
     EDIT.id = d.id;
+    if (d.save_rev !== undefined) EDIT.save_rev = d.save_rev;   /* APSA1876: lam moi save_rev sau moi lan luu */
     if (d.code) { EDIT.code = d.code; document.getElementById('fCode').value = d.code; }
     EDIT.title = body.title;
     document.getElementById('editHint').textContent = 'Đang sửa: ' + (EDIT.code || body.title);
@@ -3975,6 +3979,14 @@ async function saveQuote(silent, quiet){
     btn.disabled = false;
     return d.id;
   } catch(e){
+    /* APSA1876: server tu choi vi nguoi khac vua sua -> dung tu luu va bao ro */
+    if (String(e.message || '').indexOf('STALE|') === 0) {
+      AS_dirty = false; clearTimeout(AS_timer); AS_timer = null;
+      asState('error', 'Có người vừa sửa — hãy tải lại trang');
+      toast('Có người vừa sửa báo giá này. Vui lòng tải lại trang trước khi lưu để không ghi đè thay đổi của họ.', 'err');
+      btn.disabled = false;
+      return 0;
+    }
     if (!silent) toast(e.message, 'err');
     btn.disabled = false;
     return 0;
@@ -4262,7 +4274,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMore();
 /* ══════════ TỰ ĐỘNG LƯU ══════════
    Lưu sau 20 giây kể từ lần cuối cùng chạm vào một trường có thay đổi thông tin.
    Báo giá mới chỉ tự lưu khi đã có tiêu đề (API bắt buộc).                     */
-const AUTOSAVE_MS = 20000;
+const AUTOSAVE_MS = 5000;   /* APSA1875: tu luu sau 5 giay */
 let AS_dirty = false, AS_timer = null, AS_saving = false, AS_bound = false;
 
 function asState(kind, extra){
@@ -4271,7 +4283,7 @@ function asState(kind, extra){
   const t = () => new Date().toLocaleTimeString('vi-VN', { hour:'2-digit', minute:'2-digit' });
   const map = {
     clean:   ['', ''],
-    dirty:   ['dirty',  'Chưa lưu · tự lưu sau 20s'],
+    dirty:   ['dirty',  'Chưa lưu · tự lưu sau 5s'],
     saving:  ['saving', 'Đang lưu…'],
     saved:   ['saved',  'Đã tự lưu ' + t()],
     manual:  ['saved',  'Đã lưu ' + t()],
