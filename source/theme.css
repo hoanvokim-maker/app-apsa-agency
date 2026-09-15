@@ -828,3 +828,8 @@ html[data-theme="light"] .mbox > h3,
 html[data-theme="light"] .dlg > h3 {
   color: var(--accent2) !important;
 }
+
+/* ---- APSA1889 — LIGHT MODE: nen o icon / nut den -> xam dam ---- */
+html[data-theme="light"] .card-icon { background: #3a3a34 !important; }
+html[data-theme="light"] .card-star { background: rgba(58, 58, 52, .62) !important; }
+html[data-theme="light"] #apsaHam { background: rgba(58, 58, 52, .95) !important; }

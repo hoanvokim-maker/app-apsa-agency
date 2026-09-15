@@ -1,5 +1,5 @@
 {
-    "version": "2.0.25",
+    "version": "2.0.26",
     "updated": "2026-09-15",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-13",
             "note": "Phiên bản 2.0",
             "items": [
+                {
+                    "d": "2026-09-15",
+                    "v": "2.0.26",
+                    "t": "APSA1889 light mode: nen o icon module, nut sao, nut ham -> xam dam #3a3a34; theme.css v42",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-15",
                     "v": "2.0.25",
