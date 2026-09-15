@@ -320,6 +320,8 @@
   if (/login|share|view-album|public/.test(path)) return;
 
   var I = {
+    help:    '<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
+
     home:    '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',
     work:    '<rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/>',
     quote:   '<path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/><path d="M8.5 13h7M8.5 16.5h4.5"/>',
@@ -358,6 +360,7 @@
 
   var NAV = [
     { home: 1, ico: 'home',   name: 'Trang chủ',        url: './index.html' },
+    { ico: 'help',    name: 'Hướng dẫn hệ thống', url: './help.html', id: 108 },
     { grp: 'Công việc' },
     { ico: 'task',    name: 'Làm việc',          url: './assignments.html', id: 35 },
     { ico: 'quote',   name: 'Báo giá & Nghiệm thu', url: './quotation.html', id: 32 },

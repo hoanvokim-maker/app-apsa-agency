@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script>
+  document.documentElement.style.visibility = 'hidden';
+  fetch('./api/auth-api.php?action=me', { credentials: 'same-origin' })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(res => {
+      if (!res.ok) throw new Error();
+      window.__APSA_USER = res.data;
+      document.documentElement.style.visibility = 'visible';
+    })
+    .catch(() => {
+      location.replace('./login.html?next=' + encodeURIComponent(location.pathname + location.search));
+      return;
+    })
+    .then(() => { if (window.__APSA_USER) window.dispatchEvent(new Event('apsa-auth-ready')); });
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=1">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=1">
+<link rel="manifest" href="/site.webmanifest">
+<title>Hướng dẫn hệ thống — APSA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/theme.css?v=26" />
+<script src="/apsa-ui.js?v=44"></script>
+<script src="/perm-guard.js?v=3"></script>
+<style>
+:root { --neon: var(--accent); }
+body { margin:0; color:var(--text); font-family:var(--font-body); }
+header { display:flex; align-items:center; gap:14px; padding:12px 26px;
+  border-bottom:1px solid var(--border); position:sticky; top:0; z-index:40;
+  background:rgba(0,0,0,.86); backdrop-filter:blur(8px); }
+header .logo img { height:22px; display:block; }
+.back-btn { display:inline-flex; align-items:center; gap:6px; color:var(--text2);
+  text-decoration:none; font-size:12.5px; font-weight:600;
+  border:1px solid var(--border); border-radius:999px; padding:6px 13px; }
+.back-btn:hover { color:var(--accent); border-color:var(--border-hover); }
+
+.wrap { max-width:min(92vw,1180px); margin:0 auto; padding:0 20px 90px; }
+.page-head { max-width:min(92vw,1180px); margin:26px auto 18px; padding:0 20px; }
+.page-head h1 { font-family:var(--font-display); font-size:30px; font-weight:900;
+  letter-spacing:2px; text-transform:uppercase; margin:0 0 6px; }
+.page-head p { margin:0; color:var(--text2); font-size:13px; max-width:70ch; }
+
+.tabs { position:sticky; top:47px; z-index:30; display:flex; gap:8px; flex-wrap:wrap;
+  padding:12px 0; margin-bottom:6px; background:rgba(0,0,0,.9); backdrop-filter:blur(8px); }
+.tabs a { font-size:12px; font-weight:700; letter-spacing:.4px; text-decoration:none;
+  color:var(--text2); border:1px solid var(--border); border-radius:999px; padding:7px 14px; }
+.tabs a:hover { color:var(--accent); border-color:var(--border-hover); }
+
+.sec { border:1px solid var(--border); border-radius:var(--radius); background:var(--bg2);
+  padding:22px; margin:0 0 22px; scroll-margin-top:110px; }
+.sec > h2 { font-family:var(--font-display); font-size:16px; font-weight:800; letter-spacing:1.4px;
+  text-transform:uppercase; margin:0 0 4px; color:var(--accent); }
+.sec > .lead { margin:0 0 20px; color:var(--text2); font-size:13px; max-width:78ch; }
+.sec h3 { font-size:13px; font-weight:800; letter-spacing:.6px; text-transform:uppercase;
+  margin:26px 0 10px; color:var(--text); }
+.sec h3:first-of-type { margin-top:4px; }
+.sec p { font-size:13px; line-height:1.65; color:var(--text2); margin:0 0 10px; max-width:78ch; }
+.sec b, .sec strong { color:var(--text); font-weight:700; }
+code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px;
+  background:var(--bg4); color:var(--accent); padding:1px 6px; border-radius:3px; }
+
+/* --- So do luong: cac buoc noi nhau bang mui ten --- */
+.flow { display:flex; align-items:stretch; gap:0; flex-wrap:wrap; margin:14px 0 6px; }
+.step { flex:1 1 130px; min-width:118px; border:1px solid var(--border); border-radius:var(--radius);
+  background:var(--bg3); padding:11px 12px; position:relative; }
+.step + .step { margin-left:20px; }
+.step + .step::before { content:''; position:absolute; left:-20px; top:50%; width:20px; height:1px;
+  background:var(--border); }
+.step + .step::after { content:''; position:absolute; left:-8px; top:50%; width:6px; height:6px;
+  border-top:1px solid var(--text3); border-right:1px solid var(--text3);
+  transform:translateY(-50%) rotate(45deg); }
+.step .n { font-size:9.5px; font-weight:800; letter-spacing:1px; color:var(--text3);
+  text-transform:uppercase; display:block; margin-bottom:5px; }
+.step .t { font-size:12.5px; font-weight:700; color:var(--text); display:block; line-height:1.3; }
+.step .d { font-size:11px; color:var(--text2); display:block; margin-top:5px; line-height:1.45; }
+.step.on { border-color:var(--accent); background:rgba(223,242,13,.07); }
+.step.on .t { color:var(--accent); }
+.step.off { border-style:dashed; }
+.step.bad { border-color:rgba(255,77,77,.5); }
+.step.bad .t { color:var(--red); }
+
+/* --- Bang --- */
+.tw { overflow-x:auto; margin:12px 0 6px; border:1px solid var(--border); border-radius:var(--radius); }
+table.t { width:100%; border-collapse:collapse; font-size:12px; min-width:520px; }
+table.t th { text-align:left; font-size:10px; letter-spacing:.8px; text-transform:uppercase;
+  color:var(--text3); font-weight:800; padding:9px 12px; background:var(--bg3);
+  border-bottom:1px solid var(--border); white-space:nowrap; }
+table.t td { padding:9px 12px; border-bottom:1px solid var(--border); color:var(--text2);
+  vertical-align:top; line-height:1.5; }
+table.t tr:last-child td { border-bottom:0; }
+table.t td:first-child { color:var(--text); font-weight:600; white-space:nowrap; }
+.pill { display:inline-block; font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:20px;
+  white-space:nowrap; }
+.pill.y { background:rgba(59,201,255,.16); color:#3bc9ff; }
+.pill.n { background:rgba(255,255,255,.07); color:#8a8a8a; }
+.pill.r { background:rgba(255,77,77,.14); color:#ff6b6b; }
+
+/* --- Khoi ghi chu --- */
+.note { border-left:2px solid var(--accent); background:rgba(223,242,13,.05);
+  padding:12px 16px; margin:14px 0; border-radius:0 var(--radius) var(--radius) 0; }
+.note.warn { border-left-color:var(--red); background:rgba(255,77,77,.06); }
+.note .h { font-size:11px; font-weight:800; letter-spacing:.8px; text-transform:uppercase;
+  color:var(--accent); margin-bottom:5px; }
+.note.warn .h { color:var(--red); }
+.note p { margin:0; font-size:12.5px; color:var(--text2); line-height:1.6; }
+.note p + p { margin-top:7px; }
+
+/* --- The thong tin 2 cot --- */
+.cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; margin:12px 0 6px; }
+.card { border:1px solid var(--border); border-radius:var(--radius); background:var(--bg3); padding:14px 16px; }
+.card .k { font-size:10px; font-weight:800; letter-spacing:.9px; text-transform:uppercase;
+  color:var(--text3); margin-bottom:6px; }
+.card .v { font-size:13px; font-weight:700; color:var(--text); margin-bottom:6px; }
+.card .x { font-size:11.5px; color:var(--text2); line-height:1.55; }
+
+/* --- Dong thoi gian tu luu --- */
+.tl { border-left:1px solid var(--border); margin:14px 0 6px; padding-left:20px; }
+.tl .ev { position:relative; padding:0 0 16px; }
+.tl .ev:last-child { padding-bottom:0; }
+.tl .ev::before { content:''; position:absolute; left:-25px; top:4px; width:9px; height:9px;
+  border-radius:50%; background:var(--bg); border:1px solid var(--text3); }
+.tl .ev.hi::before { background:var(--accent); border-color:var(--accent); }
+.tl .ev .w { font-size:10.5px; font-weight:800; letter-spacing:.9px; text-transform:uppercase;
+  color:var(--accent); display:block; margin-bottom:3px; }
+.tl .ev .c { font-size:12.5px; color:var(--text2); line-height:1.6; }
+.tl .ev .c b { color:var(--text); }
+
+/* --- Ma bao gia --- */
+.codebox { display:flex; flex-wrap:wrap; gap:0; margin:12px 0 4px; font-family:var(--font-display); }
+.codebox .cp { border:1px solid var(--border); background:var(--bg3); padding:9px 14px; text-align:center; }
+.codebox .cp + .cp { border-left:0; }
+.codebox .cp .big { font-size:17px; font-weight:800; color:var(--accent); letter-spacing:1px; display:block; }
+.codebox .cp .sm { font-size:9.5px; font-weight:700; letter-spacing:.7px; text-transform:uppercase;
+  color:var(--text3); display:block; margin-top:4px; font-family:var(--font-body); }
+
+ul.li { margin:8px 0 10px; padding-left:18px; }
+ul.li li { font-size:12.5px; color:var(--text2); line-height:1.7; margin-bottom:4px; }
+ul.li li b { color:var(--text); }
+
+@media (max-width:760px){
+  .page-head h1 { font-size:22px; }
+  .sec { padding:16px; }
+  .step + .step { margin-left:0; margin-top:18px; }
+  .step + .step::before { left:50%; top:-18px; width:1px; height:18px; }
+  .step + .step::after { left:50%; top:-8px; transform:translateX(-50%) rotate(135deg); }
+  .flow { flex-direction:column; }
+  .tabs { top:45px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="./index.html"><img src="./Logo rectange.png" alt="APSA" onerror="this.style.display='none'" /></a>
+  <a class="back-btn" href="./index.html">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Trang chủ
+  </a>
+</header>
+
+<div class="page-head">
+  <h1>Hướng dẫn hệ thống</h1>
+  <p>Giải thích cách APSA Tools hoạt động: dự án đi qua những bước nào, chi phí và thanh toán được nhắc ra sao, và dữ liệu được lưu như thế nào. Tài liệu này mô tả đúng logic đang chạy trên hệ thống.</p>
+</div>
+
+<div class="wrap">
+
+<div class="tabs">
+  <a href="#s1">1 · Vòng đời dự án</a>
+  <a href="#s2">2 · Chi phí &amp; thanh toán</a>
+  <a href="#s3">3 · Lưu dữ liệu</a>
+</div>
+
+<section class="sec" id="s1">
+  <h2>1 · Vòng đời dự án: từ báo giá đến nghiệm thu</h2>
+  <p class="lead">Mỗi dự án chỉ có <b>một trạng thái duy nhất</b> tại một thời điểm. Trạng thái này là trục chính của cả hệ thống — cột "Duyệt BG", bộ đếm ở đầu trang và bộ lọc nghiệm thu đều được suy ra từ nó, chứ không phải nhập tay riêng.</p>
+
+  <h3>Chín bước của một dự án</h3>
+  <div class="flow">
+    <div class="step"><span class="n">Bước 1</span><span class="t">Nhận yêu cầu</span><span class="d">Khách vừa đặt vấn đề, chưa ra giá.</span></div>
+    <div class="step"><span class="n">Bước 2</span><span class="t">Báo giá</span><span class="d">Đã gửi bảng giá cho khách, đang chờ phản hồi.</span></div>
+    <div class="step on"><span class="n">Bước 3 · Mốc duyệt</span><span class="t">Xác nhận báo giá</span><span class="d">Khách đồng ý. Từ đây trở đi hệ thống tính là ĐÃ DUYỆT.</span></div>
+    <div class="step"><span class="n">Bước 4</span><span class="t">Đang thực hiện</span><span class="d">Dự án đang chạy, bắt đầu phát sinh chi phí thực tế.</span></div>
+    <div class="step"><span class="n">Bước 5</span><span class="t">Hoàn thành dịch vụ</span><span class="d">Đã làm xong phần việc, chưa gửi hồ sơ nghiệm thu.</span></div>
+  </div>
+  <div class="flow">
+    <div class="step"><span class="n">Bước 6</span><span class="t">Gửi nghiệm thu</span><span class="d">Đã gửi bảng nghiệm thu cho khách. Dự án thoát khỏi mục "Chưa nghiệm thu".</span></div>
+    <div class="step"><span class="n">Bước 7</span><span class="t">Đóng và chờ thanh toán</span><span class="d">Chốt sổ, chờ khách chuyển tiền.</span></div>
+    <div class="step"><span class="n">Bước 8</span><span class="t">Đóng và đã thanh toán</span><span class="d">Khách đã trả đủ. Dự án kết thúc trọn vẹn.</span></div>
+    <div class="step bad"><span class="n">Nhánh rẽ</span><span class="t">Trượt Bidding</span><span class="d">Không thắng thầu. Dự án dừng ở đây, không tính là duyệt cũng không tính là chưa nghiệm thu.</span></div>
+  </div>
+
+  <h3>Cột "Duyệt BG" được tính như thế nào</h3>
+  <p>Hệ thống <b>không có ô tick duyệt riêng</b>. Nó so vị trí trạng thái hiện tại với mốc <b>"Xác nhận báo giá"</b>: bằng hoặc đứng sau mốc đó thì hiện <span class="pill y">Đã duyệt</span>, đứng trước thì <span class="pill n">Chưa duyệt</span>, riêng Trượt Bidding hiện <span class="pill r">Trượt</span>.</p>
+  <div class="tw"><table class="t">
+    <thead><tr><th>Trạng thái dự án</th><th>Duyệt BG</th><th>Nằm trong "Chưa nghiệm thu"</th><th>Tính là "Đã hoàn thành"</th></tr></thead>
+    <tbody>
+      <tr><td>Nhận yêu cầu</td><td><span class="pill n">Chưa duyệt</span></td><td>Có</td><td>Không</td></tr>
+      <tr><td>Báo giá</td><td><span class="pill n">Chưa duyệt</span></td><td>Có</td><td>Không</td></tr>
+      <tr><td>Xác nhận báo giá</td><td><span class="pill y">Đã duyệt</span></td><td>Có</td><td>Không</td></tr>
+      <tr><td>Đang thực hiện</td><td><span class="pill y">Đã duyệt</span></td><td>Có</td><td>Không</td></tr>
+      <tr><td>Hoàn thành dịch vụ</td><td><span class="pill y">Đã duyệt</span></td><td>Không</td><td>Có</td></tr>
+      <tr><td>Gửi nghiệm thu</td><td><span class="pill y">Đã duyệt</span></td><td>Không</td><td>Không</td></tr>
+      <tr><td>Đóng và chờ thanh toán</td><td><span class="pill y">Đã duyệt</span></td><td>Không</td><td>Có</td></tr>
+      <tr><td>Đóng và đã thanh toán</td><td><span class="pill y">Đã duyệt</span></td><td>Không</td><td>Có</td></tr>
+      <tr><td>Trượt Bidding</td><td><span class="pill r">Trượt</span></td><td>Không</td><td>Không</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note">
+    <div class="h">Điều này có nghĩa là gì trong công việc</div>
+    <p>Nếu anh/chị đã duyệt báo giá với khách ngoài đời (email, điện thoại, PO) nhưng <b>quên kéo trạng thái lên "Xác nhận báo giá"</b>, hệ thống sẽ vẫn hiển thị "Chưa duyệt" và con số ở dashboard sẽ lệch. Kéo trạng thái là thao tác xác nhận chính thức trong hệ thống.</p>
+    <p>Đổi trạng thái ngay tại danh sách báo giá — bấm vào ô trạng thái của dòng đó và chọn bước mới, không cần mở dự án ra.</p>
+  </div>
+
+  <h3>Mã báo giá được sinh ra sao</h3>
+  <p>Mã được cấp tự động khi tạo dự án mới và <b>giữ nguyên suốt đời dự án</b>, kể cả khi đổi tiêu đề hay trạng thái.</p>
+  <div class="codebox">
+    <div class="cp"><span class="big">14</span><span class="sm">Ngày</span></div>
+    <div class="cp"><span class="big">09</span><span class="sm">Tháng</span></div>
+    <div class="cp"><span class="big">2026</span><span class="sm">Năm báo giá</span></div>
+    <div class="cp"><span class="big">171</span><span class="sm">Dự án thứ 171 của năm 2026</span></div>
+  </div>
+  <ul class="li">
+    <li>Số cuối là <b>bộ đếm chạy theo từng năm dương lịch</b>, không phải theo tháng. Sang 01/01 năm sau sẽ quay về 1.</li>
+    <li>Hệ thống <b>không cho hai dự án trùng mã</b>. Nếu mã nhập tay bị trùng, hệ thống tự cấp mã kế tiếp.</li>
+    <li>Đổi <b>Ngày báo giá</b> trước khi lưu lần đầu sẽ đổi luôn phần ngày trong mã.</li>
+  </ul>
+
+  <h3>Báo giá và Nghiệm thu là hai cột số khác nhau</h3>
+  <p>Mỗi dòng hạng mục mang <b>hai bộ số song song</b>. Đây là lý do một dự án có thể xuất ra hai file Excel khác nhau.</p>
+  <div class="cards">
+    <div class="card">
+      <div class="k">Cột báo giá</div>
+      <div class="v">Số đã cam kết với khách</div>
+      <div class="x">Số lượng, đơn vị, đơn giá, thành tiền — chốt khi gửi báo giá. Xuất ra file <code>Quotation-...</code></div>
+    </div>
+    <div class="card">
+      <div class="k">Cột nghiệm thu</div>
+      <div class="v">Số thực tế đã làm</div>
+      <div class="x">Số lượng thực tế, đơn giá thực tế, thành tiền thực tế và chứng từ kèm theo. Xuất ra file <code>LIQUIDATION-...</code></div>
+    </div>
+  </div>
+  <p>Nút <b>"Chép sang nghiệm thu"</b> copy toàn bộ số báo giá sang cột nghiệm thu để làm điểm khởi đầu — sau đó chỉ sửa những dòng thực tế có chênh lệch. Những dòng đã có số nghiệm thu sẽ không bị ghi đè.</p>
+  <p>Tên file Excel tải về theo định dạng <code>Quotation-14092026-171-AZ-IT-SETUP-VR.xlsx</code> — tiền tố, mã báo giá, rồi tiêu đề; không có khoảng trắng, các phần nối bằng dấu gạch ngang.</p>
+</section>
+
+<section class="sec" id="s2">
+  <h2>2 · Chi phí thực tế &amp; thanh toán nhà cung cấp</h2>
+  <p class="lead">Mỗi dòng chi phí là một khoản phải trả cho một nhà cung cấp. Hệ thống dùng <b>Ngày đến hạn</b> của dòng đó để tự động nhắc thanh toán qua Zalo, và dựng sẵn mã QR chuyển khoản để không phải gõ lại số tài khoản.</p>
+
+  <h3>Một dòng chi phí đi qua những gì</h3>
+  <div class="flow">
+    <div class="step"><span class="n">Bước 1</span><span class="t">Thêm dòng chi phí</span><span class="d">Chọn nhà cung cấp, nhập nội dung, số lượng, đơn giá, VAT.</span></div>
+    <div class="step on"><span class="n">Bước 2</span><span class="t">Điền ngày đến hạn</span><span class="d">Đây là ô quyết định mọi nhắc nhở. Bỏ trống thì hệ thống không nhắc gì cả.</span></div>
+    <div class="step"><span class="n">Bước 3</span><span class="t">Hệ thống nhắc</span><span class="d">Bắn Zalo cho Admin khi đến hạn, và nhắc lại mỗi sáng nếu còn nợ.</span></div>
+    <div class="step"><span class="n">Bước 4</span><span class="t">Quét QR chuyển tiền</span><span class="d">Mã QR có sẵn số tiền và nội dung chuyển khoản.</span></div>
+    <div class="step"><span class="n">Bước 5</span><span class="t">Đánh dấu Đã trả</span><span class="d">Dòng dừng xuất hiện trong danh sách cần chuẩn bị.</span></div>
+  </div>
+
+  <h3>Khi nào Zalo được gửi đi</h3>
+  <p>Có <b>hai cơ chế chạy song song</b>. Cơ chế tức thì chỉ bắn một lần cho mỗi dòng; cơ chế hằng ngày thì nhắc lại đều đặn cho tới khi khoản đó được đánh dấu đã trả. Hai cơ chế không bắn trùng nhau trong cùng một ngày.</p>
+  <div class="cards">
+    <div class="card">
+      <div class="k">Cơ chế 1 · Tức thì</div>
+      <div class="v">Ngay khi lưu dòng chi phí</div>
+      <div class="x">Nếu ngày đến hạn là <b>hôm nay hoặc đã quá hạn</b>, Zalo bắn đi ngay lúc bấm lưu. Ngày đến hạn ở tương lai thì chưa gửi.</div>
+    </div>
+    <div class="card">
+      <div class="k">Cơ chế 2 · Hằng ngày</div>
+      <div class="v">8 giờ 30 sáng mỗi ngày</div>
+      <div class="x">Quét toàn bộ dòng <b>chưa trả và đã tới hạn</b>, gộp thành một bản tin tổng. <b>Lặp lại mỗi sáng</b> cho tới khi khoản đó được đánh dấu Đã trả.</div>
+    </div>
+  </div>
+  <ul class="li">
+    <li>Tin tức thì gồm: tên khoản, nhà cung cấp, số tiền đã cộng VAT, ngày đến hạn, số ngày quá hạn và mã dự án.</li>
+    <li>Bản tin sáng liệt kê <b>tối đa 15 khoản</b>, phần còn lại gộp thành "và N khoản khác", kèm <b>tổng số tiền</b> phải chi.</li>
+    <li>Người nhận là <b>toàn bộ tài khoản Admin đang hoạt động</b> — không gửi cho nhân viên thường.</li>
+    <li>Ngoài Zalo, một thông báo cũng xuất hiện trong chuông thông báo của app.</li>
+    <li>Dòng đã đánh dấu <b>Đã trả</b> sẽ không bao giờ bị nhắc nữa. Đây là cách duy nhất để tắt nhắc nhở hằng ngày.</li>
+    <li>Dòng <b>không điền ngày đến hạn</b> sẽ không bao giờ được nhắc, và cũng không xuất hiện ở bộ lọc "Cần chuẩn bị 7 ngày".</li>
+  </ul>
+
+  <h3>Bốn bộ lọc ở trang Chi phí thực tế</h3>
+  <div class="tw"><table class="t">
+    <thead><tr><th>Bộ lọc</th><th>Hiển thị những dòng</th><th>Dùng khi nào</th></tr></thead>
+    <tbody>
+      <tr><td>Cần chuẩn bị 7 ngày</td><td>Chưa trả và đến hạn trong vòng 7 ngày tới, kể cả đã quá hạn</td><td><b>Mặc định khi mở trang.</b> Đây là việc cần làm tuần này.</td></tr>
+      <tr><td>Chưa trả</td><td>Toàn bộ khoản chưa thanh toán, bất kể hạn xa hay gần</td><td>Xem tổng công nợ phải trả.</td></tr>
+      <tr><td>Đã trả</td><td>Các khoản đã thanh toán xong</td><td>Đối chiếu, tra cứu lịch sử.</td></tr>
+      <tr><td>Tất cả</td><td>Mọi dòng chi phí</td><td>Rà soát toàn bộ.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Mã QR chuyển khoản</h3>
+  <p>Mã QR được dựng từ <b>thông tin ngân hàng lưu trong hồ sơ nhà cung cấp</b> — ngân hàng, số tài khoản, tên chủ tài khoản — cộng với số tiền và nội dung chuyển khoản của chính dòng chi phí đó. Bên dưới mã có in lại số tiền (có dấu chấm phân cách nghìn) và nội dung chuyển khoản để đối chiếu bằng mắt trước khi bấm chuyển.</p>
+  <div class="note">
+    <div class="h">Muốn QR đúng thì hồ sơ nhà cung cấp phải đúng</div>
+    <p>Nếu QR ra sai hoặc không hiện, gần như chắc chắn là nhà cung cấp đó <b>chưa điền hoặc điền sai số tài khoản</b> trong module <b>Nhà cung cấp</b>. Sửa ở đó thì mọi dòng chi phí của nhà cung cấp này tự cập nhật theo.</p>
+    <p>Có thể sửa tạm số tiền hoặc nội dung ngay trên khung QR mà không ảnh hưởng tới dữ liệu đã lưu.</p>
+  </div>
+</section>
+
+<section class="sec" id="s3">
+  <h2>3 · Lưu dữ liệu: tự lưu, cảnh báo chưa lưu, chống ghi đè</h2>
+  <p class="lead">Hệ thống có ba lớp bảo vệ khác nhau cho ba tình huống mất dữ liệu thường gặp nhất: quên bấm Lưu, đóng nhầm hộp thoại, và hai người cùng sửa một dự án.</p>
+
+  <h3>Lớp 1 · Tự lưu sau 5 giây — trang Báo giá</h3>
+  <p>Khi đang mở một dự án để sửa, mọi thay đổi đều được đếm giờ. Ngừng gõ 5 giây là hệ thống tự lưu, không cần bấm gì.</p>
+  <div class="tl">
+    <div class="ev"><span class="w">Chưa sửa gì</span><span class="c">Nhãn hiển thị <b>trống</b>. Không có gì cần lưu.</span></div>
+    <div class="ev"><span class="w">Vừa gõ / vừa đổi ô</span><span class="c">Nhãn chuyển thành <b>"Chưa lưu · tự lưu sau 5s"</b> và bắt đầu đếm ngược.</span></div>
+    <div class="ev hi"><span class="w">Sau 5 giây không thao tác</span><span class="c">Hệ thống tự gửi lên máy chủ, nhãn đổi thành <b>"Đã tự lưu HH:MM"</b>.</span></div>
+    <div class="ev"><span class="w">Chuyển sang tab khác</span><span class="c">Lưu <b>ngay lập tức</b>, không đợi hết 5 giây.</span></div>
+    <div class="ev"><span class="w">Đóng trình duyệt khi còn thay đổi</span><span class="c">Trình duyệt hiện cảnh báo trước khi thoát.</span></div>
+  </div>
+  <ul class="li">
+    <li>Bấm nút <b>Lưu báo giá</b> vẫn hoạt động bình thường và lưu ngay, không phải chờ.</li>
+    <li>Tự lưu chỉ tính những thao tác <b>do người dùng thật sự thực hiện</b> — hệ thống tự điền số liệu sẽ không kích hoạt đếm giờ nhầm.</li>
+    <li>Dự án <b>chưa có tiêu đề</b> sẽ không tự lưu; nhãn báo <b>"Nhập tiêu đề để tự lưu"</b>.</li>
+  </ul>
+
+  <h3>Lớp 2 · Cảnh báo khi đóng hộp thoại còn dở</h3>
+  <p>Ở các module dùng hộp thoại, tự lưu không phù hợp — nó sẽ phá mất nút Huỷ, ghi nửa chừng giá trị đang gõ dở và tạo ra bản ghi rác. Vì vậy hệ thống dùng cách khác: <b>chặn lại đúng lúc đóng</b>.</p>
+  <p>Nếu đã sửa gì đó rồi bấm Huỷ, bấm dấu X, bấm ra ngoài hoặc nhấn phím Esc, một hộp xác nhận sẽ hiện ra với ba lựa chọn:</p>
+  <div class="cards">
+    <div class="card"><div class="k">Lựa chọn 1</div><div class="v">Quay lại</div><div class="x">Đóng cảnh báo, giữ nguyên hộp thoại và mọi thứ đang gõ dở.</div></div>
+    <div class="card"><div class="k">Lựa chọn 2</div><div class="v">Bỏ thay đổi</div><div class="x">Đóng hộp thoại và <b>huỷ toàn bộ</b> những gì vừa sửa.</div></div>
+    <div class="card"><div class="k">Lựa chọn 3</div><div class="v">Lưu luôn</div><div class="x">Lưu lại rồi mới đóng, giống như tự bấm nút Lưu của hộp thoại đó.</div></div>
+  </div>
+  <p>Lớp bảo vệ này đang bật ở 10 module: <b>Làm việc, Rate Card, Quản lý Công ty, Quản lý Khách hàng, Quản lý Công nợ, Nhà cung cấp, Chi phí thực tế, Quản lý User, Tủ hợp đồng, Duyệt video</b>.</p>
+
+  <h3>Lớp 3 · Chống hai người ghi đè lên nhau</h3>
+  <p>Trước đây, nếu hai người cùng mở một báo giá và cả hai cùng lưu, người lưu sau sẽ <b>âm thầm xoá mất</b> toàn bộ công sức của người lưu trước mà không ai biết. Giờ hệ thống chặn việc này lại.</p>
+  <p>Mỗi báo giá mang một <b>số lần lưu</b>. Khi mở dự án ra, trình duyệt ghi nhớ con số đó. Lúc lưu, nó gửi kèm con số này lên máy chủ để đối chiếu.</p>
+  <div class="flow">
+    <div class="step"><span class="n">Tình huống</span><span class="t">A và B cùng mở dự án</span><span class="d">Cả hai cùng nhìn thấy bản lưu lần thứ 7.</span></div>
+    <div class="step"><span class="n">Diễn biến</span><span class="t">A lưu trước</span><span class="d">Bản trên máy chủ thành lần thứ 8. A tiếp tục làm việc bình thường.</span></div>
+    <div class="step bad"><span class="n">Kết quả</span><span class="t">B lưu sau bị từ chối</span><span class="d">B vẫn đang cầm con số 7 trong khi máy chủ đã là 8, nên hệ thống không ghi gì cả.</span></div>
+    <div class="step on"><span class="n">Xử lý</span><span class="t">B tải lại trang</span><span class="d">B thấy bản mới nhất của A, nhập lại phần của mình rồi lưu.</span></div>
+  </div>
+  <div class="note warn">
+    <div class="h">Khi thấy cảnh báo này, hãy làm gì</div>
+    <p>Cảnh báo hiện lên: <b>"Có người vừa sửa báo giá này. Vui lòng tải lại trang trước khi lưu để không ghi đè thay đổi của họ."</b></p>
+    <p><b>Đừng bấm Lưu lại nhiều lần</b> — sẽ vẫn bị từ chối. Hệ thống cũng tự tắt chế độ tự lưu của dự án đó để khỏi thử đi thử lại mỗi 5 giây.</p>
+    <p>Việc cần làm: chụp lại hoặc ghi ra ngoài phần mình vừa nhập, <b>tải lại trang</b> để lấy bản mới nhất, rồi nhập lại. Nếu phần sửa nhiều, nên gọi cho người kia để thống nhất ai nhập trước.</p>
+  </div>
+  <div class="note">
+    <div class="h">Những thao tác KHÔNG bị tính là ghi đè</div>
+    <p>Bộ đếm chỉ tăng khi <b>lưu nội dung báo giá</b>. Upload file PO/hoá đơn, đổi trạng thái dự án, ghim dự án hay ẩn dự án <b>không làm tăng bộ đếm</b> — nên anh/chị sẽ không bị cảnh báo nhầm chỉ vì mình vừa upload một file.</p>
+  </div>
+</section>
+
+</div>
+</body>
+</html>
