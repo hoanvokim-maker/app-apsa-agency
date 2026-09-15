@@ -212,7 +212,7 @@ case 'req': {
     $text = implode("\n", $lines);
 
     /* Nguoi nhan thong bao: chi gui cho anh Harris (theo yeu cau). */
-    $st = $pdo->query("SELECT id, display_name, username, zalo_chat_id FROM `app_users`
+    $st = $pdo->query("SELECT id, display_name, username, zalo_chat_id, staff_type FROM `app_users`
         WHERE active = 1 AND zalo_chat_id IS NOT NULL AND zalo_chat_id <> ''
           AND (LOWER(username) = 'harris' OR LOWER(display_name) = 'harris' OR id = 1)
         ORDER BY (LOWER(username) = 'harris') DESC, id ASC

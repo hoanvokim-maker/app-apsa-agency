@@ -401,6 +401,15 @@ html[data-theme="light"] .rp .btn.unc:hover{ background:#157a3d !important; colo
 <script>
 var API = './api/quotation-api.php';
 var ROWS = [], QUOS = [], PAY = { sup: [], user: [] };
+/* APSA1902: nhan vien inhouse van la "ca nhan" nhung nhan la FULLTIME, chi
+   freelancer moi la FL. Tra theo ten vi dong chi phi chi luu payee_name. */
+function payTag(name) {
+  var k = nrm(name || ''), a = PAY.user || [];
+  for (var i = 0; i < a.length; i++) {
+    if (nrm(a[i].name) === k) return String(a[i].staff_type || 'inhouse') === 'freelancer' ? 'FL' : 'FULLTIME';
+  }
+  return 'FL';
+}
 var FQ = '', FST = 'soon', FTY = 'all';   /* APSA1871: mac dinh xem Can chuan bi 7 ngay */
 var SORT = 'date', DIR = -1, SEL = {}, editing = null, delId = 0, qrRow = null, qTimer = null;
 
@@ -587,7 +596,7 @@ function render() {
         (r.created_by_name ? '<div class="byu" title="Người đã thêm khoản chi này">'
           + '<span class="byu-i">+</span>' + esc(r.created_by_name) + '</div>' : '') + '</td>' +
       '<td>' + (r.payee_name ? esc(r.payee_name) + ' <span class="tag ' + (r.payee_type || 'sup') + '">' +
-        (r.payee_type === 'user' ? 'FL' : 'NCC') + '</span>' +
+        (r.payee_type === 'user' ? payTag(r.payee_name) : 'NCC') + '</span>' +
         (r.bank_account ? '<div class="sub">' + esc(r.bank_name || '') + ' · ' + esc(r.bank_account) + '</div>' : '')
         : '<span style="color:var(--text3)">—</span>') + '</td>' +
       '<td class="num">' + fmt(r.qty) + '</td>' +
@@ -720,7 +729,7 @@ function openForm(r) {
     el('ePayee')._b = 1;
     var L = [];
     PAY.sup.forEach(function (p)  { L.push({ k: nrm(p.name), label: p.name, tag: 'NCC', tagc: 'sup',  t: 'sup',  id: p.id }); });
-    PAY.user.forEach(function (p) { L.push({ k: nrm(p.name), label: p.name, tag: 'FL',  tagc: 'user', t: 'user', id: p.id }); });
+    PAY.user.forEach(function (p) { L.push({ k: nrm(p.name), label: p.name, tag: (String(p.staff_type || 'inhouse') === 'freelancer' ? 'FL' : 'FULLTIME'), tagc: 'user', t: 'user', id: p.id }); });
     acBind('ePayee', 'acPayee', L, function (it) { pickPayee = { t: it.t, id: it.id };
       if (el('eVat')) el('eVat').value = (it.t === 'sup' ? 8 : 0); });
   }

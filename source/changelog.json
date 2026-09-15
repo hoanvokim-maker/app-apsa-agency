@@ -1,5 +1,5 @@
 {
-    "version": "2.0.37",
+    "version": "2.0.38",
     "updated": "2026-09-15",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-13",
             "note": "Phiên bản 2.0",
             "items": [
+                {
+                    "d": "2026-09-15",
+                    "v": "2.0.38",
+                    "t": "APSA1902 Chi phi thuc te: nhan vien inhouse hien nhan FULLTIME thay vi FL (van thuoc nhom ca nhan), freelancer giu FL",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-15",
                     "v": "2.0.37",
