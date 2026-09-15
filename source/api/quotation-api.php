@@ -550,6 +550,12 @@ if (!q_hasColumn($pdo, 'quotation_expenses', 'created_by')) {
 if (!q_hasColumn($pdo, 'quotation_expenses', 'pay_date')) {
     q_mig($pdo, "ALTER TABLE `quotation_expenses` ADD COLUMN `pay_date` DATE NULL DEFAULT NULL");
 }
+if (!q_hasColumn($pdo, 'quotation_expenses', 'due_notified_at')) {
+    q_mig($pdo, "ALTER TABLE `quotation_expenses`
+        ADD COLUMN `due_notified_at` DATETIME NULL DEFAULT NULL
+        COMMENT 'APSA1869: da ban Zalo nhac den han cho dong nay luc nao'");
+}
+
 
 /* --- Noi dung chuyen khoan cho tung dong chi --- */
 if (!q_hasColumn($pdo, 'quotation_expenses', 'pay_memo')) {
@@ -1066,6 +1072,63 @@ function q_calSyncDeliv(PDO $pdo, $id) {
     } catch (Exception $e) {
         /* im lang: lich khong duoc lam hong viec luu bao gia */
     }
+}
+
+/* APSA1869: bao Zalo NGAY khi dong chi phi co ngay thanh toan <= hom nay,
+   thay vi doi cron 08:30 hom sau. Moi dong chi ban 1 lan (due_notified_at). */
+function q_notify_due(PDO $pdo, $rowId)
+{
+    $rowId = (int) $rowId;
+    if ($rowId <= 0) return;
+    try {
+        $st = $pdo->prepare(
+            "SELECT e.id, e.name, e.qty, e.price, e.vat_percent, e.pay_date,
+                    e.payee_name, e.paid, e.due_notified_at, q.code, q.title
+               FROM `quotation_expenses` e
+               JOIN `quotations` q ON q.id = e.quotation_id
+              WHERE e.id = ? AND q.deleted_at IS NULL LIMIT 1");
+        $st->execute(array($rowId));
+        $r = $st->fetch(PDO::FETCH_ASSOC);
+        if (!$r) return;
+        if ((int) $r['paid'] === 1) return;
+        if (!empty($r['due_notified_at'])) return;
+        $d = trim((string) $r['pay_date']);
+        if ($d === '' || $d === '0000-00-00') return;
+        $today = date('Y-m-d');
+        if ($d > $today) return;
+
+        $amt = (float) $r['qty'] * (float) $r['price'];
+        $amt = $amt + $amt * ((float) $r['vat_percent'] / 100);
+        $dd  = (int) floor((strtotime($today) - strtotime($d)) / 86400);
+        $tag = $dd > 0 ? ('qua han ' . $dd . ' ngay') : 'den han hom nay';
+        $who = trim((string) $r['payee_name']);
+
+        $title = 'Khoan chi den han thanh toan';
+        $body  = '- ' . mb_substr((string) $r['name'], 0, 46, 'UTF-8')
+               . ($who !== '' ? ' / ' . $who : '')
+               . ' / ' . number_format($amt, 0, ',', '.') . ' d'
+               . ' / ' . date('d/m', strtotime($d)) . ' (' . $tag . ')'
+               . "\n" . 'Du an: ' . (string) $r['code']
+               . ((string) $r['title'] !== '' ? ' - ' . (string) $r['title'] : '');
+        $url  = './chi-phi.html';
+        $acts = array(array('kind' => 'open', 'label' => 'Mo Chi phi thuc te', 'url' => $url));
+
+        $ins = $pdo->prepare("INSERT INTO `app_notifications` (user_id, kind, title, body, url, actor)
+                              VALUES (?,?,?,?,?,?)");
+        foreach ($pdo->query("SELECT id FROM `app_users` WHERE `role` = 'admin' AND active = 1") as $ad) {
+            $uid = (int) $ad['id'];
+            try {
+                $ins->execute(array($uid, 'pay_due',
+                    mb_substr($title, 0, 200, 'UTF-8'), mb_substr($body, 0, 500, 'UTF-8'),
+                    $url, 'He thong'));
+            } catch (PDOException $e) { }
+            if (function_exists('zb_enabled') && zb_enabled()) {
+                zb_push($pdo, $uid, 'pay_due', $title, $body, $url, $acts);
+            }
+        }
+        $pdo->prepare("UPDATE `quotation_expenses` SET due_notified_at = NOW() WHERE id = ?")
+            ->execute(array($rowId));
+    } catch (Exception $e) { } catch (Throwable $e) { }
 }
 
 function q_expStamp(PDO $pdo, $rowId) {
@@ -2349,6 +2412,7 @@ case 'exp-row-save': {
         if (!$sets) q_fail('Khong co gi de cap nhat');
         $par[] = $id;
         $pdo->prepare('UPDATE `quotation_expenses` SET ' . implode(', ', $sets) . ' WHERE id = ?')->execute($par);
+        if (array_key_exists('pay_date', $B)) q_notify_due($pdo, $id);   /* APSA1869 */
         q_ok(array('id' => $id));
     }
     $qid = (int) ($B['quotation_id'] ?? 0);
@@ -2373,6 +2437,7 @@ case 'exp-row-save': {
     ]);
     $newExpId = (int) $pdo->lastInsertId();
         q_expStamp($pdo, $newExpId);
+        q_notify_due($pdo, $newExpId);   /* APSA1869 */
         q_ok(array('id' => $newExpId));
 }
 
@@ -2570,6 +2635,9 @@ case 'expenses-save': {
                 . implode(',', array_map('intval', $gone)) . ")")->execute([$qid]);
         }
         $pdo->commit();
+        /* APSA1869: sau khi commit moi ban Zalo, tranh ban roi bi rollback.
+           Moi dong chi ban 1 lan nho cot due_notified_at. */
+        foreach (array_keys($keep) as $__rid) q_notify_due($pdo, (int) $__rid);
     } catch (Throwable $e) {
         $pdo->rollBack();
         q_fail('Không lưu được chi phí: ' . $e->getMessage());

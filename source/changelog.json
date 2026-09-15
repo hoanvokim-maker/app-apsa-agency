@@ -1,12 +1,18 @@
 {
-    "version": "2.0.9",
-    "updated": "2026-09-14",
+    "version": "2.0.10",
+    "updated": "2026-09-15",
     "releases": [
         {
             "v": "2.0",
             "date": "2026-09-13",
             "note": "Phiên bản 2.0",
             "items": [
+                {
+                    "d": "2026-09-15",
+                    "v": "2.0.10",
+                    "t": "Chi phi: bao Zalo ngay khi luu dong co ngay thanh toan den han; o chon ngay hien dung ngay vua chon; mo quyen Chi phi thuc te cho tat ca user",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-14",
                     "v": "2.0.9",

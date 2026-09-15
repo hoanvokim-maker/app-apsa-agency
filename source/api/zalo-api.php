@@ -140,8 +140,10 @@ if ($ACTION === 'cron-pay-due') {
                 AND e.pay_date <> '0000-00-00'
                 AND e.pay_date <= ?
                 AND q.deleted_at IS NULL
+                /* APSA1869: bo qua dong da ban Zalo ngay trong hom nay */
+                AND (e.due_notified_at IS NULL OR DATE(e.due_notified_at) <> ?)
               ORDER BY e.pay_date ASC, q.code ASC");
-        $st->execute(array($today));
+        $st->execute(array($today, $today));
         $rows = $st->fetchAll();
     } catch (Exception $e) { $rows = array(); }
 

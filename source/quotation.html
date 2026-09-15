@@ -4972,12 +4972,18 @@ function dmyUpgrade(root){
         });
       } catch (e) {}
 
+      var dmySelf = false;   /* APSA1868 */
       function fire(){
+        dmySelf = true;
         el.dispatchEvent(new Event('input',  { bubbles: true }));
         el.dispatchEvent(new Event('change', { bubbles: true }));
+        dmySelf = false;
       }
       el.addEventListener('change', function (){
-        if (document.activeElement !== txt) txt.value = dmyFromIso(proto.get.call(el));
+        /* APSA1868: chon ngay tu lich he thong -> luon do lai o hien thi dd/mm/yyyy.
+           Chi bo qua khi fire() vua ban su kien do nguoi dung dang go tay. */
+        if (dmySelf) return;
+        txt.value = dmyFromIso(proto.get.call(el));
       });
       txt.addEventListener('input', function (){
         var raw = txt.value.replace(/[^0-9\/]/g, '');
