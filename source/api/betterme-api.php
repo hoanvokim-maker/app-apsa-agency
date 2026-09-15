@@ -274,6 +274,11 @@ switch ($action) {
 /* --- APSA1887: Theo doi nhan vien fulltime (checklist rieng tu cua nguoi dang nhap) --- */
 case 'staff': {
     if (!$IS_ADMIN) bm_fail('Chi Admin dung duoc muc nay.', 403);
+    /* APSA1893: dang xem thay tai khoan khac thi khong mo so ghi chu rieng,
+       de loi hua "chi minh toi nhin thay" khong bi pha. */
+    if (!empty($_SESSION['real_user_id'])) {
+        bm_fail('Dang o che do xem thay tai khoan khac — khu vuc ghi chu rieng khong mo.', 403);
+    }
     $us = $pdo->query("SELECT id, display_name, username, position, avatar FROM `app_users`
                        WHERE active = 1 AND (staff_type = 'inhouse' OR staff_type IS NULL OR staff_type = '')
                        ORDER BY display_name ASC, username ASC")->fetchAll();
@@ -307,6 +312,11 @@ case 'staff': {
 /* --- APSA1887: 1 nhan vien: checklist rieng + card gop y + topic ban ay tu dat --- */
 case 'review': {
     if (!$IS_ADMIN) bm_fail('Chi Admin dung duoc muc nay.', 403);
+    /* APSA1893: dang xem thay tai khoan khac thi khong mo so ghi chu rieng,
+       de loi hua "chi minh toi nhin thay" khong bi pha. */
+    if (!empty($_SESSION['real_user_id'])) {
+        bm_fail('Dang o che do xem thay tai khoan khac — khu vuc ghi chu rieng khong mo.', 403);
+    }
     $tid = isset($_GET['target_id']) ? (int) $_GET['target_id'] : 0;
     if ($tid <= 0) bm_fail('Thieu nhan vien.');
     $st = $pdo->prepare("SELECT * FROM `bm_reviews`
@@ -353,6 +363,11 @@ case 'review': {
 /* --- APSA1887: ghi / xoa 1 dong checklist rieng tu --- */
 case 'review-save': {
     if (!$IS_ADMIN) bm_fail('Chi Admin dung duoc muc nay.', 403);
+    /* APSA1893: dang xem thay tai khoan khac thi khong mo so ghi chu rieng,
+       de loi hua "chi minh toi nhin thay" khong bi pha. */
+    if (!empty($_SESSION['real_user_id'])) {
+        bm_fail('Dang o che do xem thay tai khoan khac — khu vuc ghi chu rieng khong mo.', 403);
+    }
     $rid = isset($B['id']) ? (int) $B['id'] : 0;
     $tid = isset($B['target_id']) ? (int) $B['target_id'] : 0;
     $ct = bm_s(isset($B['content']) ? $B['content'] : '', 500);
@@ -379,6 +394,11 @@ case 'review-save': {
 }
 case 'review-del': {
     if (!$IS_ADMIN) bm_fail('Chi Admin dung duoc muc nay.', 403);
+    /* APSA1893: dang xem thay tai khoan khac thi khong mo so ghi chu rieng,
+       de loi hua "chi minh toi nhin thay" khong bi pha. */
+    if (!empty($_SESSION['real_user_id'])) {
+        bm_fail('Dang o che do xem thay tai khoan khac — khu vuc ghi chu rieng khong mo.', 403);
+    }
     $rid = isset($B['id']) ? (int) $B['id'] : 0;
     $st = $pdo->prepare("UPDATE `bm_reviews` SET deleted_at = NOW() WHERE id = ? AND owner_id = ?");
     $st->execute(array($rid, (int) $ME['id']));

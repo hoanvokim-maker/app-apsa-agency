@@ -206,6 +206,67 @@ switch ($action) {
         ]);
         break;
 
+    /* --- APSA1893: Super Admin doi sang tai khoan khac de xem/kiem tra --- */
+    case 'impersonate': {
+        /* Quyen luon xet tren TAI KHOAN THAT. Neu dang o che do xem thay thi
+           phai thoat truoc, de khong the nhay chuoi tu user nay sang user khac. */
+        if (!empty($_SESSION['real_user_id'])) {
+            fail('Bạn đang xem thay một tài khoản. Hãy thoát trước khi chuyển sang người khác.', 409);
+        }
+        $me  = requireAdmin($pdo);
+        $tid = (int) ($body['user_id'] ?? 0);
+        if ($tid <= 0) fail('Thiếu tài khoản cần chuyển sang.');
+        if ($tid === (int) $me['id']) fail('Đây đã là tài khoản của bạn.');
+        $st = $pdo->prepare("SELECT id, username, display_name, role, active FROM `app_users` WHERE id = ?");
+        $st->execute([$tid]);
+        $t = $st->fetch();
+        if (!$t) fail('Không tìm thấy tài khoản.', 404);
+        if ((int) $t['active'] !== 1) fail('Tài khoản này đang bị khoá.', 403);
+        $tName = trim((string) $t['display_name']);
+        if ($tName === '') $tName = (string) $t['username'];
+        $mName = trim((string) $me['display_name']);
+        if ($mName === '') $mName = (string) $me['username'];
+        $_SESSION['real_user_id'] = (int) $me['id'];
+        $_SESSION['user_id']      = (int) $t['id'];
+        $_SESSION['_touched_at']  = time();
+        try {
+            $lg = $pdo->prepare("INSERT INTO `activity_log`
+                (created_at, user_id, user_name, area, action, label, target)
+                VALUES (NOW(), ?, ?, 'account', 'impersonate-start', ?, ?)");
+            $lg->execute([(int) $me['id'], $mName, 'Xem thay ' . $tName, (string) $t['username']]);
+        } catch (Exception $e) { /* log hong thi cung khong chan thao tac */ }
+        ok([
+            'user'      => ['id' => (int) $t['id'], 'name' => $tName, 'role' => (string) $t['role']],
+            'real_user' => ['id' => (int) $me['id'], 'name' => $mName],
+        ]);
+        break;
+    }
+    case 'impersonate-stop': {
+        $realId = (int) ($_SESSION['real_user_id'] ?? 0);
+        if ($realId <= 0) fail('Bạn không ở chế độ xem thay.', 400);
+        $st = $pdo->prepare("SELECT id, username, display_name, active FROM `app_users` WHERE id = ?");
+        $st->execute([$realId]);
+        $r = $st->fetch();
+        if (!$r || (int) $r['active'] !== 1) {
+            $_SESSION = [];
+            session_destroy();
+            fail('Tài khoản gốc không còn hiệu lực — hãy đăng nhập lại.', 401);
+        }
+        $rName = trim((string) $r['display_name']);
+        if ($rName === '') $rName = (string) $r['username'];
+        $wasId = (int) ($_SESSION['user_id'] ?? 0);
+        $_SESSION['user_id'] = $realId;
+        unset($_SESSION['real_user_id']);
+        $_SESSION['_touched_at'] = time();
+        try {
+            $lg = $pdo->prepare("INSERT INTO `activity_log`
+                (created_at, user_id, user_name, area, action, label, target)
+                VALUES (NOW(), ?, ?, 'account', 'impersonate-stop', 'Thoat xem thay', ?)");
+            $lg->execute([$realId, $rName, (string) $wasId]);
+        } catch (Exception $e) { /* bo qua */ }
+        ok(['user' => ['id' => $realId, 'name' => $rName]]);
+        break;
+    }
     case 'logout':
         $_SESSION = [];
         session_destroy();
@@ -215,6 +276,20 @@ switch ($action) {
     case 'me':
         $u = currentUser($pdo);
         if (!$u) fail('Unauthorized', 401);
+        /* APSA1893: bao cho giao dien biet dang xem thay tai khoan nao */
+        $u['impersonating'] = 0;
+        $u['real_user'] = null;
+        if (!empty($_SESSION['real_user_id'])) {
+            $rs = $pdo->prepare("SELECT id, username, display_name FROM `app_users` WHERE id = ?");
+            $rs->execute([(int) $_SESSION['real_user_id']]);
+            $rr = $rs->fetch();
+            if ($rr) {
+                $rn = trim((string) $rr['display_name']);
+                if ($rn === '') $rn = (string) $rr['username'];
+                $u['impersonating'] = 1;
+                $u['real_user'] = ['id' => (int) $rr['id'], 'name' => $rn];
+            }
+        }
         ok($u);
         break;
 

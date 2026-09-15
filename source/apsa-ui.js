@@ -859,6 +859,9 @@ function paintBell() {
     }
     h += '</div>';
     /* APSA1879: nut doi nen sang / toi */
+    h += '<button type="button" class="as-item" id="apsaSwitch" style="display:none" title="Đổi sang tài khoản khác">' +
+         '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13l-3-3"/><path d="M20 16H7l3 3"/></svg>' +
+         '<span class="as-txt">Đổi tài khoản</span></button>';
     h += '<button type="button" class="as-item" id="apsaTheme" role="switch" aria-checked="' + (AD_isLight() ? 'true' : 'false') + '" title="Đổi nền sáng / tối">' +
          '<svg viewBox="0 0 24 24" aria-hidden="true">' + (AD_isLight() ? I.sun : I.moon) + '</svg>' +
          '<span class="as-txt">' + (AD_isLight() ? 'Nền tối' : 'Nền sáng') + '</span>' +
@@ -1605,4 +1608,156 @@ function pullHome() {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
   window.addEventListener('apsa-auth-ready', repaint);
+})();
+
+/* ===== APSA1893 — Super Admin: doi sang tai khoan khac ===== */
+(function () {
+  var API = './api/auth-api.php';
+  var ME = null;
+
+  function css() {
+    if (document.getElementById('swAcStyle')) return;
+    var s = document.createElement('style');
+    s.id = 'swAcStyle';
+    s.textContent =
+      '#swBar{position:fixed;left:0;right:0;top:0;z-index:100050;display:flex;gap:12px;' +
+      'align-items:center;justify-content:center;padding:7px 16px;font-size:12.5px;font-weight:600;' +
+      'background:var(--accent-fill,#d97757);color:#fff;font-family:"Oxanium",sans-serif}' +
+      '#swBar button{height:24px;border-radius:999px;border:1px solid rgba(255,255,255,.6);' +
+      'background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:12px;padding:0 12px;cursor:pointer}' +
+      '#swBar button:hover{background:rgba(255,255,255,.3)}' +
+      'body.sw-on{padding-top:34px}' +
+      '#swOv{position:fixed;inset:0;z-index:100060;display:none;align-items:center;justify-content:center;' +
+      'background:rgba(0,0,0,.5);padding:20px}' +
+      '#swOv.on{display:flex}' +
+      '#swBox{width:100%;max-width:420px;max-height:80vh;overflow:auto;border-radius:16px;padding:22px;' +
+      'background:var(--bg2,#131313);border:1px solid var(--accent-fill,#d97757);' +
+      'font-family:"Oxanium",sans-serif;color:var(--text,#fff)}' +
+      '#swBox h3{font-size:15px;letter-spacing:1px;text-transform:uppercase;margin:0 0 4px}' +
+      '#swBox p{font-size:12px;color:var(--text3,#888);margin:0 0 14px;line-height:1.5}' +
+      '#swBox .swu{display:flex;align-items:center;gap:10px;width:100%;padding:9px 11px;border-radius:10px;' +
+      'border:1px solid transparent;background:transparent;color:inherit;font:inherit;font-size:13px;' +
+      'text-align:left;cursor:pointer}' +
+      '#swBox .swu:hover{background:var(--w10,rgba(0,0,0,.05));border-color:var(--border)}' +
+      '#swBox .swav{width:26px;height:26px;border-radius:50%;background:var(--w12,rgba(0,0,0,.07));' +
+      'display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;flex:0 0 auto}' +
+      '#swBox .swr{font-size:11px;color:var(--text3,#888)}' +
+      '#swBox .swft{display:flex;justify-content:flex-end;margin-top:14px}';
+    document.head.appendChild(s);
+  }
+
+  function ini(n) {
+    var p = String(n || '').trim().split(/\s+/);
+    if (!p[0]) return '?';
+    return (p.length > 1 ? p[p.length - 2][0] + p[p.length - 1][0] : p[0].slice(0, 2)).toUpperCase();
+  }
+  function esc(t) {
+    return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  async function call(action, body) {
+    var o = { credentials: 'same-origin', cache: 'no-store' };
+    if (body) {
+      o.method = 'POST';
+      o.headers = { 'Content-Type': 'application/json' };
+      o.body = JSON.stringify(body);
+    }
+    var r = await fetch(API + '?action=' + action, o);
+    var j = null;
+    try { j = await r.json(); } catch (e) {}
+    if (!r.ok || !j || !j.ok) throw new Error((j && j.error) || ('Lỗi ' + r.status));
+    return j.data;
+  }
+
+  function bar(realName, asName) {
+    var b = document.getElementById('swBar');
+    if (!b) {
+      b = document.createElement('div');
+      b.id = 'swBar';
+      document.body.appendChild(b);
+    }
+    b.innerHTML =
+      '<span>Bạn (' + esc(realName) + ') đang xem hệ thống bằng tài khoản <b>' + esc(asName) + '</b></span>' +
+      '<button type="button" id="swBack">Về tài khoản của tôi</button>';
+    document.body.classList.add('sw-on');
+    document.getElementById('swBack').onclick = async function () {
+      this.disabled = true;
+      try { await call('impersonate-stop', {}); location.reload(); }
+      catch (e) { this.disabled = false; alert(e.message); }
+    };
+  }
+
+  function ov() {
+    var o = document.getElementById('swOv');
+    if (o) return o;
+    o = document.createElement('div');
+    o.id = 'swOv';
+    o.innerHTML = '<div id="swBox"></div>';
+    document.body.appendChild(o);
+    o.addEventListener('click', function (e) { if (e.target === o) o.classList.remove('on'); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') o.classList.remove('on');
+    });
+    return o;
+  }
+
+  async function open() {
+    css();
+    var o = ov(), box = document.getElementById('swBox');
+    box.innerHTML = '<h3>Đổi tài khoản</h3><p>Đang tải danh sách…</p>';
+    o.classList.add('on');
+    var list;
+    try { list = await call('basic-list'); }
+    catch (e) { box.innerHTML = '<h3>Đổi tài khoản</h3><p>' + esc(e.message) + '</p>'; return; }
+    var users = (list && (list.users || list.list || list)) || [];
+    if (!Array.isArray(users)) users = [];
+    var rows = users.filter(function (u) {
+      return Number(u.id) !== Number(ME.id) && Number(u.active === undefined ? 1 : u.active) === 1;
+    });
+    box.innerHTML =
+      '<h3>Đổi tài khoản</h3>' +
+      '<p>Bạn sẽ thấy hệ thống đúng như người đó thấy. Mọi thao tác trong lúc này được ghi lại dưới tên bạn. ' +
+      'Khu vực ghi chú riêng trong Better Me không mở ở chế độ này.</p>' +
+      (rows.length
+        ? rows.map(function (u) {
+            var nm = u.name || u.display_name || u.username || ('#' + u.id);
+            return '<button type="button" class="swu" data-u="' + u.id + '">' +
+              '<span class="swav">' + esc(ini(nm)) + '</span>' +
+              '<span style="flex:1">' + esc(nm) +
+              (u.position ? '<br><span class="swr">' + esc(u.position) + '</span>' : '') + '</span>' +
+              '<span class="swr">' + esc(u.role || '') + '</span>' +
+              '</button>';
+          }).join('')
+        : '<p>Không có tài khoản nào khác.</p>') +
+      '<div class="swft"><button type="button" class="swu" id="swCancel" style="width:auto">Huỷ</button></div>';
+    document.getElementById('swCancel').onclick = function () { o.classList.remove('on'); };
+    [].forEach.call(box.querySelectorAll('.swu[data-u]'), function (b) {
+      b.onclick = async function () {
+        b.disabled = true;
+        try { await call('impersonate', { user_id: Number(b.getAttribute('data-u')) }); location.href = './index.html'; }
+        catch (e) { b.disabled = false; alert(e.message); }
+      };
+    });
+  }
+
+  async function boot() {
+    try { ME = await call('me'); } catch (e) { return; }
+    if (!ME) return;
+    if (Number(ME.impersonating) === 1 && ME.real_user) {
+      css();
+      bar(ME.real_user.name, ME.display_name || ME.username);
+      return;
+    }
+    if (String(ME.role || '').toLowerCase() !== 'admin') return;
+    var tick = setInterval(function () {
+      var b = document.getElementById('apsaSwitch');
+      if (!b) return;
+      b.style.display = '';
+      b.onclick = function (e) { e.preventDefault(); open(); };
+    }, 400);
+    setTimeout(function () { clearInterval(tick); }, 12000);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
 })();

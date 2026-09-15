@@ -78,7 +78,7 @@ CREATE TABLE `activity_log` (
   KEY `k_quo` (`quotation_id`),
   KEY `k_user` (`user_id`),
   KEY `k_area` (`area`)
-) ENGINE=InnoDB AUTO_INCREMENT=943 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=945 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1017,6 +1017,8 @@ INSERT INTO `activity_log` VALUES (939,'2026-09-15 22:01:07',3,'Thảo Lý','exp
 INSERT INTO `activity_log` VALUES (940,'2026-09-15 22:01:16',3,'Thảo Lý','quotation','save','Lưu báo giá / dự án',15,'30072026-135','','id: 15 · kind: event · code: 30072026-135 · title: AZ-R&I-COPD Forum HCM-2026 · company_id: 1 · customer_id: 10 · client_name: AstraZeneca · client_tax: 0315158696 · client_address: 76 Lê Lai, Phường Bến Thành, Tp. HCM, Việt Nam · quotation_date: 2026-07-30 · currency: VND · ma_percent: 10');
 INSERT INTO `activity_log` VALUES (941,'2026-09-15 22:01:16',3,'Thảo Lý','checklist','assignees-save','Lưu phân công / checklist',15,'30072026-135','','quotation_id: 15 · list: 0 mục');
 INSERT INTO `activity_log` VALUES (942,'2026-09-15 22:01:16',3,'Thảo Lý','expense','expenses-save','Lưu chi phí thực tế',15,'30072026-135','','quotation_id: 15 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (943,'2026-09-15 22:15:20',1,'Harris','account','impersonate-start','Xem thay Vy Vy',0,'','vyvy',NULL);
+INSERT INTO `activity_log` VALUES (944,'2026-09-15 22:15:31',1,'Harris','account','impersonate-stop','Thoat xem thay',0,'','10',NULL);
 /*!40000 ALTER TABLE `activity_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
