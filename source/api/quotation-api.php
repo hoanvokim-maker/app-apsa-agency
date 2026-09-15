@@ -1149,13 +1149,15 @@ function q_xlsx_name($isLiq, $code, $title)
         $map[mb_strtoupper($ch, 'UTF-8')] = strtoupper($vt[$k]);
     }
     $t = strtr($t, $map);
-    $t = preg_replace('/[^A-Za-z0-9 \-_]+/', ' ', $t);
-    $t = trim(preg_replace('/\s+/', ' ', $t));
-    $c = trim(preg_replace('/[^A-Za-z0-9\-_]+/', '-', (string) $code), '-');
+    /* Ten file khong dung khoang trang: moi thanh phan noi bang dau - */
+    $t = preg_replace('/[^A-Za-z0-9_]+/', '-', $t);
+    $t = trim(preg_replace('/-+/', '-', $t), '-');
+    $c = preg_replace('/[^A-Za-z0-9_]+/', '-', (string) $code);
+    $c = trim(preg_replace('/-+/', '-', $c), '-');
     $n = ($isLiq ? 'LIQUIDATION' : 'Quotation')
-       . ($c !== '' ? ' ' . $c : '')
-       . ($t !== '' ? ' ' . $t : '');
-    $n = trim(preg_replace('/\s+/', ' ', $n));
+       . ($c !== '' ? '-' . $c : '')
+       . ($t !== '' ? '-' . $t : '');
+    $n = trim(preg_replace('/-+/', '-', $n), '-');
     return $n !== '' ? $n : 'Quotation';
 }
 
