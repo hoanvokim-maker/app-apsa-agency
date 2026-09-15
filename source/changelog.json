@@ -1,5 +1,5 @@
 {
-    "version": "2.0.40",
+    "version": "2.0.41",
     "updated": "2026-09-15",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-13",
             "note": "Phiên bản 2.0",
             "items": [
+                {
+                    "d": "2026-09-15",
+                    "v": "2.0.41",
+                    "t": "APSA1905 Chi phi: o 'Da thanh toan' co nut chon moc 7 / 14 ngay / 1 thang (nho theo may), nen sang va chu phu de doc hon",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-15",
                     "v": "2.0.40",

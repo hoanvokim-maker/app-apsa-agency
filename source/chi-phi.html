@@ -276,6 +276,22 @@ html[data-theme="light"] {
     .rp .btn.unc{ border-color:rgba(74,222,128,.55); color:#4ade80; }
     .rp .btn.unc:hover{ background:#4ade80; color:#111; }
     .rp.off table{ display:none; }
+    /* APSA1905 — o "da thanh toan": nut chon moc + nen sang, chu phu de doc */
+    .rp-sw{ display:inline-flex; gap:4px; margin-left:12px; vertical-align:middle }
+    .rp-d{ height:22px; padding:0 10px; border-radius:999px; border:1px solid var(--border);
+           background:transparent; color:var(--text3); font:inherit; font-size:11px;
+           line-height:20px; cursor:pointer; white-space:nowrap }
+    .rp-d:hover{ border-color:var(--ok,#157a3d); color:var(--ok,#157a3d) }
+    .rp-d.on{ background:var(--ok,#157a3d); border-color:var(--ok,#157a3d); color:#fff; font-weight:700 }
+    html[data-theme="light"] .rp{
+      background:#f6faf7 !important;
+      border-color:rgba(21,122,61,.30) !important;
+    }
+    html[data-theme="light"] .rp .sub,
+    html[data-theme="light"] .rp .d,
+    html[data-theme="light"] .rp .n,
+    html[data-theme="light"] .rp .tg{ color:#6e6e66 !important; }
+    html[data-theme="light"] .rp .who{ color:#2f2f2b !important; }
   </style>
   <div id="recentPaid"></div>
   <div class="card" id="view"></div>
@@ -517,11 +533,15 @@ function th(k, t, cls) {
 /* ===== APSA1835: cac khoan da thanh toan trong 7 ngay -> dua len tren, tai UNC gui NCC ===== */
 var RP_OPEN = (function(){ try { return localStorage.getItem('cp_rp') !== '0'; } catch(e){ return true; } })();
 function rpToggle(){ RP_OPEN = !RP_OPEN; try { localStorage.setItem('cp_rp', RP_OPEN ? '1' : '0'); } catch(e){} renderRecentPaid(); }
+/* APSA1905: chon moc 7 / 14 ngay / 1 thang cho o "da thanh toan" */
+var RP_DAYS = (function(){ try{ var v=Number(localStorage.getItem('cp_rp_days')); return (v===7||v===14||v===30)?v:7; }catch(e){ return 7; } })();
+function rpDays(n, ev){ if(ev) ev.stopPropagation(); RP_DAYS=n; try{ localStorage.setItem('cp_rp_days', String(n)); }catch(e){} renderRecentPaid(); }
+function rpLabel(){ return RP_DAYS===30 ? '1 tháng qua' : (RP_DAYS + ' ngày qua'); }
 function rpDate(r){ var d = String(r.paid_at || r.pay_date || '').slice(0,10); return d; }
 function rpAttach(id){ qrRow = byId(id); if (!qrRow) return; el('qUnc').value = ''; el('qUnc').click(); }
 function renderRecentPaid(){
   var box = el('recentPaid'); if (!box) return;
-  var lim = new Date(); lim.setDate(lim.getDate() - 7);
+  var lim = new Date(); lim.setDate(lim.getDate() - RP_DAYS);
   var lims = lim.getFullYear() + '-' + String(lim.getMonth()+1).padStart(2,'0') + '-' + String(lim.getDate()).padStart(2,'0');
   var L = ROWS.filter(function(r){ return Number(r.paid) === 1 && rpDate(r) >= lims; })
               .sort(function(a,b){ return String(b.paid_at||b.pay_date||'').localeCompare(String(a.paid_at||a.pay_date||'')); });
@@ -530,7 +550,11 @@ function renderRecentPaid(){
   L.forEach(function(r){ tot += amt(r); if (Number(r.has_proof) === 1 || r.proof_file) nUnc++; });
   box.innerHTML =
     '<div class="rp' + (RP_OPEN ? '' : ' off') + '">' +
-      '<div class="rp-h" onclick="rpToggle()"><b>✓ Đã thanh toán 7 ngày qua</b>' +
+      '<div class="rp-h" onclick="rpToggle()"><b>✓ Đã thanh toán ' + rpLabel() + '</b>' +
+        '<span class="rp-sw">' + [7,14,30].map(function(n){
+          return '<button type="button" class="rp-d' + (RP_DAYS===n?' on':'') + '" onclick="rpDays(' + n + ',event)">' +
+                 (n===30 ? '1 tháng' : n + ' ngày') + '</button>';
+        }).join('') + '</span>' +
         '<span class="n">' + L.length + ' khoản · ' + fmt(tot) + ' đ · ' + nUnc + '/' + L.length + ' có UNC</span>' +
         '<span class="spacer"></span><span class="tg">' + (RP_OPEN ? 'Thu gọn ▴' : 'Mở rộng ▾') + '</span></div>' +
       '<table><tbody>' + L.map(function(r){
