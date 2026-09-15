@@ -650,13 +650,11 @@ function cardHtml(it){
 
   if (it.type === 'image' && (it.thumb || it.url)){
     const ratio = (it.width && it.height) ? ` style="aspect-ratio:${it.width}/${it.height}"` : '';
-    media = `<img class="media" loading="lazy"${ratio} src="${esc(it.thumb || it.url)}" alt="${esc(it.title)}"
-              onerror="this.outerHTML='<div class=ph><div class=big><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-image"/></svg></div><div class=host>Không tải được ảnh</div></div>'">`;
+    media = `<img class="media" loading="lazy"${ratio} src="${esc(it.thumb || it.url)}" alt="${esc(it.title)}" data-ph="1">`;
   } else if (it.type === 'video' && it.source === 'upload'){
     media = `<video class="media" preload="metadata" muted playsinline src="${esc(it.url)}#t=0.5"></video>`;
   } else if (it.thumb){
-    media = `<img class="media" loading="lazy" src="${esc(it.thumb)}" alt="${esc(it.title)}"
-              onerror="this.outerHTML='<div class=ph><div class=big>${src[0]}</div><div class=host>${esc(host(it.url))}</div></div>'">`;
+    media = `<img class="media" loading="lazy" src="${esc(it.thumb)}" alt="${esc(it.title)}" data-ph="1">`;
   } else {
     media = `<div class="ph"><div class="big">${src[0]}</div><div class="host">${esc(host(it.url))}</div></div>`;
   }
@@ -939,6 +937,26 @@ document.addEventListener('keydown', e => {
 /* ── Khởi động ──────────────────────────────── */
 paintName();
 load();
+
+/* ===== APSA1903 — thumbnail hong thi thay bang o placeholder.
+   Truoc day dung onerror noi dong ghep chuoi HTML trong thuoc tinh -> de vo
+   cu phap va lam ro ra chuoi '"&gt;' ngay tren the. Nay xu ly tap trung. ===== */
+document.addEventListener('error', function (e) {
+  var img = e.target;
+  if (!img || img.tagName !== 'IMG' || img.getAttribute('data-ph') !== '1') return;
+  if (img.dataset.phDone === '1') return;
+  img.dataset.phDone = '1';
+  var card = img.closest('.item');
+  var url  = card ? (card.getAttribute('data-url') || '') : '';
+  var h = '';
+  try { h = url ? new URL(url).hostname.replace(/^www\./, '') : ''; } catch (err) { h = ''; }
+  var ph = document.createElement('div');
+  ph.className = 'ph';
+  var big = document.createElement('div'); big.className = 'big'; big.textContent = '🖼';
+  var host = document.createElement('div'); host.className = 'host'; host.textContent = h || 'không tải được ảnh';
+  ph.appendChild(big); ph.appendChild(host);
+  if (img.parentNode) img.parentNode.replaceChild(ph, img);
+}, true);
 </script>
 </body>
 </html>
