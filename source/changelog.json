@@ -1,5 +1,5 @@
 {
-    "version": "2.0.44",
+    "version": "2.0.45",
     "updated": "2026-09-15",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-13",
             "note": "Phiên bản 2.0",
             "items": [
+                {
+                    "d": "2026-09-15",
+                    "v": "2.0.45",
+                    "t": "APSA1908 Chi phi: them khoang cach giua bang chi phi va o 'Da thanh toan'",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-15",
                     "v": "2.0.44",
