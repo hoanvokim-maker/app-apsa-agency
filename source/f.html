@@ -19,10 +19,10 @@
   .tabs { display: flex; gap: 7px; margin-bottom: 14px; flex-wrap: wrap; }
   .tab { font-size: 12.5px; padding: 6px 13px; border-radius: 20px; border: 1px solid #2c2c2c;
     background: transparent; color: #bdbdbd; cursor: pointer; }
-  .tab.on { background: #dff20d; border-color: #dff20d; color: #101010; font-weight: 700; }
+  .tab.on { background: var(--neon); border-color: var(--neon); color: #101010; font-weight: 700; }
   .frames { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 11px; align-items: start; }
   .fr { border: 2px solid #232323; border-radius: 13px; padding: 8px; cursor: pointer; background: #131313; }
-  .fr.on { border-color: #dff20d; }
+  .fr.on { border-color: var(--neon); }
   .fr .ph { border-radius: 8px; overflow: hidden; background: #202020; display: flex;
     align-items: center; justify-content: center; }
   .fr img { width: 100%; display: block; }
@@ -32,7 +32,7 @@
     position: relative; touch-action: none; }
   .stage canvas { display: block; width: 100%; height: auto; }
   .stage .drop { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 6px;
-    align-items: center; justify-content: center; background: rgba(0,0,0,.55); color: #dff20d;
+    align-items: center; justify-content: center; background: rgba(0,0,0,.55); color: var(--neon);
     font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; padding: 20px; }
   .stage .drop small { color: #9d9d9d; font-weight: 400; font-size: 12px; }
   .ctl { display: flex; align-items: center; gap: 11px; margin: 10px 0; }
@@ -40,7 +40,7 @@
   .ctl input[type=range] { flex: 1; accent-color: #dff20d; }
   .row { display: flex; gap: 9px; margin-top: 14px; }
   .btn { flex: 1; border: 0; border-radius: 12px; padding: 14px; font: inherit; font-weight: 700;
-    font-size: 15px; cursor: pointer; background: #dff20d; color: #101010; }
+    font-size: 15px; cursor: pointer; background: var(--neon); color: #101010; }
   .btn.ghost { background: transparent; color: #d4d4d4; border: 1px solid #2f2f2f; font-weight: 500; }
   .btn:disabled { opacity: .45; }
   .msg { text-align: center; padding: 70px 20px; color: #9d9d9d; }

@@ -18,7 +18,7 @@
       --text3: #5e5e5e;
       --accent: #dff20d;
       --accent2: #c9dd00;
-      --accent-glow: rgba(223,242,13,0.35);
+      --accent-glow: rgba(var(--neon-rgb),0.35);
       --red: #ff4d4d;
       --radius: 14px;
   --w-rgb: 255,255,255;
@@ -60,8 +60,8 @@ html[data-theme="light"] {
       content: '';
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at 30% 20%, rgba(223,242,13,0.15), transparent 50%),
-                  radial-gradient(circle at 80% 80%, rgba(223,242,13,0.1), transparent 50%);
+      background: radial-gradient(circle at 30% 20%, rgba(var(--neon-rgb),0.15), transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(var(--neon-rgb),0.1), transparent 50%);
       pointer-events: none;
       z-index: 0;
     }
@@ -128,8 +128,8 @@ html[data-theme="light"] {
     }
 
     input:focus {
-      border-color: rgba(223,242,13,0.5);
-      box-shadow: 0 0 0 3px rgba(223,242,13,0.1);
+      border-color: rgba(var(--neon-rgb),0.5);
+      box-shadow: 0 0 0 3px rgba(var(--neon-rgb),0.1);
     }
 
     /* --- Nut hien/an mat khau --- */
@@ -187,7 +187,7 @@ html[data-theme="light"] {
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/theme.css?v=50" />
+<link rel="stylesheet" href="/theme.css?v=51" />
 </head>
 <body>
 

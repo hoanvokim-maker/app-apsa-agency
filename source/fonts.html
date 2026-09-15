@@ -29,7 +29,7 @@
       --bg: #000000; --bg2: #0b0b0b; --bg3: #141414; --bg4: #1c1c1c;
       --border: rgba(255,255,255,0.08); --border-h: rgba(255,255,255,0.16);
       --text: #ffffff; --text2: #9a9a9a; --text3: #5e5e5e;
-      --accent: #dff20d; --accent2: #c9dd00; --glow: rgba(223,242,13,0.28);
+      --accent: #dff20d; --accent2: #c9dd00; --glow: rgba(var(--neon-rgb),0.28);
       --green: #dff20d; --orange: #ffffff; --pink: #c9dd00;
       --cyan: #ffffff; --yellow: #dff20d; --red: #ff4d4d;
       --r: 11px;
@@ -93,10 +93,10 @@ html[data-theme="light"] {
     .search-wrap { position: relative; flex: 1; min-width: 200px; max-width: 340px; }
     .search-wrap svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text3); pointer-events: none; }
     .search-input { width: 100%; background: var(--bg2); border: 1px solid var(--border); border-radius: 9px; padding: 8px 12px 8px 34px; color: var(--text); font-size: 13px; font-family: inherit; outline: none; transition: border-color .2s; }
-    .search-input:focus { border-color: rgba(223,242,13,.5); }
+    .search-input:focus { border-color: rgba(var(--neon-rgb),.5); }
     .search-input::placeholder { color: var(--text3); }
     .fsel { background: var(--bg2); border: 1px solid var(--border); border-radius: 9px; padding: 8px 12px; color: var(--text2); font-size: 13px; font-family: inherit; outline: none; cursor: pointer; }
-    .fsel:focus { border-color: rgba(223,242,13,.4); }
+    .fsel:focus { border-color: rgba(var(--neon-rgb),.4); }
     .ml { margin-left: auto; }
     .btn { padding: 8px 15px; border-radius: 9px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; border: none; transition: all .2s; display: inline-flex; align-items: center; gap: 6px; }
     .btn-p { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; box-shadow: 0 0 12px var(--glow); }
@@ -177,7 +177,7 @@ html[data-theme="light"] {
     .fg { margin-bottom: 10px; }
     .fg label { display: block; font-size: 11px; font-weight: 600; color: var(--text2); margin-bottom: 5px; }
     .fg input, .fg select, .fg textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 9px; padding: 9px 12px; color: var(--text); font-size: 13px; font-family: inherit; outline: none; transition: border-color .2s; }
-    .fg input:focus, .fg select:focus, .fg textarea:focus { border-color: rgba(223,242,13,.5); }
+    .fg input:focus, .fg select:focus, .fg textarea:focus { border-color: rgba(var(--neon-rgb),.5); }
     .fg input::placeholder, .fg textarea::placeholder { color: var(--text3); }
     .fg textarea { resize: none; }
 
@@ -224,8 +224,8 @@ html[data-theme="light"] {
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/theme.css?v=50" />
-<script src="/apsa-ui.js?v=54"></script>
+<link rel="stylesheet" href="/theme.css?v=51" />
+<script src="/apsa-ui.js?v=55"></script>
   <script src="/perm-guard.js?v=3"></script>
   <style>
     /* APSA1858: Kho Font */
@@ -233,7 +233,7 @@ html[data-theme="light"] {
     .fbar .f { display:flex; flex-direction:column; gap:4px; }
     .fbar .f > label { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:.5px; }
     .fbar input, .fbar select { background:var(--bg3); border:1px solid var(--border); color:var(--text); border-radius:var(--radius); padding:0 8px; height:28px; font-family:var(--font-body); font-size:12px; outline:none; }
-    .fbar input:focus, .fbar select:focus { border-color:rgba(223,242,13,.5); }
+    .fbar input:focus, .fbar select:focus { border-color:rgba(var(--neon-rgb),.5); }
     .fbar .grow { flex:1 1 240px; }
     .fbar .grow input { width:100%; }
     #sample { min-width:250px; }
@@ -249,7 +249,7 @@ html[data-theme="light"] {
     .fc-sub { font-size:11px; color:var(--text2); margin-top:3px; font-weight:400; }
     .lic { font-size:10px; padding:2px 8px; border-radius:999px; border:1px solid var(--border); color:var(--text2); white-space:nowrap; }
     .lic.free { color:#8ce99a; border-color:rgba(140,233,154,.4); }
-    .lic.paid { color:var(--accent); border-color:rgba(223,242,13,.45); }
+    .lic.paid { color:var(--accent); border-color:rgba(var(--neon-rgb),.45); }
     .lic.client { color:#7ac7ff; border-color:rgba(122,199,255,.4); }
 
     .fc-prev { min-height:66px; display:flex; align-items:center; background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:10px 12px; overflow:hidden; }

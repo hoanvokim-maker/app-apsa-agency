@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/theme.css?v=50" />
+  <link rel="stylesheet" href="/theme.css?v=51" />
 <style>
   :root {
     --bg: #000; --bg2: #0b0b0b; --bg3: #141414; --bg4: #1c1c1c;
@@ -80,20 +80,20 @@ html[data-theme="light"] {
   .bar { padding: 10px 12px; border-top: 1px solid rgba(var(--w-rgb),.08); }
   .tl { position: relative; height: 26px; margin-bottom: 8px; }
   .tl .rail { position: absolute; left: 0; right: 0; top: 11px; height: 4px; border-radius: 4px; background: rgba(var(--w-rgb),.13); }
-  .tl .mk { position: absolute; top: 4px; width: 3px; height: 18px; border-radius: 3px; background: #dff20d; cursor: pointer; transform: translateX(-1px); }
+  .tl .mk { position: absolute; top: 4px; width: 3px; height: 18px; border-radius: 3px; background: var(--neon); cursor: pointer; transform: translateX(-1px); }
   .tl .mk.done { background: #4ade80; opacity: .55; }
-  .tl .mk:hover { box-shadow: 0 0 0 3px rgba(223,242,13,.25); }
+  .tl .mk:hover { box-shadow: 0 0 0 3px rgba(var(--neon-rgb),.25); }
   .tl .cur { position: absolute; top: 2px; width: 2px; height: 22px; background: #fff; opacity: .85; pointer-events: none; }
 
   .ctrls { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .vb { font: inherit; font-size: 12.5px; padding: 7px 11px; border-radius: 9px; border: 1px solid rgba(var(--w-rgb),.14);
          background: rgba(var(--w-rgb),.05); color: #e9eaec; cursor: pointer; white-space: nowrap; transition: .15s; }
   .vb:hover { background: rgba(var(--w-rgb),.1); }
-  .vb.pri { background: #dff20d; color: #101010; border-color: #dff20d; font-weight: 700; }
+  .vb.pri { background: var(--neon); color: #101010; border-color: var(--neon); font-weight: 700; }
   .vb.pri:hover { filter: brightness(1.08); }
-  .vb.on { background: rgba(223,242,13,.16); border-color: #dff20d; color: #dff20d; }
+  .vb.on { background: rgba(var(--neon-rgb),.16); border-color: var(--neon); color: var(--neon); }
   .vb:disabled { opacity: .4; cursor: default; }
-  .tcode { font-family: 'Oxanium', monospace; font-size: 15px; font-weight: 700; color: #dff20d; padding: 0 8px; min-width: 96px; }
+  .tcode { font-family: 'Oxanium', monospace; font-size: 15px; font-weight: 700; color: var(--neon); padding: 0 8px; min-width: 96px; }
   .sp { flex: 1; }
 
   .cmp { padding: 12px; border-top: 1px solid rgba(var(--w-rgb),.08); display: none; }
@@ -101,7 +101,7 @@ html[data-theme="light"] {
   .cmp .row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
   input[type="text"], textarea { font: inherit; font-size: 13.5px; color: #e9eaec; background: rgba(0,0,0,.35);
     border: 1px solid rgba(var(--w-rgb),.14); border-radius: 9px; padding: 9px 11px; width: 100%; outline: none; }
-  input[type="text"]:focus, textarea:focus { border-color: #dff20d; }
+  input[type="text"]:focus, textarea:focus { border-color: var(--neon); }
   textarea { min-height: 74px; resize: vertical; }
   .cmp .name { max-width: 240px; }
   .thumbs { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 0; }
@@ -120,7 +120,7 @@ html[data-theme="light"] {
   .cm { border: 1px solid rgba(var(--w-rgb),.09); border-radius: 11px; padding: 10px; margin-bottom: 9px; background: rgba(var(--w-rgb),.03); }
   .cm.done { opacity: .5; }
   .cm .top { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-  .cm .ts { font-family: 'Oxanium', monospace; font-weight: 700; font-size: 12.5px; color: #101010; background: #dff20d;
+  .cm .ts { font-family: 'Oxanium', monospace; font-weight: 700; font-size: 12.5px; color: #101010; background: var(--neon);
             border: 0; border-radius: 6px; padding: 2px 7px; cursor: pointer; }
   .cm .au { font-size: 12.5px; font-weight: 600; }
   .cm .dt { font-size: 11px; color: #7d838a; margin-left: auto; }
@@ -135,7 +135,7 @@ html[data-theme="light"] {
   .lb { position: fixed; inset: 0; background: rgba(0,0,0,.9); display: none; align-items: center; justify-content: center; z-index: 90; padding: 24px; }
   .lb.open { display: flex; }
   .lb img { max-width: 96%; max-height: 92%; border-radius: 10px; }
-  .toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); background: #dff20d; color: #101010;
+  .toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); background: var(--neon); color: #101010;
            font-weight: 700; font-size: 13px; padding: 9px 16px; border-radius: 10px; opacity: 0; pointer-events: none; transition: .2s; z-index: 99; }
   .toast.on { opacity: 1; }
   .err { padding: 40px 22px; text-align: center; color: #ff8080; font-size: 14px; }
@@ -145,14 +145,14 @@ html[data-theme="light"] {
 .vbar .vlb{font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.55;margin-right:2px}
 .vchip{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border:1px solid #2b3138;border-radius:99px;font-size:12px;font-weight:700;color:#c9ced6;text-decoration:none}
 .vchip:hover{border-color:#4a535e;color:var(--text)}
-.vchip.on{background:#dff20d;border-color:#dff20d;color:#111}
+.vchip.on{background:var(--neon);border-color:var(--neon);color:#111}
 .vchip.off{opacity:.45}
 .vchip i{font-style:normal;font-size:10px;background:#ff6b6b;color:#fff;border-radius:99px;padding:0 5px;line-height:15px}
-.vchip.on i{background:#111;color:#dff20d}
+.vchip.on i{background:#111;color:var(--neon)}
 .vcmp{margin-left:4px;padding:4px 12px;border:1px solid #2b3138;background:#1b2026;color:#c9ced6;border-radius:99px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
-.vcmp:hover{border-color:#dff20d;color:#dff20d}
+.vcmp:hover{border-color:var(--neon);color:var(--neon)}
 .tsn{margin-left:6px;padding:1px 8px;border:1px solid #2b3138;background:transparent;color:#8d96a3;border-radius:99px;font:inherit;font-size:11px;cursor:pointer}
-.tsn:hover{border-color:#dff20d;color:#dff20d}
+.tsn:hover{border-color:var(--neon);color:var(--neon)}
 .cmpov{position:fixed;inset:0;background:#0b0d10;z-index:9000;display:none;flex-direction:column}
 .cmpov.open{display:flex}
 .cmphd{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid #20262d;flex-wrap:wrap}
@@ -238,7 +238,7 @@ html[data-theme="light"] /* APSA1849 */ .mk.prev{ background:#2f5fd0 !important;
       <div class="pens" id="pens">
         <span style="font-size:12px;color:#9aa0a6">Bút:</span>
         <span class="sw on" style="background:#ff2d55" onclick="setPen(this,'#ff2d55')"></span>
-        <span class="sw" style="background:#dff20d" onclick="setPen(this,'#dff20d')"></span>
+        <span class="sw" style="background:var(--neon)" onclick="setPen(this,'#dff20d')"></span>
         <span class="sw" style="background:#38bdf8" onclick="setPen(this,'#38bdf8')"></span>
         <span class="sw" style="background:#4ade80" onclick="setPen(this,'#4ade80')"></span>
         <span class="sw" style="background:#ffffff" onclick="setPen(this,'#ffffff')"></span>

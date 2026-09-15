@@ -21,8 +21,8 @@
   <meta name="theme-color" content="#dff20d">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>APSA — Better Me</title>
-  <link rel="stylesheet" href="/theme.css?v=50" />
-  <script src="/apsa-ui.js?v=54"></script>
+  <link rel="stylesheet" href="/theme.css?v=51" />
+  <script src="/apsa-ui.js?v=55"></script>
   <style>
 /* ---- base theme ke thua tu cac trang khac ---- */
 
@@ -258,7 +258,7 @@ th.lv-sort:hover { color:var(--text); }
     .tcard { border:1px solid var(--border,rgba(var(--w-rgb),.1)); border-radius:var(--radius,4px);
              background:var(--bg2,#0b0b0b); margin-bottom:10px; overflow:hidden;
              border-left:3px solid rgba(var(--w-rgb),.14) }
-    .tcard.done { border-left-color:#dff20d; background:rgba(223,242,13,.035) }
+    .tcard.done { border-left-color:var(--neon); background:rgba(var(--neon-rgb),.035) }
     .tcard .th { display:flex; gap:12px; align-items:center; padding:13px 15px; cursor:pointer }
     .tcard .th:hover { background:rgba(var(--w-rgb),.025) }
     .tcard .tt { font-weight:700; font-size:14px; flex:1; min-width:0 }
@@ -267,19 +267,19 @@ th.lv-sort:hover { color:var(--text); }
     .tcard .tb { padding:0 15px 16px; border-top:1px solid var(--border,rgba(var(--w-rgb),.08)) }
 
     .pbar { width:110px; height:5px; border-radius:99px; background:rgba(var(--w-rgb),.10); overflow:hidden; flex:0 0 auto }
-    .pbar i { display:block; height:100%; background:#dff20d; border-radius:99px }
+    .pbar i { display:block; height:100%; background:var(--neon); border-radius:99px }
     .pct { font-size:10px; font-weight:700; color:var(--text2,#9a9a9a); width:34px; text-align:right; flex:0 0 auto }
 
     .who { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px;
            font-size:10px; font-weight:700; letter-spacing:.3px; white-space:nowrap;
            border:1px solid rgba(var(--w-rgb),.14); background:rgba(var(--w-rgb),.04); color:var(--text2,#9a9a9a) }
     .who.mentor { border-color:rgba(86,204,242,.5); background:rgba(86,204,242,.12); color:#7fd0f5 }
-    .who.owner  { border-color:rgba(223,242,13,.5); background:rgba(223,242,13,.12); color:#dff20d }
+    .who.owner  { border-color:rgba(var(--neon-rgb),.5); background:rgba(var(--neon-rgb),.12); color:var(--neon) }
     .whos { display:flex; gap:5px; flex-wrap:wrap; align-items:center }
 
     .stat { font-size:10px; font-weight:700; letter-spacing:.5px; padding:2px 9px; border-radius:999px;
             border:1px solid rgba(var(--w-rgb),.14); color:var(--text2,#9a9a9a); white-space:nowrap }
-    .stat.ok { border-color:rgba(223,242,13,.55); background:rgba(223,242,13,.14); color:#dff20d }
+    .stat.ok { border-color:rgba(var(--neon-rgb),.55); background:rgba(var(--neon-rgb),.14); color:var(--neon) }
 
     .sec { margin-top:16px }
     .sec > h4 { font-family:var(--font-display,inherit); font-size:11px; letter-spacing:2px;
@@ -302,7 +302,7 @@ th.lv-sort:hover { color:var(--text); }
     .step .sx:hover { opacity:1; color:var(--red,#ff4d4f) }
     .step input[type=text] { flex:1; background:transparent; border:0; border-bottom:1px solid transparent;
                              color:var(--text,#fff); font:inherit; font-size:13px; padding:1px 0 }
-    .step input[type=text]:focus { outline:none; border-bottom-color:rgba(223,242,13,.45) }
+    .step input[type=text]:focus { outline:none; border-bottom-color:rgba(var(--neon-rgb),.45) }
 
     .cmt { display:flex; gap:9px; padding:9px 0; border-bottom:1px solid rgba(var(--w-rgb),.05) }
     .cmt.rep { margin-left:34px }

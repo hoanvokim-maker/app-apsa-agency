@@ -1761,3 +1761,52 @@ function pullHome() {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 })();
+
+/* ===== APSA1901 — luoi an toan: o nen sang, chu nao tuong phan < 3:1 so voi
+   chinh nen cua no thi tu doi sang trang hoac xam dam. Chi chay khi light mode. ===== */
+(function () {
+  function L(c) {
+    var m = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?/.exec(c || '');
+    if (!m) return null;
+    if (m[4] !== undefined && parseFloat(m[4]) < 0.5) return null;
+    var f = function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+    return 0.2126 * f(+m[1]) + 0.7152 * f(+m[2]) + 0.0722 * f(+m[3]);
+  }
+  function ratio(a, b) { return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05); }
+  function ownBg(el) {
+    var n = el;
+    while (n && n !== document.documentElement) {
+      var v = L(getComputedStyle(n).backgroundColor);
+      if (v !== null) return v;
+      n = n.parentElement;
+    }
+    return 1;
+  }
+  function pass() {
+    if (document.documentElement.getAttribute('data-theme') !== 'light') return;
+    var all = document.querySelectorAll('body *');
+    for (var i = 0; i < all.length; i++) {
+      var e = all[i];
+      if (e.dataset.ctxOk === '1') continue;
+      if (!e.firstChild || e.firstChild.nodeType !== 3) continue;
+      if (!(e.textContent || '').trim()) continue;
+      var cs = getComputedStyle(e);
+      if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+      var fg = L(cs.color);
+      if (fg === null) continue;
+      var bg = ownBg(e);
+      if (ratio(fg, bg) >= 3) { e.dataset.ctxOk = '1'; continue; }
+      var toW = ratio(1, bg), toD = ratio(L('rgb(58,58,52)'), bg);
+      e.style.setProperty('color', toW >= toD ? '#ffffff' : '#3a3a34', 'important');
+      e.dataset.ctxOk = '1';
+    }
+  }
+  var t = null;
+  function kick() { clearTimeout(t); t = setTimeout(pass, 220); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', kick);
+  else kick();
+  try {
+    new MutationObserver(kick).observe(document.documentElement,
+      { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'data-theme', 'style'] });
+  } catch (e) {}
+})();

@@ -22,12 +22,12 @@
   <meta name="theme-color" content="#dff20d">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>APSA — Kho công ty</title>
-  <script src="/apsa-ui.js?v=54"></script>
+  <script src="/apsa-ui.js?v=55"></script>
   <script src="/perm-guard.js?v=3"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/theme.css?v=50" />
+  <link rel="stylesheet" href="/theme.css?v=51" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -97,7 +97,7 @@ html[data-theme="light"] {
                  border: none; background: transparent; color: var(--text3); cursor: pointer; border-radius: 6px; display: none; font-size: 13px; font-family: inherit; }
   .search.has .clr { display: block; }
   .search .clr:hover { color: var(--text); background: var(--bg4); }
-  mark { background: rgba(223,242,13,.26); color: var(--green); border-radius: 3px; padding: 0 1px; }
+  mark { background: rgba(var(--neon-rgb),.26); color: var(--green); border-radius: 3px; padding: 0 1px; }
 
   .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
   .rg { display:inline-block; font-size:11px; font-weight:700; letter-spacing:.02em; padding:3px 9px; border-radius:999px;
@@ -218,7 +218,7 @@ html[data-theme="light"] {
   .whpill { display:inline-block; font-size:10.5px; font-weight:800; letter-spacing:.05em;
             padding:2px 8px; border-radius:99px; border:1px solid transparent; white-space:nowrap; }
   .p-new    { background:rgba(74,222,128,.16); color:#4ade80; }
-  .p-good   { background:rgba(223,242,13,.14); color:#dff20d; }
+  .p-good   { background:rgba(var(--neon-rgb),.14); color:var(--neon); }
   .p-fair   { background:rgba(var(--w-rgb),.09); color:#c9ced6; }
   .p-broken { background:rgba(255,107,107,.16); color:#ff8a8a; }
   .p-lost   { background:rgba(255,107,107,.28); color:#fff; }
@@ -230,7 +230,7 @@ html[data-theme="light"] {
   .wb { font:inherit; font-size:11.5px; font-weight:600; padding:5px 10px; border-radius:8px;
         border:1px solid var(--border,#2b3138); background:transparent; color:var(--text2,#c9ced6); cursor:pointer; white-space:nowrap; }
   .wb:hover { border-color:#4a535e; color:var(--text); }
-  .wb.go { border-color:rgba(223,242,13,.5); color:#dff20d; }
+  .wb.go { border-color:rgba(var(--neon-rgb),.5); color:var(--neon); }
   .wb.go:hover { background:var(--accent,#dff20d); color:#111; }
   .wb.dg:hover { border-color:#ff6b6b; color:#ff8a8a; }
   .whempty { padding:34px 10px; text-align:center; opacity:.5; font-size:13px; }

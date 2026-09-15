@@ -31,7 +31,7 @@
   --bg:#000000; --bg2:#0b0b0b; --bg3:#141414;
   --border:rgba(255,255,255,.08); --border-hover:rgba(255,255,255,.18);
   --text:#ffffff; --text2:#9a9a9a; --text3:#5e5e5e;
-  --accent:#dff20d; --accent2:#c9dd00; --accent-glow:rgba(223,242,13,.35);
+  --accent:#dff20d; --accent2:#c9dd00; --accent-glow:rgba(var(--neon-rgb),.35);
   --green:#dff20d; --orange:#ffffff; --pink:#c9dd00; --cyan:#ffffff; --red:#ff4d4d; --yellow:#dff20d;
   --radius:14px;
   --w-rgb: 255,255,255;
@@ -97,7 +97,7 @@ header{
   transition:border-color .2s, box-shadow .2s;
 }
 .search-input::placeholder{ color:var(--text3); }
-.search-input:focus{ border-color:rgba(223,242,13,.5); box-shadow:0 0 0 3px rgba(223,242,13,.1); }
+.search-input:focus{ border-color:rgba(var(--neon-rgb),.5); box-shadow:0 0 0 3px rgba(var(--neon-rgb),.1); }
 
 .hbtn{
   display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-family:inherit;
@@ -137,7 +137,7 @@ header{
 
 .badge-pending{
   display:inline-block; margin-left:6px; font-size:9px; font-weight:700; letter-spacing:.3px;
-  color:#eaff6b; background:rgba(223,242,13,.18); border:1px solid rgba(223,242,13,.4);
+  color:var(--neon); background:rgba(var(--neon-rgb),.18); border:1px solid rgba(var(--neon-rgb),.4);
   padding:1px 6px; border-radius:10px; vertical-align:middle;
 }
 
@@ -174,7 +174,7 @@ header{
   padding:9px 13px; color:var(--text); font-size:13.5px; font-family:inherit; outline:none;
   transition:border-color .2s; resize:vertical;
 }
-.fg input:focus, .fg textarea:focus, .fg select:focus{ border-color:rgba(223,242,13,.5); }
+.fg input:focus, .fg textarea:focus, .fg select:focus{ border-color:rgba(var(--neon-rgb),.5); }
 .fg .hint{ font-size:11px; color:var(--text3); margin-top:5px; line-height:1.5; }
 .row2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .row3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
@@ -202,7 +202,7 @@ header{
 }
 .toast.show{ transform:translateY(0); }
 .toast.err{ border-color:rgba(255,77,77,.5); color:#ff8f8f; }
-.toast.ok{ border-color:rgba(223,242,13,.5); color:#eaff6b; }
+.toast.ok{ border-color:rgba(var(--neon-rgb),.5); color:var(--neon); }
 .bar{ position:fixed; top:0; left:0; height:3px; width:0; background:linear-gradient(90deg,var(--accent),var(--accent2));
   z-index:999; transition:width .25s; box-shadow:0 0 12px var(--accent-glow); }
 
@@ -236,7 +236,7 @@ header{
   font-weight:600; cursor:pointer; outline:none; transition:.2s;
 }
 .fsel:hover{ border-color:var(--border-hover); }
-.fsel:focus{ border-color:rgba(223,242,13,.5); }
+.fsel:focus{ border-color:rgba(var(--neon-rgb),.5); }
 .fsel.on{ background:var(--accent); border-color:var(--accent); color:#0d0d0d; }
 .fsep{ width:1px; height:22px; background:var(--border); margin:0 4px; }
 .fclear{
@@ -254,7 +254,7 @@ header{
   overflow:hidden; transition:.2s;
 }
 .pcard:hover{ border-color:var(--border-hover); }
-.pcard.open{ border-color:rgba(223,242,13,.35); }
+.pcard.open{ border-color:rgba(var(--neon-rgb),.35); }
 .pcard.late{ border-color:rgba(255,77,77,.35); }
 /* APSA1853: du an lau khong cap nhat */
 .pcard.stale1{ border-color:rgba(255,159,64,.55); box-shadow:inset 3px 0 0 #ff9f40; }
@@ -361,7 +361,7 @@ table.asg col.c-stat{ width:132px; }
   display:inline-block; padding:2.5px 9px; border-radius:20px; font-size:10.5px;
   font-weight:700; letter-spacing:.3px; white-space:nowrap;
 }
-.pos-account{ background:rgba(223,242,13,.16); color:#eaff6b; }
+.pos-account{ background:rgba(var(--neon-rgb),.16); color:var(--neon); }
 .pos-admin{ background:rgba(var(--w-rgb),.12); color:#ffffff; }
 .pos-designer{ background:rgba(126,231,135,.15); color:#7ee787; }
 .pos-editor{ background:rgba(120,180,255,.15); color:#8ec5ff; }
@@ -377,7 +377,7 @@ table.asg col.c-stat{ width:132px; }
   font-weight:600; cursor:pointer; outline:none; transition:.2s; min-width:104px;
 }
 .ssel:hover{ border-color:var(--border-hover); }
-.ssel.s-doing{ color:#eaff6b; border-color:rgba(223,242,13,.35); }
+.ssel.s-doing{ color:var(--neon); border-color:rgba(var(--neon-rgb),.35); }
 .ssel.s-review{ color:#8ec5ff; border-color:rgba(120,180,255,.35); }
 .ssel.s-done{ color:#7ee787; border-color:rgba(126,231,135,.35); }
 
@@ -414,8 +414,8 @@ table.asg col.c-stat{ width:132px; }
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/theme.css?v=50" />
-<script src="/apsa-ui.js?v=54"></script>
+<link rel="stylesheet" href="/theme.css?v=51" />
+<script src="/apsa-ui.js?v=55"></script>
   <script src="/perm-guard.js?v=3"></script>
   <script src="/apsa-dirty.js?v=2"></script>
 <style>

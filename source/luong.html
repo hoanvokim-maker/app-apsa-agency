@@ -22,14 +22,14 @@
   <meta name="theme-color" content="#dff20d">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>APSA — Bảng lương</title>
-  <script src="/apsa-ui.js?v=54"></script>
+  <script src="/apsa-ui.js?v=55"></script>
   <script src="/perm-guard.js?v=3"></script>
   <script src="/exp-qr.js?v=10"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/theme.css?v=50" />
+  <link rel="stylesheet" href="/theme.css?v=51" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -114,7 +114,7 @@ html[data-theme="light"] {
   .pysm { font: inherit; font-size: 11px; font-weight: 700; padding: 3px 7px; border-radius: 7px; cursor: pointer;
           border: 1px solid var(--border-h); background: rgba(var(--w-rgb),.05); color: var(--text2); white-space: nowrap; }
   .pysm:hover { color: var(--text); border-color: rgba(var(--w-rgb),.4); }
-  .pysm.go { color: var(--green); border-color: rgba(223,242,13,.45); }
+  .pysm.go { color: var(--green); border-color: rgba(var(--neon-rgb),.45); }
   .pysm.up, .pysm.okc { color: #4ade80; border-color: rgba(74,222,128,.42); }
   .ib { width: 32px; height: 32px; border-radius: 9px; border: 1px solid var(--border); background: var(--bg3);
         color: var(--text2); cursor: pointer; display: inline-grid; place-items: center; font-family: inherit; font-size: 15px; }
@@ -134,7 +134,7 @@ html[data-theme="light"] {
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
   .drop { border: 1.5px dashed rgba(var(--w-rgb),.22); border-radius: 12px; padding: 24px 14px; text-align: center;
           font-size: 13px; color: var(--text2); cursor: pointer; transition: .15s; }
-  .drop:hover, .drop.hot { border-color: var(--green); color: var(--green); background: rgba(223,242,13,.06); }
+  .drop:hover, .drop.hot { border-color: var(--green); color: var(--green); background: rgba(var(--neon-rgb),.06); }
   #pvBox { max-height: 320px; overflow: auto; margin-top: 12px; border: 1px solid var(--border); border-radius: 10px; }
   #pvBox table { font-size: 12px; } #pvBox thead th { position: sticky; top: 0; background: #131313; }
   .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; align-items: center; }

@@ -1,5 +1,5 @@
 {
-    "version": "2.0.36",
+    "version": "2.0.37",
     "updated": "2026-09-15",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-13",
             "note": "Phiên bản 2.0",
             "items": [
+                {
+                    "d": "2026-09-15",
+                    "v": "2.0.37",
+                    "t": "APSA1900 token --neon/--neon-rgb + ghi de fill/stroke SVG (44 file, 112 khai bao, 231 rgba). APSA1901 luoi an toan tuong phan luc chay o light mode. theme.css v51, apsa-ui.js v55",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-15",
                     "v": "2.0.36",

@@ -85,7 +85,7 @@
     '#adAsk .row{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}' +
     '#adAsk button{border-radius:9px;padding:9px 15px;font-size:13px;font-weight:700;cursor:pointer;' +
     'font-family:inherit;border:1px solid rgba(255,255,255,.16);background:transparent;color:var(--text,#eee)}' +
-    '#adAsk button.pri{background:#dff20d;color:#111;border-color:#dff20d}' +
+    '#adAsk button.pri{background:var(--neon);color:#111;border-color:var(--neon)}' +
     '#adAsk button:hover{filter:brightness(1.12)}';
 
   var box = null;

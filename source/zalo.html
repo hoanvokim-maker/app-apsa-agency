@@ -25,8 +25,8 @@
   <title>APSA — Thông báo Zalo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/theme.css?v=50" />
-  <script src="/apsa-ui.js?v=54"></script>
+  <link rel="stylesheet" href="/theme.css?v=51" />
+  <script src="/apsa-ui.js?v=55"></script>
   <script src="/perm-guard.js?v=3"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -110,7 +110,7 @@ html[data-theme="light"] {
     .ok  { color:var(--green); font-weight:700; }
     .no  { color:var(--text3); }
     .msg { font-size:12.5px; padding:9px 12px; border-radius:8px; margin-top:10px; display:none; }
-    .msg.good { display:block; background:rgba(223,242,13,.09); border:1px solid rgba(223,242,13,.35); }
+    .msg.good { display:block; background:rgba(var(--neon-rgb),.09); border:1px solid rgba(var(--neon-rgb),.35); }
     .msg.bad  { display:block; background:rgba(255,77,77,.09);  border:1px solid rgba(255,77,77,.35); color:#ffb3b3; }
     .kinds { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
     .kinds span { font-size:11px; color:var(--text2); border:1px solid var(--border); border-radius:6px; padding:3px 8px; }

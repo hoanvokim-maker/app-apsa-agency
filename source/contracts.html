@@ -23,13 +23,13 @@
 <meta name="theme-color" content="#dff20d">
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>APSA — Tủ hợp đồng</title>
-  <script src="/apsa-ui.js?v=54"></script>
+  <script src="/apsa-ui.js?v=55"></script>
   <script src="/perm-guard.js?v=3"></script>
   <script src="/apsa-dirty.js?v=2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/theme.css?v=50" />
+  <link rel="stylesheet" href="/theme.css?v=51" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -96,7 +96,7 @@ html[data-theme="light"] {
       padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); color: var(--text2); background: var(--bg2);
     }
     .chip b { color: var(--text); font-weight: 700; }
-    .chip.ok { border-color: rgba(223,242,13,.35); color: var(--green); }
+    .chip.ok { border-color: rgba(var(--neon-rgb),.35); color: var(--green); }
     .chip.bad { border-color: rgba(255,77,77,.4); color: #ffb3b3; }
 
     .wrap { padding: 0 28px 70px; max-width: 1320px; }
@@ -137,11 +137,11 @@ html[data-theme="light"] {
     .crumbs a:hover { color: var(--text); background: var(--bg3); border-color: var(--border); }
     .crumbs a.cur { color: var(--green); }
     .crumbs .sep { color: var(--text3); }
-    .crumbs a.drop { background: rgba(223,242,13,.14); border-color: var(--green); color: var(--green); }
+    .crumbs a.drop { background: rgba(var(--neon-rgb),.14); border-color: var(--green); color: var(--green); }
 
     /* ── Drop zone ── */
     #drop { border-radius: 14px; transition: all .18s; }
-    #drop.on { outline: 2px dashed var(--green); outline-offset: 6px; background: rgba(223,242,13,.04); }
+    #drop.on { outline: 2px dashed var(--green); outline-offset: 6px; background: rgba(var(--neon-rgb),.04); }
 
     /* ── Table ── */
     .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
@@ -161,14 +161,14 @@ html[data-theme="light"] {
     tbody tr:last-child td { border-bottom: none; }
     tbody tr { transition: background .14s; }
     tbody tr:hover { background: var(--bg3); }
-    tbody tr.dropok { background: rgba(223,242,13,.09); }
+    tbody tr.dropok { background: rgba(var(--neon-rgb),.09); }
     .nm { display: flex; align-items: center; gap: 11px; min-width: 0; }
     .nm .ic {
       width: 32px; height: 32px; flex: 0 0 32px; border-radius: 8px;
       display: grid; place-items: center; font-size: 10px; font-weight: 800; letter-spacing: .02em;
       background: var(--bg4); color: var(--text2); border: 1px solid var(--border);
     }
-    .nm .ic.dir { color: var(--green); border-color: rgba(223,242,13,.3); background: rgba(223,242,13,.08); }
+    .nm .ic.dir { color: var(--green); border-color: rgba(var(--neon-rgb),.3); background: rgba(var(--neon-rgb),.08); }
     .nm .ic.pdf { color: #ff7b7b; } .nm .ic.img { color: var(--sky); }
     .nm .ic.doc { color: #7ba7ff; } .nm .ic.ppt { color: #ffa06b; }
     .nm .ic.xls { color: #6bd99a; } .nm .ic.zip { color: #d0a7ff; }
@@ -261,7 +261,7 @@ html[data-theme="light"] {
     }
     .search .clr:hover { color: var(--text); background: var(--bg4); }
     .search.has .clr { display: block; }
-    mark { background: rgba(223,242,13,.26); color: var(--green); border-radius: 3px; padding: 0 1px; }
+    mark { background: rgba(var(--neon-rgb),.26); color: var(--green); border-radius: 3px; padding: 0 1px; }
 
     .sel {
       font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--text);

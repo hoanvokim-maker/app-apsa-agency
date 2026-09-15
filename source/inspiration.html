@@ -32,7 +32,7 @@
   --bg:#000000; --bg2:#0b0b0b; --bg3:#141414;
   --border:rgba(255,255,255,.08); --border-hover:rgba(255,255,255,.18);
   --text:#ffffff; --text2:#9a9a9a; --text3:#5e5e5e;
-  --accent:#dff20d; --accent2:#c9dd00; --accent-glow:rgba(223,242,13,.35);
+  --accent:#dff20d; --accent2:#c9dd00; --accent-glow:rgba(var(--neon-rgb),.35);
   --green:#dff20d; --orange:#ffffff; --pink:#c9dd00; --cyan:#ffffff; --red:#ff4d4d; --yellow:#dff20d;
   --radius:14px;
   --w-rgb: 255,255,255;
@@ -98,7 +98,7 @@ header{
   transition:border-color .2s, box-shadow .2s;
 }
 .search-input::placeholder{ color:var(--text3); }
-.search-input:focus{ border-color:rgba(223,242,13,.5); box-shadow:0 0 0 3px rgba(223,242,13,.1); }
+.search-input:focus{ border-color:rgba(var(--neon-rgb),.5); box-shadow:0 0 0 3px rgba(var(--neon-rgb),.1); }
 
 .hbtn{
   display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-family:inherit;
@@ -144,7 +144,7 @@ header{
   border:1px solid var(--border); background:var(--bg2); color:var(--text2); transition:.15s;
 }
 .tag-chip:hover{ border-color:var(--accent); color:var(--text); }
-.tag-chip.on{ background:rgba(223,242,13,.18); border-color:var(--accent); color:var(--accent2); font-weight:600; }
+.tag-chip.on{ background:rgba(var(--neon-rgb),.18); border-color:var(--accent); color:var(--accent2); font-weight:600; }
 .sep{ width:1px; height:20px; background:var(--border); margin:0 4px; }
 
 /* ─── Masonry ─── */
@@ -161,7 +161,7 @@ header{
   position:relative; cursor:zoom-in; transition:.22s cubic-bezier(.4,0,.2,1);
 }
 .item:hover{ border-color:var(--border-hover); transform:translateY(-3px); box-shadow:0 12px 40px rgba(0,0,0,.5); }
-.item.pinned{ border-color:rgba(223,242,13,.45); }
+.item.pinned{ border-color:rgba(var(--neon-rgb),.45); }
 
 .item .media{ width:100%; display:block; background:var(--bg3); }
 .item img.media{ object-fit:cover; }
@@ -187,7 +187,7 @@ header{
 .meta .n{ font-size:11.5px; color:var(--text2); line-height:1.5; margin-bottom:7px;
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .meta .tags{ display:flex; flex-wrap:wrap; gap:4px; margin-bottom:7px; }
-.meta .tg{ font-size:10px; padding:2px 7px; border-radius:20px; background:rgba(223,242,13,.14); color:var(--accent2); font-weight:600; }
+.meta .tg{ font-size:10px; padding:2px 7px; border-radius:20px; background:rgba(var(--neon-rgb),.14); color:var(--accent2); font-weight:600; }
 .meta .foot{ display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:10.5px; color:var(--text3); }
 
 .acts{
@@ -218,7 +218,7 @@ kbd{ background:var(--bg3); border:1px solid var(--border); border-radius:5px; p
 .drop.on{ display:flex; }
 .drop .box{
   border:3px dashed var(--accent); border-radius:26px; padding:70px 90px; text-align:center;
-  background:rgba(223,242,13,.07);
+  background:rgba(var(--neon-rgb),.07);
 }
 .drop .box .i{ font-size:60px; margin-bottom:14px; }
 .drop .box h2{ font-size:22px; font-weight:700; margin-bottom:6px; }
@@ -253,14 +253,14 @@ kbd{ background:var(--bg3); border:1px solid var(--border); border-radius:5px; p
   padding:10px 14px; color:var(--text); font-size:13.5px; font-family:inherit; outline:none;
   transition:border-color .2s; resize:vertical;
 }
-.fg input:focus, .fg textarea:focus{ border-color:rgba(223,242,13,.5); }
+.fg input:focus, .fg textarea:focus{ border-color:rgba(var(--neon-rgb),.5); }
 .fg .hint{ font-size:11px; color:var(--text3); margin-top:5px; line-height:1.5; }
 
 .dropzone{
   border:2px dashed var(--border); border-radius:14px; padding:26px 18px; text-align:center;
   cursor:pointer; transition:.2s; color:var(--text3);
 }
-.dropzone:hover{ border-color:var(--accent); color:var(--accent2); background:rgba(223,242,13,.05); }
+.dropzone:hover{ border-color:var(--accent); color:var(--accent2); background:rgba(var(--neon-rgb),.05); }
 .dropzone .i{ font-size:28px; margin-bottom:7px; }
 .dropzone .m{ font-size:13px; font-weight:600; color:var(--text2); }
 .dropzone .s{ font-size:11px; margin-top:4px; }
@@ -329,7 +329,7 @@ kbd{ background:var(--bg3); border:1px solid var(--border); border-radius:5px; p
 }
 .toast.show{ transform:translateX(-50%) translateY(0); }
 .toast.err{ border-color:rgba(255,77,77,.5); color:#ff8f8f; }
-.toast.ok{ border-color:rgba(223,242,13,.5); color:#eaff6b; }
+.toast.ok{ border-color:rgba(var(--neon-rgb),.5); color:var(--neon); }
 
 /* ─── Progress ─── */
 .bar{ position:fixed; top:0; left:0; height:3px; width:0; background:linear-gradient(90deg,var(--accent),var(--accent2));
@@ -359,8 +359,8 @@ html[data-theme="light"] .lb-stage iframe{ background:#ffffff !important; }
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/theme.css?v=50" />
-<script src="/apsa-ui.js?v=54"></script>
+<link rel="stylesheet" href="/theme.css?v=51" />
+<script src="/apsa-ui.js?v=55"></script>
   <script src="/perm-guard.js?v=3"></script>
 </head>
 <body>
@@ -900,7 +900,7 @@ function openLb(id){
       <div style="margin-top:6px"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.url)}</a></div>
     </div>
     ${it.note ? `<h4>Ghi chú</h4><div class="lb-info">${esc(it.note)}</div>` : ''}
-    ${tags.length ? `<h4>Tag</h4><div class="tags" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:18px">${tags.map(t=>`<span class="tg" style="font-size:11px;padding:3px 9px;border-radius:20px;background:rgba(223,242,13,.14);color:var(--accent2);font-weight:600">#${esc(t)}</span>`).join('')}</div>` : ''}
+    ${tags.length ? `<h4>Tag</h4><div class="tags" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:18px">${tags.map(t=>`<span class="tg" style="font-size:11px;padding:3px 9px;border-radius:20px;background:rgba(var(--neon-rgb),.14);color:var(--accent2);font-weight:600">#${esc(t)}</span>`).join('')}</div>` : ''}
     <button class="btn ghost" onclick="copyLink('${esc(it.url).replace(/'/g,"\\'")}')"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-link"/></svg> Sao chép link</button>
     <button class="btn danger" style="margin-top:8px" onclick="delItem(${it.id})"><svg class="pill-ico" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-trash"/></svg> Xoá</button>`;
 

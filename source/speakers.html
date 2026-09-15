@@ -22,12 +22,12 @@
   <meta name="theme-color" content="#dff20d">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>APSA — Thư viện Speaker</title>
-  <script src="/apsa-ui.js?v=54"></script>
+  <script src="/apsa-ui.js?v=55"></script>
   <script src="/perm-guard.js?v=3"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/theme.css?v=50" />
+  <link rel="stylesheet" href="/theme.css?v=51" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -97,7 +97,7 @@ html[data-theme="light"] {
                  border: none; background: transparent; color: var(--text3); cursor: pointer; border-radius: 6px; display: none; font-size: 13px; font-family: inherit; }
   .search.has .clr { display: block; }
   .search .clr:hover { color: var(--text); background: var(--bg4); }
-  mark { background: rgba(223,242,13,.26); color: var(--green); border-radius: 3px; padding: 0 1px; }
+  mark { background: rgba(var(--neon-rgb),.26); color: var(--green); border-radius: 3px; padding: 0 1px; }
 
   .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
   .rg { display:inline-block; font-size:11px; font-weight:700; letter-spacing:.02em; padding:3px 9px; border-radius:999px;
@@ -221,7 +221,7 @@ html[data-theme="light"] {
   .spchip { font-size:10px; font-weight:700; letter-spacing:.03em; padding:2px 7px; border-radius:99px;
             background:rgba(var(--w-rgb),.07); color:#c9ced6; white-space:nowrap; }
   .spchip.f { background:rgba(90,160,255,.16); color:#8ec0ff; }
-  .spchip.s { background:rgba(223,242,13,.13); color:#dff20d; }
+  .spchip.s { background:rgba(var(--neon-rgb),.13); color:var(--neon); }
   .spact { display:flex; gap:5px; border-top:1px solid rgba(var(--w-rgb),.06); }
   .spact button { flex:1; font:inherit; font-size:11.5px; font-weight:600; padding:7px 4px; border:0;
                   background:transparent; color:var(--text2,#c9ced6); cursor:pointer; }
@@ -261,7 +261,7 @@ html[data-theme="light"] {
   .spdrop { border:1.5px dashed var(--border,#2b3138); border-radius:14px; aspect-ratio:1/1;
             display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;
             cursor:pointer; background:rgba(var(--w-rgb),.02); text-align:center; }
-  .spdrop.hot { border-color:var(--accent,#dff20d); background:rgba(223,242,13,.07); }
+  .spdrop.hot { border-color:var(--accent,#dff20d); background:rgba(var(--neon-rgb),.07); }
   .spdrop img { width:100%; height:100%; object-fit:contain; }
   .spdrop .ph { font-size:11.5px; opacity:.5; padding:14px; line-height:1.5; }
   .spdbtn { display:flex; gap:6px; margin-top:8px; }

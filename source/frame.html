@@ -20,7 +20,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Frame Avatar — APSA</title>
 <meta name="description" content="Tao khung avatar theo su kien, khach tu ghep anh va tai ve." />
-<link rel="stylesheet" href="/theme.css?v=50" />
+<link rel="stylesheet" href="/theme.css?v=51" />
 <style>
   .fa-wrap { max-width: 1180px; margin: 0 auto; padding: 18px 20px 60px; }
   .fa-hint { display: flex; gap: 10px; align-items: flex-start; background: var(--card, #141414);
@@ -34,7 +34,7 @@
   .fa-name { font-weight: 700; font-size: 15px; line-height: 1.35; flex: 1; }
   .fa-badge { font-size: 10.5px; letter-spacing: .04em; text-transform: uppercase; font-weight: 700;
     padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
-  .b-live { background: #dff20d; color: #101010; }
+  .b-live { background: var(--neon); color: #101010; }
   .b-soon { background: #2a3a52; color: #9ec7ff; }
   .b-end  { background: #3a2a2a; color: #ff9e9e; }
   .b-off  { background: #2a2a2a; color: #999; }
@@ -47,7 +47,7 @@
   .fbtn { font-size: 12px; padding: 6px 11px; border-radius: 9px; border: 1px solid var(--line, #333);
     background: transparent; color: var(--text, #e8e8e8); cursor: pointer; }
   .fbtn:hover { border-color: #555; }
-  .fbtn.pri { background: #dff20d; color: #101010; border-color: #dff20d; font-weight: 600; }
+  .fbtn.pri { background: var(--neon); color: #101010; border-color: var(--neon); font-weight: 600; }
   .fbtn.dgr { color: #ff8b8b; }
   .fa-ov { position: fixed; inset: 0; background: rgba(0,0,0,.72); display: none;
     align-items: flex-start; justify-content: center; padding: 26px 14px; overflow: auto; z-index: 900; }
@@ -68,13 +68,13 @@
   .fg textarea { min-height: 62px; resize: vertical; }
   .frow2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .fchk { display: flex; align-items: center; gap: 8px; font-size: 13.5px; margin: 4px 0 16px; }
-  .fa-save { width: 100%; background: #dff20d; color: #101010; border: 0; border-radius: 10px;
+  .fa-save { width: 100%; background: var(--neon); color: #101010; border: 0; border-radius: 10px;
     padding: 11px; font: inherit; font-weight: 700; cursor: pointer; }
   .fa-del { width: 100%; background: transparent; color: #ff8b8b; border: 1px solid #442; border-radius: 10px;
     padding: 9px; font: inherit; cursor: pointer; margin-top: 9px; }
   .fdrop { border: 1.5px dashed #3a3a3a; border-radius: 12px; padding: 20px; text-align: center;
     font-size: 13px; color: var(--text2, #9a9a9a); cursor: pointer; margin-bottom: 16px; }
-  .fdrop:hover, .fdrop.on { border-color: #dff20d; color: #dff20d; }
+  .fdrop:hover, .fdrop.on { border-color: var(--neon); color: var(--neon); }
   .fitems { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
   .fitem { border: 1px solid var(--line, #262626); border-radius: 12px; padding: 10px; }
   .fthumb { background-image: linear-gradient(45deg,#333 25%,transparent 25%),linear-gradient(-45deg,#333 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#333 75%),linear-gradient(-45deg,transparent 75%,#333 75%);
@@ -101,9 +101,9 @@
   header .back:hover { color: var(--text, #e8e8e8); }
   header .page-title { font-size: 16px; font-weight: 700; color: var(--text, #e8e8e8); display: flex; align-items: center;
     gap: 8px; flex: 1; white-space: nowrap; }
-  header .page-title .count { font-size: 11px; font-weight: 700; background: #dff20d; color: #101010;
+  header .page-title .count { font-size: 11px; font-weight: 700; background: var(--neon); color: #101010;
     border-radius: 20px; padding: 2px 8px; }
-  header .btn-add { background: #dff20d; color: #101010; border: 0; border-radius: 9px;
+  header .btn-add { background: var(--neon); color: #101010; border: 0; border-radius: 9px;
     padding: 8px 14px; font: inherit; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }
   @media (max-width: 640px) { header { padding: 10px 12px; gap: 9px; } header .page-title { font-size: 14px; } }
 .ic{ width:15px; height:15px; flex:0 0 auto; vertical-align:-3px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; margin-right:6px; }
@@ -389,7 +389,7 @@ el('frOv').addEventListener('click', function (e) { if (e.target === this) close
 
 load();
 </script>
-<script src="/apsa-ui.js?v=54"></script>
+<script src="/apsa-ui.js?v=55"></script>
 <script src="/perm-guard.js?v=3"></script>
 </body>
 </html>

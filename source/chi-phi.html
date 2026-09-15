@@ -22,14 +22,14 @@
   <meta name="theme-color" content="#dff20d">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>APSA — Chi phí thực tế</title>
-  <script src="/apsa-ui.js?v=54"></script>
+  <script src="/apsa-ui.js?v=55"></script>
   <script src="/perm-guard.js?v=3"></script>
   <script src="/apsa-dirty.js?v=2"></script>
   <script src="/exp-qr.js?v=10"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/theme.css?v=50" />
+  <link rel="stylesheet" href="/theme.css?v=51" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -132,7 +132,7 @@ html[data-theme="light"] {
   tbody tr.corp td { background-image: linear-gradient(rgba(56,148,255,.14), rgba(56,148,255,.14)); }
   tbody tr.pers td:first-child { box-shadow: inset 3px 0 0 rgba(250,204,21,.8); }
   tbody tr.corp td:first-child { box-shadow: inset 3px 0 0 rgba(56,148,255,.8); }
-  tbody tr.sel td { outline: 1px solid rgba(223,242,13,.45); outline-offset: -1px; }
+  tbody tr.sel td { outline: 1px solid rgba(var(--neon-rgb),.45); outline-offset: -1px; }
   td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .nm { font-weight: 700; }
   .sub.who { opacity: .8; }
@@ -160,11 +160,11 @@ html[data-theme="light"] {
       border-radius: 11px; padding: 0; }
     .ib { vertical-align: middle; }
     .ib svg { display: block; flex: 0 0 auto; }
-    .ib.qrbig { color: #dff20d; border-color: rgba(223,242,13,.40); background: rgba(223,242,13,.07); }
-    .ib.qrbig:hover { color: #dff20d; background: rgba(223,242,13,.15); border-color: rgba(223,242,13,.66); }
+    .ib.qrbig { color: var(--neon); border-color: rgba(var(--neon-rgb),.40); background: rgba(var(--neon-rgb),.07); }
+    .ib.qrbig:hover { color: var(--neon); background: rgba(var(--neon-rgb),.15); border-color: rgba(var(--neon-rgb),.66); }
     .ib.qrbig.off { color: var(--text3); background: transparent; border-color: var(--border); }
     #qCap { margin-top: 10px; text-align: center; }
-    #qCap .qc-a { font-size: 16px; font-weight: 800; color: #dff20d; }
+    #qCap .qc-a { font-size: 16px; font-weight: 800; color: var(--neon); }
     #qCap .qc-i { margin-top: 6px; font-size: 13px; line-height: 1.45; color: var(--text); word-break: break-word; }
     #qCap .qc-i b { display: block; font-size: 10px; font-weight: 700; letter-spacing: .12em;
       text-transform: uppercase; color: var(--text3); margin-bottom: 3px; }

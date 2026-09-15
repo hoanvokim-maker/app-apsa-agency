@@ -191,8 +191,8 @@
       '.pysm{font:inherit;font-size:11px;font-weight:700;padding:3px 7px;border-radius:7px;cursor:pointer;' +
       'border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05);color:#9aa0a6;white-space:nowrap}' +
       '.pysm:hover{color:#fff;border-color:rgba(255,255,255,.4)}' +
-      '.pysm.go{color:#dff20d;border-color:rgba(223,242,13,.45)}' +
-      '.pysm.go:hover{background:rgba(223,242,13,.14)}' +
+      '.pysm.go{color:var(--neon);border-color:rgba(var(--neon-rgb),.45)}' +
+      '.pysm.go:hover{background:rgba(var(--neon-rgb),.14)}' +
       '.pysm.up,.pysm.ok{color:#4ade80;border-color:rgba(74,222,128,.42)}' +
       '.pysm.up:hover,.pysm.ok:hover{background:rgba(74,222,128,.14);color:#4ade80}' +
       '.pbtn.req{color:#facc15;border-color:rgba(250,204,21,.45)}' +
@@ -203,13 +203,13 @@
       '.pydlg .s{font-size:12.5px;color:#9aa0a6;margin-bottom:14px;line-height:1.5}' +
       '.pydrop{border:1.5px dashed rgba(255,255,255,.22);border-radius:12px;padding:26px 14px;text-align:center;' +
       'font-size:13px;color:#9aa0a6;cursor:pointer;transition:.15s}' +
-      '.pydrop:hover,.pydrop.hot{border-color:#dff20d;color:#dff20d;background:rgba(223,242,13,.06)}' +
+      '.pydrop:hover,.pydrop.hot{border-color:var(--neon);color:var(--neon);background:rgba(var(--neon-rgb),.06)}' +
       '#pyPrev img{max-width:100%;margin-top:12px;border-radius:10px;display:block}' +
-      '.pyfile{margin-top:8px;font-size:12.5px;color:#dff20d;word-break:break-all}' +
+      '.pyfile{margin-top:8px;font-size:12.5px;color:var(--neon);word-break:break-all}' +
       '.pyrow{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}' +
       '.pyb{font:inherit;font-size:13px;font-weight:600;padding:9px 15px;border-radius:9px;cursor:pointer;' +
       'border:1px solid rgba(255,255,255,.16);background:#141414;color:#fff}' +
-      '.pyb.p{background:#dff20d;color:#000;border-color:#dff20d}' +
+      '.pyb.p{background:var(--neon);color:#000;border-color:var(--neon)}' +
       '.pyb:disabled{opacity:.45;cursor:default}';
     document.head.appendChild(css);
 

@@ -10,9 +10,9 @@
   color-scheme: dark;
   --bg:#000000; --bg2:#0b0b0b; --bg3:#141414; --bg4:#2b2b2b;
   --border:rgba(255,255,255,.10);
-  --border-hover:rgba(223,242,13,.55);
+  --border-hover:rgba(var(--neon-rgb),.55);
   --text:#ffffff; --text2:#9a9a9a; --text3:#5e5e5e;
-  --accent:#dff20d; --accent2:#c9dd00; --accent-glow:rgba(223,242,13,.22);
+  --accent:#dff20d; --accent2:#c9dd00; --accent-glow:rgba(var(--neon-rgb),.22);
   --green:#dff20d; --cyan:#ffffff; --pink:#c9dd00; --yellow:#dff20d;
   --orange:#ffffff; --red:#ff4d4d;
   --radius:4px;
@@ -584,9 +584,9 @@ html[data-theme="light"] body{ background:var(--bg); color:var(--text); }
   --w07:rgba(255,255,255,.07); --w09:rgba(255,255,255,.09);
   --w10:rgba(255,255,255,.10); --w12:rgba(255,255,255,.12);
   --w18:rgba(255,255,255,.18);
-  --a05:rgba(223,242,13,.05);  --a09:rgba(223,242,13,.09);
-  --a14:rgba(223,242,13,.14);  --a50:rgba(223,242,13,.5);
-  --a55:rgba(223,242,13,.55);
+  --a05:rgba(var(--neon-rgb),.05);  --a09:rgba(var(--neon-rgb),.09);
+  --a14:rgba(var(--neon-rgb),.14);  --a50:rgba(var(--neon-rgb),.5);
+  --a55:rgba(var(--neon-rgb),.55);
   --r10:rgba(255,77,77,.10); --r12:rgba(255,77,77,.12);
   --r15:rgba(255,77,77,.15); --r40:rgba(255,77,77,.4);
   --scrim6:rgba(0,0,0,.6); --scrim7:rgba(0,0,0,.7); --scrim75:rgba(0,0,0,.75);
@@ -990,3 +990,11 @@ html[data-theme="light"] #p-perm .btn.dg{ background:#b3261e !important; color:#
 html[data-theme="light"] #p-perm .btn.dg:hover{ background:#b3261e !important; color:#ffffff !important; }
 html[data-theme="light"] .shbtn.dg{ color:#b3261e !important; }
 html[data-theme="light"] .supt .xr:hover{ color:#b3261e !important; }
+
+/* ---- APSA1900 — token cho mau neon + SVG dung thuoc tinh fill/stroke ---- */
+:root{ --neon:#dff20d; --neon-rgb:223,242,13; }
+html[data-theme="light"]{ --neon:#c2542f; --neon-rgb:194,84,47; }
+html[data-theme="light"] [fill="#dff20d"], html[data-theme="light"] [fill="#DFF20D"],
+html[data-theme="light"] [fill="#c9dd00"], html[data-theme="light"] [fill="#eaff4a"]{ fill:#c2542f !important; }
+html[data-theme="light"] [stroke="#dff20d"], html[data-theme="light"] [stroke="#DFF20D"],
+html[data-theme="light"] [stroke="#c9dd00"], html[data-theme="light"] [stroke="#eaff4a"]{ stroke:#c2542f !important; }

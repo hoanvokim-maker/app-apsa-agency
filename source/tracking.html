@@ -29,7 +29,7 @@
     --bg: #000000; --bg2: #0b0b0b; --bg3: #141414;
     --border: rgba(255,255,255,0.08); --border-hover: rgba(255,255,255,0.18);
     --text: #ffffff; --text2: #9a9a9a; --text3: #5e5e5e;
-    --accent: #dff20d; --accent2: #c9dd00; --accent-glow: rgba(223,242,13,0.35);
+    --accent: #dff20d; --accent2: #c9dd00; --accent-glow: rgba(var(--neon-rgb),0.35);
     --green: #dff20d; --cyan: #ffffff; --orange: #ffffff; --red: #ff4d4d;
     --radius: 14px;
   --w-rgb: 255,255,255;
@@ -110,7 +110,7 @@ html[data-theme="light"] {
     padding: 8px 12px; color: var(--text); font-size: 13px; font-family: inherit; outline: none;
     min-width: 150px;
   }
-  .filter-group input:focus, .filter-group select:focus { border-color: rgba(223,242,13,0.5); }
+  .filter-group input:focus, .filter-group select:focus { border-color: rgba(var(--neon-rgb),0.5); }
   .filter-group input[type="date"] { color-scheme: dark; }
 
   /* Table */
@@ -127,10 +127,10 @@ html[data-theme="light"] {
   }
   td { padding: 11px 16px; border-bottom: 1px solid var(--border); color: var(--text2); white-space: nowrap; }
   tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(223,242,13,0.04); }
+  tr:hover td { background: rgba(var(--neon-rgb),0.04); }
   td.strong { color: var(--text); font-weight: 600; }
   .tag {
-    display: inline-block; background: rgba(223,242,13,0.13); border: 1px solid rgba(223,242,13,0.3);
+    display: inline-block; background: rgba(var(--neon-rgb),0.13); border: 1px solid rgba(var(--neon-rgb),0.3);
     color: var(--accent2); font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 20px;
   }
   .slide-badge {
@@ -157,8 +157,8 @@ html[data-theme="light"] {
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/theme.css?v=50" />
-<script src="/apsa-ui.js?v=54"></script>
+<link rel="stylesheet" href="/theme.css?v=51" />
+<script src="/apsa-ui.js?v=55"></script>
   <script src="/perm-guard.js?v=3"></script>
 </head>
 <body>

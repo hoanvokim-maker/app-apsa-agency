@@ -48,7 +48,7 @@
     + 'font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;padding:4px 9px;border-radius:7px;'
     + 'border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#9a9a9a;white-space:nowrap}'
     + '.qcopy:hover{color:#fff;background:rgba(255,255,255,.12)}'
-    + '.qcopy.on{color:#dff20d;border-color:rgba(223,242,13,.55);background:rgba(223,242,13,.12)}';
+    + '.qcopy.on{color:var(--neon);border-color:rgba(var(--neon-rgb),.55);background:rgba(var(--neon-rgb),.12)}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(mount, 400); });
   else setTimeout(mount, 400);

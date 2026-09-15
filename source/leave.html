@@ -233,8 +233,8 @@ html[data-theme="light"] .tab.on .cnt{ background:#ffffff !important; }
 </style>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/theme.css?v=50" />
-  <script src="/apsa-ui.js?v=54"></script>
+  <link rel="stylesheet" href="/theme.css?v=51" />
+  <script src="/apsa-ui.js?v=55"></script>
   <script src="/perm-guard.js?v=3"></script>
 </head>
 <body>
@@ -459,7 +459,7 @@ async function init() {
   const q = new URLSearchParams(location.search);
   if (q.get('id')) setTimeout(() => {
     const el = document.getElementById('row-' + q.get('id'));
-    if (el) { el.scrollIntoView({ block: 'center' }); el.style.background = 'rgba(223,242,13,.07)'; }
+    if (el) { el.scrollIntoView({ block: 'center' }); el.style.background = 'rgba(var(--neon-rgb),.07)'; }
   }, 400);
 }
 
@@ -869,7 +869,7 @@ async function loadQuota() {
         } else if (u.probation) {
           chip = '<span style="' + CH + ';background:rgba(255,176,32,.16);color:var(--amber)">Thử việc</span>';
         } else {
-          chip = '<span style="' + CH + ';background:rgba(223,242,13,.16);color:var(--neon)">Chính thức ' + qdmy(u.official_at) + '</span>';
+          chip = '<span style="' + CH + ';background:rgba(var(--neon-rgb),.16);color:var(--neon)">Chính thức ' + qdmy(u.official_at) + '</span>';
         }
         if (u.scheme === 'accrual') {
           editor =
