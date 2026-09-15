@@ -109,7 +109,7 @@
       m = PLIST[i];
       h += '<div class="pac-i' + (i === PACT ? ' on' : '') + '" data-k="' + i + '">' +
              '<span class="pac-n">' + esc(m.o.name) + '</span>' +
-             '<span class="tag ' + (m.t === 'sup' ? 'sup' : 'user') + '">' + (m.t === 'sup' ? 'NCC' : 'FL') + '</span>' +
+             '<span class="tag ' + (m.t === 'sup' ? 'sup' : 'user') + '">' + (m.t === 'sup' ? 'NCC' : (window.payTag ? payTag(m.label || m.name) : 'FL')) + '</span>' +  /* APSA1907 */
            '</div>';
     }
     b.innerHTML = h; b.classList.add('open');
@@ -181,7 +181,7 @@
     var masked = Number(r.bank_masked) === 1;
     var sub = r.payee_type
       ? '<div class="psub"><span class="tag ' + (r.payee_type === 'user' ? 'user' : 'sup') + '">' +
-        (r.payee_type === 'user' ? 'FL' : 'NCC') + '</span>' +
+        (r.payee_type === 'user' ? (window.payTag ? payTag(r.payee_name) : 'FL') : 'NCC') + '</span>' +  /* APSA1907 */
         (r.bank_account ? '<span>' + esc(r.bank_name || '') + ' · ' + esc(r.bank_account) + (masked ? ' (ẩn)' : '') + '</span>'
                         : '<span class="warn">chưa có STK</span>') + '</div>'
       : '';

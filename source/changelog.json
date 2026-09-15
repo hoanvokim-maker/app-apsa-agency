@@ -1,5 +1,5 @@
 {
-    "version": "2.0.43",
+    "version": "2.0.44",
     "updated": "2026-09-15",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-13",
             "note": "Phiên bản 2.0",
             "items": [
+                {
+                    "d": "2026-09-15",
+                    "v": "2.0.44",
+                    "t": "APSA1907 nhan FULLTIME/FL con bi ghi de boi chi-phi-group.js (file nay tu ve lai hang) — da dong bo; chi-phi-group.js v11",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-15",
                     "v": "2.0.43",
