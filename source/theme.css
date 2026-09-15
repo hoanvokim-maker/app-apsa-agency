@@ -833,3 +833,34 @@ html[data-theme="light"] .dlg > h3 {
 html[data-theme="light"] .card-icon { background: #3a3a34 !important; }
 html[data-theme="light"] .card-star { background: rgba(58, 58, 52, .62) !important; }
 html[data-theme="light"] #apsaHam { background: rgba(58, 58, 52, .95) !important; }
+
+/* ---- APSA1890 — Chuan hoa chieu cao moi nut = 28px (toan he thong) ----
+   Chi ep chieu cao + padding doc + line-height. KHONG dung toi display/width
+   nen nut block hay nut vuong icon deu giu nguyen bo cuc. */
+.btn,
+button.btn,
+a.btn,
+.hbtn,
+.back-btn,
+.btn-primary,
+.btn-add,
+.iconbtn,
+.icon-btn,
+.axbtn,
+.zipbtn,
+.zbtn,
+.fbtn,
+.pbtn,
+.rowbtn,
+.openbtn,
+.type-btn,
+.qv-btn,
+.s1-btn,
+.h-card-btn {
+  height: 28px !important;
+  min-height: 28px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  line-height: 26px !important;
+  box-sizing: border-box !important;
+}
