@@ -1030,7 +1030,7 @@ function pullHome() {
       'align-items:center;justify-content:center;font-weight:700;color:var(--ok3);font-size:12px}' +
       '.apsa-nt .tb{flex:1;min-width:0}' +
       '.apsa-nt .tt{font-weight:700;margin-bottom:2px}' +
-      '.apsa-nt .td{color:#9aa3b2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}' +
+      '.apsa-nt .td{color:var(--slate);overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}' +
       '.apsa-nt .tx{flex:0 0 auto;color:#6b7280;font-size:15px;line-height:1;padding:0 2px;' +
       'background:none;border:0;cursor:pointer}' +
       '.apsa-nt .tx:hover{color:#e8ebf0}';

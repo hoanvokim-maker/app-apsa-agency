@@ -78,7 +78,7 @@ CREATE TABLE `activity_log` (
   KEY `k_quo` (`quotation_id`),
   KEY `k_user` (`user_id`),
   KEY `k_area` (`area`)
-) ENGINE=InnoDB AUTO_INCREMENT=754 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=760 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -828,6 +828,12 @@ INSERT INTO `activity_log` VALUES (750,'2026-09-15 14:36:56',1,'Harris','quotati
 INSERT INTO `activity_log` VALUES (751,'2026-09-15 14:36:56',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
 INSERT INTO `activity_log` VALUES (752,'2026-09-15 14:37:38',1,'Harris','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
 INSERT INTO `activity_log` VALUES (753,'2026-09-15 14:37:42',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (754,'2026-09-15 15:14:42',5,'Nhật Tân','expense','exp-row-save','Lưu dòng chi phí',0,'','','id: 779 · pay_memo: APSA TT HD5261');
+INSERT INTO `activity_log` VALUES (755,'2026-09-15 15:14:44',5,'Nhật Tân','quotation','save','Lưu báo giá / dự án',44,'02072026-106','','id: 44 · kind: event · code: 02072026-106 · title: AZ-MSD-ONCO-ImAE-ExpertMeeting · company_id: 1 · customer_id: 12 · client_name: AstraZeneca · client_tax: 0315158696 · client_address: 76 Lê Lai, Phường Bến Thành, Tp. HCM, Việt Nam · quotation_date: 2026-07-02 · currency: VND · ma_percent: 0');
+INSERT INTO `activity_log` VALUES (756,'2026-09-15 15:14:44',5,'Nhật Tân','checklist','assignees-save','Lưu phân công / checklist',44,'02072026-106','','quotation_id: 44 · list: 5 mục');
+INSERT INTO `activity_log` VALUES (757,'2026-09-15 15:14:44',5,'Nhật Tân','expense','expenses-save','Lưu chi phí thực tế',44,'02072026-106','','quotation_id: 44 · list: 12 mục');
+INSERT INTO `activity_log` VALUES (758,'2026-09-15 15:52:37',1,'Harris','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (759,'2026-09-15 15:52:37',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
 /*!40000 ALTER TABLE `activity_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1626,7 +1632,7 @@ INSERT INTO `app_user_prefs` VALUES (3,'ui','{\"font_size\":\"md\"}','2026-08-26
 INSERT INTO `app_user_prefs` VALUES (4,'home','{\"order\":[32,95,96,1,17,18,90,23,24,25,26,35,27,34,31,29,30,28,92,91,100,101,97,98,99],\"hidden\":[],\"custom\":[],\"pinned\":[32,95,96,27],\"cats\":[]}','2026-09-03 02:24:45');
 INSERT INTO `app_user_prefs` VALUES (4,'quo_recent','[{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1789446168784},{\"id\":296,\"code\":\"04092026-159\",\"title\":\"AZ-CVRM-Webcast CKM 360 buổi số 4\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-04\",\"at\":1789356366473},{\"id\":44,\"code\":\"02072026-106\",\"title\":\"AZ-MSD-ONCO-ImAE-ExpertMeeting\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-02\",\"at\":1789034825456},{\"id\":295,\"code\":\"03092026-158\",\"title\":\"AZ-RI-Synagis-Booth-0509\",\"client\":\"AstraZeneca\",\"date\":\"2026-09-03\",\"at\":1788946320970},{\"id\":293,\"code\":\"28082026-156\",\"title\":\"APSA-NỘI-BỘ\",\"client\":\"APSA\",\"date\":\"2026-08-28\",\"at\":1788927991967},{\"id\":5,\"code\":\"17082026-145\",\"title\":\"AZ-R&I-NEXIUM-BOOTH\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-17\",\"at\":1788580138826},{\"id\":81,\"code\":\"14052026-69\",\"title\":\"AZ-ONCO-Brochure Booklet Lynparza\",\"client\":\"AstraZeneca\",\"date\":\"2026-05-14\",\"at\":1788502833450},{\"id\":2,\"code\":\"20082026-148\",\"title\":\"AZ-CVRM-TRANING-2508\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-20\",\"at\":1787887877435},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787887862041},{\"id\":71,\"code\":\"26052026-79\",\"title\":\"AZ-ONCO-PEAKSharing-Huế-11Jun\",\"client\":\"AstraZeneca\",\"date\":\"2026-05-26\",\"at\":1787827855968}]','2026-09-15 04:22:49');
 INSERT INTO `app_user_prefs` VALUES (5,'home','{\"order\":[32,26,30,29,1,91,27,17,18,90,23,24,25,28,35,34,31,92],\"hidden\":[],\"custom\":[],\"pinned\":[]}','2026-08-26 06:01:17');
-INSERT INTO `app_user_prefs` VALUES (5,'quo_recent','[{\"id\":44,\"code\":\"02072026-106\",\"title\":\"AZ-MSD-ONCO-ImAE-ExpertMeeting\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-02\",\"at\":1789455545936},{\"id\":81,\"code\":\"14052026-69\",\"title\":\"AZ-ONCO-Brochure Booklet Lynparza\",\"client\":\"AstraZeneca\",\"date\":\"2026-05-14\",\"at\":1789444882698},{\"id\":304,\"code\":\"07092026-167\",\"title\":\"AZ-ONCO-Phát sinh Expert Meeting 1309\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-07\",\"at\":1789191170358},{\"id\":305,\"code\":\"08092026-168\",\"title\":\"AZ-ONCO-Truqap Internal Launch 2026\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-08\",\"at\":1789113553013},{\"id\":13,\"code\":\"03082026-137\",\"title\":\"AZ-ONCO-TRUQAP MATERIALs\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-03\",\"at\":1789031140266},{\"id\":295,\"code\":\"03092026-158\",\"title\":\"AZ-RI-Synagis-Booth-0509\",\"client\":\"AstraZeneca\",\"date\":\"2026-09-03\",\"at\":1788773311059},{\"id\":137,\"code\":\"23012026-13\",\"title\":\"AZ-ONCO-Brilliant-Opportunities-Series\",\"client\":\"AstraZeneca\",\"date\":\"2026-01-23\",\"at\":1788748720090},{\"id\":4,\"code\":\"18082026-146\",\"title\":\"OGN-MKT-HOIDUOCHOC-CANTHO\",\"client\":\"Organon\",\"date\":\"2026-08-18\",\"at\":1787816878997},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787816868468},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787557635740}]','2026-09-15 06:59:06');
+INSERT INTO `app_user_prefs` VALUES (5,'quo_recent','[{\"id\":44,\"code\":\"02072026-106\",\"title\":\"AZ-MSD-ONCO-ImAE-ExpertMeeting\",\"client\":\"AstraZeneca\",\"date\":\"2026-07-02\",\"at\":1789460084556},{\"id\":81,\"code\":\"14052026-69\",\"title\":\"AZ-ONCO-Brochure Booklet Lynparza\",\"client\":\"AstraZeneca\",\"date\":\"2026-05-14\",\"at\":1789444882698},{\"id\":304,\"code\":\"07092026-167\",\"title\":\"AZ-ONCO-Phát sinh Expert Meeting 1309\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-07\",\"at\":1789191170358},{\"id\":305,\"code\":\"08092026-168\",\"title\":\"AZ-ONCO-Truqap Internal Launch 2026\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-08\",\"at\":1789113553013},{\"id\":13,\"code\":\"03082026-137\",\"title\":\"AZ-ONCO-TRUQAP MATERIALs\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-03\",\"at\":1789031140266},{\"id\":295,\"code\":\"03092026-158\",\"title\":\"AZ-RI-Synagis-Booth-0509\",\"client\":\"AstraZeneca\",\"date\":\"2026-09-03\",\"at\":1788773311059},{\"id\":137,\"code\":\"23012026-13\",\"title\":\"AZ-ONCO-Brilliant-Opportunities-Series\",\"client\":\"AstraZeneca\",\"date\":\"2026-01-23\",\"at\":1788748720090},{\"id\":4,\"code\":\"18082026-146\",\"title\":\"OGN-MKT-HOIDUOCHOC-CANTHO\",\"client\":\"Organon\",\"date\":\"2026-08-18\",\"at\":1787816878997},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1787816868468},{\"id\":148,\"code\":\"21082026-149\",\"title\":\"AZ-ONCO-SHOOTING-VDO-VJ\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-21\",\"at\":1787557635740}]','2026-09-15 08:14:45');
 INSERT INTO `app_user_prefs` VALUES (5,'ui','{\"font_size\":\"xl\"}','2026-08-26 03:12:53');
 INSERT INTO `app_user_prefs` VALUES (6,'quo_recent','[{\"id\":306,\"code\":\"11092026-169\",\"title\":\"AZ-KACD-Booth Hội Dược Cần Thơ-9&1010\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-11\",\"at\":1789457606824},{\"id\":119,\"code\":\"02032026-32\",\"title\":\"AZ-KACD-FocusMeeting-Series-05-Events\",\"client\":\"AstraZeneca\",\"date\":\"2026-03-02\",\"at\":1789121320452},{\"id\":9,\"code\":\"07082026-141\",\"title\":\"JNJ-ONCO-Launch Tecvayli ( 14&15 Nov)\",\"client\":\"Johnson&Johnson\",\"date\":\"2026-08-07\",\"at\":1788785802546},{\"id\":7,\"code\":\"12082026-143\",\"title\":\"AZ-ONCO-GI-SOTAYBENHNHAN\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-12\",\"at\":1787714099126}]','2026-09-15 07:33:27');
 INSERT INTO `app_user_prefs` VALUES (6,'ui','{\"font_size\":\"xl\"}','2026-08-26 03:12:53');
@@ -3012,7 +3018,7 @@ CREATE TABLE `frame_events` (
 
 LOCK TABLES `frame_events` WRITE;
 /*!40000 ALTER TABLE `frame_events` DISABLE KEYS */;
-INSERT INTO `frame_events` VALUES (2,'blood-cancer-awareness','Blood-Cancer-Awareness','','2026-09-13','2026-10-22',1,52,14,'Harris','2026-09-13 15:14:49');
+INSERT INTO `frame_events` VALUES (2,'blood-cancer-awareness','Blood-Cancer-Awareness','','2026-09-13','2026-10-22',1,54,15,'Harris','2026-09-13 15:14:49');
 /*!40000 ALTER TABLE `frame_events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3049,7 +3055,7 @@ INSERT INTO `frame_items` VALUES (4,2,'blood tree1','1:1','uploads/frames/2/f2-7
 INSERT INTO `frame_items` VALUES (5,2,'blood tree2','1:1','uploads/frames/2/f2-2b83252b6db9.png',900,900,2,2,'2026-09-13 15:15:52');
 INSERT INTO `frame_items` VALUES (6,2,'blood tree3','1:1','uploads/frames/2/f2-84f4f67000c7.png',900,900,3,2,'2026-09-13 15:15:52');
 INSERT INTO `frame_items` VALUES (7,2,'ribbon 1','1:1','uploads/frames/2/f2-1d370762ea92.png',900,900,4,1,'2026-09-13 15:15:52');
-INSERT INTO `frame_items` VALUES (8,2,'ribbon 2','1:1','uploads/frames/2/f2-404cc29a49f1.png',900,900,5,7,'2026-09-13 15:15:52');
+INSERT INTO `frame_items` VALUES (8,2,'ribbon 2','1:1','uploads/frames/2/f2-404cc29a49f1.png',900,900,5,8,'2026-09-13 15:15:52');
 /*!40000 ALTER TABLE `frame_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -4243,7 +4249,7 @@ CREATE TABLE `quotation_assignees` (
   KEY `idx_user` (`user_id`),
   KEY `idx_stat` (`status`),
   KEY `idx_due` (`due_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=1520 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1525 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4291,11 +4297,6 @@ INSERT INTO `quotation_assignees` VALUES (1352,284,'item',4,NULL,'Book người 
 INSERT INTO `quotation_assignees` VALUES (1353,284,'item',4,NULL,'Lên lịch thanh toán đợt 1',NULL,'done',3,'Trang Đỗ','2026-09-15 04:22:48','2026-09-15 04:22:48',NULL,0,0);
 INSERT INTO `quotation_assignees` VALUES (1354,284,'item',4,NULL,'Làm việc với vendor về thời gian set up / thông tin nhân sự + hàng hóa','2026-09-11','done',4,'Trang Đỗ','2026-09-15 04:22:48','2026-09-15 04:22:48',NULL,0,0);
 INSERT INTO `quotation_assignees` VALUES (1355,284,'item',4,NULL,'Đăng ký tòa nhà gửi C Nga','2026-09-12','done',5,'Trang Đỗ','2026-09-15 04:22:48','2026-09-15 04:22:48',NULL,0,0);
-INSERT INTO `quotation_assignees` VALUES (1380,44,'item',4,NULL,'Voucher Xanh SM','2026-09-09','done',0,'Nhật Tân','2026-09-15 06:59:06','2026-09-15 06:59:06',NULL,0,0);
-INSERT INTO `quotation_assignees` VALUES (1381,44,'item',0,NULL,'Design thẻ đeo, bảng tên, khung livestream, visual',NULL,'done',1,'Nhật Tân','2026-09-15 06:59:06','2026-09-15 06:59:06',NULL,0,84);
-INSERT INTO `quotation_assignees` VALUES (1382,44,'item',3,NULL,'In thẻ đeo, bảng tên, tài liệu (dí Tin)',NULL,'done',2,'Nhật Tân','2026-09-15 06:59:06','2026-09-15 06:59:06',NULL,0,0);
-INSERT INTO `quotation_assignees` VALUES (1383,44,'item',3,NULL,'Booking anh Dũng',NULL,'done',3,'Nhật Tân','2026-09-15 06:59:06','2026-09-15 06:59:06',NULL,0,0);
-INSERT INTO `quotation_assignees` VALUES (1384,44,'item',3,NULL,'Họp với kỹ thuật + lấy báo giá',NULL,'done',4,'Nhật Tân','2026-09-15 06:59:06','2026-09-15 06:59:06',NULL,0,0);
 INSERT INTO `quotation_assignees` VALUES (1511,292,'item',34,NULL,'Idea booth + gift set',NULL,'todo',0,'Thảo Lý','2026-09-15 07:33:06','2026-09-15 07:33:06',NULL,0,0);
 INSERT INTO `quotation_assignees` VALUES (1512,292,'item',3,NULL,'Báo giá',NULL,'doing',1,'Thảo Lý','2026-09-15 07:33:06','2026-09-15 07:33:06',NULL,0,0);
 INSERT INTO `quotation_assignees` VALUES (1513,292,'item',8,NULL,'Thiết kế KV','2026-09-07','done',2,'Thảo Lý','2026-09-15 07:33:06','2026-09-15 07:33:06',NULL,0,0);
@@ -4305,6 +4306,11 @@ INSERT INTO `quotation_assignees` VALUES (1516,292,'item',34,NULL,'Idea box bổ
 INSERT INTO `quotation_assignees` VALUES (1517,292,'item',3,NULL,'Booth AI',NULL,'todo',6,'Thảo Lý','2026-09-15 07:33:06','2026-09-15 07:33:06',NULL,0,0);
 INSERT INTO `quotation_assignees` VALUES (1518,292,'item',0,NULL,'Design material',NULL,'doing',7,'Thảo Lý','2026-09-15 07:33:06','2026-09-15 07:33:06',NULL,0,109);
 INSERT INTO `quotation_assignees` VALUES (1519,292,'item',8,NULL,'Design photobooth + frame',NULL,'todo',8,'Thảo Lý','2026-09-15 07:33:06','2026-09-15 07:33:06',NULL,0,0);
+INSERT INTO `quotation_assignees` VALUES (1520,44,'item',4,NULL,'Voucher Xanh SM','2026-09-09','done',0,'Nhật Tân','2026-09-15 08:14:44','2026-09-15 08:14:44',NULL,0,0);
+INSERT INTO `quotation_assignees` VALUES (1521,44,'item',0,NULL,'Design thẻ đeo, bảng tên, khung livestream, visual',NULL,'done',1,'Nhật Tân','2026-09-15 08:14:44','2026-09-15 08:14:44',NULL,0,84);
+INSERT INTO `quotation_assignees` VALUES (1522,44,'item',3,NULL,'In thẻ đeo, bảng tên, tài liệu (dí Tin)',NULL,'done',2,'Nhật Tân','2026-09-15 08:14:44','2026-09-15 08:14:44',NULL,0,0);
+INSERT INTO `quotation_assignees` VALUES (1523,44,'item',3,NULL,'Booking anh Dũng',NULL,'done',3,'Nhật Tân','2026-09-15 08:14:44','2026-09-15 08:14:44',NULL,0,0);
+INSERT INTO `quotation_assignees` VALUES (1524,44,'item',3,NULL,'Họp với kỹ thuật + lấy báo giá',NULL,'done',4,'Nhật Tân','2026-09-15 08:14:44','2026-09-15 08:14:44',NULL,0,0);
 /*!40000 ALTER TABLE `quotation_assignees` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -5039,7 +5045,7 @@ INSERT INTO `quotation_expenses` VALUES (775,44,'group','13/9','13/9','',0.00,''
 INSERT INTO `quotation_expenses` VALUES (776,44,'item','13/9','Kỹ thuật livestream HCM','2 camera: 4tr, 2 kỹ thuật: 4tr, Rhs tối: 4tr',1.00,'Gói',12000000.00,8.00,2,NULL,'2026-09-11 07:58:23','2026-09-11 07:58:23',0,NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'',3,'Thảo Lý',NULL);
 INSERT INTO `quotation_expenses` VALUES (777,44,'item','13/9','Kỹ thuật livestream HN','2 camera: 4tr, 2 kỹ thuật: 4tr, Rhs tối: 4tr, chụp ảnh: 1tr5, intercom: 800k',1.00,'Gói',14300000.00,8.00,3,NULL,'2026-09-11 07:58:23','2026-09-11 07:58:23',0,NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'',3,'Thảo Lý',NULL);
 INSERT INTO `quotation_expenses` VALUES (778,44,'item','13/9','Thẻ đeo + dây đeo','',1.00,'Gói',1300000.00,8.00,4,NULL,'2026-09-11 07:58:23','2026-09-11 07:58:23',0,'sup',67,'Công nghệ Lê Minh','ACB','156246139','CTY TNHH TM VA DV PT CONG NGHE LE MINH',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'',3,'Thảo Lý',NULL);
-INSERT INTO `quotation_expenses` VALUES (779,44,'item','13/9','Internet HN','',1.00,'Gói',7200000.00,10.00,5,NULL,'2026-09-11 07:58:23','2026-09-15 06:59:43',0,'sup',112,'CÔNG TY CỔ PHẦN NETNAM','Vietcombank','001 100 022 1247','CÔNG TY CỔ PHẦN NETNAM',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'2026-09-18','APSA TT HD',3,'Thảo Lý',NULL);
+INSERT INTO `quotation_expenses` VALUES (779,44,'item','13/9','Internet HN','',1.00,'Gói',7200000.00,10.00,5,NULL,'2026-09-11 07:58:23','2026-09-15 08:14:42',0,'sup',112,'CÔNG TY CỔ PHẦN NETNAM','Vietcombank','001 100 022 1247','CÔNG TY CỔ PHẦN NETNAM',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'2026-09-18','APSA TT HD5261',3,'Thảo Lý',NULL);
 INSERT INTO `quotation_expenses` VALUES (780,44,'item','13/9','Internet HCM','',1.00,'Gói',3500000.00,10.00,6,NULL,'2026-09-11 07:58:23','2026-09-12 06:41:41',1,'sup',106,'VIỄN THÔNG HÀ NỘI - CHI NHÁNH TẬP ĐOÀN BƯU CHÍNH VIỄN THÔNG VIỆT NAM','BIDV','1600114156','Viễn thông Hà Nội Chi nhánh Tập đoàn Bưu chính viễn thông Việt Nam',NULL,NULL,'2026-09-12 13:41:41','Harris','2026-09/d8caf289794eaaa730ccf5ec.pdf','TRANSFER:3233386-4111.pdf','application/pdf','2026-09-12','Công ty APSA thanh toán cho Dương 251664,DD6',3,'Thảo Lý',NULL);
 INSERT INTO `quotation_expenses` VALUES (781,44,'item','13/9','Ballroom HCM','',1.00,'Gói',29893500.00,8.00,7,NULL,'2026-09-11 08:00:29','2026-09-11 08:00:29',0,NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'',3,'Thảo Lý',NULL);
 INSERT INTO `quotation_expenses` VALUES (782,44,'item','13/9','Ballroom HN','',1.00,'Gói',7407407.00,8.00,8,NULL,'2026-09-11 08:00:29','2026-09-11 08:00:29',0,NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'',3,'Thảo Lý',NULL);
@@ -5079,7 +5085,7 @@ CREATE TABLE `quotation_items` (
   `act_file_name` varchar(200) DEFAULT NULL COMMENT 'Tên file gốc',
   PRIMARY KEY (`id`),
   KEY `idx_quotation` (`quotation_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20947 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20949 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -8581,8 +8587,6 @@ INSERT INTO `quotation_items` VALUES (20175,114,'item','Photographer','Scan QR c
 INSERT INTO `quotation_items` VALUES (20176,114,'item','Filming','2 Cam, 1 wide 1 tele',2.00,'Pc',3500000.00,'',158,2.00,'Pc',3500000.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (20177,114,'item','Miscellaneous','',1.00,'Pc',10000000.00,'',159,1.00,'Pc',10000000.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (20233,293,'section','','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (20255,44,'section','Total','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
-INSERT INTO `quotation_items` VALUES (20256,44,'item','Total báo giá','',1.00,'Gói',217484981.00,'',1,0.00,'',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (20893,292,'section','Creative','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (20894,292,'item','Design 2D','- KV\n- Form register\n- Post Workvivo\n- Thư mời online\n- Standee quy trình\n- Photobooth\n- Hashtag\n- Hanger\n- Poster TV\n- Avatar\n- Hình nền laptop',1.00,'Gói',12000000.00,'',1,0.00,'',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (20895,292,'item','Video animation','<30s',1.00,'Gói',10000000.00,'',2,0.00,'',0.00,0.00,'',NULL,NULL);
@@ -8637,6 +8641,8 @@ INSERT INTO `quotation_items` VALUES (20943,306,'item','Chụp hình lấy liề
 INSERT INTO `quotation_items` VALUES (20944,306,'item','Kahoot','',1.00,'',500000.00,'',14,0.00,'',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (20945,306,'item','Account quản lý dự án','',0.00,'Gói',2000000.00,'',15,0.00,'',0.00,0.00,'',NULL,NULL);
 INSERT INTO `quotation_items` VALUES (20946,306,'item','Chi phí ăn ở & di chuyển','1 account & 1 escort',0.00,'Gói',2000000.00,'',16,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (20947,44,'section','Total','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL);
+INSERT INTO `quotation_items` VALUES (20948,44,'item','Total báo giá','',1.00,'Gói',217484981.00,'',1,0.00,'',0.00,0.00,'',NULL,NULL);
 /*!40000 ALTER TABLE `quotation_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -8945,7 +8951,7 @@ INSERT INTO `quotations` VALUES (40,'media','07072026-110','Decathlon-Event-BuuL
 INSERT INTO `quotations` VALUES (41,'media','07072026-109','OGN-MMA-VDO',5,31,'Organon','thi.lan.anh.thi.lan.anh@organon.com','0317975100','Phòng 03-135, Tầng 3, Lim Tower 3, 29A Nguyễn Đình Chiểu, Phường Sài Gòn, Thành phố Hồ Chí Minh, Việt Nam','2026-07-07','','VND',10.00,8.00,1,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Đang thực hiện','Harris',NULL,'2026-08-20 19:01:59','2026-09-04 07:06:13',0,NULL,'running',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'','','',1,0,0,0);
 INSERT INTO `quotations` VALUES (42,'other','03072026-108','VFR-BOX',3,32,'VFR','','3702289042','47/4, DT 743 Street, Binh Phuoc B Area, An Phu Ward, Ho Chi Minh City, Vietnam','2026-07-03','','VND',0.00,8.00,0,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Báo giá','Harris',NULL,'2026-08-20 19:01:59','2026-09-05 08:23:16',1,NULL,'paid',NULL,NULL,NULL,NULL,NULL,NULL,'2026-09-04 14:18:07',NULL,'Hệ thống',NULL,NULL,'','','',1,0,0,0);
 INSERT INTO `quotations` VALUES (43,'other','03072026-107','VFR-Sticker',3,32,'VFR','','3702289042','47/4, DT 743 Street, Binh Phuoc B Area, An Phu Ward, Ho Chi Minh City, Vietnam','2026-07-03','','VND',0.00,8.00,0,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Báo giá','Harris',NULL,'2026-08-20 19:01:59','2026-09-05 08:23:16',1,NULL,'dong_du_an',NULL,NULL,NULL,NULL,NULL,NULL,'2026-09-04 14:18:15',NULL,'Hệ thống',NULL,NULL,'','','',1,0,0,0);
-INSERT INTO `quotations` VALUES (44,'event','02072026-106','AZ-MSD-ONCO-ImAE-ExpertMeeting',1,12,'AstraZeneca','','0315158696','76 Lê Lai, Phường Bến Thành, Tp. HCM, Việt Nam','2026-07-02','','VND',0.00,8.00,0,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Nhận yêu cầu','Harris',NULL,'2026-08-20 19:01:59','2026-09-15 06:59:06',0,NULL,'running','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'','','',1,0,0,4);
+INSERT INTO `quotations` VALUES (44,'event','02072026-106','AZ-MSD-ONCO-ImAE-ExpertMeeting',1,12,'AstraZeneca','','0315158696','76 Lê Lai, Phường Bến Thành, Tp. HCM, Việt Nam','2026-07-02','','VND',0.00,8.00,0,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Nhận yêu cầu','Harris',NULL,'2026-08-20 19:01:59','2026-09-15 08:14:44',0,NULL,'running','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'','','',1,0,0,5);
 INSERT INTO `quotations` VALUES (45,'other','01072026-105','AZ-CVRM-VIDEO-XIGDUO',1,33,'AstraZeneca','','0315158696','76 Lê Lai, Phường Bến Thành, Tp. HCM, Việt Nam','2026-07-01','','VND',10.00,8.00,1,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Báo giá','Harris',NULL,'2026-08-20 19:01:59','2026-09-04 07:06:13',1,NULL,'quote',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'','','',1,0,0,0);
 INSERT INTO `quotations` VALUES (46,'event','01072026-104','AZ-R&I-Breztri-NSM-Midyear-0708',1,10,'AstraZeneca','','0315158696','76 Lê Lai, Phường Bến Thành, Tp. HCM, Việt Nam','2026-07-01','','VND',10.00,8.00,1,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Nhận yêu cầu','Harris',NULL,'2026-08-20 19:01:59','2026-09-05 08:23:16',1,NULL,'done','',NULL,NULL,'inv-20260827140758-690b71.pdf','NC Mid Year.pdf',NULL,'2026-09-04 14:06:13',NULL,'Hệ thống',NULL,NULL,'','','',1,0,0,0);
 INSERT INTO `quotations` VALUES (47,'other','29062026-103','GIGAMED-COM2-Branding',10,34,'Gigamed','thu.anh.doan@gigamed.com.vn','0316417470','13.05A. Tầng 13 Toà nhà Viettel, 285 Cách Mạng Tháng 8, Phường Hòa Hưng, TP Hồ Chí Minh, Việt Nam','2026-06-29','','VND',10.00,8.00,1,1,'Đồng bộ từ manage.apsa.agency — trạng thái: Nhận yêu cầu','Harris',NULL,'2026-08-20 19:02:17','2026-09-04 07:06:13',1,NULL,'request',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'','','',1,0,0,0);
