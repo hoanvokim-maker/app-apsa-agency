@@ -1,6 +1,6 @@
 /* ============================================================
    APSA — Theme "Futuristic Lime"  /theme.css  (v7)
-   Bảng màu: Đen #000 · Xám #2B2B2B · Trắng #FFF · Xanh chanh #DFF20D
+   Bảng màu: Đen var(--bg) · Xám var(--bg4) · Trắng var(--text) · Xanh chanh var(--accent)
    Font: Orbitron (số/Latin) + Oxanium (chữ Việt)
    v4: nền texture cát đen-xám chuyển động nhẹ + bộ icon 2D
    ============================================================ */
@@ -22,7 +22,7 @@
 
 /* ══ NỀN: TEXTURE CÁT ĐEN – XÁM, TRÔI NHẸ ═════════════════ */
 body{
-  background:#000 !important;
+  background:var(--bg) !important;
   font-family:var(--font-body) !important;
   letter-spacing:.01em;
   -webkit-font-smoothing:antialiased;
@@ -57,7 +57,7 @@ body::after{
   content:'';
   position:fixed; inset:0; z-index:0; pointer-events:none;
   background:
-    radial-gradient(120% 75% at 50% -12%, rgba(223,242,13,.075) 0%, transparent 58%),
+    radial-gradient(120% 75% at 50% -12%, rgba(var(--a-rgb),.075) 0%, transparent 58%),
     radial-gradient(115% 105% at 50% 45%, transparent 62%, rgba(0,0,0,.42) 100%);
 }
 @keyframes apsaSandA{
@@ -110,14 +110,14 @@ h2{ font-size:clamp(19px,2.2vw,26px) !important; }
   width:46px !important; height:46px !important;
   border-radius:4px !important;
   background:#0f0f0f !important;
-  border:1px solid rgba(255,255,255,.10);
+  border:1px solid var(--w10);
   display:flex !important; align-items:center; justify-content:center;
   transition:border-color .2s, box-shadow .2s;
 }
 .card-icon .ico{ width:27px; height:27px; display:block; }
 .card:hover .card-icon{
-  border-color:rgba(223,242,13,.55);
-  box-shadow:0 0 18px rgba(223,242,13,.16);
+  border-color:var(--a55);
+  box-shadow:0 0 18px rgba(var(--a-rgb),.16);
 }
 .ico-emoji{ font-size:20px; line-height:1; }
 .ttl-ico{ width:19px; height:19px; vertical-align:-4px; flex-shrink:0; }
@@ -135,7 +135,7 @@ h1 .ttl-ico{ width:30px; height:30px; vertical-align:-6px; }
 .btn-green .pill-ico,.btn.green .pill-ico,.btn-view .pill-ico,
 .filter-pill.active .pill-ico,.pill.active .pill-ico,.tab.active .pill-ico,
 .hbtn.primary .pill-ico,.hbtn.green-b .pill-ico{
-  background:#0d0d0d; border-radius:5px; padding:1.5px; box-sizing:content-box;
+  background:var(--bg-card); border-radius:5px; padding:1.5px; box-sizing:content-box;
 }
 .filter-pill{ display:inline-flex !important; align-items:center; gap:2px; }
 .fb-icon{ display:inline-flex; align-items:center; }
@@ -150,18 +150,18 @@ h1 .ttl-ico{ width:30px; height:30px; vertical-align:-6px; }
 .search-input,.hsel{ border-radius:2px !important; }
 
 .card,.stat,.modal,.tbl-wrap{
-  background:rgba(11,11,11,.86) !important;
+  background:rgba(var(--card-rgb),.86) !important;
   backdrop-filter:blur(2px);
-  border:1px solid rgba(255,255,255,.09) !important;
+  border:1px solid var(--w09) !important;
   box-shadow:none !important;
 }
 .card:hover,.stat:hover{
-  border-color:rgba(223,242,13,.45) !important;
-  box-shadow:0 0 0 1px rgba(223,242,13,.12), 0 0 34px rgba(223,242,13,.07) !important;
+  border-color:rgba(var(--a-rgb),.45) !important;
+  box-shadow:0 0 0 1px rgba(var(--a-rgb),.12), 0 0 34px rgba(var(--a-rgb),.07) !important;
 }
 header{
-  background:rgba(0,0,0,.88) !important;
-  border-bottom:1px solid rgba(255,255,255,.09) !important;
+  background:rgba(var(--bar-rgb),.88) !important;
+  border-bottom:1px solid var(--w09) !important;
 }
 
 /* ══ NÚT NỀN CHANH → CHỮ ĐEN ══════════════════════════════ */
@@ -173,16 +173,16 @@ header{
 .card:hover .card-arrow{
   background:var(--accent) !important;
   background-image:none !important;
-  color:#000 !important;
+  color:var(--bg) !important;
   border-color:var(--accent) !important;
   font-weight:700 !important;
   text-shadow:none !important;
-  box-shadow:0 0 22px rgba(223,242,13,.20) !important;
+  box-shadow:0 0 22px rgba(var(--a-rgb),.20) !important;
 }
 .btn:not(.ghost):not(.danger):hover,
 .btn-primary:hover,.hbtn.primary:hover,.fb-btn:hover{
   background:#eaff4a !important;
-  box-shadow:0 0 30px rgba(223,242,13,.34) !important;
+  box-shadow:0 0 30px rgba(var(--a-rgb),.34) !important;
   transform:translateY(-1px);
 }
 .btn.ghost,.btn.danger{ background:transparent !important; background-image:none !important; }
@@ -190,34 +190,34 @@ header{
 /* ══ Ô NHẬP ═══════════════════════════════════════════════ */
 .fg input,.fg textarea,.fg select,.search-input,.hsel,input[type=text],
 input[type=date],input[type=number],input[type=password],select,textarea{
-  background:#111111 !important;
-  border:1px solid rgba(255,255,255,.12) !important;
-  color:#fff !important;
+  background:var(--bg3) !important;
+  border:1px solid var(--w12) !important;
+  color:var(--text) !important;
   font-family:var(--font-body) !important;
 }
 .fg input:focus,.fg textarea:focus,.fg select:focus,.search-input:focus,
 input:focus,select:focus,textarea:focus{
   border-color:var(--accent) !important;
-  box-shadow:0 0 0 2px rgba(223,242,13,.16) !important;
+  box-shadow:0 0 0 2px rgba(var(--a-rgb),.16) !important;
   outline:none !important;
 }
 
 /* ══ BẢNG ═════════════════════════════════════════════════ */
 table thead th{
-  background:#000 !important; color:#5e5e5e !important;
-  border-bottom:1px solid rgba(223,242,13,.22) !important;
+  background:var(--bg) !important; color:var(--text3) !important;
+  border-bottom:1px solid rgba(var(--a-rgb),.22) !important;
 }
-table tbody td{ background:rgba(11,11,11,.88) !important; border-bottom:1px solid rgba(255,255,255,.07) !important; }
-table tbody tr:hover td{ background:#141414 !important; }
+table tbody td{ background:rgba(var(--card-rgb),.88) !important; border-bottom:1px solid var(--w07) !important; }
+table tbody tr:hover td{ background:var(--bg3) !important; }
 
 /* ══ CHI TIẾT ═════════════════════════════════════════════ */
 a{ text-decoration:none; }
-::selection{ background:var(--accent); color:#000; }
+::selection{ background:var(--accent); color:var(--bg); }
 *::-webkit-scrollbar{ width:9px; height:9px; }
-*::-webkit-scrollbar-track{ background:#000; }
-*::-webkit-scrollbar-thumb{ background:#2b2b2b; }
+*::-webkit-scrollbar-track{ background:var(--bg); }
+*::-webkit-scrollbar-thumb{ background:var(--bg4); }
 *::-webkit-scrollbar-thumb:hover{ background:var(--accent); }
-footer{ border-top:1px solid rgba(255,255,255,.08) !important; letter-spacing:.06em; }
+footer{ border-top:1px solid var(--wash2) !important; letter-spacing:.06em; }
 
 @media(max-width:900px){
   h1{ font-size:26px !important; }
@@ -248,37 +248,37 @@ table th, .who-cell .meta, .psub, .pmeta, .due-cell .soon{
 .umenu{
   display:none; position:absolute; top:calc(100% + 8px); right:0; z-index:300;
   min-width:212px; padding:7px; border-radius:14px; cursor:default;
-  background:#0b0b0b; border:1px solid rgba(255,255,255,.14);
-  box-shadow:0 18px 44px rgba(0,0,0,.6);
+  background:var(--bg2); border:1px solid var(--wash3);
+  box-shadow:0 18px 44px var(--scrim6);
 }
 .umenu.open{ display:block; }
 .umhead{
   font-size:10px; font-weight:800; letter-spacing:.7px; text-transform:uppercase;
-  color:#5e5e5e; padding:7px 10px 6px;
+  color:var(--text3); padding:7px 10px 6px;
 }
 .umenu .fsopt{
   width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px;
-  background:transparent; border:1px solid transparent; color:#9a9a9a; cursor:pointer;
+  background:transparent; border:1px solid transparent; color:var(--text2); cursor:pointer;
   font-family:inherit; font-size:12.5px; font-weight:600; text-align:left;
   padding:8px 10px; border-radius:9px; transition:.15s;
 }
-.umenu .fsopt em{ font-style:normal; font-size:10.5px; color:#5e5e5e; font-weight:700; }
-.umenu .fsopt:hover{ background:#141414; color:#fff; }
-.umenu .fsopt.on{ background:rgba(223,242,13,.14); border-color:rgba(223,242,13,.45); color:#dff20d; }
-.umenu .fsopt.on em{ color:#dff20d; opacity:.8; }
-.umsep{ height:1px; background:rgba(255,255,255,.09); margin:7px 4px; }
+.umenu .fsopt em{ font-style:normal; font-size:10.5px; color:var(--text3); font-weight:700; }
+.umenu .fsopt:hover{ background:var(--bg3); color:var(--text); }
+.umenu .fsopt.on{ background:var(--a14); border-color:rgba(var(--a-rgb),.45); color:var(--accent); }
+.umenu .fsopt.on em{ color:var(--accent); opacity:.8; }
+.umsep{ height:1px; background:var(--w09); margin:7px 4px; }
 .umenu .umlog{ display:flex; align-items:center; gap:8px; width:100%; text-align:left;
   padding:8px 10px; border-radius:9px; border:1px solid transparent; background:transparent;
   color:var(--text2); font-family:inherit; font-size:12.5px; font-weight:600; cursor:pointer; transition:.15s; }
-.umenu .umlog:hover{ background:#141414; color:#fff; }
+.umenu .umlog:hover{ background:var(--bg3); color:var(--text); }
 .umenu .umlog em{ margin-left:auto; font-style:normal; font-family:'Orbitron',sans-serif;
-  font-size:10px; font-weight:800; color:#000; background:var(--accent); border-radius:20px; padding:2px 7px; }
+  font-size:10px; font-weight:800; color:var(--bg); background:var(--accent); border-radius:20px; padding:2px 7px; }
 .umenu .umout{
-  width:100%; background:transparent; border:none; color:#9a9a9a; cursor:pointer;
+  width:100%; background:transparent; border:none; color:var(--text2); cursor:pointer;
   font-family:inherit; font-size:12.5px; font-weight:600; text-align:left;
   padding:8px 10px; border-radius:9px; transition:.15s;
 }
-.umenu .umout:hover{ background:rgba(255,77,77,.12); color:#ff8f8f; }
+.umenu .umout:hover{ background:var(--r12); color:var(--red-soft2); }
 
 /* ══════════ ACTION BUTTONS TRÊN NAVIGATION ══════════ */
 header .hact{ display:flex; align-items:center; gap:8px; min-width:0; }
@@ -313,17 +313,17 @@ header #btnMore{ padding:7px 12px; font-size:15px; line-height:1; letter-spacing
 header .hmenu{
   display:none; position:absolute; top:calc(100% + 8px); right:0; z-index:300;
   min-width:206px; padding:7px; border-radius:14px;
-  background:#0b0b0b; border:1px solid rgba(255,255,255,.14);
-  box-shadow:0 18px 44px rgba(0,0,0,.6);
+  background:var(--bg2); border:1px solid var(--wash3);
+  box-shadow:0 18px 44px var(--scrim6);
 }
 header .hmenu.open{ display:block; }
 header .hmenu button{
   width:100%; display:flex; align-items:center; gap:9px;
-  background:transparent; border:none; color:#9a9a9a; cursor:pointer;
+  background:transparent; border:none; color:var(--text2); cursor:pointer;
   font-family:inherit; font-size:12.5px; font-weight:600; text-align:left;
   padding:9px 10px; border-radius:9px; transition:.15s; white-space:nowrap;
 }
-header .hmenu button:hover{ background:#141414; color:#fff; }
+header .hmenu button:hover{ background:var(--bg3); color:var(--text); }
 
 /* ── APSA v1.2.11 — tan dung ~90% be ngang man hinh laptop ───────────── */
 @media (min-width: 1180px) {
@@ -366,7 +366,7 @@ html body select#fStatus:focus {
   border-style: solid !important;
   background-color: color-mix(in srgb, var(--neon) 15%, transparent) !important;
   border-color: color-mix(in srgb, var(--neon) 40%, transparent) !important;
-  color: color-mix(in srgb, var(--neon) 78%, #ffffff) !important;
+  color: color-mix(in srgb, var(--neon) 78%, var(--text)) !important;
 }
 html body select[class*="stt"]:hover,
 html body select#fStatus:hover {
@@ -383,7 +383,7 @@ html body select#fStatus:hover {
   /* ── Tấm nền ─────────────────────────────────────────────────── */
   .modal, .mbox, .dlg, .sheet, .popup-box {
     border-radius: 18px !important;
-    border: 1px solid rgba(255,255,255,.10) !important;
+    border: 1px solid var(--w10) !important;
     background: #131313 !important;
     box-shadow: 0 34px 90px rgba(0,0,0,.72) !important;
     padding: 30px !important;
@@ -397,12 +397,12 @@ html body select#fStatus:hover {
     font-size: 19px !important;
     letter-spacing: 1.4px !important;
     text-transform: uppercase !important;
-    color: #ffffff !important;
+    color: var(--text) !important;
     margin: 0 0 20px !important;
   }
   .modal > .mh-sub, .modal .modal-sub, .mbox > .mh-sub {
     font-size: 13px !important;
-    color: #8d8d8d !important;
+    color: var(--ink3) !important;
     margin: -14px 0 22px !important;
     line-height: 1.5 !important;
   }
@@ -414,14 +414,14 @@ html body select#fStatus:hover {
     font-weight: 800 !important;
     letter-spacing: 1.1px !important;
     text-transform: uppercase !important;
-    color: #6f6f6f !important;
+    color: var(--text3) !important;
   }
   .modal label.ck, .mbox label.ck, .modal .ck, .mbox .ck {
     font-size: 13px !important;
     font-weight: 400 !important;
     letter-spacing: 0 !important;
     text-transform: none !important;
-    color: #9a9a9a !important;
+    color: var(--text2) !important;
   }
 
   /* ── Ô nhập ──────────────────────────────────────────────────── */
@@ -433,15 +433,15 @@ html body select#fStatus:hover {
     border-radius: 10px !important;
     padding-top: 11px !important;
     padding-bottom: 11px !important;
-    background: #0b0b0b !important;
-    border: 1px solid rgba(255,255,255,.11) !important;
-    color: #ffffff !important;
+    background: var(--bg2) !important;
+    border: 1px solid rgba(var(--w-rgb),.11) !important;
+    color: var(--text) !important;
     font-size: 13.5px !important;
   }
   .modal input:focus, .modal select:focus, .modal textarea:focus,
   .mbox input:focus, .mbox select:focus, .mbox textarea:focus {
-    border-color: #dff20d !important;
-    box-shadow: 0 0 0 1px rgba(223,242,13,.35) !important;
+    border-color: var(--accent-fill) !important;
+    box-shadow: 0 0 0 1px rgba(var(--a-rgb),.35) !important;
     outline: none !important;
   }
   .modal input::placeholder, .modal textarea::placeholder,
@@ -454,10 +454,10 @@ html body select#fStatus:hover {
     padding: 13px 20px !important;
     font-size: 14px !important;
     font-weight: 800 !important;
-    background: #dff20d !important;
-    border: 1px solid #dff20d !important;
-    color: #000000 !important;
-    box-shadow: 0 0 26px rgba(223,242,13,.30) !important;
+    background: var(--accent-fill) !important;
+    border: 1px solid var(--accent) !important;
+    color: var(--bg) !important;
+    box-shadow: 0 0 26px rgba(var(--a-rgb),.30) !important;
   }
   .modal .btn.primary:hover, .modal .btn-add:hover, .modal button[type="submit"]:hover,
   .mbox .btn.primary:hover, .mbox .btn-add:hover, .mbox button[type="submit"]:hover {
@@ -528,3 +528,106 @@ html select#fStatus {
   padding-bottom: 0 !important;
   line-height: 26px !important;
 }
+
+/* =====================================================================
+   APSA1879 - NEN SANG (light mode)
+   Cac token bo sung: dung cho nhung ma mau truoc day viet cung trong trang.
+   Gia tri o :root la mau TOI hien tai -> khong doi gi khi chua bat light.
+   ===================================================================== */
+:root{
+  --bg-card:      #0d0d0d;   /* nen the / hang bang */
+  --panel:        #1c1c1c;   /* nen khoi noi bat */
+  --panel2:       #2b3138;   /* nen khoi phu */
+  --wash1:        rgba(255,255,255,.06);
+  --wash2:        rgba(255,255,255,.08);
+  --wash3:        rgba(255,255,255,.14);
+  --accent-fill:  #dff20d;   /* nen nut vang neon - GIU NGUYEN o ca 2 che do */
+  --accent-on:    #000000;   /* chu dat tren nen vang */
+  --red-soft:     #ff6b6b;
+  --red-soft2:    #ff8f8f;
+  --red-wash:     rgba(255,77,77,.14);
+  --shadow:       rgba(0,0,0,.55);
+}
+
+html[data-theme="light"]{
+  color-scheme: light;
+
+  --bg:#f4f5f1; --bg2:#ffffff; --bg3:#f0f1ec; --bg4:#e4e6de;
+  --bg-card:#ffffff; --panel:#f7f8f4; --panel2:#eceee7;
+
+  --border:rgba(0,0,0,.13);
+  --border-hover:rgba(111,125,0,.55);
+
+  --text:#16170f; --text2:#5d6052; --text3:#8b8d7e;
+
+  /* Vang neon khong doc duoc tren nen trang -> chu/vien dung tong o liu dam,
+     con nen nut van giu dung vang neon thuong hieu. */
+  --accent:#6b7a00; --accent2:#586400;
+  --accent-glow:rgba(107,122,0,.16);
+  --accent-fill:#dff20d;
+  --accent-on:#16170f;
+
+  --green:#5c7a00; --cyan:#16170f; --pink:#586400; --yellow:#6b7a00;
+  --orange:#16170f; --red:#c92a2a;
+  --red-soft:#c92a2a; --red-soft2:#e03131; --red-wash:rgba(201,42,42,.10);
+
+  --wash1:rgba(0,0,0,.04);
+  --wash2:rgba(0,0,0,.06);
+  --wash3:rgba(0,0,0,.11);
+  --shadow:rgba(0,0,0,.14);
+}
+
+html[data-theme="light"] body{ background:var(--bg); color:var(--text); }
+
+/* APSA1879 - lop 2: cac muc alpha va mau chip trang thai */
+:root{
+  --w07:rgba(255,255,255,.07); --w09:rgba(255,255,255,.09);
+  --w10:rgba(255,255,255,.10); --w12:rgba(255,255,255,.12);
+  --w18:rgba(255,255,255,.18);
+  --a05:rgba(223,242,13,.05);  --a09:rgba(223,242,13,.09);
+  --a14:rgba(223,242,13,.14);  --a50:rgba(223,242,13,.5);
+  --a55:rgba(223,242,13,.55);
+  --r10:rgba(255,77,77,.10); --r12:rgba(255,77,77,.12);
+  --r15:rgba(255,77,77,.15); --r40:rgba(255,77,77,.4);
+  --scrim6:rgba(0,0,0,.6); --scrim7:rgba(0,0,0,.7); --scrim75:rgba(0,0,0,.75);
+  --ink1:#1f1f1f; --ink2:#2a2a2a; --ink3:#8d8d8d; --ink4:#f2f2f2;
+  --accent-soft:#eaff6b;
+  --ok:#7ee787; --ok2:#4ade80; --ok3:#39ff88;
+  --info:#7fd7ff; --warn:#ffc357; --warn2:#ffd54a; --warn3:#ff9f0a;
+  --rose:#ff4d6d; --blue-wash:rgba(90,160,255,.055);
+}
+html[data-theme="light"]{
+  --w07:rgba(0,0,0,.05); --w09:rgba(0,0,0,.06);
+  --w10:rgba(0,0,0,.08); --w12:rgba(0,0,0,.09);
+  --w18:rgba(0,0,0,.14);
+  --a05:rgba(107,122,0,.07); --a09:rgba(107,122,0,.11);
+  --a14:rgba(107,122,0,.16); --a50:rgba(107,122,0,.5);
+  --a55:rgba(107,122,0,.55);
+  --r10:rgba(201,42,42,.08); --r12:rgba(201,42,42,.10);
+  --r15:rgba(201,42,42,.12); --r40:rgba(201,42,42,.35);
+  --scrim6:rgba(0,0,0,.42); --scrim7:rgba(0,0,0,.5); --scrim75:rgba(0,0,0,.55);
+  --ink1:#eceee7; --ink2:#e2e4dc; --ink3:#71736a; --ink4:#2a2b24;
+  --accent-soft:#5c6800;
+  --ok:#2f7a45; --ok2:#2f7a45; --ok3:#2b7a40;
+  --info:#1f6f9c; --warn:#9a6b00; --warn2:#8a5f00; --warn3:#a35a00;
+  --rose:#c2255c; --blue-wash:rgba(31,111,156,.06);
+}
+
+/* APSA1879 - lop 3: tach phan RGB ra bien de MOI muc alpha tu doi theo nen,
+   khong phai khai bao rieng tung muc .05 .08 .12 ... */
+:root{
+  --w-rgb:255,255,255;   /* mau phu trang tren nen toi */
+  --a-rgb:223,242,13;    /* vang thuong hieu */
+  --r-rgb:255,77,77;     /* do canh bao */
+  --card-rgb:11,11,11;   /* nen o bang dinh (sticky) */
+  --bar-rgb:0,0,0;       /* thanh tren cung */
+}
+html[data-theme="light"]{
+  --w-rgb:0,0,0;
+  --a-rgb:107,122,0;
+  --r-rgb:201,42,42;
+  --card-rgb:255,255,255;
+  --bar-rgb:255,255,255;
+}
+:root{ --lime:#7cff9e; }
+html[data-theme="light"]{ --lime:#1f7a3d; }
