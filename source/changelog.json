@@ -1,5 +1,5 @@
 {
-    "version": "2.0.23",
+    "version": "2.0.24",
     "updated": "2026-09-15",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-13",
             "note": "Phiên bản 2.0",
             "items": [
+                {
+                    "d": "2026-09-15",
+                    "v": "2.0.24",
+                    "t": "APSA1887 Better Me: khu vuc theo doi nhan vien fulltime (checklist rieng tu theo ngay + han + uu tien), 2 tab card. APSA1888 light mode: khung dialog trang vien cam toan he thong, chu den -> xam dam",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-15",
                     "v": "2.0.23",

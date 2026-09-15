@@ -654,7 +654,7 @@ html[data-theme="light"]{
   --border:rgba(0,0,0,.14); --border-hover:rgba(194,84,47,.55);
 
   /* --- chu --- */
-  --text:#141412; --text2:#57574f; --text3:#87877e;
+  --text:#2f2f2b; --text2:#57574f; --text3:#87877e;
 
   /* --- cam: mau nhan duy nhat --- */
   --accent:#c2542f; --accent2:#a8441f; --accent-soft:#a8441f;
@@ -807,3 +807,24 @@ html[data-theme="light"] #apsaTheme .as-sw .kn{
 }
 #apsaTheme .as-sw{ border:0 !important; }
 html[data-theme="light"] #apsaTheme .as-sw{ border:0 !important; }
+
+/* ---- APSA1888 — LIGHT MODE: khung pop-up nền trắng, viền cam ----
+   Ghi de lai block "APSA v1.2.16" o tren (dang ep #131313 !important). */
+html[data-theme="light"] .modal,
+html[data-theme="light"] .mbox,
+html[data-theme="light"] .dlg,
+html[data-theme="light"] .sheet,
+html[data-theme="light"] .popup-box {
+  background: #ffffff !important;
+  border: 1px solid var(--accent-fill) !important;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, .16) !important;
+}
+html[data-theme="light"] .modal > h2,
+html[data-theme="light"] .modal > form > h2,
+html[data-theme="light"] .mbox > h2,
+html[data-theme="light"] .dlg > h2,
+html[data-theme="light"] .modal > h3,
+html[data-theme="light"] .mbox > h3,
+html[data-theme="light"] .dlg > h3 {
+  color: var(--accent2) !important;
+}

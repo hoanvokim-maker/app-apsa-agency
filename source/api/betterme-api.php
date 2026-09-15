@@ -135,6 +135,33 @@ function bm_migrate(PDO $pdo)
             PRIMARY KEY (`id`),
             KEY `idx_topic` (`topic_id`)
         )" . $eng);
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `bm_reviews` (
+            `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            `owner_id` INT UNSIGNED NOT NULL,
+            `target_id` INT UNSIGNED NOT NULL,
+            `d` DATE NOT NULL,
+            `content` VARCHAR(500) NOT NULL DEFAULT '',
+            `done` TINYINT(1) NOT NULL DEFAULT 0,
+            `due_date` DATE NULL,
+            `prio` TINYINT(1) NOT NULL DEFAULT 2,
+            `sort_order` INT NOT NULL DEFAULT 0,
+            `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            `deleted_at` DATETIME NULL,
+            PRIMARY KEY (`id`),
+            KEY `idx_ot` (`owner_id`,`target_id`,`d`)
+        )" . $eng);
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `bm_feedback` (
+            `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            `target_id` INT UNSIGNED NOT NULL,
+            `author_id` INT UNSIGNED NOT NULL,
+            `author_name` VARCHAR(120) NOT NULL DEFAULT '',
+            `body` TEXT NULL,
+            `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            `deleted_at` DATETIME NULL,
+            PRIMARY KEY (`id`),
+            KEY `idx_target` (`target_id`)
+        )" . $eng);
     } catch (PDOException $e) {
         bm_fail('Khong tao duoc bang Better Me: ' . $e->getMessage(), 500);
     }
@@ -244,6 +271,140 @@ $B = bm_body();
 switch ($action) {
 
 /* --- Danh sach user + thong tin phien --- */
+/* --- APSA1887: Theo doi nhan vien fulltime (checklist rieng tu cua nguoi dang nhap) --- */
+case 'staff': {
+    if (!$IS_ADMIN) bm_fail('Chi Admin dung duoc muc nay.', 403);
+    $us = $pdo->query("SELECT id, display_name, username, position, avatar FROM `app_users`
+                       WHERE active = 1 AND (staff_type = 'inhouse' OR staff_type IS NULL OR staff_type = '')
+                       ORDER BY display_name ASC, username ASC")->fetchAll();
+    $cnt = array(); $opn = array(); $fbn = array();
+    $st = $pdo->prepare("SELECT target_id, COUNT(*) n, SUM(done = 0) o FROM `bm_reviews`
+                         WHERE owner_id = ? AND deleted_at IS NULL GROUP BY target_id");
+    $st->execute(array((int) $ME['id']));
+    foreach ($st->fetchAll() as $r) {
+        $cnt[(int) $r['target_id']] = (int) $r['n'];
+        $opn[(int) $r['target_id']] = (int) $r['o'];
+    }
+    foreach ($pdo->query("SELECT target_id, COUNT(*) n FROM `bm_feedback`
+                          WHERE deleted_at IS NULL GROUP BY target_id")->fetchAll() as $r) {
+        $fbn[(int) $r['target_id']] = (int) $r['n'];
+    }
+    $out = array();
+    foreach ($us as $u) {
+        $uid = (int) $u['id'];
+        $nm = trim((string) $u['display_name']);
+        if ($nm === '') $nm = (string) $u['username'];
+        $out[] = array(
+            'id' => $uid, 'name' => $nm,
+            'position' => (string) $u['position'], 'avatar' => (string) $u['avatar'],
+            'n' => isset($cnt[$uid]) ? $cnt[$uid] : 0,
+            'open' => isset($opn[$uid]) ? $opn[$uid] : 0,
+            'fb' => isset($fbn[$uid]) ? $fbn[$uid] : 0,
+        );
+    }
+    bm_ok(array('staff' => $out));
+}
+/* --- APSA1887: 1 nhan vien: checklist rieng + card gop y + topic ban ay tu dat --- */
+case 'review': {
+    if (!$IS_ADMIN) bm_fail('Chi Admin dung duoc muc nay.', 403);
+    $tid = isset($_GET['target_id']) ? (int) $_GET['target_id'] : 0;
+    if ($tid <= 0) bm_fail('Thieu nhan vien.');
+    $st = $pdo->prepare("SELECT * FROM `bm_reviews`
+                         WHERE owner_id = ? AND target_id = ? AND deleted_at IS NULL
+                         ORDER BY d DESC, sort_order ASC, id ASC");
+    $st->execute(array((int) $ME['id'], $tid));
+    $items = array();
+    foreach ($st->fetchAll() as $r) {
+        $items[] = array(
+            'id' => (int) $r['id'], 'd' => (string) $r['d'],
+            'content' => (string) $r['content'], 'done' => (int) $r['done'],
+            'due_date' => (string) $r['due_date'], 'prio' => (int) $r['prio'],
+        );
+    }
+    $st = $pdo->prepare("SELECT * FROM `bm_feedback`
+                         WHERE target_id = ? AND deleted_at IS NULL ORDER BY id DESC LIMIT 300");
+    $st->execute(array($tid));
+    $fbs = array();
+    foreach ($st->fetchAll() as $r) {
+        $fbs[] = array(
+            'id' => (int) $r['id'], 'author_id' => (int) $r['author_id'],
+            'author' => (string) $r['author_name'], 'body' => (string) $r['body'],
+            'at' => (string) $r['created_at'],
+        );
+    }
+    $st = $pdo->prepare("SELECT id, ym, title, how, status FROM `bm_topics`
+                         WHERE owner_id = ? AND deleted_at IS NULL ORDER BY ym DESC, id DESC");
+    $st->execute(array($tid));
+    $tps = array();
+    foreach ($st->fetchAll() as $r) {
+        $s2 = $pdo->prepare("SELECT done FROM `bm_steps` WHERE topic_id = ?");
+        $s2->execute(array((int) $r['id']));
+        $rows = $s2->fetchAll();
+        $dn = 0;
+        foreach ($rows as $x) if ((int) $x['done']) $dn++;
+        $tps[] = array(
+            'id' => (int) $r['id'], 'ym' => (string) $r['ym'],
+            'title' => (string) $r['title'], 'how' => (string) $r['how'],
+            'status' => (string) $r['status'], 'steps' => count($rows), 'done' => $dn,
+        );
+    }
+    bm_ok(array('items' => $items, 'feedback' => $fbs, 'topics' => $tps));
+}
+/* --- APSA1887: ghi / xoa 1 dong checklist rieng tu --- */
+case 'review-save': {
+    if (!$IS_ADMIN) bm_fail('Chi Admin dung duoc muc nay.', 403);
+    $rid = isset($B['id']) ? (int) $B['id'] : 0;
+    $tid = isset($B['target_id']) ? (int) $B['target_id'] : 0;
+    $ct = bm_s(isset($B['content']) ? $B['content'] : '', 500);
+    $dd = isset($B['d']) ? trim((string) $B['d']) : '';
+    if (!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $dd)) $dd = date('Y-m-d');
+    $du = isset($B['due_date']) ? trim((string) $B['due_date']) : '';
+    if (!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $du)) $du = null;
+    $pr = isset($B['prio']) ? (int) $B['prio'] : 2;
+    if ($pr < 1 || $pr > 3) $pr = 2;
+    $dn = !empty($B['done']) ? 1 : 0;
+    if ($rid > 0) {
+        $st = $pdo->prepare("UPDATE `bm_reviews` SET content = ?, d = ?, due_date = ?, prio = ?, done = ?
+                             WHERE id = ? AND owner_id = ? AND deleted_at IS NULL");
+        $st->execute(array($ct, $dd, $du, $pr, $dn, $rid, (int) $ME['id']));
+    } else {
+        if ($tid <= 0) bm_fail('Thieu nhan vien.');
+        if ($ct === '') bm_fail('Chua nhap noi dung.');
+        $st = $pdo->prepare("INSERT INTO `bm_reviews` (owner_id, target_id, d, content, done, due_date, prio)
+                             VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $st->execute(array((int) $ME['id'], $tid, $dd, $ct, $dn, $du, $pr));
+        $rid = (int) $pdo->lastInsertId();
+    }
+    bm_ok(array('id' => $rid));
+}
+case 'review-del': {
+    if (!$IS_ADMIN) bm_fail('Chi Admin dung duoc muc nay.', 403);
+    $rid = isset($B['id']) ? (int) $B['id'] : 0;
+    $st = $pdo->prepare("UPDATE `bm_reviews` SET deleted_at = NOW() WHERE id = ? AND owner_id = ?");
+    $st->execute(array($rid, (int) $ME['id']));
+    bm_ok(array('id' => $rid));
+}
+/* --- APSA1887: card gop y ve dong nghiep --- */
+case 'fb-add': {
+    $tid = isset($B['target_id']) ? (int) $B['target_id'] : 0;
+    $bd = bm_s(isset($B['body']) ? $B['body'] : '', 2000);
+    if ($tid <= 0) bm_fail('Chua chon nguoi nhan gop y.');
+    if ($bd === '') bm_fail('Chua nhap noi dung.');
+    if ($tid === (int) $ME['id']) bm_fail('Khong gop y cho chinh minh.');
+    $st = $pdo->prepare("INSERT INTO `bm_feedback` (target_id, author_id, author_name, body)
+                         VALUES (?, ?, ?, ?)");
+    $st->execute(array($tid, (int) $ME['id'], (string) $ME['display_name'], $bd));
+    bm_ok(array('id' => (int) $pdo->lastInsertId()));
+}
+case 'fb-del': {
+    $fid = isset($B['id']) ? (int) $B['id'] : 0;
+    $sql = "UPDATE `bm_feedback` SET deleted_at = NOW() WHERE id = ?";
+    $arg = array($fid);
+    if (!$IS_ADMIN) { $sql .= " AND author_id = ?"; $arg[] = (int) $ME['id']; }
+    $st = $pdo->prepare($sql);
+    $st->execute($arg);
+    bm_ok(array('id' => $fid));
+}
 case 'meta': {
     $us = $pdo->query("SELECT id, display_name, username FROM `app_users`
                         WHERE active = 1 ORDER BY display_name ASC, username ASC")->fetchAll();
