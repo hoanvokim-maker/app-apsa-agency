@@ -1,5 +1,5 @@
 {
-    "version": "2.0.34",
+    "version": "2.0.35",
     "updated": "2026-09-15",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-13",
             "note": "Phiên bản 2.0",
             "items": [
+                {
+                    "d": "2026-09-15",
+                    "v": "2.0.35",
+                    "t": "APSA1898 light mode: 156 rule ghi de nen hard-code toi / neon tren 30 trang (hang nhom, chip, nut) -> nen sang + chu dam",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-15",
                     "v": "2.0.34",
