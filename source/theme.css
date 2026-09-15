@@ -793,3 +793,17 @@ html[data-theme="light"] #apsaTheme .as-sw .kn{
 /* thanh ben thu gon thi an cong tac, giong nhu nhan chu */
 #apsaSide .as-sw{ opacity:0; transition:opacity .13s ease; }
 #apsaSide:hover .as-sw, body.as-pin #apsaSide .as-sw{ opacity:1; }
+
+/* APSA1886 - bo vien / khung quanh nut doi nen (ca khi dang focus) */
+#apsaTheme,
+#apsaTheme:hover,
+#apsaTheme:focus,
+#apsaTheme:focus-visible,
+#apsaTheme:active{
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+  -webkit-tap-highlight-color:transparent;
+}
+#apsaTheme .as-sw{ border:0 !important; }
+html[data-theme="light"] #apsaTheme .as-sw{ border:0 !important; }

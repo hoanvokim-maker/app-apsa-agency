@@ -333,12 +333,50 @@
   function AD_set(t){ try { localStorage.setItem(AD_TKEY, t); } catch (e) {} AD_apply(t); }
   window.APSA_setTheme = AD_set;
   AD_apply(AD_read());
+
+  /* APSA1885: theme luu theo TAI KHOAN, khong chi theo trinh duyet.
+     Ap tu localStorage truoc de khong nhay nen, roi hoi server de dong bo.
+     Dung app_user_prefs co san (key 'theme') nen khong phai doi cau truc bang. */
+  var AD_API = './api/auth-api.php';
+  function AD_pull(){
+    try {
+      fetch(AD_API + '?action=prefs-get&key=theme', { credentials: 'same-origin', cache: 'no-store' })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (j) {
+          if (!j || !j.ok || !j.data) return;
+          var v = j.data.value;
+          if (v !== 'light' && v !== 'dark') return;   /* chua tung chon -> giu may nay */
+          if (v === AD_read()) return;
+          try { localStorage.setItem(AD_TKEY, v); } catch (e) {}
+          AD_apply(v);
+          var b = document.getElementById('apsaTheme');
+          if (b) {
+            var sv = b.querySelector('svg'), tx = b.querySelector('.as-txt');
+            if (sv) sv.innerHTML = (v === 'light') ? I.sun : I.moon;
+            if (tx) tx.textContent = (v === 'light') ? 'Nền tối' : 'Nền sáng';
+            b.setAttribute('aria-checked', v === 'light' ? 'true' : 'false');
+          }
+        })
+        .catch(function () {});
+    } catch (e) {}
+  }
+  function AD_push(v){
+    try {
+      fetch(AD_API + '?action=prefs-save', {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: 'theme', value: v })
+      }).catch(function () {});
+    } catch (e) {}
+  }
+  AD_pull();
   document.addEventListener('click', function (e) {
     var b = (e.target && e.target.closest) ? e.target.closest('#apsaTheme') : null;
     if (!b) return;
     e.preventDefault();
     var next = AD_isLight() ? 'dark' : 'light';
     AD_set(next);
+  AD_push(next);   /* APSA1885: nho theo tai khoan */
     var sv = b.querySelector('svg'), tx = b.querySelector('.as-txt');
     if (sv) sv.innerHTML = (next === 'light') ? I.sun : I.moon;
     if (tx) tx.textContent = (next === 'light') ? 'Nền tối' : 'Nền sáng';
