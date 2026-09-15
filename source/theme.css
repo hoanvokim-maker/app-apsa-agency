@@ -713,3 +713,35 @@ html[data-theme="light"] .stt-paid{      background:#2f2f2b !important; color:#f
                                          border-color:#2f2f2b !important; }
 html[data-theme="light"] .stt-lost{      background:rgba(179,38,30,.10) !important; color:#b3261e !important;
                                          border-color:rgba(179,38,30,.4) !important; }
+
+/* =====================================================================
+   APSA1881 - XANH LA DAM cho nhom DUYET / HOAN THANH.
+   He mau nen sang chot lai 4 nghia: xam-den (cau truc), cam (dang chay),
+   xanh la dam (duyet & hoan thanh), do gach (qua han).
+   ===================================================================== */
+:root{
+  --appr-bg:rgba(59,201,255,.16);   /* nen toi: giu xanh duong nhu cu */
+  --appr-fg:#3bc9ff;
+  --done-fill:#2f2f2b; --done-fg:#ffffff;
+}
+html[data-theme="light"]{
+  --appr-bg:rgba(21,122,61,.13);
+  --appr-fg:#12693a;
+  --done-fill:#157a3d; --done-fg:#ffffff;
+  /* moi thu mang nghia "hoan thanh" deu keo ve xanh la dam */
+  --green:#157a3d; --lime:#157a3d;
+  --ok:#157a3d; --ok2:#157a3d; --ok3:#12693a;
+}
+/* Chip trang thai: 3 buoc hoan thanh -> xanh la dam.
+   Gui nghiem thu KHONG tinh la hoan thanh (moi gui ho so, tien chua ve) -> giu xam. */
+html[data-theme="light"] .stt-service_done,
+html[data-theme="light"] .stt-done,
+html[data-theme="light"] .stt-dong_du_an,
+html[data-theme="light"] .stt-paid{
+  background:var(--done-fill) !important;
+  color:var(--done-fg) !important;
+  border-color:#11602f !important;
+}
+html[data-theme="light"] .stt-liq_sent{
+  background:#57574f !important; color:#ffffff !important; border-color:#45453f !important;
+}

@@ -661,7 +661,7 @@ table.q tbody tr.dragblock td{ background:var(--a05); }
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/theme.css?v=35" />
+<link rel="stylesheet" href="/theme.css?v=36" />
 <script src="/apsa-ui.js?v=49"></script>
   <script src="/perm-guard.js?v=3"></script>
 <script src="/exp-qr.js?v=10"></script>
@@ -1943,9 +1943,9 @@ function apprRank(r){
 function apprCell(r){
   const v = apprRank(r);
   const css = 'display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;';
-  if (v === 1)  return '<td class="sm"><span style="' + css + 'background:rgba(59,201,255,.16);color:#3bc9ff">Đã duyệt</span></td>';
+  if (v === 1)  return '<td class="sm"><span style="' + css + 'background:var(--appr-bg);color:var(--appr-fg)">Đã duyệt</span></td>';
   if (v === -1) return '<td class="sm"><span style="' + css + 'background:var(--red-wash);color:var(--red-soft)">Trượt</span></td>';
-  return '<td class="sm"><span style="' + css + 'background:var(--w07);color:#8a8a8a">Chưa duyệt</span></td>';
+  return '<td class="sm"><span style="' + css + 'background:var(--w07);color:var(--text3)">Chưa duyệt</span></td>';
 }
 
 function statusCell(r){
