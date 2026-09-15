@@ -905,3 +905,15 @@ html[data-theme="light"] #apsaHam .hdot,
 html[data-theme="light"] #apsaSide .as-bell .as-dot {
   color: #f6f6f4 !important;
 }
+
+/* ---- APSA1891b — Dong tre han / sap den han: van giu mau theo trang thai ----
+   Nen de trong suot cho thay mau canh bao cua ca dong, chi chu + vien theo trang thai.
+   Can "html body" de thang do uu tien so voi rule .chktbl trong quotation.html. */
+html body table.chktbl tr.it.late select.asgst-todo,
+html body table.chktbl tr.it.soon select.asgst-todo   { color:var(--as-todo) !important;  border-color:var(--as-todo-bd) !important; }
+html body table.chktbl tr.it.late select.asgst-doing,
+html body table.chktbl tr.it.soon select.asgst-doing  { color:var(--as-doing) !important; border-color:var(--as-doing-bd) !important; }
+html body table.chktbl tr.it.late select.asgst-review,
+html body table.chktbl tr.it.soon select.asgst-review { color:var(--as-rev) !important;   border-color:var(--as-rev-bd) !important; }
+html body table.chktbl tr.it.late select.asgst-done,
+html body table.chktbl tr.it.soon select.asgst-done   { color:var(--as-done) !important;  border-color:var(--as-done-bd) !important; }
