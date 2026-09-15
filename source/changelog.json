@@ -1,5 +1,5 @@
 {
-    "version": "2.0.27",
+    "version": "2.0.28",
     "updated": "2026-09-15",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-13",
             "note": "Phiên bản 2.0",
             "items": [
+                {
+                    "d": "2026-09-15",
+                    "v": "2.0.28",
+                    "t": "APSA1891 moi trang thai checklist mot mau rieng (todo xam / doing xanh duong / review vang / done xanh la dam). APSA1892 light mode: dao mau icon + so dem tren o nen xam dam. theme.css v45",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-15",
                     "v": "2.0.27",

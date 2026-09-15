@@ -864,3 +864,44 @@ a.btn,
   line-height: 26px !important;
   box-sizing: border-box !important;
 }
+
+/* ---- APSA1891 — Moi trang thai checklist mot mau rieng ----
+   todo = xam, doing = xanh duong, review = vang cam dam, done = xanh la dam. */
+:root{
+  --as-todo:#9aa3b2;  --as-todo-bg:rgba(255,255,255,.06);  --as-todo-bd:rgba(255,255,255,.16);
+  --as-doing:#7c9cff; --as-doing-bg:rgba(124,156,255,.15); --as-doing-bd:rgba(124,156,255,.45);
+  --as-rev:#ffb020;   --as-rev-bg:rgba(255,176,32,.15);    --as-rev-bd:rgba(255,176,32,.45);
+  --as-done:#4ade80;  --as-done-bg:rgba(74,222,128,.15);   --as-done-bd:rgba(74,222,128,.45);
+}
+html[data-theme="light"]{
+  --as-todo:#6e6e66;  --as-todo-bg:#f2f2f0;               --as-todo-bd:rgba(0,0,0,.16);
+  --as-doing:#2f5fd0; --as-doing-bg:rgba(47,95,208,.10);  --as-doing-bd:rgba(47,95,208,.40);
+  --as-rev:#a86500;   --as-rev-bg:rgba(168,101,0,.11);    --as-rev-bd:rgba(168,101,0,.40);
+  --as-done:#157a3d;  --as-done-bg:rgba(21,122,61,.12);   --as-done-bd:rgba(21,122,61,.42);
+}
+select.asgst{ font-weight:600 !important; }
+select.asgst-todo  { color:var(--as-todo) !important;  background-color:var(--as-todo-bg) !important;  border-color:var(--as-todo-bd) !important; }
+select.asgst-doing { color:var(--as-doing) !important; background-color:var(--as-doing-bg) !important; border-color:var(--as-doing-bd) !important; }
+select.asgst-review{ color:var(--as-rev) !important;   background-color:var(--as-rev-bg) !important;   border-color:var(--as-rev-bd) !important; }
+select.asgst-done  { color:var(--as-done) !important;  background-color:var(--as-done-bg) !important;  border-color:var(--as-done-bd) !important; }
+select.asgst option{ color:var(--text); background:var(--bg-card,var(--bg2)); font-weight:500; }
+
+/* ---- APSA1892 — Dao mau tren nhung o nen xam dam (light mode) ----
+   Sprite icon ve bang var(--text)/var(--text2)/var(--text3); tren nen xam dam
+   phai dao thanh xam sang, neu khong se trung mau voi nen. */
+html[data-theme="light"] .card-icon,
+html[data-theme="light"] .card-star,
+html[data-theme="light"] #apsaHam {
+  --text: #f2f2f0;
+  --text2: #dcdcd8;
+  --text3: #aeaea6;
+  --ink3: #dcdcd8;
+  --ink4: #f2f2f0;
+  color: #f2f2f0 !important;
+}
+html[data-theme="light"] #apsaHam:hover { color: #ffffff !important; }
+/* So dem trong huy hieu tron: chu xam sang cho noi tren nen cam/do */
+html[data-theme="light"] #apsaHam .hdot,
+html[data-theme="light"] #apsaSide .as-bell .as-dot {
+  color: #f6f6f4 !important;
+}

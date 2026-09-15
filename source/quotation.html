@@ -661,7 +661,7 @@ table.q tbody tr.dragblock td{ background:var(--a05); }
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/theme.css?v=43" />
+<link rel="stylesheet" href="/theme.css?v=45" />
 <script src="/apsa-ui.js?v=53"></script>
   <script src="/perm-guard.js?v=3"></script>
 <script src="/exp-qr.js?v=10"></script>
@@ -2469,7 +2469,7 @@ function renderAsg(){
       `<td><input value="${esc(a.name || '')}" placeholder="Tên công việc" oninput="asgSet(${i},'name',this.value)" /></td>` +
       `<td style="width:210px"><select onchange="asgSet(${i},'who',this.value)">${whoOpts(a)}</select></td>` +
       `<td style="width:145px"><input type="date" value="${esc(a.due_date || '')}" onchange="asgSet(${i},'due_date',this.value)" /></td>` +
-      `<td style="width:150px"><select${(false /* APSA1847: ai cung doi duoc trang thai */) ? ' disabled title="Ch\u1ec9 ng\u01b0\u1eddi \u0111\u01b0\u1ee3c giao m\u1edbi \u0111\u1ed5i \u0111\u01b0\u1ee3c tr\u1ea1ng th\u00e1i"' : ''} onchange="asgSet(${i},'status',this.value)">${chkOpts(stats, a.status || 'todo')}</select></td>` +
+      `<td style="width:150px"><select class="asgst asgst-${a.status || 'todo'}"${(false /* APSA1847: ai cung doi duoc trang thai */) ? ' disabled title="Ch\u1ec9 ng\u01b0\u1eddi \u0111\u01b0\u1ee3c giao m\u1edbi \u0111\u1ed5i \u0111\u01b0\u1ee3c tr\u1ea1ng th\u00e1i"' : ''} onchange="asgSet(${i},'status',this.value)">${chkOpts(stats, a.status || 'todo')}</select></td>` +
       `<td class="chk-p">${chkPrioBtn(a, i)}</td>` +
       del + `</tr>`;
   }).join('');
