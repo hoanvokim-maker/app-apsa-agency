@@ -2062,11 +2062,11 @@ case 'share-view': {
             'kind'           => (string) (isset($q['kind']) ? $q['kind'] : ''),
             'quotation_date' => (string) $q['quotation_date'],
             'event_date'     => (string) $q['event_date'],
-            'priority'     => (int) $q['priority'],
             'event_from'     => (string) $q['event_from'],
             'event_to'     => (string) $q['event_to'],
-            'cal_web_link'     => (string) $q['cal_web_link'],
-            'liq_date'       => (string) (isset($q['liq_date']) ? $q['liq_date'] : ''),
+            /* APSA1878: chi gui ngay nghiem thu khi link la link nghiem thu.
+               Link bao gia cho khach khong can biet moc noi bo nay. */
+            'liq_date'      => $isLiq ? (string) (isset($q['liq_date']) ? $q['liq_date'] : '') : '',
             'currency'       => (string) $q['currency'],
             'ma_percent'     => (float) $q['ma_percent'],
             'vat_percent'    => (float) $q['vat_percent'],

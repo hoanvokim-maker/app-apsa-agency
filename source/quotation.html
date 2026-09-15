@@ -2156,15 +2156,26 @@ function setQuoteUrl(q, push){
     else history.replaceState({ q: q ? (q.code || '') : '', id: q ? q.id : 0 }, '', url);
   } catch(e){}
 }
-function quoteUrl(){
-  const code = document.getElementById('fCode').value.trim();
-  return location.origin + location.pathname.replace(/[^/]*$/, 'quotation.html')
-       + (code ? '?q=' + encodeURIComponent(code) : (EDIT && EDIT.id ? '?id=' + EDIT.id : ''));
-}
-function copyQuoteLink(){
-  navigator.clipboard.writeText(quoteUrl())
-    .then(() => toast('Đã chép link báo giá này'))
-    .catch(() => toast('Không chép được link', 'err'));
+/* APSA1878: nut Chep link tra ve LINK CONG KHAI cho khach hang xem
+   (bao-gia.html?t=TOKEN) - khong can dang nhap. Truoc day no copy nham
+   quotation.html?q=CODE la trang noi bo, khach mo ra bi doi dang nhap. */
+async function copyQuoteLink(){
+  if (!EDIT || !EDIT.id) { toast('Hãy lưu báo giá trước khi lấy link chia sẻ', 'err'); return; }
+  try {
+    const d = await api(API, 'share-create', { body: { id: EDIT.id, scope: 'quote' } });
+    const tok = d && d.share && d.share.token;
+    if (!tok) throw new Error('Không tạo được link');
+    const url = location.origin
+      + location.pathname.replace(/[^/]*$/, 'bao-gia.html') + '?t=' + encodeURIComponent(tok);
+    try { await navigator.clipboard.writeText(url); }
+    catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); } finally { document.body.removeChild(ta); }
+    }
+    toast('Đã chép link công khai — khách mở được ngay, không cần đăng nhập', 'ok');
+  } catch (e) { toast(e.message || 'Không chép được link', 'err'); }
 }
 
 async function openQuote(id, opts){
