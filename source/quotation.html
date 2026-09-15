@@ -164,7 +164,7 @@ table.t tbody tr.done td{ opacity:.62; }
 .caret{ color:var(--text3); font-size:10px; display:inline-block; transition:transform .2s; }
 tr.open .caret{ transform:rotate(90deg); color:var(--accent2); }
 .chip{ display:inline-block; font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:20px; white-space:nowrap; }
-.chip.unpaid{ color:#e6e6e6; background:var(--wash3); border:1px solid rgba(var(--w-rgb),.3); }
+.chip.unpaid{ color:var(--text); background:var(--wash3); border:1px solid rgba(var(--w-rgb),.3); }
 .chip.partial{ color:var(--accent-soft); background:rgba(var(--a-rgb),.15); border:1px solid rgba(var(--a-rgb),.36); }
 .chip.paid{ color:var(--accent-soft); background:var(--a14); border:1px solid rgba(var(--a-rgb),.34); }
 .chip.od{ color:var(--red-soft2); background:var(--r15); border:1px solid rgba(var(--r-rgb),.36); }
@@ -196,7 +196,7 @@ table.pt td{ padding:6px 10px; border-top:1px solid var(--border); background:tr
 .mlchk{ display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--text2); margin:2px 0 10px; cursor:pointer; }
 .mlchk input{ width:15px; height:15px; accent-color:var(--accent); }
 .mlfiles{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
-.mlfiles .att{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; color:#9dffc0;
+.mlfiles .att{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; color:var(--ok);
   background:rgba(57,255,136,.12); border:1px solid rgba(57,255,136,.35); border-radius:8px; padding:5px 10px; }
 .mlhint{ font-size:11.5px; color:var(--text3); line-height:1.55; margin:-4px 0 14px; }
 #ctOv .mlact .btn{ width:auto; min-width:118px; padding:10px 18px; }
@@ -303,7 +303,7 @@ tr.flash td{ animation:flash 1.1s ease-out; }
 .qbtn{ width:27px; height:27px; border-radius:8px; border:1px solid var(--border); background:var(--bg3); color:var(--text2);
   cursor:pointer; font-size:12px; display:inline-flex; align-items:center; justify-content:center; transition:.15s; flex-shrink:0; }
 .qbtn:hover{ color:var(--bg); background:var(--accent); border-color:var(--accent); }
-.qbtn.pay:hover{ background:#8ee06a; border-color:#8ee06a; }
+.qbtn.pay:hover{ background:#8ee06a; border-color:var(--ok); }
 .qbtn:disabled{ opacity:.4; cursor:not-allowed; }
 .qhint{ font-size:10px; color:var(--text3); margin-top:3px; display:block; }
 
@@ -322,10 +322,10 @@ tr.flash td{ animation:flash 1.1s ease-out; }
 .log .lc{ font-size:11px; color:var(--text2); margin-top:2px; }
 .log .tag{ display:inline-block; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.4px;
   padding:1px 7px; border-radius:20px; border:1px solid var(--border); color:var(--text3); }
-.log .tag.pay{ color:#a7e07a; border-color:rgba(167,224,122,.4); background:rgba(167,224,122,.1); }
+.log .tag.pay{ color:var(--ok); border-color:rgba(167,224,122,.4); background:rgba(167,224,122,.1); }
 .log .tag.create{ color:var(--accent-soft); border-color:rgba(var(--a-rgb),.4); background:rgba(var(--a-rgb),.1); }
 .log .tag.delete, .log .tag.purge{ color:var(--red-soft2); border-color:var(--r40); background:var(--r10); }
-.log .tag.update{ color:#8fd0ff; border-color:rgba(143,208,255,.4); background:rgba(143,208,255,.1); }
+.log .tag.update{ color:var(--info); border-color:rgba(143,208,255,.4); background:rgba(143,208,255,.1); }
 
 .sect{ margin-top:22px; }
 .sect .sh{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
@@ -613,7 +613,7 @@ table.imptbl td.n{ text-align:right; font-variant-numeric:tabular-nums; white-sp
 .sumcard .r .c2{ min-width:120px; text-align:right; color:var(--info); }
 .sumcard .r .c3{ min-width:110px; text-align:right; }
 .sumcard .r .c3.up{ color:var(--ok3); } .sumcard .r .c3.down{ color:var(--rose); }
-.hbtn.liqon{ background:rgba(0,140,255,.16); border-color:rgba(127,215,255,.55); color:#bfeaff; }
+.hbtn.liqon{ background:rgba(0,140,255,.16); border-color:rgba(127,215,255,.55); color:var(--info); }
 .rowbtn{ width:24px; height:24px; border-radius:6px; border:1px solid transparent; background:transparent; color:var(--text3);
   cursor:pointer; font-size:11px; display:inline-flex; align-items:center; justify-content:center; transition:.15s; }
 .rowbtn:hover{ color:var(--bg); background:var(--accent); border-color:var(--accent); }
@@ -662,7 +662,7 @@ table.q tbody tr.dragblock td{ background:var(--a05); }
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/theme.css?v=36" />
-<script src="/apsa-ui.js?v=49"></script>
+<script src="/apsa-ui.js?v=50"></script>
   <script src="/perm-guard.js?v=3"></script>
 <script src="/exp-qr.js?v=10"></script>
 <script src="/exp-day.js?v=6"></script>
@@ -734,13 +734,13 @@ select#fStatus option{background:var(--bg3);color:var(--ink4);font-weight:600;te
 .qcmd textarea{width:100%;min-height:92px;resize:vertical;background:var(--bg-card);border:1px solid var(--ink2);
   border-radius:10px;color:var(--ink4);font:inherit;font-size:14px;padding:11px 13px;outline:none}
 .qcmd textarea:focus{border-color:var(--accent-fill)}
-.qcmd .err{display:none;background:#241615;border:1px solid #4a2523;color:#ff8a80;border-radius:10px;
+.qcmd .err{display:none;background:#241615;border:1px solid #4a2523;color:var(--red-soft);border-radius:10px;
   padding:10px 13px;font-size:13px;margin-bottom:14px}
 .qcmd .row{display:flex;gap:10px;margin-top:18px}
 .qcmd .row button{flex:1;appearance:none;border:0;border-radius:11px;font:inherit;font-size:14px;
   font-weight:700;padding:12px;cursor:pointer}
 .qcmd .row .p{background:var(--accent-fill);color:var(--bg-card)}
-.qcmd .row .s{background:#1e1e1e;color:#c8c8c8;border:1px solid var(--ink2)}
+.qcmd .row .s{background:#1e1e1e;color:var(--text2);border:1px solid var(--ink2)}
 
 #qcToast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--accent-fill);color:var(--bg-card);
   font-weight:700;font-size:13px;padding:11px 20px;border-radius:11px;z-index:700;opacity:0;
@@ -811,8 +811,8 @@ table.q tbody tr.g3>td:first-child{border-left:3px solid var(--warn3)}
 .prio-cell{width:66px!important}
 .priochip.ico{width:30px;height:24px;padding:0!important;gap:0;justify-content:center}
 .priochip.ico .ic{margin:0}
-.chip.kd-media{border-color:rgba(90,160,255,.55)!important;background:rgba(90,160,255,.14)!important;color:#7fb4ff!important}
-.chip.kd-production{border-color:rgba(255,159,10,.60)!important;background:rgba(255,159,10,.15)!important;color:#ffb043!important}
+.chip.kd-media{border-color:rgba(90,160,255,.55)!important;background:rgba(90,160,255,.14)!important;color:var(--info)!important}
+.chip.kd-production{border-color:rgba(255,159,10,.60)!important;background:rgba(255,159,10,.15)!important;color:var(--warn)!important}
 .dmy{position:relative;display:block;width:100%}
 .dmy>input.dmy-t{width:100%;padding-right:26px}
 .dmy>input.dmy-h{position:absolute!important;right:0;top:0;height:100%;width:26px!important;
@@ -892,8 +892,8 @@ table.chktbl tr.it.late > td{ background:rgba(255,77,79,.26) !important; }
 table.chktbl tr.it.soon > td{ background:rgba(255,176,32,.24) !important; }
 table.chktbl tr.it.late > td input, table.chktbl tr.it.late > td select,
 table.chktbl tr.it.soon > td input, table.chktbl tr.it.soon > td select{ background:transparent !important; border-color:var(--wash3) !important; }
-table.chktbl tr.it.late input, table.chktbl tr.it.late select, table.chktbl tr.it.late .dmy-t{ color:#ffdede !important; }
-table.chktbl tr.it.soon input, table.chktbl tr.it.soon select, table.chktbl tr.it.soon .dmy-t{ color:#ffeccb !important; }
+table.chktbl tr.it.late input, table.chktbl tr.it.late select, table.chktbl tr.it.late .dmy-t{ color:var(--red-soft) !important; }
+table.chktbl tr.it.soon input, table.chktbl tr.it.soon select, table.chktbl tr.it.soon .dmy-t{ color:var(--warn) !important; }
 table.chktbl tr.it.late select option, table.chktbl tr.it.soon select option{ background:var(--bg3) !important; color:var(--text) !important; }
 table.chktbl tr.it.done > td input, table.chktbl tr.it.done > td select{ opacity:.62; }
 table.chktbl td.chk-x{ width:34px; text-align:center; }
@@ -904,8 +904,8 @@ table.chktbl input.dmy-h{ opacity:0 !important; }
 table.exptbl input:disabled{ opacity:.4; cursor:not-allowed; }
 /* APSA1827: du an an */
 .hidepill{ display:inline-block; background:var(--red-soft); color:var(--text); font-size:9.5px; font-weight:800; letter-spacing:.06em; padding:1px 6px; border-radius:5px; margin-right:7px; vertical-align:1px; }
-body.quo-hidden #btnHide{ color:#ff8a8a; }
-body.quo-hidden .qhead::after{ content:'DỰ ÁN ẨN — CHỈ ADMIN THẤY'; display:inline-block; margin-left:10px; font-size:10px; font-weight:800; letter-spacing:.08em; color:#ff8a8a; border:1px solid rgba(255,107,107,.45); border-radius:6px; padding:2px 8px; vertical-align:3px; }
+body.quo-hidden #btnHide{ color:var(--red-soft); }
+body.quo-hidden .qhead::after{ content:'DỰ ÁN ẨN — CHỈ ADMIN THẤY'; display:inline-block; margin-left:10px; font-size:10px; font-weight:800; letter-spacing:.08em; color:var(--red-soft); border:1px solid rgba(255,107,107,.45); border-radius:6px; padding:2px 8px; vertical-align:3px; }
 /* APSA1822: che thong tin tien cua du an voi vi tri khong duoc cap quyen */
 body.nofin #quoSec,
 body.nofin .sumbox,
@@ -4545,7 +4545,7 @@ function showImp(){
       '<label><input type="checkbox" id="impMeta" /> Cập nhật cả thông tin chung (tên khách, MST, địa chỉ, ngày, event date)</label>' +
       (d.liq ? '<label><input type="checkbox" id="impLiq" checked /> Nạp cả số liệu nghiệm thu (cột bên phải)</label>' : '') +
     '</div>' +
-    '<div class="impwarn" style="color:#ff9d9d;background:var(--r10);border-color:rgba(var(--r-rgb),.35)">' +
+    '<div class="impwarn" style="color:var(--red-soft);background:var(--r10);border-color:rgba(var(--r-rgb),.35)">' +
       'Toàn bộ bảng hạng mục hiện tại sẽ bị thay bằng nội dung file. File đính kèm PO và hóa đơn không bị ảnh hưởng.' +
     '</div>';
 
