@@ -78,7 +78,7 @@ CREATE TABLE `activity_log` (
   KEY `k_quo` (`quotation_id`),
   KEY `k_user` (`user_id`),
   KEY `k_area` (`area`)
-) ENGINE=InnoDB AUTO_INCREMENT=760 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=764 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -834,6 +834,10 @@ INSERT INTO `activity_log` VALUES (756,'2026-09-15 15:14:44',5,'Nhật Tân','ch
 INSERT INTO `activity_log` VALUES (757,'2026-09-15 15:14:44',5,'Nhật Tân','expense','expenses-save','Lưu chi phí thực tế',44,'02072026-106','','quotation_id: 44 · list: 12 mục');
 INSERT INTO `activity_log` VALUES (758,'2026-09-15 15:52:37',1,'Harris','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
 INSERT INTO `activity_log` VALUES (759,'2026-09-15 15:52:37',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (760,'2026-09-15 16:27:13',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (761,'2026-09-15 16:27:13',1,'Harris','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (762,'2026-09-15 16:27:50',1,'Harris','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (763,'2026-09-15 16:27:50',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
 /*!40000 ALTER TABLE `activity_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3018,7 +3022,7 @@ CREATE TABLE `frame_events` (
 
 LOCK TABLES `frame_events` WRITE;
 /*!40000 ALTER TABLE `frame_events` DISABLE KEYS */;
-INSERT INTO `frame_events` VALUES (2,'blood-cancer-awareness','Blood-Cancer-Awareness','','2026-09-13','2026-10-22',1,54,15,'Harris','2026-09-13 15:14:49');
+INSERT INTO `frame_events` VALUES (2,'blood-cancer-awareness','Blood-Cancer-Awareness','','2026-09-13','2026-10-22',1,57,15,'Harris','2026-09-13 15:14:49');
 /*!40000 ALTER TABLE `frame_events` ENABLE KEYS */;
 UNLOCK TABLES;
 

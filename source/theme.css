@@ -641,3 +641,75 @@ html[data-theme="light"]{
   --slate:#5b626e; --slate2:#6e7178; --blue:#3355cc;
   --gold:#8a6a00; --violet:#7b3fb8;
 }
+
+/* =====================================================================
+   APSA1880 - NEN SANG ban chot: nen TRANG that, bo het mau la,
+   he mau chi con XAM - DEN - CAM. Khoi nay dat cuoi file nen de len
+   moi gia tri light phia tren (cung do uu tien, khai bao sau thang).
+   ===================================================================== */
+html[data-theme="light"]{
+  /* --- nen: trang that, phan tach bang VIEN chu khong bang sac do --- */
+  --bg:#ffffff; --bg2:#ffffff; --bg3:#f6f6f5; --bg4:#ededeb;
+  --bg-card:#ffffff; --panel:#fafaf9; --panel2:#f1f1ef;
+  --border:rgba(0,0,0,.14); --border-hover:rgba(194,84,47,.55);
+
+  /* --- chu --- */
+  --text:#141412; --text2:#57574f; --text3:#87877e;
+
+  /* --- cam: mau nhan duy nhat --- */
+  --accent:#c2542f; --accent2:#a8441f; --accent-soft:#a8441f;
+  --accent-fill:#d97757; --accent-on:#ffffff;
+  --accent-glow:rgba(194,84,47,.14);
+
+  /* --- bo xanh la / xanh duong / tim / hong -> xam hoac cam --- */
+  --green:#2f2f2b; --lime:#2f2f2b; --cyan:#141412;
+  --pink:#c2542f; --yellow:#c2542f; --orange:#c2542f;
+  --ok:#4a4a44; --ok2:#4a4a44; --ok3:#3b3b36;
+  --info:#c2542f; --warn:#a8441f; --warn2:#a8441f; --warn3:#c2542f;
+  --blue:#c2542f; --gold:#a8441f; --violet:#57574f;
+  --slate:#57574f; --slate2:#6e6e66;
+  --blue-wash:rgba(194,84,47,.06);
+
+  /* --- canh bao giu mau do gach: cung ho am voi cam nhung van nhan ra ngay --- */
+  --red:#b3261e; --red-soft:#b3261e; --red-soft2:#c9422f;
+  --red-wash:rgba(179,38,30,.09);
+  --r10:rgba(179,38,30,.07); --r12:rgba(179,38,30,.09);
+  --r15:rgba(179,38,30,.11); --r40:rgba(179,38,30,.32);
+  --r-rgb:179,38,30;
+
+  /* --- cac lop alpha --- */
+  --w-rgb:0,0,0; --a-rgb:194,84,47; --card-rgb:255,255,255; --bar-rgb:255,255,255;
+  --w07:rgba(0,0,0,.045); --w09:rgba(0,0,0,.055);
+  --w10:rgba(0,0,0,.07);  --w12:rgba(0,0,0,.085);
+  --w18:rgba(0,0,0,.13);
+  --a05:rgba(194,84,47,.06); --a09:rgba(194,84,47,.10);
+  --a14:rgba(194,84,47,.14); --a50:rgba(194,84,47,.5);
+  --a55:rgba(194,84,47,.55);
+
+  --ink1:#f1f1ef; --ink2:#e8e8e6; --ink3:#6e6e66; --ink4:#2a2a26;
+  --scrim6:rgba(0,0,0,.4); --scrim7:rgba(0,0,0,.48); --scrim75:rgba(0,0,0,.52);
+  --shadow:rgba(0,0,0,.10);
+}
+html[data-theme="light"] body{ background:var(--bg); color:var(--text); }
+
+/* APSA1880 - chip trang thai o nen sang: bo mau sac, phan biet bang DO DAM.
+   Cang ve cuoi quy trinh cang dam; giai doan dang chay dung cam de noi bat. */
+html[data-theme="light"] .stt{
+  border:1px solid rgba(0,0,0,.14) !important;
+  font-weight:700 !important;
+}
+html[data-theme="light"] .stt-request{   background:#fbfbfa !important; color:#6e6e66 !important; }
+html[data-theme="light"] .stt-quote{     background:#f2f2f0 !important; color:#4a4a44 !important; }
+html[data-theme="light"] .stt-confirmed{ background:rgba(194,84,47,.10) !important; color:#a8441f !important;
+                                         border-color:rgba(194,84,47,.38) !important; }
+html[data-theme="light"] .stt-running{   background:#d97757 !important; color:#ffffff !important;
+                                         border-color:#c2542f !important; }
+html[data-theme="light"] .stt-service_done,
+html[data-theme="light"] .stt-liq_sent{  background:#57574f !important; color:#ffffff !important;
+                                         border-color:#45453f !important; }
+html[data-theme="light"] .stt-done,
+html[data-theme="light"] .stt-dong_du_an,
+html[data-theme="light"] .stt-paid{      background:#2f2f2b !important; color:#ffffff !important;
+                                         border-color:#2f2f2b !important; }
+html[data-theme="light"] .stt-lost{      background:rgba(179,38,30,.10) !important; color:#b3261e !important;
+                                         border-color:rgba(179,38,30,.4) !important; }
