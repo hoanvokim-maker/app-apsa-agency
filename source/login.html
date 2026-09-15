@@ -21,7 +21,28 @@
       --accent-glow: rgba(223,242,13,0.35);
       --red: #ff4d4d;
       --radius: 14px;
+  --w-rgb: 255,255,255;
     }
+
+/* ---- APSA1895 — LIGHT MODE cho trang nay ----
+   Trang tu khai bo token rieng o :root nen de len theme.css;
+   khoi duoi day dinh nghia lai dung bo token do cho nen sang. */
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --bg2: #ffffff;
+  --bg3: #fafaf9;
+  --border: rgba(0,0,0,.14);
+  --border-hover: rgba(194,84,47,.55);
+  --text: #3a3a34;
+  --text2: #57574f;
+  --text3: #87877e;
+  --accent: #d97757;
+  --accent2: #d97757;
+  --accent-glow: rgba(217,119,87,.35);
+  --red: #b3261e;
+  --w-rgb: 0,0,0;
+}
+ }
 
     body {
       font-family: 'Oxanium', sans-serif;
@@ -121,7 +142,7 @@
       background: none; border: 0; border-radius: 8px; cursor: pointer;
       color: #9a9a9a; transition: color .15s, background .15s;
     }
-    .pw-eye:hover { color: var(--accent, #dff20d); background: rgba(255,255,255,.07); }
+    .pw-eye:hover { color: var(--accent, #dff20d); background: rgba(var(--w-rgb),.07); }
     .pw-eye:focus-visible { outline: 2px solid var(--accent, #dff20d); outline-offset: 2px; }
     .pw-eye svg { width: 18px; height: 18px; display: block; }
 
@@ -166,7 +187,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/theme.css?v=47" />
+<link rel="stylesheet" href="/theme.css?v=48" />
 </head>
 <body>
 

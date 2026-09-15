@@ -34,6 +34,33 @@
   --accent:#dff20d; --accent2:#c9dd00; --accent-glow:rgba(223,242,13,.35);
   --green:#dff20d; --orange:#ffffff; --pink:#c9dd00; --cyan:#ffffff; --red:#ff4d4d; --yellow:#dff20d;
   --radius:14px;
+  --w-rgb: 255,255,255;
+}
+
+/* ---- APSA1895 — LIGHT MODE cho trang nay ----
+   Trang tu khai bo token rieng o :root nen de len theme.css;
+   khoi duoi day dinh nghia lai dung bo token do cho nen sang. */
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --bg2: #ffffff;
+  --bg3: #fafaf9;
+  --border: rgba(0,0,0,.14);
+  --border-hover: rgba(194,84,47,.55);
+  --text: #3a3a34;
+  --text2: #57574f;
+  --text3: #87877e;
+  --accent: #d97757;
+  --accent2: #d97757;
+  --accent-glow: rgba(217,119,87,.35);
+  --green: #d97757;
+  --orange: #242424;
+  --pink: #d97757;
+  --cyan: #242424;
+  --red: #b3261e;
+  --yellow: #d97757;
+  --w-rgb: 0,0,0;
+}
+
 }
 
 body{
@@ -335,14 +362,14 @@ table.asg col.c-stat{ width:132px; }
   font-weight:700; letter-spacing:.3px; white-space:nowrap;
 }
 .pos-account{ background:rgba(223,242,13,.16); color:#eaff6b; }
-.pos-admin{ background:rgba(255,255,255,.12); color:#ffffff; }
+.pos-admin{ background:rgba(var(--w-rgb),.12); color:#ffffff; }
 .pos-designer{ background:rgba(126,231,135,.15); color:#7ee787; }
 .pos-editor{ background:rgba(120,180,255,.15); color:#8ec5ff; }
 .pos-none{ background:var(--bg3); color:var(--text3); }
 .fl-tag{
   display:inline-block; margin-left:5px; padding:1px 6px; border-radius:20px;
   font-size:9.5px; font-weight:800; letter-spacing:.4px;
-  background:rgba(255,255,255,.1); color:var(--text2);
+  background:rgba(var(--w-rgb),.1); color:var(--text2);
 }
 .ssel{
   background:var(--bg3); border:1px solid var(--border); color:var(--text);
@@ -387,7 +414,7 @@ table.asg col.c-stat{ width:132px; }
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/theme.css?v=47" />
+<link rel="stylesheet" href="/theme.css?v=48" />
 <script src="/apsa-ui.js?v=54"></script>
   <script src="/perm-guard.js?v=3"></script>
   <script src="/apsa-dirty.js?v=2"></script>

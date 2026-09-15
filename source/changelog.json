@@ -1,5 +1,5 @@
 {
-    "version": "2.0.31",
+    "version": "2.0.32",
     "updated": "2026-09-15",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-13",
             "note": "Phiên bản 2.0",
             "items": [
+                {
+                    "d": "2026-09-15",
+                    "v": "2.0.32",
+                    "t": "APSA1895 light mode toan he thong: 38 trang tu khai token rieng o :root nay da co khoi html[data-theme=light] tuong ung (neon -> cam, nen den -> trang, chu trang -> xam dam, rgba trang -> rgba den)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-15",
                     "v": "2.0.31",

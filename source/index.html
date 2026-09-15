@@ -48,7 +48,33 @@
       --yellow: #dff20d;
       --red: #ff4d4d;
       --radius: 14px;
+  --w-rgb: 255,255,255;
     }
+
+/* ---- APSA1895 — LIGHT MODE cho trang nay ----
+   Trang tu khai bo token rieng o :root nen de len theme.css;
+   khoi duoi day dinh nghia lai dung bo token do cho nen sang. */
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --bg2: #ffffff;
+  --bg3: #fafaf9;
+  --border: rgba(0,0,0,.14);
+  --border-hover: rgba(194,84,47,.55);
+  --text: #3a3a34;
+  --text2: #57574f;
+  --text3: #87877e;
+  --accent: #d97757;
+  --accent2: #d97757;
+  --accent-glow: rgba(217,119,87,.35);
+  --green: #d97757;
+  --orange: #242424;
+  --pink: #d97757;
+  --cyan: #242424;
+  --yellow: #d97757;
+  --red: #b3261e;
+  --w-rgb: 0,0,0;
+}
+ }
 
     html { scroll-behavior: smooth; }
 
@@ -729,7 +755,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/theme.css?v=47" />
+<link rel="stylesheet" href="/theme.css?v=48" />
 <script src="/apsa-ui.js?v=54"></script>
   <script src="/perm-guard.js?v=3"></script>
 </head>

@@ -12,6 +12,24 @@
   --text:#fff; --text2:rgba(255,255,255,.72); --text3:rgba(255,255,255,.45);
   --accent:#DFF20D; --heart:#ff3b5c;
   --safe-b:env(safe-area-inset-bottom,0px); --safe-t:env(safe-area-inset-top,0px);
+  --w-rgb: 255,255,255;
+}
+
+/* ---- APSA1895 — LIGHT MODE cho trang nay ----
+   Trang tu khai bo token rieng o :root nen de len theme.css;
+   khoi duoi day dinh nghia lai dung bo token do cho nen sang. */
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --bg2: #ffffff;
+  --line: rgba(0,0,0,.12);
+  --text: #3a3a34;
+  --text2: #57574f;
+  --text3: #87877e;
+  --accent: #d97757;
+  --heart: #b3261e;
+  --w-rgb: 0,0,0;
+}
+;
 }
 html,body{ height:100%; }
 body{ background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
@@ -29,7 +47,7 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .top .t b{ display:block; font-size:15px; font-weight:650; letter-spacing:-.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .top .t span{ display:block; font-size:11.5px; color:var(--text3); margin-top:1px; }
 .iconbtn{ width:38px; height:38px; border-radius:50%; display:grid; place-items:center; font-size:17px;
-  background:rgba(255,255,255,.10); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); flex:0 0 auto; }
+  background:rgba(var(--w-rgb),.10); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); flex:0 0 auto; }
 .iconbtn:active{ transform:scale(.92); }
 
 /* ── Lưới ── */
@@ -60,7 +78,7 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .rail.hide, .cap.hide{ opacity:0; pointer-events:none; }
 .rail .b{ display:flex; flex-direction:column; align-items:center; gap:3px; color:#fff; text-decoration:none; }
 .rail .b .ic{ width:46px; height:46px; border-radius:50%; display:grid; place-items:center; font-size:21px;
-  background:rgba(0,0,0,.38); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.38); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(var(--w-rgb),.12);
   transition:transform .18s cubic-bezier(.2,1.6,.4,1), background .18s; }
 .rail .b:active .ic{ transform:scale(.88); }
 .rail .b .n{ font-size:11px; font-weight:700; color:#fff; text-shadow:0 1px 4px rgba(0,0,0,.7); min-height:13px; }
@@ -82,7 +100,7 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .bottom .st{ flex:1; font-size:12px; color:var(--text3); }
 .bottom .st b{ color:var(--text); font-weight:700; }
 .pill{ padding:9px 14px; border-radius:999px; font-size:12.5px; font-weight:700;
-  background:rgba(255,255,255,.10); border:1px solid var(--line); }
+  background:rgba(var(--w-rgb),.10); border:1px solid var(--line); }
 .pill.go{ background:var(--accent); color:#000; border-color:transparent; }
 
 /* ── Bottom sheet ghi chú ── */
@@ -101,7 +119,7 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .sheet .row{ display:flex; gap:8px; }
 .sheet .row button{ flex:1; padding:13px; border-radius:12px; font-weight:700; font-size:14px; }
 .sheet .row .ok{ background:var(--accent); color:#000; }
-.sheet .row .no{ background:rgba(255,255,255,.10); }
+.sheet .row .no{ background:rgba(var(--w-rgb),.10); }
 
 .toast{ position:fixed; left:50%; bottom:calc(var(--safe-b) + 84px); transform:translateX(-50%) translateY(14px);
   background:rgba(20,20,20,.95); border:1px solid var(--line); color:#fff; padding:10px 16px; border-radius:999px;
@@ -113,7 +131,7 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .empty h2{ font-size:17px; margin-bottom:6px; }
 .empty p{ font-size:13px; color:var(--text3); line-height:1.6; }
 .brand{ position:fixed; bottom:calc(var(--safe-b) + 4px); left:0; right:0; text-align:center; font-size:10px;
-  color:rgba(255,255,255,.28); z-index:35; letter-spacing:.5px; pointer-events:none; }
+  color:rgba(var(--w-rgb),.28); z-index:35; letter-spacing:.5px; pointer-events:none; }
 </style>
 </head>
 <body>

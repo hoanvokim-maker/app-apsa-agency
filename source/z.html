@@ -19,7 +19,7 @@
   <title>Xác nhận - APSA</title>
   <link rel="icon" href="/favicon.zico" sizes="any">
   <meta name="theme-color" content="#dff20d">
-  <link rel="stylesheet" href="/theme.css?v=47">
+  <link rel="stylesheet" href="/theme.css?v=48">
 <style>
   :root { --bg:#0d0d0d; --card:#161616; --line:#2b2b2b; --text:#e8e8e8; --dim:#9a9a9a; --acc:#dff20d; }
   * { box-sizing: border-box; }
@@ -89,7 +89,22 @@
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;')
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  --w-rgb: 255,255,255;
   }
+
+/* ---- APSA1895 — LIGHT MODE cho trang nay ----
+   Trang tu khai bo token rieng o :root nen de len theme.css;
+   khoi duoi day dinh nghia lai dung bo token do cho nen sang. */
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --card: #ffffff;
+  --line: rgba(0,0,0,.12);
+  --text: #3a3a34;
+  --dim: #87877e;
+  --acc: #d97757;
+  --w-rgb: 0,0,0;
+}
+
   function show(id) {
     ['load', 'ask', 'msg'].forEach(function (k) { $(k).classList.toggle('zhide', k !== id); });
   }

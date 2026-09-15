@@ -461,8 +461,8 @@ html body select#fStatus:hover {
   }
   .modal .btn.primary:hover, .modal .btn-add:hover, .modal button[type="submit"]:hover,
   .mbox .btn.primary:hover, .mbox .btn-add:hover, .mbox button[type="submit"]:hover {
-    background: #eaff45 !important;
-    border-color: #eaff45 !important;
+    background: var(--btn-hover, #eaff45) !important;
+    border-color: var(--btn-hover, #eaff45) !important;
   }
 
   /* ── Nút phụ (Huỷ / Đóng) ────────────────────────────────────── */
@@ -929,4 +929,12 @@ html[data-theme="light"] .hbtn.primary:hover,
 html[data-theme="light"] .fb-btn:hover{
   color:#ffffff !important;
   border-color:var(--btn-hover) !important;
+}
+html[data-theme="light"] .modal .btn.primary:hover,
+html[data-theme="light"] .modal .btn-add:hover,
+html[data-theme="light"] .modal button[type="submit"]:hover,
+html[data-theme="light"] .mbox .btn.primary:hover,
+html[data-theme="light"] .mbox .btn-add:hover,
+html[data-theme="light"] .mbox button[type="submit"]:hover{
+  color:#ffffff !important;
 }

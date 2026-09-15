@@ -29,7 +29,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/theme.css?v=47" />
+  <link rel="stylesheet" href="/theme.css?v=48" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -39,7 +39,30 @@
       --green: #dff20d; --pink: #c9dd00; --red: #ff4d4d;
       --amber: #ffb020; --sky: #56ccf2;
       --r: 11px;
+  --w-rgb: 255,255,255;
     }
+
+/* ---- APSA1895 — LIGHT MODE cho trang nay ----
+   Trang tu khai bo token rieng o :root nen de len theme.css;
+   khoi duoi day dinh nghia lai dung bo token do cho nen sang. */
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --bg2: #ffffff;
+  --bg3: #fafaf9;
+  --bg4: #f2f2f0;
+  --border: rgba(0,0,0,.14);
+  --border-h: rgba(194,84,47,.55);
+  --text: #3a3a34;
+  --text2: #57574f;
+  --text3: #87877e;
+  --green: #d97757;
+  --pink: #d97757;
+  --red: #b3261e;
+  --amber: #a8441f;
+  --sky: #2f5fd0;
+  --w-rgb: 0,0,0;
+}
+ }
     html { scroll-behavior: smooth; }
     body { font-family: 'Oxanium', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
@@ -61,9 +84,9 @@
     .page-head { padding: 32px 28px 18px; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
     .gbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 12px; }
     .gtab { font-size: 12.5px; font-weight: 700; letter-spacing: .01em; color: var(--text2);
-            background: transparent; border: 1px solid rgba(255,255,255,.12); border-radius: 999px;
+            background: transparent; border: 1px solid rgba(var(--w-rgb),.12); border-radius: 999px;
             padding: 7px 16px; cursor: pointer; transition: all .15s; }
-    .gtab:hover { color: var(--text); border-color: rgba(255,255,255,.3); }
+    .gtab:hover { color: var(--text); border-color: rgba(var(--w-rgb),.3); }
     .gtab.on { color: #0d0d0d; background: var(--accent); border-color: var(--accent); }
     .page-head h1 { font-size: 26px; font-weight: 800; letter-spacing: -.5px; }
     .page-head p  { font-size: 13px; color: var(--text2); margin-top: 4px; }
@@ -87,7 +110,7 @@
       padding: 9px 16px; border-radius: 9px; border: 1px solid var(--border-h);
       background: var(--bg3); color: var(--text); transition: all .18s; white-space: nowrap;
     }
-    .btn:hover { background: var(--bg4); border-color: rgba(255,255,255,.28); }
+    .btn:hover { background: var(--bg4); border-color: rgba(var(--w-rgb),.28); }
     .btn.primary { background: var(--green); color: #000; border-color: var(--green); }
     .btn.primary:hover { background: var(--pink); border-color: var(--pink); }
     .btn.danger { color: #ffb3b3; border-color: rgba(255,77,77,.35); }

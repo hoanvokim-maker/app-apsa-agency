@@ -31,7 +31,30 @@
       --text: #ffffff; --text2: #9a9a9a; --text3: #5e5e5e;
       --accent: #dff20d; --accent2: #c9dd00; --accent-glow: rgba(223,242,13,0.35);
       --green: #dff20d; --red: #ff4d4d; --yellow: #dff20d; --radius: 14px;
+  --w-rgb: 255,255,255;
     }
+
+/* ---- APSA1895 — LIGHT MODE cho trang nay ----
+   Trang tu khai bo token rieng o :root nen de len theme.css;
+   khoi duoi day dinh nghia lai dung bo token do cho nen sang. */
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --bg2: #ffffff;
+  --bg3: #fafaf9;
+  --border: rgba(0,0,0,.14);
+  --border-hover: rgba(194,84,47,.55);
+  --text: #3a3a34;
+  --text2: #57574f;
+  --text3: #87877e;
+  --accent: #d97757;
+  --accent2: #d97757;
+  --accent-glow: rgba(217,119,87,.35);
+  --green: #d97757;
+  --red: #b3261e;
+  --yellow: #d97757;
+  --w-rgb: 0,0,0;
+}
+ }
     body { font-family: 'Oxanium', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
     header {
@@ -72,21 +95,21 @@
     .dname { color: var(--text2); font-size: 12px; }
     .role-pill { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
     .role-admin { background: rgba(223,242,13,0.15); color: #c9dd00; }
-    .role-member { background: rgba(255,255,255,0.15); color: #ffffff; }
+    .role-member { background: rgba(var(--w-rgb),0.15); color: #ffffff; }
     .status-pill { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
     .role-pill { white-space: nowrap; }
     .status-active { background: rgba(223,242,13,0.15); color: var(--green); }
     .status-inactive { background: rgba(255,77,77,0.15); color: var(--red); }
     /* Vị trí công việc + loại nhân sự */
     .pos-pill { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
-      background: rgba(255,255,255,.08); color: var(--text2); white-space: nowrap; }
+      background: rgba(var(--w-rgb),.08); color: var(--text2); white-space: nowrap; }
     .pos-account  { background: rgba(127,215,255,.16); color: #7fd7ff; }
     .pos-admin    { background: rgba(223,242,13,.15);  color: #c9dd00; }
     .pos-designer { background: rgba(255,138,220,.16); color: #ff8adc; }
     .pos-editor   { background: rgba(160,140,255,.18); color: #b7a6ff; }
-    .pos-none     { background: rgba(255,255,255,.06); color: var(--text3); font-weight: 600; }
+    .pos-none     { background: rgba(var(--w-rgb),.06); color: var(--text3); font-weight: 600; }
     .type-pill { font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
-    .type-inhouse    { background: rgba(255,255,255,.1);  color: var(--text2); }
+    .type-inhouse    { background: rgba(var(--w-rgb),.1);  color: var(--text2); }
     .type-freelancer { background: rgba(255,176,32,.16);  color: #ffc357; }
     .nologin { font-size: 10.5px; color: var(--text3); }
     .contact { color: var(--text3); font-size: 11.5px; margin-top: 3px; }
@@ -110,7 +133,7 @@
     .icon-btn.key:hover { border-color: var(--accent); color: var(--accent); }
     .apsa-toast {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(90px);
-      background: #141414; border: 1px solid rgba(255,255,255,.12); border-radius: 12px;
+      background: #141414; border: 1px solid rgba(var(--w-rgb),.12); border-radius: 12px;
       padding: 11px 20px; font-size: 13px; color: #fff; z-index: 950; max-width: 90vw; text-align: center;
       transition: transform .3s cubic-bezier(.4,0,.2,1); box-shadow: 0 12px 40px rgba(0,0,0,.5);
     }
@@ -160,7 +183,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/theme.css?v=47" />
+<link rel="stylesheet" href="/theme.css?v=48" />
 <script src="/apsa-ui.js?v=54"></script>
   <script src="/perm-guard.js?v=3"></script>
   <script src="/apsa-dirty.js?v=2"></script>

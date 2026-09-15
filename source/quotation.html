@@ -37,7 +37,25 @@
   --accent:var(--accent); --accent2:var(--accent2); --accent-glow:rgba(223,242,13,.35);
   --green:var(--accent); --orange:var(--text); --pink:var(--accent2); --cyan:var(--text); --red:var(--red); --yellow:var(--accent);
   --radius:14px;
+  --w-rgb: 255,255,255;
 }
+
+/* ---- APSA1895 — LIGHT MODE cho trang nay ----
+   Trang tu khai bo token rieng o :root nen de len theme.css;
+   khoi duoi day dinh nghia lai dung bo token do cho nen sang. */
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --bg2: #ffffff;
+  --bg3: #fafaf9;
+  --border: rgba(0,0,0,.14);
+  --border-hover: rgba(194,84,47,.55);
+  --text: #3a3a34;
+  --text2: #57574f;
+  --text3: #87877e;
+  --accent-glow: rgba(217,119,87,.35);
+  --w-rgb: 0,0,0;
+}
+
 body{ font-family:'Oxanium', sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
 body::before{ content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); }
@@ -661,7 +679,7 @@ table.q tbody tr.dragblock td{ background:var(--a05); }
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/theme.css?v=47" />
+<link rel="stylesheet" href="/theme.css?v=48" />
 <script src="/apsa-ui.js?v=54"></script>
   <script src="/perm-guard.js?v=3"></script>
 <script src="/exp-qr.js?v=10"></script>

@@ -15,7 +15,25 @@
     --ink: #12151a; --ink2: #4a5361; --ink3: #8a93a2;
     --line: #dfe3ea; --line2: #eef1f5; --bg: #f4f6f9; --card: #ffffff;
     --accent: #1d4ed8; --accent-soft: #eff4ff;
+  --w-rgb: 255,255,255;
   }
+
+/* ---- APSA1895 — LIGHT MODE cho trang nay ----
+   Trang tu khai bo token rieng o :root nen de len theme.css;
+   khoi duoi day dinh nghia lai dung bo token do cho nen sang. */
+html[data-theme="light"] {
+  --ink: #3a3a34;
+  --ink2: #57574f;
+  --ink3: #87877e;
+  --line: rgba(0,0,0,.12);
+  --line2: rgba(0,0,0,.08);
+  --bg: #ffffff;
+  --card: #ffffff;
+  --accent: #2f5fd0;
+  --accent-soft: #2f5fd0;
+  --w-rgb: 0,0,0;
+}
+
   body { font-family: 'Oxanium', system-ui, -apple-system, 'Segoe UI', sans-serif;
          background: var(--bg); color: var(--ink); line-height: 1.5; padding: 28px 16px 64px; }
   .sheet { max-width: 900px; margin: 0 auto; background: var(--card); border: 1px solid var(--line);

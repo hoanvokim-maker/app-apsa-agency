@@ -43,7 +43,21 @@
     .side { width:100%; flex:0 0 auto; position:static; max-height:none; border-right:0;
             border-bottom:1px solid var(--bd) }
     .side .list { max-height:240px; overflow:auto }
+  --w-rgb: 255,255,255;
   }
+
+/* ---- APSA1895 — LIGHT MODE cho trang nay ----
+   Trang tu khai bo token rieng o :root nen de len theme.css;
+   khoi duoi day dinh nghia lai dung bo token do cho nen sang. */
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --bd: rgba(0,0,0,.14);
+  --tx: #3a3a34;
+  --mu: #87877e;
+  --ac: #d97757;
+  --w-rgb: 0,0,0;
+}
+ }
 </style>
 </head>
 <body>

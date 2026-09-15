@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/theme.css?v=47" />
+<link rel="stylesheet" href="/theme.css?v=48" />
 <script src="/apsa-ui.js?v=54"></script>
 <script src="/perm-guard.js?v=3"></script>
 <style>
@@ -153,6 +153,15 @@ ul.li li b { color:var(--text); }
   .step + .step::after { left:50%; top:-8px; transform:translateX(-50%) rotate(135deg); }
   .flow { flex-direction:column; }
   .tabs { top:45px; }
+  --w-rgb: 255,255,255;
+}
+
+/* ---- APSA1895 — LIGHT MODE cho trang nay ----
+   Trang tu khai bo token rieng o :root nen de len theme.css;
+   khoi duoi day dinh nghia lai dung bo token do cho nen sang. */
+html[data-theme="light"] {
+  --w-rgb: 0,0,0;
+}
 }
 </style>
 </head>

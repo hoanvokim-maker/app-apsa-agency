@@ -31,7 +31,29 @@
       --text: #ffffff; --text2: #9a9a9a; --text3: #5e5e5e;
       --green: #dff20d; --pink: #c9dd00; --red: #ff4d6d; --amber: #ffb020;
       --r: 11px;
+  --w-rgb: 255,255,255;
     }
+
+/* ---- APSA1895 — LIGHT MODE cho trang nay ----
+   Trang tu khai bo token rieng o :root nen de len theme.css;
+   khoi duoi day dinh nghia lai dung bo token do cho nen sang. */
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --bg2: #ffffff;
+  --bg3: #fafaf9;
+  --bg4: #f2f2f0;
+  --border: rgba(0,0,0,.14);
+  --border-h: rgba(194,84,47,.55);
+  --text: #3a3a34;
+  --text2: #57574f;
+  --text3: #87877e;
+  --green: #d97757;
+  --pink: #d97757;
+  --red: #b3261e;
+  --amber: #a8441f;
+  --w-rgb: 0,0,0;
+}
+ }
     html { scroll-behavior: smooth; }
     body { font-family: 'Oxanium', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
@@ -181,7 +203,7 @@
   </style>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/theme.css?v=47" />
+  <link rel="stylesheet" href="/theme.css?v=48" />
   <script src="/apsa-ui.js?v=54"></script>
   <script src="/perm-guard.js?v=3"></script>
 </head>
@@ -299,7 +321,7 @@
             <div class="fg" style="grid-column:span 2"><label>Ghi chú</label><input type="text" id="hNote" placeholder="Ví dụ: làm bù thứ Bảy 22/8" /></div>
             <div class="fg"><button class="btn primary" style="width:100%" onclick="saveHoliday()">+ Thêm ngày lễ</button></div>
           </div>
-          <div class="grid3" style="align-items:end;margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08)">
+          <div class="grid3" style="align-items:end;margin-top:22px;padding-top:18px;border-top:1px solid rgba(var(--w-rgb),.08)">
             <div class="fg"><label>Nạp sẵn lịch nghỉ lễ Việt Nam</label><select id="hYear"></select></div>
             <div class="fg"><button class="btn" style="width:100%" onclick="seedHolidays()">Nạp lịch năm này</button></div>
             <div class="fg"><div class="hint" style="margin:0">Chỉ thêm những ngày còn thiếu, không ghi đè ngày anh đã tự sửa.</div></div>
@@ -335,8 +357,8 @@
     <style>
       #p-position .ptbl { width:100%; border-collapse:collapse; font-size:13px; margin-top:4px; }
       #p-position .ptbl th { text-align:left; font-size:10.5px; letter-spacing:.09em; text-transform:uppercase;
-        opacity:.55; padding:6px 8px; border-bottom:1px solid rgba(255,255,255,.1); font-weight:600; }
-      #p-position .ptbl td { padding:7px 8px; border-bottom:1px solid rgba(255,255,255,.07); vertical-align:middle; }
+        opacity:.55; padding:6px 8px; border-bottom:1px solid rgba(var(--w-rgb),.1); font-weight:600; }
+      #p-position .ptbl td { padding:7px 8px; border-bottom:1px solid rgba(var(--w-rgb),.07); vertical-align:middle; }
       #p-position .ptbl tr:last-child td { border-bottom:0; }
       #p-position .ptbl .r { text-align:right; white-space:nowrap; }
       #p-position .ptbl code { opacity:.55; font-size:11.5px; }
@@ -367,9 +389,9 @@
       <div class="hint">Thứ tự và các mục bị ẩn ở đây <b>dùng chung cho cả công ty</b> — mọi tài khoản đều thấy giống nhau. Chỉ Admin sửa được.</div>
 
       <style>
-        #p-menu .mblist { margin-top: 14px; border: 1px solid var(--border, rgba(255,255,255,.08)); border-radius: 12px; overflow: hidden; }
+        #p-menu .mblist { margin-top: 14px; border: 1px solid var(--border, rgba(var(--w-rgb),.08)); border-radius: 12px; overflow: hidden; }
         #p-menu .mbrow { display: flex; align-items: center; gap: 10px; padding: 9px 12px;
-                         border-bottom: 1px solid var(--border, rgba(255,255,255,.06)); font-size: 13px; }
+                         border-bottom: 1px solid var(--border, rgba(var(--w-rgb),.06)); font-size: 13px; }
         #p-menu .mbrow:last-child { border-bottom: none; }
         #p-menu .mbrow.hid .mbn { opacity: .42; text-decoration: line-through; }
         #p-menu .mbi { width: 26px; text-align: right; color: #5e5e5e; font-size: 11.5px; font-weight: 700; flex: 0 0 26px; }
@@ -377,9 +399,9 @@
         #p-menu .mbh { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #9a9a9a; cursor: pointer; white-space: nowrap; }
         #p-menu .mbh input { width: 15px; height: 15px; accent-color: #dff20d; cursor: pointer; }
         #p-menu .mbb { width: 28px; height: 28px; border-radius: 8px; cursor: pointer;
-                       border: 1px solid var(--border, rgba(255,255,255,.1)); background: transparent;
+                       border: 1px solid var(--border, rgba(var(--w-rgb),.1)); background: transparent;
                        color: #9a9a9a; font: inherit; font-size: 13px; line-height: 1; }
-        #p-menu .mbb:hover { color: #fff; border-color: rgba(255,255,255,.26); }
+        #p-menu .mbb:hover { color: #fff; border-color: rgba(var(--w-rgb),.26); }
         #p-menu .mbacts { margin-top: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         #p-menu .mbmsg { font-size: 12px; color: #dff20d; }
       </style>
@@ -479,9 +501,9 @@
           '.mbrow.off .mbname,.mbrow.off .mbico{opacity:.36}' +
           '.mbrow.off .mbname{text-decoration:line-through}' +
           '.mbrow.mbg{background:var(--bg3)}' +
-          '.mbg .mbgname{flex:1;background:transparent;border:1px dashed rgba(255,255,255,.16);color:var(--green);border-radius:8px;padding:5px 9px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px}' +
+          '.mbg .mbgname{flex:1;background:transparent;border:1px dashed rgba(var(--w-rgb),.16);color:var(--green);border-radius:8px;padding:5px 9px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px}' +
           '.mbg .mbgname:focus{outline:none;border-color:var(--green)}' +
-          '.mbx{background:none;border:1px solid rgba(255,255,255,.12);color:var(--text3);border-radius:8px;width:26px;height:26px;cursor:pointer;line-height:1}' +
+          '.mbx{background:none;border:1px solid rgba(var(--w-rgb),.12);color:var(--text3);border-radius:8px;width:26px;height:26px;cursor:pointer;line-height:1}' +
           '.mbx:hover{color:#ff6b6b;border-color:rgba(255,77,77,.5)}';
         document.head.appendChild(st);
       }
