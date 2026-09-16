@@ -148,6 +148,55 @@ if ($ACT === 'p-use') {
     fr_out(array('ok' => true));
 }
 
+/* ---- APSA1916: khach luu anh ghep -> SharePoint, tra ve link ngan cho QR ---- */
+if ($ACT === 'p-share') {
+    require_once __DIR__ . '/frame-sp.php';
+    $b    = fr_body();
+    $slug = isset($b['slug']) ? fr_slug((string) $b['slug']) : '';
+    $data = isset($b['png'])  ? (string) $b['png'] : '';
+    if ($slug === '' || $data === '') fr_fail('Thieu du lieu.', 400);
+
+    $p = strpos($data, 'base64,');
+    if ($p !== false) $data = substr($data, $p + 7);
+    $raw = base64_decode($data, true);
+    if ($raw === false || strlen($raw) < 100) fr_fail('Anh khong hop le.', 400);
+    if (strlen($raw) > 12582912) fr_fail('Anh qua lon (toi da 12MB).', 413);
+    if (substr($raw, 1, 3) !== 'PNG') fr_fail('Chi nhan file PNG.', 400);
+
+    $st = $pdo->prepare('SELECT id, slug, name, start_at, end_at, active FROM frame_events WHERE slug = ? LIMIT 1');
+    $st->execute(array($slug));
+    $e = $st->fetch(PDO::FETCH_ASSOC);
+    if (!$e || (int) $e['active'] !== 1) fr_fail('Su kien khong ton tai.', 404);
+    $today = date('Y-m-d');
+    if (!empty($e['start_at']) && $today < substr($e['start_at'], 0, 10)) fr_fail('Su kien chua bat dau.', 403);
+    if (!empty($e['end_at'])   && $today > substr($e['end_at'], 0, 10))   fr_fail('Su kien da ket thuc.', 403);
+
+    fsp_table($pdo);
+
+    $ip = isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+    $rl = $pdo->prepare('SELECT COUNT(*) FROM frame_shots WHERE ip = ? AND created_at > (NOW() - INTERVAL 1 HOUR)');
+    $rl->execute(array($ip));
+    if ((int) $rl->fetchColumn() >= 40) fr_fail('Ban da luu qua nhieu anh, thu lai sau.', 429);
+
+    $err = '';
+    $tok = apsp_tok($err);
+    if (!$tok) fr_fail('Chua ket noi duoc SharePoint.', 503);
+    $folder = apsp_name(trim((string) $e['name']) !== '' ? $e['name'] : $slug);
+    $dir    = apsp_dir($tok, APSP_ROOT, $folder, $err);
+    if (!$dir) fr_fail('Khong tao duoc thu muc: ' . $err, 502);
+
+    $fname  = date('Ymd-His') . '-' . bin2hex(random_bytes(3)) . '.png';
+    $itemId = fsp_put_png($tok, $dir, $fname, $raw, $err);
+    if (!$itemId) fr_fail($err, 502);
+
+    $token = bin2hex(random_bytes(16));
+    $ins = $pdo->prepare('INSERT INTO frame_shots (event_id, token, sp_item, fname, bytes, ip, created_at) VALUES (?,?,?,?,?,?,NOW())');
+    $ins->execute(array((int) $e['id'], $token, $itemId, $fname, strlen($raw), $ip));
+
+    $base = 'https://' . (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'app.apsa.agency');
+    fr_out(array('ok' => true, 'token' => $token, 'url' => $base . '/p/' . $token));
+}
+
 /* ============ QUAN TRI - can dang nhap ============ */
 
 $ME = fr_me();

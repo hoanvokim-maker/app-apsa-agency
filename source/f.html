@@ -96,6 +96,13 @@ html[data-theme="light"] .stage{ background:#ffffff !important; }
 html[data-theme="light"] .btn{ background:#d97757 !important; color:#ffffff !important; }
 html[data-theme="light"] .done{ background:#fafaf9 !important; }
 html[data-theme="light"] .toast{ background:#f2f2f0 !important; }
+
+.spqr{ display:none; }
+.spqr.on{ display:block; margin-top:22px; padding-top:20px; border-top:1px solid #222; }
+.spqr-t{ font-size:13px; color:#d4d4d4; margin-bottom:12px; }
+.spqr-i{ background:#fff; border-radius:12px; padding:10px; display:inline-block; line-height:0; }
+.spqr-i svg{ display:block; width:168px; height:168px; }
+.spqr-h{ margin-top:10px; font-size:12px; color:#8a8a8a; }
 </style>
 </head>
 <body>
@@ -130,6 +137,7 @@ html[data-theme="light"] .toast{ background:#f2f2f0 !important; }
 <input type="file" id="pick" accept="image/*" hidden />
 <div class="toast" id="toast"></div>
 
+<script src="/qr-lib.js?v=1"></script>
 <script>
 var Q = String.fromCharCode(63);
 var API = '/api/frame-api.php';
@@ -345,9 +353,47 @@ function makeIt() {
     el('doneImg').src = URL.createObjectURL(b);
     el('done').classList.add('on');
     window.scrollTo(0, 0);
+    spShare(b);
   }, 'image/png');
 }
 
+
+/* ===== APSA1916: luu anh len SharePoint + QR cho dien thoai ===== */
+var SP_BOX = null;
+function spBox(){
+  if (SP_BOX) return SP_BOX;
+  SP_BOX = document.createElement('div');
+  SP_BOX.className = 'spqr';
+  var inner = document.querySelector('#done .inner');
+  if (inner) inner.appendChild(SP_BOX);
+  return SP_BOX;
+}
+function spShare(blob){
+  if (IS_TOUCH || !blob || !EV || !EV.slug) return;
+  if (typeof qrcode !== 'function') return;
+  var box = spBox();
+  box.className = 'spqr on';
+  box.innerHTML = '<div class="spqr-t">\u0110ang t\u1ea1o m\u00e3 QR\u2026</div>';
+  var fr = new FileReader();
+  fr.onload = function () {
+    fetch(API + '?action=p-share', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slug: EV.slug, png: String(fr.result) })
+    }).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j || !j.ok || !j.url) throw new Error('loi');
+      var q = qrcode(0, 'M'); q.addData(j.url); q.make();
+      box.innerHTML =
+        '<div class="spqr-t">Qu\u00e9t b\u1eb1ng \u0111i\u1ec7n tho\u1ea1i \u0111\u1ec3 l\u01b0u \u1ea3nh</div>' +
+        '<div class="spqr-i">' + q.createSvgTag({ cellSize: 6, margin: 3 }) + '</div>' +
+        '<div class="spqr-h">M\u1edf camera \u2192 qu\u00e9t m\u00e3 \u2192 nh\u1ea5n gi\u1eef \u1ea3nh \u2192 <b>Th\u00eam v\u00e0o \u1ea2nh</b></div>';
+    }).catch(function () {
+      box.className = 'spqr';
+      box.innerHTML = '';
+    });
+  };
+  fr.readAsDataURL(blob);
+}
 function fileName() {
   var base = (EV && EV.slug ? EV.slug : 'frame');
   return base + '-' + Date.now() + '.png';
