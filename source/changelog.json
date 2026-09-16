@@ -1,7 +1,20 @@
 {
-    "version": "2.0.46",
+    "version": "2.1.0",
     "updated": "2026-09-16",
     "releases": [
+        {
+            "v": "2.1",
+            "date": "2026-09-16",
+            "note": "Phiên bản 2.1",
+            "items": [
+                {
+                    "d": "2026-09-16",
+                    "v": "2.1.0",
+                    "t": "Phien ban 2.1: hoan tat light mode toan he thong, Better Me theo doi nhan vien, switch account, dong bo nut/mau",
+                    "by": "mee53661"
+                }
+            ]
+        },
         {
             "v": "2.0",
             "date": "2026-09-13",
