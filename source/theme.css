@@ -1019,3 +1019,17 @@ html body .dlg button.btn.btn.btn.btn {
   box-sizing: border-box !important;
   overflow: hidden !important;
 }
+
+/* ---- APSA1909 — bo vien mac dinh cua <button> trong sidebar (ap cho moi .as-item, ke ca #apsaSwitch) ---- */
+#apsaSide .as-item,
+#apsaSide .as-item:hover,
+#apsaSide .as-item:focus,
+#apsaSide .as-item:focus-visible,
+#apsaSide .as-item:active {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
