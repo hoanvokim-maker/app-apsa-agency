@@ -1,5 +1,5 @@
 {
-    "version": "2.1.0",
+    "version": "2.1.1",
     "updated": "2026-09-16",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-16",
             "note": "Phiên bản 2.1",
             "items": [
+                {
+                    "d": "2026-09-16",
+                    "v": "2.1.1",
+                    "t": "APSA1910: o Da thanh toan - nen trang, chu phu xam dam de doc",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-16",
                     "v": "2.1.0",
