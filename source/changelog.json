@@ -1,5 +1,5 @@
 {
-    "version": "2.1.1",
+    "version": "2.1.2",
     "updated": "2026-09-16",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-16",
             "note": "Phiên bản 2.1",
             "items": [
+                {
+                    "d": "2026-09-16",
+                    "v": "2.1.2",
+                    "t": "APSA1911: doi mau chu banner switch account sang den",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-16",
                     "v": "2.1.1",

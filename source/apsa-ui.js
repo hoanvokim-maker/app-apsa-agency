@@ -1622,10 +1622,10 @@ function pullHome() {
     s.textContent =
       '#swBar{position:fixed;left:0;right:0;top:0;z-index:100050;display:flex;gap:12px;' +
       'align-items:center;justify-content:center;padding:7px 16px;font-size:12.5px;font-weight:600;' +
-      'background:var(--accent-fill,#d97757);color:#fff;font-family:"Oxanium",sans-serif}' +
-      '#swBar button{height:24px;border-radius:999px;border:1px solid rgba(255,255,255,.6);' +
-      'background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:12px;padding:0 12px;cursor:pointer}' +
-      '#swBar button:hover{background:rgba(255,255,255,.3)}' +
+      'background:var(--accent-fill,#d97757);color:#1a1a16;font-family:"Oxanium",sans-serif}' +
+      '#swBar button{height:24px;border-radius:999px;border:1px solid rgba(0,0,0,.45);' +
+      'background:rgba(0,0,0,.10);color:#1a1a16;font:inherit;font-size:12px;padding:0 12px;cursor:pointer}' +
+      '#swBar button:hover{background:rgba(0,0,0,.18)}' +
       'body.sw-on{padding-top:34px}' +
       '#swOv{position:fixed;inset:0;z-index:100060;display:none;align-items:center;justify-content:center;' +
       'background:rgba(0,0,0,.5);padding:20px}' +
