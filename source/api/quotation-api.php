@@ -436,6 +436,11 @@ if (!q_hasColumn($pdo, 'quotations', 'inv_file')) {
         ADD COLUMN `inv_file` VARCHAR(200) DEFAULT NULL COMMENT 'File hóa đơn tổng hợp đã lưu',
         ADD COLUMN `inv_name` VARCHAR(200) DEFAULT NULL COMMENT 'Tên file hóa đơn gốc'");
 }
+/* APSA1913: co bat/tat dong khi tinh total nghiem thu */
+if (!q_hasColumn($pdo, 'quotation_items', 'is_off')) {
+    q_mig($pdo, "ALTER TABLE `quotation_items`
+        ADD COLUMN `is_off` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Bo qua dong nay khi cong total'");
+}
 if (!q_hasColumn($pdo, 'quotation_items', 'act_file')) {
     q_mig($pdo, "ALTER TABLE `quotation_items`
         ADD COLUMN `act_file` VARCHAR(200) DEFAULT NULL COMMENT 'File PDF chứng từ đã lưu',
@@ -3046,8 +3051,8 @@ case 'save': {
         }
         $pdo->prepare("DELETE FROM quotation_items WHERE quotation_id = ?")->execute([$id]);
         $ins = $pdo->prepare("INSERT INTO quotation_items (quotation_id, kind, name, description, qty, unit, unit_price, remark, sort_order,
-                                act_qty, act_unit, act_price, act_amount, act_remark, act_file, act_file_name)
-                              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                                act_qty, act_unit, act_price, act_amount, act_remark, act_file, act_file_name, is_off)
+                              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         $i = 0;
         foreach ($items as $it) {
             $kind = (($it['kind'] ?? 'item') === 'section') ? 'section' : 'item';
@@ -3069,6 +3074,7 @@ case 'save': {
                 $kind === 'item' ? num($it['act_amount'] ?? 0) : 0,
                 s($it['act_remark'] ?? '', 300),
                 $keep[0], $keep[1],
+                (!empty($it['off']) ? 1 : 0),
             ]);
         }
         $pdo->commit();

@@ -674,6 +674,23 @@ table.q tbody tr.dragblock td{ background:var(--a05); }
 .qform .qbody{ margin-top:14px; }
 .hintline{ font-size:11.5px; color:var(--text3); }
 .hintline b{ color:var(--accent2); font-weight:700; }
+
+    /* ===== APSA1913: checkbox bat/tat dong khi cong total + canh bao 5k USD ===== */
+    table.q td.dragh .rowck{ width:13px; height:13px; margin:0 5px 0 13px; vertical-align:middle;
+      cursor:pointer; accent-color:var(--accent-fill); }
+    table.q tbody tr.offrow td{ opacity:.42; }
+    table.q tbody tr.offrow td.dragh{ opacity:1; }
+    table.q tbody tr.offrow td.amt{ text-decoration:line-through; }
+    table.q tbody tr.lockrow input:not(.rowck), table.q tbody tr.lockrow textarea{ pointer-events:none; }
+    table.q tbody tr.lockrow .rowck{ opacity:.45; }
+    #q5kWarn{ position:fixed; right:18px; bottom:18px; z-index:100060; display:none; max-width:320px;
+      background:#b3261e; color:#fff; border-radius:14px; padding:14px 16px;
+      box-shadow:0 18px 44px rgba(0,0,0,.34); font-family:"Oxanium",sans-serif; font-size:13px; line-height:1.45; }
+    #q5kWarn.on{ display:block; }
+    #q5kWarn b{ display:block; font-size:14px; margin-bottom:4px; }
+    #q5kWarn .q5k-n{ display:block; margin-top:6px; opacity:.85; font-size:12px; }
+    #q5kWarn button{ margin-top:10px; height:28px; border:0; border-radius:999px; background:#fff;
+      color:#b3261e; font:inherit; font-weight:700; padding:0 14px; cursor:pointer; }
 </style>
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1285,7 +1302,7 @@ html[data-theme="light"] #qcToast.bad{ background:#b3261e !important; color:#fff
       <table class="q" id="qtable">
         <thead>
           <tr>
-            <th style="width:74px">No</th>
+            <th style="width:92px">No</th>
             <th id="thName" style="width:190px">Name</th>
             <th id="thDesc" style="width:240px">Description</th>
             <th style="width:68px">Qty</th>
@@ -2216,7 +2233,7 @@ async function openQuote(id, opts){
       kind: i.kind, name: i.name || '', description: i.description || '',
       qty: Number(i.qty)||0, unit: i.unit || '', unit_price: Number(i.unit_price)||0, remark: i.remark || '',
       act_qty: Number(i.act_qty)||0, act_unit: i.act_unit || '', act_price: Number(i.act_price)||0,
-      act_amount: Number(i.act_amount)||0, act_remark: i.act_remark || ''
+      act_amount: Number(i.act_amount)||0, act_remark: i.act_remark || '', off: Number(i.is_off)||0
     })) });
     if (!EDIT.items.length) EDIT.items = [blankItem('section')];
     ASG = (d.checklist || []).map(a => ({ kind:a.kind||'item', name:a.name||'', user_id:Number(a.user_id)||0, supplier_id:Number(a.supplier_id)||0, due_date:a.due_date||'', status:a.status||'todo', priority:Number(a.priority)||0 }));
@@ -3066,7 +3083,7 @@ function onCtChange(){
 /* ── Bảng hạng mục ── */
 function blankItem(kind){
   return { kind: kind, name:'', description:'', qty: kind==='item'?1:0, unit:'', unit_price:0, remark:'',
-           act_qty:0, act_unit:'', act_price:0, act_amount:0, act_remark:'' };
+           act_qty:0, act_unit:'', act_price:0, act_amount:0, act_remark:'', off:0 };
 }
 function addRow(kind, data){
   const row = Object.assign(blankItem(kind), data || {});
@@ -3135,11 +3152,58 @@ function itemAmount(it){
   return (q || 0) * (p || 0);
 }
 
+/* ===== APSA1913: bat/tat tung dong khi cong total ===== */
+function secOwnerIdx(i){
+  for (var k = i; k >= 0; k--) if (EDIT.items[k].kind === 'section') return k;
+  return -1;
+}
+function secIsOff(i){
+  var k = secOwnerIdx(i);
+  return k >= 0 && !!EDIT.items[k].off;
+}
+function rowOff(i){
+  var it = EDIT.items[i];
+  if (!it) return false;
+  if (it.kind === 'section') return !!it.off;
+  return secIsOff(i) || !!it.off;
+}
+function toggleOff(i, on){
+  var it = EDIT.items[i];
+  if (!it) return;
+  it.off = on ? 0 : 1;
+  renderRows(); renderAmounts(); markDirty();
+}
+function ckBox(i, isSec){
+  var on   = !EDIT.items[i].off;
+  var lock = !isSec && secIsOff(i);
+  return '<input type="checkbox" class="rowck" ' + (on ? 'checked ' : '') + (lock ? 'disabled ' : '') +
+         'onchange="toggleOff(' + i + ', this.checked)" title="' +
+         (isSec ? 'T\u00ednh c\u1ea3 nh\u00f3m n\u00e0y v\u00e0o total' : 'T\u00ednh d\u00f2ng n\u00e0y v\u00e0o total') + '">';
+}
+var Q5K_HIDE = false;
+function q5kWarn(totalVnd){
+  var rate = Number((window.__APSA_ST || {}).usd_rate) || 0;
+  var usd  = rate > 0 ? (Number(totalVnd) || 0) / rate : 0;
+  var el   = document.getElementById('q5kWarn');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'q5kWarn';
+    el.innerHTML = '<b>V\u01b0\u1ee3t qu\u00e1 5.000 USD</b>' +
+      '<span>B\u1ea1n \u0111\u00e3 v\u01b0\u1ee3t qu\u00e1 chi ph\u00ed 5k \u2014 ki\u1ec3m tra l\u1ea1i chi ph\u00ed nh\u00e9.</span>' +
+      '<span class="q5k-n"></span><button type="button">\u0110\u00e3 hi\u1ec3u</button>';
+    document.body.appendChild(el);
+    el.querySelector('button').onclick = function(){ el.classList.remove('on'); Q5K_HIDE = true; };
+  }
+  if (!(rate > 0 && usd > 5000)) { el.classList.remove('on'); Q5K_HIDE = false; return; }
+  if (Q5K_HIDE) return;
+  el.querySelector('.q5k-n').textContent = 'Hi\u1ec7n t\u1ea1i: ' + Math.round(usd).toLocaleString('en-US') + ' USD';
+  el.classList.add('on');
+}
 function sectionSums(actual){
   const sums = {}; let cur = null;
   EDIT.items.forEach((it, i) => {
     if (it.kind === 'section') { cur = i; sums[i] = 0; }
-    else if (cur !== null) sums[cur] += actual ? actAmount(it) : itemAmount(it);
+    else if (cur !== null) sums[cur] += rowOff(i) ? 0 : (actual ? actAmount(it) : itemAmount(it));
   });
   return sums;
 }
@@ -3210,8 +3274,8 @@ function renderRows(){
     const dis = isSec ? ' disabled style="opacity:.35"' : '';
     const gcls = ' g' + (secIdx % 4);
     const hideRow = (!isSec && secHidden) ? ' style="display:none"' : '';
-    return '<tr class="' + (isSec ? 'sec' : '') + gcls + (LIQ && itemChanged(it) ? ' chg' : '') + '"' + hideRow + '>' +
-      '<td class="c dragh" title="Kéo để đổi thứ tự"><span class="grip"></span>' +
+    return '<tr class="' + (isSec ? 'sec' : '') + gcls + (LIQ && itemChanged(it) ? ' chg' : '') + (rowOff(i) ? ' offrow' : '') + (!isSec && secIsOff(i) ? ' lockrow' : '') + '"' + hideRow + '>' +
+      '<td class="c dragh" title="Kéo để đổi thứ tự"><span class="grip"></span>' + ckBox(i, isSec) +
         (isSec
           ? '<button type="button" class="seccol" onclick="toggleSec(\'' + it._skey + '\', event)" title="' +
             (SEC_COLLAPSED[it._skey] ? 'Mở nhóm' : 'Thu gọn nhóm') + '">' +
@@ -3799,7 +3863,7 @@ function renderAmounts(){
 }
 
 function currentTotals(actual){
-  const sub = EDIT.items.reduce((a,it) => a + (it.kind === 'item' ? (actual ? actAmount(it) : itemAmount(it)) : 0), 0);
+  const sub = EDIT.items.reduce((a,it,i) => a + (it.kind === 'item' && !rowOff(i) ? (actual ? actAmount(it) : itemAmount(it)) : 0), 0);
   const showMa  = document.getElementById('fShowMa').checked;
   const showVat = document.getElementById('fShowVat').checked;
   const maP  = Number(document.getElementById('fMa').value) || 0;
@@ -3815,6 +3879,7 @@ function renderTotals(){
   const cur = document.getElementById('fCur').value || 'VND';
   const liq = LIQ;
   const a   = liq ? currentTotals(true) : null;
+  q5kWarn(a ? a.total : t.total);   /* APSA1913 */
 
   const line = (label, v, av, isTotal) => {
     let r = '<div class="r' + (isTotal ? ' total' : '') + '"><span>' + label + '</span>' +
