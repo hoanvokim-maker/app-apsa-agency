@@ -131,6 +131,17 @@ html[data-theme="light"] .fbar select{ background:#fafaf9 !important; }
 html[data-theme="light"] .ftoast{ background:#f2f2f0 !important; color:#3a3a34 !important; }
 html[data-theme="light"] header .page-title .count{ background:#d97757 !important; color:#ffffff !important; }
 html[data-theme="light"] header .btn-add{ background:#d97757 !important; color:#ffffff !important; }
+
+#qrOv{ position:fixed; inset:0; z-index:100070; display:none; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.62); padding:20px; }
+#qrOv.on{ display:flex; }
+#qrBox{ background:#141414; border:1px solid #2f2f2f; border-radius:18px; padding:22px;
+  width:min(380px,92vw); text-align:center; }
+#qrBox h3{ margin:0 0 14px; font-size:16px; color:#eaeaea; }
+#qrImg{ background:#fff; border-radius:12px; padding:12px; display:inline-block; line-height:0; }
+#qrImg svg{ display:block; width:236px; height:236px; }
+#qrUrl{ margin:12px 0 16px; font-size:12px; color:#9a9a9a; word-break:break-all; }
+#qrAct{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
 </style>
 </head>
 <body>
@@ -262,11 +273,77 @@ function cardHtml(e) {
     '<div class="fa-acts">' +
       '<button class="fbtn pri" onclick="openFr(' + e.id + ')"><svg class="ic" viewBox="0 0 24 24"><use href="#g-image"/></svg> Quản lý khung</button>' +
       '<button class="fbtn" onclick="copyLink(' + e.id + ')"><svg class="ic" viewBox="0 0 24 24"><use href="#g-link"/></svg> Chép link</button>' +
-      '<a class="fbtn" href="' + esc(pubUrl(e.slug)) + '" target="_blank" rel="noopener"><svg class="ic" viewBox="0 0 24 24"><use href="#g-eye"/></svg> Mở thử</a>' +
+      '<button class="fbtn" onclick="openQR(' + e.id + ')"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM19 14h2M14 19h3M19 19h2"/></svg> QR</button>' +
+            '<a class="fbtn" href="' + esc(pubUrl(e.slug)) + '" target="_blank" rel="noopener"><svg class="ic" viewBox="0 0 24 24"><use href="#g-eye"/></svg> Mở thử</a>' +
       '<button class="fbtn" onclick="openEv(' + e.id + ')"><svg class="ic" viewBox="0 0 24 24"><use href="#g-pen"/></svg> Sửa</button>' +
     '</div></div>';
 }
 
+/* ===== APSA1915: QR mo link cong khai + tai file SVG/PNG ===== */
+var QR_CUR = null;
+function qrSvgFor(url, cell){
+  var q = qrcode(0, 'M');
+  q.addData(url); q.make();
+  return q.createSvgTag({ cellSize: cell || 7, margin: 4 });
+}
+function openQR(id){
+  var e = EVENTS.filter(function (x) { return Number(x.id) === id; })[0];
+  if (!e) return;
+  var url = pubUrl(e.slug);
+  QR_CUR = { url: url, name: (e.slug || ('frame-' + id)) };
+  var ov = document.getElementById('qrOv');
+  if (!ov) {
+    ov = document.createElement('div');
+    ov.id = 'qrOv';
+    ov.innerHTML = '<div id="qrBox"><h3 id="qrTitle"></h3><div id="qrImg"></div>' +
+      '<div id="qrUrl"></div><div id="qrAct">' +
+      '<button class="fbtn pri" id="qrDlSvg">Tải QR (SVG)</button>' +
+      '<button class="fbtn" id="qrDlPng">Tải QR (PNG)</button>' +
+      '<button class="fbtn" id="qrClose">Đóng</button></div></div>';
+    document.body.appendChild(ov);
+    ov.addEventListener('click', function (ev) { if (ev.target === ov) closeQR(); });
+    document.getElementById('qrClose').onclick  = closeQR;
+    document.getElementById('qrDlSvg').onclick  = dlQrSvg;
+    document.getElementById('qrDlPng').onclick  = dlQrPng;
+  }
+  document.getElementById('qrTitle').textContent = e.name || e.slug || 'QR';
+  document.getElementById('qrUrl').textContent   = url;
+  document.getElementById('qrImg').innerHTML     = qrSvgFor(url, 7);
+  ov.classList.add('on');
+}
+function closeQR(){ var o = document.getElementById('qrOv'); if (o) o.classList.remove('on'); }
+function qrSrc(){
+  var svg = document.querySelector('#qrImg svg');
+  if (!svg) return '';
+  var src = new XMLSerializer().serializeToString(svg);
+  if (src.indexOf('xmlns=') < 0) src = src.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+  return src;
+}
+function qrSave(blob, ext){
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'qr-' + (QR_CUR ? QR_CUR.name : 'frame') + '.' + ext;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
+}
+function dlQrSvg(){
+  var src = qrSrc(); if (!src) return;
+  qrSave(new Blob([src], { type: 'image/svg+xml;charset=utf-8' }), 'svg');
+}
+function dlQrPng(){
+  var src = qrSrc(); if (!src) return;
+  var img = new Image();
+  img.onload = function () {
+    var S = 1024, c = document.createElement('canvas');
+    c.width = S; c.height = S;
+    var x = c.getContext('2d');
+    x.fillStyle = '#ffffff'; x.fillRect(0, 0, S, S);
+    x.imageSmoothingEnabled = false;
+    x.drawImage(img, 0, 0, S, S);
+    c.toBlob(function (b) { if (b) qrSave(b, 'png'); }, 'image/png');
+  };
+  img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(src)));
+}
 function copyLink(id) {
   var e = EVENTS.filter(function (x) { return Number(x.id) === id; })[0];
   if (!e) return;
@@ -389,6 +466,7 @@ el('frOv').addEventListener('click', function (e) { if (e.target === this) close
 
 load();
 </script>
+<script src="/qr-lib.js?v=1"></script>
 <script src="/apsa-ui.js?v=56"></script>
 <script src="/perm-guard.js?v=3"></script>
 </body>
