@@ -8,6 +8,10 @@
 <title>Khung ảnh sự kiện</title>
 <meta name="robots" content="noindex" />
 <style>
+/* APSA1914: trang /f/<slug> khong nap theme.css nen phai tu dinh nghia token, neu khong var(--neon) rong -> nut Ghep anh trong suot */
+:root{ --neon:#dff20d; --neon-rgb:223,242,13; }
+html[data-theme="light"]{ --neon:#c2542f; --neon-rgb:194,84,47; }
+
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body { margin: 0; background: #0d0d0d; color: #ececec; font-size: 15px; line-height: 1.5;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
