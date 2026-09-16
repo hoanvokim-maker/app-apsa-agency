@@ -2333,7 +2333,8 @@ case 'assignees-save': {
             if (trim($nm) === '' && !$uid && !$sup) continue;
             $sttRow = q_asgStatus($a['status'] ?? 'todo');
             $meRow  = (is_array($ME) && isset($ME['id'])) ? (int) $ME['id'] : 0;
-            if ($uid > 0 && $uid !== $meRow && !qc_is_admin() && isset($qOldStt[$uid . '|' . $nm]))
+            /* APSA1912 (Harris duyet 16/09/2026): bo rang buoc - moi nguoi deu doi duoc trang thai checklist */
+            if (false)
                 $sttRow = $qOldStt[$uid . '|' . $nm];
             $ins->execute([$qid, $kd, $uid, $sup, q_asgPos($a['position'] ?? ''),
                            $nm, dateOrNull($a['due_date'] ?? ''),
