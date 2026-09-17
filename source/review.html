@@ -468,7 +468,10 @@ function verPaint() {
 /* ===== APSA1922: duyet ban video ===== */
 function plMini() {
   if (!PLT) return;
-  api('pl-open', null, '&t=' + encodeURIComponent(PLT)).then(function (d) {
+  fetch(API + '?action=pl-open&t=' + encodeURIComponent(PLT), { credentials: 'same-origin' })
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+    var d = (j && j.ok && j.data) ? j.data : {};
     var rows = d.videos || d.rows || d.items || [];
     if (!rows.length) return;
     var h = '<div class="pmh">Danh sách video · ' + rows.length + '</div>';
