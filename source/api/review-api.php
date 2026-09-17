@@ -721,7 +721,7 @@ case 'stats': {
         FROM `video_views` v WHERE " . $wh . " GROUP BY v.vkey ORDER BY secs DESC LIMIT 300");
     $p->execute($pr); $ppl = $p->fetchAll(PDO::FETCH_ASSOC);
     foreach ($ppl as $k => $r) {
-        $ppl[$k]['who'] = 'Khach #' . strtoupper(substr((string) $r['vkey'], 0, 4));
+        $ppl[$k]['who'] = 'Khách #' . strtoupper(substr((string) $r['vkey'], 0, 4));
         unset($ppl[$k]['vkey']);
     }
     rv_ok(array('kind' => $kind, 'title' => $title, 'sum' => $sum, 'vids' => $vids, 'people' => $ppl));
