@@ -3182,6 +3182,15 @@ function ckBox(i, isSec){
 }
 var Q5K_HIDE = false;
 function q5kWarn(totalVnd){
+  /* APSA1921: bao gia da duyet (>= confirmed) thi khong canh bao 5k nua */
+  var _s  = (typeof EDIT !== 'undefined' && EDIT && EDIT.status) ? String(EDIT.status) : '';
+  var _si = STATUS_ORDER.indexOf(_s), _ci = STATUS_ORDER.indexOf('confirmed');
+  if (_si >= 0 && _ci >= 0 && _si >= _ci) {
+    var _e = document.getElementById('q5kWarn');
+    if (_e) _e.classList.remove('on');
+    Q5K_HIDE = false;
+    return;
+  }
   var rate = Number((window.__APSA_ST || {}).usd_rate) || 0;
   var usd  = rate > 0 ? (Number(totalVnd) || 0) / rate : 0;
   var el   = document.getElementById('q5kWarn');
