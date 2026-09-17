@@ -987,8 +987,52 @@ function pullHome() {
     if (e.key !== 'Escape' && e.keyCode !== 27) return;
     var a = document.activeElement;
     if (a && (a.tagName === 'SELECT' || a.isContentEditable)) return;
-    if (overlayVisible()) e.stopPropagation();
+    if (escClose()) { e.preventDefault(); e.stopPropagation(); }
   }, true);
+
+  /* APSA1933: bam Esc de dong hop thoai dang mo */
+  function ovTop() {
+    var els = document.querySelectorAll(
+      '.mask,[class*="mask"],[class*="modal"],[class*="overlay"],[class*="backdrop"]');
+    var best = null, bz = -1, i, el, st, z;
+    for (i = 0; i < els.length; i++) {
+      el = els[i];
+      if (!el.getClientRects || !el.getClientRects().length) continue;
+      if (el.offsetWidth < 200 || el.offsetHeight < 200) continue;
+      st = window.getComputedStyle(el);
+      if (st.display === 'none' || st.visibility === 'hidden') continue;
+      if (parseFloat(st.opacity || '1') < 0.05) continue;
+      if (st.position !== 'fixed' && st.position !== 'absolute') continue;
+      z = parseInt(st.zIndex, 10); if (!isFinite(z)) z = 0;
+      if (z >= bz) { bz = z; best = el; }
+    }
+    return best;
+  }
+  function ovBtn(box) {
+    var b = box.querySelector('.modal-x,[data-close],.ovx,.modal-close');
+    if (b) return b;
+    var bs = box.querySelectorAll('button,a'), i, t, oc;
+    for (i = 0; i < bs.length; i++) {
+      oc = (bs[i].getAttribute('onclick') || '').toLowerCase();
+      if (oc.indexOf('close') >= 0) return bs[i];
+    }
+    for (i = 0; i < bs.length; i++) {
+      t = (bs[i].textContent || '').trim().toLowerCase();
+      if (t === '\u0111\u00f3ng' || t === 'hu\u1ef7' || t === 'h\u1ee7y' || t === '\u00d7' || t === 'x') return bs[i];
+    }
+    return null;
+  }
+  function escClose() {
+    var box = ovTop();
+    if (!box) return false;
+    var b = ovBtn(box);
+    if (b) { b.click(); return true; }
+    box.classList.remove('on'); box.classList.remove('open');
+    box.classList.remove('show'); box.classList.remove('active');
+    if (window.getComputedStyle(box).display !== 'none') box.style.display = 'none';
+    return true;
+  }
+
 
   /* ------------------------------------------------------------------ */
   /* 2. TOAST THONG BAO                                                  */
