@@ -3428,6 +3428,15 @@ case 'review-request': {
             requested_by=VALUES(requested_by), created_at=NOW(), decided_at=NULL")
         ->execute([$qid, $scope, $rid, $u['display_name'], $WHO, $note]);
 
+        /* APSA1917: loi nhan khi moi review cung phai hien trong khung Thao luan */
+        if (trim((string) $note) !== '') {
+            $pdo->prepare("INSERT INTO `quotation_comments`
+                    (quotation_id, scope, parent_id, user_id, user_name, body, mentions)
+                    VALUES (?,?,NULL,?,?,?,NULL)")
+                ->execute(array($qid, $scope, (int) $ME['id'], $WHO,
+                    '[Mời duyệt] ' . trim((string) $note)));
+        }
+
     $label = qr_label($q, $scope);
     qr_notify($pdo, $rid, 'review_request', $WHO . ' mời bạn review ' . $label,
               $note ?: 'Bấm để mở và duyệt.', qr_url($q, $scope), $WHO);
@@ -3452,6 +3461,15 @@ case 'review-decide': {
             VALUES (?,?,?,?,?,?,?, NOW())
           ON DUPLICATE KEY UPDATE status=VALUES(status), note=VALUES(note), decided_at=NOW()")
         ->execute([$qid, $scope, (int)$ME['id'], $WHO, $WHO, $status, $note]);
+
+        /* APSA1917: ly do duyet / tu choi cung hien trong khung Thao luan */
+        if (trim((string) $note) !== '') {
+            $pdo->prepare("INSERT INTO `quotation_comments`
+                    (quotation_id, scope, parent_id, user_id, user_name, body, mentions)
+                    VALUES (?,?,NULL,?,?,?,NULL)")
+                ->execute(array($qid, $scope, (int) $ME['id'], $WHO,
+                    ($status === 'approved' ? '[Đã duyệt] ' : '[Từ chối] ') . trim((string) $note)));
+        }
 
     $label = qr_label($q, $scope);
     $word  = $status === 'approved' ? 'đã DUYỆT' : 'đã TỪ CHỐI';
