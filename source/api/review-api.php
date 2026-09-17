@@ -605,6 +605,12 @@ case 'vping': {
         $q = $pdo->prepare("SELECT id FROM `video_playlists` WHERE token = ? LIMIT 1");
         $q->execute(array($pt)); $pid = (int) $q->fetchColumn();
     }
+    /* nguoi APSA dang nhap thi khong tinh vao luot xem cua khach */
+    if (rv_lvl($pdo) >= 1) {
+        $n0 = $pdo->prepare("SELECT COUNT(DISTINCT vkey) FROM `video_views` WHERE review_id = ?");
+        $n0->execute(array($rid));
+        rv_ok(array('view' => 0, 'views' => (int) $n0->fetchColumn(), 'skip' => 1));
+    }
     $vid = (int) ($B['view'] ?? 0);
     if ($vid > 0) {
         $ck = $pdo->prepare("SELECT id FROM `video_views` WHERE id = ? AND vkey = ? AND review_id = ?");

@@ -1,5 +1,5 @@
 {
-    "version": "2.1.27",
+    "version": "2.1.28",
     "updated": "2026-09-17",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-16",
             "note": "Phiên bản 2.1",
             "items": [
+                {
+                    "d": "2026-09-17",
+                    "v": "2.1.28",
+                    "t": "APSA1927b: khong tinh luot xem cho nguoi APSA dang nhap",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-17",
                     "v": "2.1.27",
