@@ -187,6 +187,12 @@ html[data-theme="light"] .toast{ background:#d97757 !important; color:#ffffff !i
     .stwrap{ overflow-x:auto }
     #stAct{ display:flex; justify-content:flex-end; margin-top:16px }
 
+    /* APSA1931: nut chi con icon */
+    .acts{ gap:4px }
+    .vb.sm.ico{ width:30px; height:28px; padding:0; gap:0; justify-content:center }
+    .vb.sm.ico .ic{ width:15px; height:15px }
+    .vb.sm.ico.act{ color:#d7f205; border-color:rgba(215,242,5,.45) }
+    .vb.sm.ico.dng:hover{ color:#ff7a7a; border-color:rgba(255,122,122,.5) }
 </style>
 </head>
 <body>
@@ -369,20 +375,26 @@ function render() {
       '<td>' + (n ? (o ? '<span class="pill n">' + o + ' / ' + n + '</span>' : '<span class="pill on">' + n + '</span>') : '—') + '</td>' +
       '<td>' + (Number(r.active) ? '<span class="pill on">Đang mở</span>' : '<span class="pill off">Đã tắt</span>') + '</td>' +
       '<td><div class="acts">' +
-        '<button class="vb sm" onclick="cp(\'' + (r.slug || r.token) + '\', this)">' + IC_CP + 'Copy link</button>' +
-        '<button class="vb sm" title="Ma QR" onclick="qrOpen(\'' + (r.slug || r.token) + '\',0)">' + IC_QR + 'QR</button>' +
-        '<button class="vb sm" onclick="stOpen(0,' + r.id + ')">' + IC_ST + 'Thống kê</button>' +
-        '<a class="vb sm" href="./review.html?t=' + r.token + '" target="_blank" rel="noopener">↗ Mở</a>' +
-        '<button class="vb sm" onclick="tg(' + r.id + ',' + (Number(r.active) ? 0 : 1) + ')">' + (Number(r.active) ? 'Tắt' : 'Bật') + '</button>' +
-        '<button class="vb sm" onclick="newVer(' + r.id + ')" title="Tải lên bản chỉnh sửa mới của video này">+ Bản mới</button>' +
-        '<button class="vb sm" onclick="ren(' + r.id + ')">✎ Sửa</button>' +
-      '<button class="vb sm" onclick="del(' + r.id + ')">Xóa</button>' +
+        '<button class="vb sm ico" title="Copy link" onclick="cp(\'' + (r.slug || r.token) + '\', this)">' + IC_CP + '</button>' +
+        '<button class="vb sm ico" title="Mã QR" onclick="qrOpen(\'' + (r.slug || r.token) + '\',0)">' + IC_QR + '</button>' +
+        '<button class="vb sm ico" title="Thống kê lượt xem" onclick="stOpen(0,' + r.id + ')">' + IC_ST + '</button>' +
+        '<a class="vb sm ico" title="Mở link duyệt" href="./review.html?t=' + r.token + '" target="_blank" rel="noopener">' + IC_OPEN + '</a>' +
+        '<button class="vb sm ico' + (Number(r.active) ? '' : ' act') + '" title="' + (Number(r.active) ? 'Tắt link' : 'Bật link') + '" onclick="tg(' + r.id + ',' + (Number(r.active) ? 0 : 1) + ')">' + IC_PWR + '</button>' +
+        '<button class="vb sm ico" title="Tải lên bản chỉnh sửa mới của video này" onclick="newVer(' + r.id + ')">' + IC_UP + '</button>' +
+        '<button class="vb sm ico" title="Sửa tên / ghi chú" onclick="ren(' + r.id + ')">' + IC_ED + '</button>' +
+      '<button class="vb sm ico dng" title="Xóa link" onclick="del(' + r.id + ')">' + IC_DEL + '</button>' +
       '</div></td></tr>';
   }).join('');
 }
 
 /* ===== APSA1930: bang thong ke luot xem ===== */
 var IC_ST = "<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round'><path d='M4 20V10M10 20V4M16 20v-7M22 20H2'/></svg>";
+var IC_OPEN = "<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M14 4h6v6'/><path d='M20 4L10.5 13.5'/><path d='M18 14.5V19a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 19V8a1.5 1.5 0 0 1 1.5-1.5H10'/></svg>";
+var IC_PWR = "<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3v9'/><path d='M7.1 6.3a8 8 0 1 0 9.8 0'/></svg>";
+var IC_UP = "<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M12 16V4'/><path d='M8 8l4-4 4 4'/><path d='M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3'/></svg>";
+var IC_ED = "<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M4 20h4L19.4 8.6a2.1 2.1 0 0 0-3-3L5 17v3z'/><path d='M14.5 6.6l2.9 2.9'/></svg>";
+var IC_DEL = "<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M4 7h16'/><path d='M10 11v6M14 11v6'/><path d='M6.5 7l.8 12.1a1.5 1.5 0 0 0 1.5 1.4h6.4a1.5 1.5 0 0 0 1.5-1.4L17.5 7'/><path d='M9.5 7V5.2A1.2 1.2 0 0 1 10.7 4h2.6a1.2 1.2 0 0 1 1.2 1.2V7'/></svg>";
+var IC_OK = "<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M4.5 12.5l5 5L19.5 7'/></svg>";
 function stSec(n) {
   n = Math.max(0, Math.round(Number(n) || 0));
   var h = Math.floor(n / 3600), m = Math.floor((n % 3600) / 60), x = n % 60;
@@ -494,8 +506,8 @@ function ren(id) {
   it.onkeydown = function (e) { if (e.key === 'Enter') ov.querySelector('.ok').click(); };
 }
 function cp(tk, b) {
-  var u = lnk(tk), old = b.textContent;
-  function done() { b.textContent = '✓ Đã copy'; setTimeout(function () { b.textContent = old; }, 1500); }
+  var u = lnk(tk), old = b.innerHTML;
+  function done() { b.innerHTML = IC_OK; setTimeout(function () { b.innerHTML = old; }, 1500); }
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(u).then(done).catch(function () { fb(); });
   } else fb();
@@ -705,22 +717,22 @@ function plLoad() {
         '<td>' + (Number(p.active) ? '<span class="pill on">Đang mở</span>'
                                    : '<span class="pill off">Đã tắt</span>') + '</td>' +
         '<td><div class="acts">' +
-        '<button class="vb sm" onclick="plCopy(\'' + (p.slug || p.token) + '\', this)">' + IC_CP + 'Copy link</button>' +
-        '<button class="vb sm" title="Ma QR" onclick="qrOpen(\'' + (p.slug || p.token) + '\',1)">' + IC_QR + 'QR</button>' +
-        '<button class="vb sm" onclick="stOpen(1,' + p.id + ')">' + IC_ST + 'Thống kê</button>' +
-        '<a class="vb sm" href="./playlist.html?t=' + p.token + '" target="_blank" rel="noopener">↗ Mở</a>' +
-        '<button class="vb sm" onclick="plEdit(' + p.id + ')">✎ Sửa</button>' +
-        '<button class="vb sm" onclick="plTog(' + p.id + ',' + (Number(p.active) ? 0 : 1) + ')">' +
+        '<button class="vb sm ico" title="Copy link" onclick="plCopy(\'' + (p.slug || p.token) + '\', this)">' + IC_CP + '</button>' +
+        '<button class="vb sm ico" title="Mã QR" onclick="qrOpen(\'' + (p.slug || p.token) + '\',1)">' + IC_QR + '</button>' +
+        '<button class="vb sm ico" title="Thống kê lượt xem" onclick="stOpen(1,' + p.id + ')">' + IC_ST + '</button>' +
+        '<a class="vb sm ico" title="Mở playlist" href="./playlist.html?t=' + p.token + '" target="_blank" rel="noopener">' + IC_OPEN + '</a>' +
+        '<button class="vb sm ico" title="Sửa playlist" onclick="plEdit(' + p.id + ')">' + IC_ED + '</button>' +
+        '<button class="vb sm ico' + (Number(p.active) ? '' : ' act') + '" title="' + (Number(p.active) ? 'Tắt link' : 'Bật link') + '" onclick="plTog(' + p.id + ',' + (Number(p.active) ? 0 : 1) + ')">' + IC_PWR + '</button>' +
         (Number(p.active) ? 'Tắt' : 'Bật') + '</button>' +
-        '<button class="vb sm" onclick="plDel(' + p.id + ')">Xóa</button>' +
+        '<button class="vb sm ico dng" title="Xóa playlist" onclick="plDel(' + p.id + ')">' + IC_DEL + '</button>' +
         '</div></td></tr>';
     }).join('');
   }).catch(function (e) { toast(e.message); });
 }
 
 function plCopy(tk, b) {
-  var u = plLink(tk), old = b.textContent;
-  function done() { b.textContent = '✓ Đã copy'; setTimeout(function () { b.textContent = old; }, 1500); }
+  var u = plLink(tk), old = b.innerHTML;
+  function done() { b.innerHTML = IC_OK; setTimeout(function () { b.innerHTML = old; }, 1500); }
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(u).then(done).catch(fb);
   } else fb();

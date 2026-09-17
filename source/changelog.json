@@ -1,5 +1,5 @@
 {
-    "version": "2.1.36",
+    "version": "2.1.37",
     "updated": "2026-09-17",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-16",
             "note": "Phiên bản 2.1",
             "items": [
+                {
+                    "d": "2026-09-17",
+                    "v": "2.1.37",
+                    "t": "APSA1931: nut thao tac trong Duyet video chi con icon",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-17",
                     "v": "2.1.36",
