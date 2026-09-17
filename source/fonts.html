@@ -265,6 +265,11 @@ html[data-theme="light"] {
     .st button { background:none; border:0; color:var(--text3); cursor:pointer; padding:3px; line-height:0; border-radius:5px; }
     .st button:hover { color:var(--accent); background:var(--bg4); }
     .st button.del:hover { color:var(--red); background:rgba(255,77,77,.12); }
+    .styles .st.xtra { display:none; }
+    .styles.open .st.xtra { display:inline-flex; }
+    .st.more { padding:3px 10px; cursor:pointer; font-weight:700; border-style:dashed;
+      color:var(--text2); background:transparent; font-family:inherit; }
+    .st.more:hover { color:var(--accent); border-color:var(--accent); }
     .st svg, .mini svg { width:12px; height:12px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
 
     .fc-foot { display:flex; align-items:center; gap:6px; flex-wrap:wrap; border-top:1px solid var(--border); padding-top:10px; margin-top:auto; }
@@ -458,6 +463,12 @@ function render() {
   applySample();
 }
 
+function stMore(b) {
+  var box = b.parentNode; if (!box) return;
+  var on = box.classList.toggle('open');
+  b.textContent = on ? 'Thu gọn' : ('+' + (b.getAttribute('data-n') || '') + ' kiểu');
+}
+
 function card(r) {
   var files = r.files || [];
   var web = files.filter(function (f) { return f.web; });
@@ -465,10 +476,17 @@ function card(r) {
   var pv = pid
     ? '<div class="fc-prev"><span style="font-family:\'' + face(pid) + '\',var(--font-body)"></span></div>'
     : '<div class="fc-prev miss">Chưa xem thử được — file zip không có chữ dạng ttf / otf / woff.</div>';
-  var sts = web.map(function (f) {
-    return '<span class="st' + (f.id === pid ? ' on' : '') + '" title="' + esc(f.orig) + ' · ' + kb(f.bytes) + '">' +
+  var LIMST = 14;                                   /* APSA1929: thu gon danh sach kieu chu */
+  var sts = web.map(function (f, i) {
+    var onx = (f.id === pid);
+    return '<span class="st' + (onx ? ' on' : '')
+      + ((i >= LIMST && !onx) ? ' xtra' : '') + '" title="' + esc(f.orig) + ' · ' + kb(f.bytes) + '">' +
       '<span class="nm" onclick="pick(' + r.id + ',' + f.id + ')">' + esc(f.style) + '</span></span>';
   }).join('');
+  if (web.length > LIMST) {
+    sts += '<button type="button" class="st more" data-n="' + (web.length - LIMST)
+         + '" onclick="stMore(this)">+' + (web.length - LIMST) + ' kiểu</button>';
+  }
   var pack = files.filter(function (f) { return f.ext === 'zip'; })[0];
   return '<div class="fcard">' +
     '<div class="fc-top"><div class="fc-name">' + esc(r.name) + '</div></div>' +
