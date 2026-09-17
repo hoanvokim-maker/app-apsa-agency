@@ -3180,12 +3180,18 @@ function ckBox(i, isSec){
          'onchange="toggleOff(' + i + ', this.checked)" title="' +
          (isSec ? 'T\u00ednh c\u1ea3 nh\u00f3m n\u00e0y v\u00e0o total' : 'T\u00ednh d\u00f2ng n\u00e0y v\u00e0o total') + '">';
 }
+var Q5K_LAST = 0;
 var Q5K_HIDE = false;
+function q5kSync(){ if (typeof q5kWarn === 'function') q5kWarn(Q5K_LAST); }
 function q5kWarn(totalVnd){
-  /* APSA1921: bao gia da duyet (>= confirmed) thi khong canh bao 5k nua */
+  /* APSA1921b: chi canh bao khi bao gia CHUA duyet
+     - duyet noi bo (Moi duyet -> Da duyet): DSC.state === 'approved'
+     - hoac trang thai du an da tu 'confirmed' tro di */
+  Q5K_LAST = totalVnd;
+  var _ap = (typeof DSC !== 'undefined' && DSC && DSC.state === 'approved');
   var _s  = (typeof EDIT !== 'undefined' && EDIT && EDIT.status) ? String(EDIT.status) : '';
   var _si = STATUS_ORDER.indexOf(_s), _ci = STATUS_ORDER.indexOf('confirmed');
-  if (_si >= 0 && _ci >= 0 && _si >= _ci) {
+  if (_ap || (_si >= 0 && _ci >= 0 && _si >= _ci)) {
     var _e = document.getElementById('q5kWarn');
     if (_e) _e.classList.remove('on');
     Q5K_HIDE = false;
@@ -3440,7 +3446,7 @@ async function loadDsc(){
   box.style.display = '';
   try{
     const j = await api(API, 'comments', { query: '&id=' + EDIT.id + '&scope=' + DSC_SCOPE });
-    DSC = j; renderDsc();
+    DSC = j; renderDsc(); q5kSync();
   }catch(e){ /* im lặng, không chặn trang */ }
 }
 
@@ -3603,7 +3609,7 @@ async function sendComment(){
     const j = await api(API, 'comment-add', { body: {
       quotation_id: EDIT.id, scope: DSC_SCOPE, body: body, mentions: mentionsIn(body) } });
     el.value = ''; DSC_PICKED.clear();
-    DSC = j; renderDsc(); toast(j.message || 'Đã gửi', 'ok');
+    DSC = j; renderDsc(); q5kSync(); toast(j.message || 'Đã gửi', 'ok');
   }catch(e){ toast(e.message, 'err'); }
 }
 
@@ -3615,7 +3621,7 @@ async function sendReply(pid){
   try{
     const j = await api(API, 'comment-add', { body: {
       quotation_id: EDIT.id, scope: DSC_SCOPE, parent_id: pid, body: body, mentions: mentionsIn(body) } });
-    DSC = j; renderDsc(); toast('Đã trả lời', 'ok');
+    DSC = j; renderDsc(); q5kSync(); toast('Đã trả lời', 'ok');
   }catch(e){ toast(e.message, 'err'); }
 }
 
@@ -3627,7 +3633,7 @@ async function delComment(id){
   })) return;
   try{
     const j = await api(API, 'comment-delete', { body: { id: id } });
-    DSC = j; renderDsc(); toast('Đã xoá', 'ok');
+    DSC = j; renderDsc(); q5kSync(); toast('Đã xoá', 'ok');
   }catch(e){ toast(e.message, 'err'); }
 }
 
@@ -3649,7 +3655,7 @@ async function decide(status){
   try{
     const j = await api(API, 'review-decide', { body: {
       quotation_id: EDIT.id, scope: DSC_SCOPE, status: status, note: note } });
-    DSC = j; renderDsc(); toast(j.message, 'ok');
+    DSC = j; renderDsc(); q5kSync(); toast(j.message, 'ok');
   }catch(e){ toast(e.message, 'err'); }
 }
 
@@ -3677,7 +3683,7 @@ async function sendReq(){
     const j = await api(API, 'review-request', { body: {
       quotation_id: EDIT.id, scope: DSC_SCOPE,
       reviewer_id: id, note: document.getElementById('reqNote').value.trim() } });
-    DSC = j; renderDsc(); closeReq(); toast(j.message, 'ok');
+    DSC = j; renderDsc(); q5kSync(); closeReq(); toast(j.message, 'ok');
   }catch(e){ toast(e.message, 'err'); }
   btn.disabled = false;
 }
@@ -3691,7 +3697,7 @@ async function cancelReq(rid){
   try{
     const j = await api(API, 'review-cancel', { body: {
       quotation_id: EDIT.id, scope: DSC_SCOPE, reviewer_id: rid } });
-    DSC = j; renderDsc(); toast(j.message, 'ok');
+    DSC = j; renderDsc(); q5kSync(); toast(j.message, 'ok');
   }catch(e){ toast(e.message, 'err'); }
 }
 

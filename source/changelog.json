@@ -1,5 +1,5 @@
 {
-    "version": "2.1.15",
+    "version": "2.1.16",
     "updated": "2026-09-17",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-16",
             "note": "Phiên bản 2.1",
             "items": [
+                {
+                    "d": "2026-09-17",
+                    "v": "2.1.16",
+                    "t": "APSA1921b: an canh bao 5.000 USD khi bao gia da duyet noi bo (DSC.state=approved)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-17",
                     "v": "2.1.15",
