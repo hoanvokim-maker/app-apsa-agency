@@ -22,7 +22,8 @@
   <meta name="theme-color" content="#dff20d">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>APSA — Duyệt video</title>
-  <script src="/apsa-ui.js?v=57"></script>
+  <script src="/qr-lib.js?v=1"></script>
+<script src="/apsa-ui.js?v=57"></script>
   <script src="/perm-guard.js?v=3"></script>
   <script src="/apsa-dirty.js?v=2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -150,6 +151,20 @@ html[data-theme="light"] .toast{ background:#d97757 !important; color:#ffffff !i
   .ropill{ display:inline-block; font-size:10px; font-weight:700; letter-spacing:.06em;
     padding:2px 8px; border-radius:999px; margin-left:7px; vertical-align:1px;
     border:1px solid rgba(var(--w-rgb),.22); opacity:.7 }
+  /* APSA1928: QR */
+  .ic{ width:14px; height:14px; display:block; flex:0 0 auto }
+  .vb.sm{ display:inline-flex; align-items:center; gap:6px }
+  #qrOv{ position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:100040;
+    display:none; align-items:center; justify-content:center; padding:20px }
+  #qrOv.on{ display:flex }
+  #qrBox{ background:#101314; border:1px solid rgba(var(--w-rgb),.14); border-radius:16px;
+    padding:20px; width:min(340px,92vw); text-align:center }
+  #qrTitle{ font-size:12.5px; font-weight:700; margin:0 0 14px; line-height:1.4;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+  #qrImg{ background:#fff; border-radius:12px; padding:12px; display:inline-block; line-height:0 }
+  #qrImg svg{ width:220px; height:220px; display:block }
+  #qrUrl{ font-size:11px; opacity:.55; margin:12px 0 16px; word-break:break-all }
+  #qrAct{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap }
 </style>
 </head>
 <body>
@@ -235,7 +250,68 @@ function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function
 function toast(m) { var t = el('toast'); t.textContent = m; t.classList.add('on'); setTimeout(function () { t.classList.remove('on'); }, 2100); }
 function mb(n) { n = Number(n) || 0; return n >= 1073741824 ? (n / 1073741824).toFixed(2) + ' GB' : (n / 1048576).toFixed(1) + ' MB'; }
 function dmy(s) { s = String(s || ''); return s.length >= 10 ? s.slice(8, 10) + '/' + s.slice(5, 7) + '/' + s.slice(0, 4) : ''; }
-function lnk(tk) { return location.origin + '/review.html?t=' + tk; }
+function lnk(tk) { return location.origin + '/v/' + tk; }
+
+/* ===== APSA1928: ma QR cho link ===== */
+var QRU = '', QRN = 'apsa';
+function qrSvgFor(txt, cell) {
+  var q = qrcode(0, 'M'); q.addData(txt); q.make();
+  return q.createSvgTag({ cellSize: cell || 7, margin: 2 });
+}
+function qrOpen(code, isPl) {
+  if (typeof qrcode !== 'function') { toast('Chưa nạp được thư viện QR, tải lại trang nhé.'); return; }
+  QRU = location.origin + (isPl ? '/pl/' : '/v/') + code;
+  QRN = (isPl ? 'playlist-' : 'video-') + code;
+  var ov = el('qrOv');
+  if (!ov) {
+    ov = document.createElement('div'); ov.id = 'qrOv';
+    ov.innerHTML = '<div id="qrBox"><div id="qrTitle"></div><div id="qrImg"></div>'
+      + '<div id="qrUrl"></div><div id="qrAct">'
+      + '<button class="vb sm pri" id="qrPng">Tải PNG</button>'
+      + '<button class="vb sm" id="qrSvg">Tải SVG</button>'
+      + '<button class="vb sm" id="qrX">Đóng</button></div></div>';
+    document.body.appendChild(ov);
+    ov.addEventListener('click', function (e) { if (e.target === ov) qrClose(); });
+    el('qrX').onclick   = qrClose;
+    el('qrSvg').onclick = qrDlSvg;
+    el('qrPng').onclick = qrDlPng;
+  }
+  el('qrTitle').textContent = isPl ? 'QR playlist' : 'QR video';
+  el('qrUrl').textContent   = QRU;
+  el('qrImg').innerHTML     = qrSvgFor(QRU, 7);
+  ov.classList.add('on');
+}
+function qrClose() { var o = el('qrOv'); if (o) o.classList.remove('on'); }
+function qrRaw() {
+  var g = document.querySelector('#qrImg svg'); if (!g) return '';
+  var src = new XMLSerializer().serializeToString(g);
+  if (src.indexOf('xmlns=') < 0) src = src.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+  return src;
+}
+function qrDown(blob, ext) {
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = QRN + '-qr.' + ext;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
+}
+function qrDlSvg() {
+  var src = qrRaw(); if (!src) return;
+  qrDown(new Blob([src], { type: 'image/svg+xml;charset=utf-8' }), 'svg');
+}
+function qrDlPng() {
+  var src = qrRaw(); if (!src) return;
+  var img = new Image();
+  img.onload = function () {
+    var S = 1024, c = document.createElement('canvas');
+    c.width = S; c.height = S;
+    var x = c.getContext('2d');
+    x.fillStyle = '#ffffff'; x.fillRect(0, 0, S, S);
+    x.imageSmoothingEnabled = false;
+    x.drawImage(img, 0, 0, S, S);
+    c.toBlob(function (b) { if (b) qrDown(b, 'png'); }, 'image/png');
+  };
+  img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(src)));
+}
 
 function api(action, body, qs) {
   var o = { credentials: 'same-origin' };
@@ -269,7 +345,8 @@ function render() {
       '<td>' + (n ? (o ? '<span class="pill n">' + o + ' / ' + n + '</span>' : '<span class="pill on">' + n + '</span>') : '—') + '</td>' +
       '<td>' + (Number(r.active) ? '<span class="pill on">Đang mở</span>' : '<span class="pill off">Đã tắt</span>') + '</td>' +
       '<td><div class="acts">' +
-        '<button class="vb sm" onclick="cp(\'' + r.token + '\', this)">📋 Copy link</button>' +
+        '<button class="vb sm" onclick="cp(\'' + (r.slug || r.token) + '\', this)">' + IC_CP + 'Copy link</button>' +
+        '<button class="vb sm" title="Ma QR" onclick="qrOpen(\'' + (r.slug || r.token) + '\',0)">' + IC_QR + 'QR</button>' +
         '<a class="vb sm" href="./review.html?t=' + r.token + '" target="_blank" rel="noopener">↗ Mở</a>' +
         '<button class="vb sm" onclick="tg(' + r.id + ',' + (Number(r.active) ? 0 : 1) + ')">' + (Number(r.active) ? 'Tắt' : 'Bật') + '</button>' +
         '<button class="vb sm" onclick="newVer(' + r.id + ')" title="Tải lên bản chỉnh sửa mới của video này">+ Bản mới</button>' +
@@ -524,7 +601,7 @@ function setTab(k) {
   if (!v) plLoad();
 }
 
-function plLink(tk) { return location.origin + '/playlist.html?t=' + tk; }
+function plLink(tk) { return location.origin + '/pl/' + tk; }
 
 function plLoad() {
   api('pl-list').then(function (d) {
@@ -541,7 +618,8 @@ function plLoad() {
         '<td>' + (Number(p.active) ? '<span class="pill on">Đang mở</span>'
                                    : '<span class="pill off">Đã tắt</span>') + '</td>' +
         '<td><div class="acts">' +
-        '<button class="vb sm" onclick="plCopy(\'' + p.token + '\', this)">⧉ Copy link</button>' +
+        '<button class="vb sm" onclick="plCopy(\'' + (p.slug || p.token) + '\', this)">' + IC_CP + 'Copy link</button>' +
+        '<button class="vb sm" title="Ma QR" onclick="qrOpen(\'' + (p.slug || p.token) + '\',1)">' + IC_QR + 'QR</button>' +
         '<a class="vb sm" href="./playlist.html?t=' + p.token + '" target="_blank" rel="noopener">↗ Mở</a>' +
         '<button class="vb sm" onclick="plEdit(' + p.id + ')">✎ Sửa</button>' +
         '<button class="vb sm" onclick="plTog(' + p.id + ',' + (Number(p.active) ? 0 : 1) + ')">' +

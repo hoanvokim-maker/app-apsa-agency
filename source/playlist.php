@@ -13,8 +13,8 @@ $thumb = '';
 
 if ($t !== '' && preg_match('/^[A-Za-z0-9]{8,64}$/', $t)) {
     try {
-        $st = apsa_og_pdo()->prepare('SELECT `title`, `note`, `thumb`, `active` FROM `video_playlists` WHERE `token` = ? LIMIT 1');
-        $st->execute(array($t));
+        $st = apsa_og_pdo()->prepare('SELECT `title`, `note`, `thumb`, `active` FROM `video_playlists` WHERE `token` = ? OR `slug` = ? LIMIT 1');
+        $st->execute(array($t, $t));
         $r = $st->fetch();
         if ($r && (int) $r['active']) {
             $title = trim((string) $r['title']);

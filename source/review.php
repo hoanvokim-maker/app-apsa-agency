@@ -31,8 +31,8 @@ if ($t !== '' && preg_match('/^[A-Za-z0-9]{8,64}$/', $t)) {
             DB_PASS,
             array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC)
         );
-        $st = $pdo->prepare('SELECT `title`, `note`, `file_name`, `active` FROM `video_reviews` WHERE `token` = ? LIMIT 1');
-        $st->execute(array($t));
+        $st = $pdo->prepare('SELECT `title`, `note`, `file_name`, `active` FROM `video_reviews` WHERE `token` = ? OR `slug` = ? LIMIT 1');
+        $st->execute(array($t, $t));
         $r = $st->fetch();
         if ($r && (int) $r['active']) {
             $title = trim((string) $r['title']) !== '' ? trim((string) $r['title']) : trim((string) $r['file_name']);

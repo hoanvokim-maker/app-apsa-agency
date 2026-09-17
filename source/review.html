@@ -355,6 +355,7 @@ html[data-theme="light"] /* APSA1849 */ .mk.prev{ background:#2f5fd0 !important;
 <script>
 var API = './api/review-api.php';
 var T = new URLSearchParams(location.search).get('t') || '';
+if (!T) { var _m = location.pathname.match(/\/v\/([A-Za-z0-9]{6,40})\/?$/); if (_m) T = _m[1]; }
 var PLT = new URLSearchParams(location.search).get('p') || '';   /* APSA1926 */
 var VK = '', VIEWID = 0, VIEWS = 0, WSEC = 0, WT0 = 0, RO = 0;   /* APSA1927 */
 var v, cv, cx, fi, INFO = null, CM = [], IMGS = [], ADMIN = 0;

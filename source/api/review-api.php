@@ -77,6 +77,35 @@ try {
     if (!in_array('ver', $cols, true))     $pdo->exec("ALTER TABLE `video_reviews` ADD COLUMN `ver` SMALLINT UNSIGNED NOT NULL DEFAULT 1");
 } catch (Exception $e) {}
 
+/* APSA1928: link ngan cho video va playlist */
+function rv_newSlug(PDO $pdo, $tb) {
+    $al = '23456789abcdefghjkmnpqrstuvwxyz';
+    $n  = strlen($al);
+    for ($k = 0; $k < 40; $k++) {
+        $x = '';
+        for ($i = 0; $i < 8; $i++) $x .= $al[random_int(0, $n - 1)];
+        $q = $pdo->prepare("SELECT 1 FROM `" . $tb . "` WHERE slug = ? LIMIT 1");
+        $q->execute(array($x));
+        if (!$q->fetchColumn()) return $x;
+    }
+    return bin2hex(random_bytes(5));
+}
+try {
+    foreach (array('video_reviews', 'video_playlists') as $tb) {
+        $cols = array();
+        foreach ($pdo->query("SHOW COLUMNS FROM `" . $tb . "`") as $c) $cols[] = $c['Field'];
+        if (!in_array('slug', $cols, true)) {
+            $pdo->exec("ALTER TABLE `" . $tb . "` ADD COLUMN `slug` VARCHAR(16) NOT NULL DEFAULT ''");
+            $pdo->exec("ALTER TABLE `" . $tb . "` ADD KEY `k_slug` (`slug`)");
+        }
+        $q = $pdo->query("SELECT id FROM `" . $tb . "` WHERE slug = '' LIMIT 50");
+        foreach ($q->fetchAll() as $row) {
+            $pdo->prepare("UPDATE `" . $tb . "` SET slug = ? WHERE id = ?")
+                ->execute(array(rv_newSlug($pdo, $tb), (int) $row['id']));
+        }
+    }
+} catch (Exception $e) {}
+
 /* APSA1927: ghi nhan luot xem video */
 $pdo->exec("CREATE TABLE IF NOT EXISTS `video_views` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -233,10 +262,10 @@ function rv_needAdmin(PDO $pdo)
 
 /* ── review theo token ─────────────────────────────────────── */
 function rv_byToken(PDO $pdo, $t, $needActive = true) {
-    $t = preg_replace('/[^a-f0-9]/', '', strtolower((string) $t));
-    if (strlen($t) !== 32) rv_fail('Link không hợp lệ.', 404);
-    $st = $pdo->prepare("SELECT * FROM `video_reviews` WHERE token = ?");
-    $st->execute(array($t));
+    $t = preg_replace('/[^a-z0-9]/', '', strtolower((string) $t));
+    if (strlen($t) < 6 || strlen($t) > 40) rv_fail('Link không hợp lệ.', 404);
+    $st = $pdo->prepare("SELECT * FROM `video_reviews` WHERE token = ? OR slug = ? LIMIT 1");
+    $st->execute(array($t, $t));
     $r = $st->fetch();
     if (!$r) rv_fail('Link không tồn tại hoặc đã bị gỡ.', 404);
     if ($needActive && !(int) $r['active']) rv_fail('Link này đã được tắt.', 403);
@@ -325,14 +354,15 @@ case 'create': {
     }
     $me = rv_me($pdo);
     $tk = bin2hex(random_bytes(16));
+    $sg = rv_newSlug($pdo, 'video_reviews');
     $st = $pdo->prepare("INSERT INTO `video_reviews`
-        (token, title, note, drive_id, item_id, file_name, file_size, created_by)
-        VALUES (?,?,?,?,?,?,?,?)");
-    $st->execute(array($tk, $title, rv_s($B['note'] ?? '', 500), RV_DRIVE, $item, $name,
+        (token, slug, title, note, drive_id, item_id, file_name, file_size, created_by)
+        VALUES (?,?,?,?,?,?,?,?,?)");
+    $st->execute(array($tk, $sg, $title, rv_s($B['note'] ?? '', 500), RV_DRIVE, $item, $name,
         (int) ($B['size'] ?? 0), $me ? ($me['display_name'] ?: $me['username']) : ''));
     $nid = (int) $pdo->lastInsertId();
     if ($rootId > 0) $pdo->prepare("UPDATE `video_reviews` SET root_id = ?, ver = ? WHERE id = ?")->execute(array($rootId, $ver, $nid));
-    rv_ok(array('id' => $nid, 'token' => $tk, 'ver' => $ver));
+    rv_ok(array('id' => $nid, 'token' => $tk, 'slug' => $sg, 'ver' => $ver));
 }
 
 case 'list': {
@@ -387,8 +417,9 @@ case 'pl-save': {
         $me = rv_me($pdo);
         $tk = bin2hex(random_bytes(16));
         $who = $me ? (isset($me['display_name']) && $me['display_name'] !== '' ? $me['display_name'] : $me['username']) : '';
-        $st = $pdo->prepare("INSERT INTO `video_playlists` (token, title, note, thumb, no_cmt, created_by) VALUES (?,?,?,?,?,?)");
-        $st->execute(array($tk, $title, $note, $thumb, $nocm, $who));
+        $psg = rv_newSlug($pdo, 'video_playlists');
+        $st = $pdo->prepare("INSERT INTO `video_playlists` (token, slug, title, note, thumb, no_cmt, created_by) VALUES (?,?,?,?,?,?,?)");
+        $st->execute(array($tk, $psg, $title, $note, $thumb, $nocm, $who));
         $id = (int) $pdo->lastInsertId();
     }
     if ($ids !== null) {
@@ -452,10 +483,10 @@ case 'pl-del': {
 
 /* Cong khai theo token */
 case 'pl-open': {
-    $t = preg_replace('/[^a-f0-9]/', '', strtolower((string) (isset($_GET['t']) ? $_GET['t'] : '')));
-    if (strlen($t) !== 32) rv_fail('Link không hợp lệ.', 404);
-    $st = $pdo->prepare("SELECT * FROM `video_playlists` WHERE token = ?");
-    $st->execute(array($t));
+    $t = preg_replace('/[^a-z0-9]/', '', strtolower((string) (isset($_GET['t']) ? $_GET['t'] : '')));
+    if (strlen($t) < 6 || strlen($t) > 40) rv_fail('Link không hợp lệ.', 404);
+    $st = $pdo->prepare("SELECT * FROM `video_playlists` WHERE token = ? OR slug = ? LIMIT 1");
+    $st->execute(array($t, $t));
     $p = $st->fetch();
     if (!$p) rv_fail('Link không tồn tại.', 404);
     if (!(int) $p['active'] && rv_lvl($pdo) < 2) rv_fail('Link đã bị tắt.', 403);
