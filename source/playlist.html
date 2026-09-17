@@ -122,7 +122,7 @@ html[data-theme="light"] {
   <main class="main" id="main"><div class="empty" id="emp">Đang tải…</div></main>
 </div>
 <script>
-var API = './api/review-api.php';
+var API = '/api/review-api.php';
 var T = (location.search.match(/[?&]t=([A-Za-z0-9]{6,40})/i) || [])[1] || '';
 if (!T) { var _m = location.pathname.match(/\/pl\/([A-Za-z0-9]{6,40})\/?$/); if (_m) T = _m[1]; }
 var VIDS = [], CUR = -1;
@@ -161,7 +161,7 @@ function pick(i) {
   if (i < 0 || i >= VIDS.length) return;
   CUR = i;
   draw();
-  var u = './review.html?t=' + encodeURIComponent(VIDS[i].token) + '&embed=1&p=' + encodeURIComponent(T);
+  var u = '/review.html?t=' + encodeURIComponent(VIDS[i].token) + '&embed=1&p=' + encodeURIComponent(T);
   el('main').innerHTML = '<iframe id="fr" src="' + u + '" allowfullscreen></iframe>';
   try { history.replaceState(null, '', '?t=' + T + '&v=' + (i + 1)); } catch (e) { }
   if (window.innerWidth <= 860) {

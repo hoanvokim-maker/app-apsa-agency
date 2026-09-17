@@ -1,5 +1,5 @@
 {
-    "version": "2.1.29",
+    "version": "2.1.30",
     "updated": "2026-09-17",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-16",
             "note": "Phiên bản 2.1",
             "items": [
+                {
+                    "d": "2026-09-17",
+                    "v": "2.1.30",
+                    "t": "APSA1928b: dung duong dan tuyet doi de link ngan /v/ chay dung",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-17",
                     "v": "2.1.29",

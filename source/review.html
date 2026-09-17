@@ -353,7 +353,7 @@ html[data-theme="light"] /* APSA1849 */ .mk.prev{ background:#2f5fd0 !important;
 <input type="file" id="fi" accept="image/*" multiple style="display:none" />
 
 <script>
-var API = './api/review-api.php';
+var API = '/api/review-api.php';
 var T = new URLSearchParams(location.search).get('t') || '';
 if (!T) { var _m = location.pathname.match(/\/v\/([A-Za-z0-9]{6,40})\/?$/); if (_m) T = _m[1]; }
 var PLT = new URLSearchParams(location.search).get('p') || '';   /* APSA1926 */
@@ -457,18 +457,18 @@ function verPaint() {
   if (!VERS || VERS.length < 2) { b.innerHTML = ''; b.style.display = 'none'; return; }
   if (APPR && !SHOWALL) {                                    /* APSA1922 */
     b.style.display = '';
-    b.innerHTML = '<a class="aplink" href="./review.html?t=' + encodeURIComponent(T) + '&all=1">'
+    b.innerHTML = '<a class="aplink" href="/review.html?t=' + encodeURIComponent(T) + '&all=1">'
                 + 'Xem các bản trước (' + (VERS.length - 1) + ')</a>';
     return;
   }
   b.style.display = '';
   b.innerHTML = '<span class="vlb">Phiên bản</span>' + VERS.map(function (x) {
     return '<a class="vchip' + (Number(x.cur) ? ' on' : '') + (Number(x.active) ? '' : ' off') + '"' +
-           ' href="./review.html?t=' + x.token + '"' +
+           ' href="/review.html?t=' + x.token + '"' +
            ' title="V' + x.ver + (Number(x.n_open) ? ' — ' + x.n_open + ' góp ý chưa xử lý' : '') + '">V' + x.ver +
            (Number(x.n_open) ? '<i>' + x.n_open + '</i>' : '') + '</a>';
   }).join('') + '<button class="vcmp" onclick="cmpOpen()">So sánh 2 bản</button>';
-  if (APPR) b.innerHTML += '<a class="aplink" style="margin-left:6px" href="./review.html?t='
+  if (APPR) b.innerHTML += '<a class="aplink" style="margin-left:6px" href="/review.html?t='
     + encodeURIComponent(APPR.token) + '">&larr; Bản đã duyệt (V' + APPR.ver + ')</a>';
 }
 
@@ -483,7 +483,7 @@ function plMini() {
     if (!rows.length) return;
     var h = '<div class="pmh">Danh sách video · ' + rows.length + '</div>';
     h += rows.map(function (x, i) {
-      return '<a class="pmi' + (x.token === T ? ' on' : '') + '" href="./review.html?t='
+      return '<a class="pmi' + (x.token === T ? ' on' : '') + '" href="/review.html?t='
         + encodeURIComponent(x.token) + '&p=' + encodeURIComponent(PLT) + '">'
         + '<span class="pmn">' + (i + 1) + '</span>'
         + '<span class="pmt">' + esc(x.title || x.file_name || '') + '</span></a>';
@@ -589,7 +589,7 @@ function apprDo() {
   if (n.length < 2) { toast('Nhập tên người duyệt.'); i.focus(); return; }
   whoSave(n);
   api('approve', { t: T, name: n }).then(function () {
-    location.replace('./review.html?t=' + encodeURIComponent(T));
+    location.replace('/review.html?t=' + encodeURIComponent(T));
   }).catch(function (e) { toast(e.message); apprPaint(); });
 }
 function apprUndo(btn) {
@@ -599,7 +599,7 @@ function apprUndo(btn) {
     return;
   }
   api('unapprove', { t: T }).then(function () {
-    location.replace('./review.html?t=' + encodeURIComponent(T));
+    location.replace('/review.html?t=' + encodeURIComponent(T));
   }).catch(function (e) { toast(e.message); apprPaint(); });
 }
 
@@ -703,7 +703,7 @@ function boot() {
     INFO = d; ADMIN = d.admin ? 1 : 0;
     VERS = d.versions || []; LATEST = d.latest || ''; APPR = d.appr || null;
     if (APPR && !SHOWALL && APPR.token !== T) {               /* APSA1922 */
-      location.replace('./review.html?t=' + encodeURIComponent(APPR.token)); return;
+      location.replace('/review.html?t=' + encodeURIComponent(APPR.token)); return;
     }
     verPaint(); apprPaint(); plMini();
     VIEWS = Number(d.views) || 0;
