@@ -303,6 +303,8 @@ header{
   border:2px solid var(--bg2); margin-left:-7px; color:#0d0d0d; background:var(--accent);
 }
 .av:first-child{ margin-left:0; }
+.av{ overflow:hidden; }
+.av img{ width:100%; height:100%; object-fit:cover; display:block; }
 .av.fl{ background:#ffffff; }
 .av.more{ background:var(--bg3); color:var(--text2); border-color:var(--bg2); font-size:10px; }
 .noteam{
@@ -433,7 +435,7 @@ table.asg col.c-stat{ width:132px; }
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/theme.css?v=53" />
-<script src="/apsa-ui.js?v=56"></script>
+<script src="/apsa-ui.js?v=57"></script>
   <script src="/perm-guard.js?v=3"></script>
   <script src="/apsa-dirty.js?v=2"></script>
 <style>
@@ -725,9 +727,10 @@ function taskTable(r){
 }
 
 /* ─── project card ─── */
-function avOf(a){ return window.APSA_AV ? window.APSA_AV.pick({ id: a.user_id, avatar: a.avatar }) : null; }
-function avCh(a){ const x = avOf(a); return x ? window.APSA_AV.ch(x[1]) : esc(initial(a.display_name)); }
-function avBg(a){ const x = avOf(a); return x ? 'background:' + x[2] + ';font-size:15px;color:#000' : ''; }
+function avOf(a){ return { id: a.user_id, avatar: a.avatar, display_name: a.display_name }; }
+function avCh(a){ const f = window.APSA_AV ? window.APSA_AV.url(avOf(a)) : '';
+  return f ? '<img src="' + esc(f) + '" alt="">' : esc(initial(a.display_name)); }
+function avBg(a){ return ''; }
 function teamHtml(r){
   if (!r.assignees.length) return '<span class="noteam">Chưa giao việc</span>';
   const seen = new Map();

@@ -1,5 +1,5 @@
 {
-    "version": "2.1.13",
+    "version": "2.1.14",
     "updated": "2026-09-17",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-16",
             "note": "Phiên bản 2.1",
             "items": [
+                {
+                    "d": "2026-09-17",
+                    "v": "2.1.14",
+                    "t": "APSA1920: doi anh dai dien bang anh upload tu may tinh, bo danh sach con vat",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-17",
                     "v": "2.1.13",

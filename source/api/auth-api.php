@@ -377,16 +377,44 @@ switch ($action) {
         ok($rows);
         break;
 
-    // -- Doi nhan vat avatar cua chinh minh --
-    case 'avatar-save': {
-        $u  = requireAuth($pdo);
-        $av = strtolower(trim((string)($body['avatar'] ?? '')));
-        $av = preg_replace('/[^a-z0-9_]/', '', $av);
-        $av = substr($av, 0, 24);
-        $pdo->prepare("UPDATE `app_users` SET avatar = ? WHERE id = ?")->execute([$av, (int)$u['id']]);
-        ok(['id' => (int)$u['id'], 'avatar' => $av]);
-        break;
-    }
+        // -- APSA1920: anh dai dien (upload tu may tinh) --
+        case 'avatar-upload': {
+            $u   = requireAuth($pdo);
+            $uid = (int) $u['id'];
+            $raw = (string) ($body['data'] ?? '');
+            $cm  = strpos($raw, ',');
+            if ($cm !== false) $raw = substr($raw, $cm + 1);
+            $bin = base64_decode($raw, true);
+            if ($bin === false || strlen($bin) < 512) fail('Anh khong hop le', 400);
+            if (strlen($bin) > 1500000) fail('Anh qua lon (toi da 1.5MB)', 400);
+            if (substr($bin, 0, 3) !== chr(0xFF) . chr(0xD8) . chr(0xFF)) fail('Chi nhan anh JPEG', 400);
+            $inf = @getimagesizefromstring($bin);
+            if (!$inf || (int) $inf[2] !== IMAGETYPE_JPEG) fail('Anh khong hop le', 400);
+            if ((int) $inf[0] < 16 || (int) $inf[0] > 2048) fail('Kich thuoc anh khong hop le', 400);
+            $dir = dirname(__DIR__) . '/uploads/avatars';
+            if (!is_dir($dir)) @mkdir($dir, 0755, true);
+            $old = (string) $u['avatar'];
+            $fn  = 'u' . $uid . '_' . bin2hex(random_bytes(4)) . '.jpg';
+            if (@file_put_contents($dir . '/' . $fn, $bin) === false) fail('Khong luu duoc anh', 500);
+            @chmod($dir . '/' . $fn, 0644);
+            $pdo->prepare("UPDATE `app_users` SET avatar = ? WHERE id = ?")->execute([$fn, $uid]);
+            if ($old !== $fn && preg_match('/^u[0-9]+_[a-f0-9]{8}[.]jpg$/', $old)) @unlink($dir . '/' . $old);
+            ok(['id' => $uid, 'avatar' => $fn]);
+            break;
+        }
+
+        case 'avatar-save':
+        case 'avatar-clear': {
+            $u   = requireAuth($pdo);
+            $uid = (int) $u['id'];
+            $old = (string) $u['avatar'];
+            $pdo->prepare("UPDATE `app_users` SET avatar = '' WHERE id = ?")->execute([$uid]);
+            if (preg_match('/^u[0-9]+_[a-f0-9]{8}[.]jpg$/', $old)) {
+                @unlink(dirname(__DIR__) . '/uploads/avatars/' . $old);
+            }
+            ok(['id' => $uid, 'avatar' => '']);
+            break;
+        }
 
     case 'create':
         requireAdmin($pdo);

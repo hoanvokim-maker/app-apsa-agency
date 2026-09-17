@@ -1471,103 +1471,161 @@ function pullHome() {
   window.apsaModalLockOutside = true;
 })();
 
-/* ===== APSA 1.8.3 - Nhan vat dai dien (avatar) ===== */
+/* ===== APSA1920 - Anh dai dien: upload anh tu may tinh ===== */
 (function () {
-  var LIST = [
-    ['cat',0x1F431,'#ffd9e8'], ['dog',0x1F436,'#ffe6c9'], ['fox',0x1F98A,'#ffd8b5'],
-    ['panda',0x1F43C,'#ececec'], ['koala',0x1F428,'#dde8f2'], ['tiger',0x1F42F,'#ffe3a8'],
-    ['lion',0x1F981,'#ffecb8'], ['frog',0x1F438,'#d8f5d1'], ['monkey',0x1F435,'#f2dfc6'],
-    ['rabbit',0x1F430,'#ffe3ec'], ['bear',0x1F43B,'#e9dac9'], ['pig',0x1F437,'#ffe1ea'],
-    ['chick',0x1F425,'#fff2bd'], ['penguin',0x1F427,'#dbe8f4'], ['owl',0x1F989,'#e5ded2'],
-    ['unicorn',0x1F984,'#f2e0ff'], ['octopus',0x1F419,'#ffd8d8'], ['dino',0x1F996,'#d8f2db'],
-    ['turtle',0x1F422,'#daf2d3'], ['whale',0x1F433,'#d2e8ff'], ['butterfly',0x1F98B,'#e9dfff'],
-    ['bee',0x1F41D,'#fff2c7'], ['dolphin',0x1F42C,'#d2ecff'], ['hedgehog',0x1F994,'#eedfcd'],
-    ['ghost',0x1F47B,'#eaeaf7'], ['alien',0x1F47D,'#e2f2e7'], ['robot',0x1F916,'#e2e7ef'],
-    ['cactus',0x1F335,'#dcf1d5'], ['sloth',0x1F9A5,'#e7e0d3'], ['duck',0x1F986,'#fff0cc'],
-    ['crab',0x1F980,'#ffdcd6'], ['mouse',0x1F42D,'#e6e6e6']
-  ];
-  var IDX = {}; for (var i = 0; i < LIST.length; i++) IDX[LIST[i][0]] = LIST[i];
-  function ch(cp){ return String.fromCodePoint(cp); }
-  function pick(u){
-    u = u || {};
-    var k = String(u.avatar || '');
-    if (IDX[k]) return IDX[k];
-    var id = Number(u.id) || 0;
-    return LIST[Math.abs(id) % LIST.length];
+  var DIR = '/uploads/avatars/';
+  var RX  = /^u[0-9]+_[a-f0-9]{8}[.]jpg$/;
+  var PAL = ['#ffd9e8','#ffe6c9','#ffd8b5','#e4e4dd','#dde8f2','#ffe3a8',
+             '#eef29d','#d8f5d1','#e9dac9','#f2e0ff','#d2e8ff','#e9dfff',
+             '#dcf1d5','#ffe0d3','#c7f0e4','#ffd6d6'];
+
+  function esc(s){ return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function file(u){ var k = String((u && u.avatar) || ''); return RX.test(k) ? k : ''; }
+  function url(u){ var f = file(u); return f ? DIR + f : ''; }
+  function ini(u){
+    var n = String((u && (u.display_name || u.name || u.username)) || '').trim();
+    if (!n) return '?';
+    var p = n.split(/\s+/);
+    var a = p[0].charAt(0);
+    var b = p.length > 1 ? p[p.length - 1].charAt(0) : '';
+    return (a + b).toUpperCase();
+  }
+  function color(u){ var id = Math.abs(Number(u && u.id) || 0); return PAL[id % PAL.length]; }
+  function bgcss(u){ return file(u) ? '' : 'background:' + color(u) + ';color:#1a1a16;'; }
+  function inner(u){
+    var f = url(u);
+    if (f) return '<img class="apsa-avimg" src="' + esc(f) + '" alt="">';
+    return esc(ini(u));
   }
   function html(u, size){
-    var a = pick(u); size = size || 22;
-    return '<span class="apsa-av" style="width:' + size + 'px;height:' + size + 'px;background:' + a[2] +
-           ';font-size:' + Math.round(size * 0.62) + 'px">' + ch(a[1]) + '</span>';
+    size = size || 22;
+    var st = 'width:' + size + 'px;height:' + size + 'px;font-size:'
+           + Math.round(size * 0.42) + 'px;font-weight:700;' + bgcss(u);
+    return '<span class="apsa-av" style="' + st + '">' + inner(u) + '</span>';
   }
-  window.APSA_AV = { list: LIST, pick: pick, html: html, ch: ch, open: openPicker };
+  window.APSA_AV = { file: file, url: url, ini: ini, color: color, bgcss: bgcss,
+                     inner: inner, html: html, open: openPicker,
+                     pick: function(){ return null; }, ch: function(){ return ''; } };
 
   function css(){
     if (document.getElementById('apsaAvCss')) return;
     var st = document.createElement('style'); st.id = 'apsaAvCss';
     st.textContent =
-      '.apsa-av{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;line-height:1;vertical-align:middle;-webkit-user-select:none;user-select:none;flex:0 0 auto}' +
+      '.apsa-av{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;line-height:1;vertical-align:middle;-webkit-user-select:none;user-select:none;flex:0 0 auto;overflow:hidden}' +
+      '.apsa-avimg{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}' +
       '.apsa-avhost{background:transparent!important;color:inherit!important;padding:0!important;border:0!important;overflow:visible!important;cursor:pointer}' +
       '.apsa-avmodal{position:fixed;inset:0;background:rgba(0,0,0,.66);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px}' +
-      '.apsa-avbox{background:var(--bg2);border:1px solid var(--wash3);border-radius:14px;padding:18px;width:min(430px,94vw);box-shadow:0 18px 60px var(--scrim6)}' +
+      '.apsa-avbox{background:var(--bg2);border:1px solid var(--wash3);border-radius:14px;padding:18px;width:min(360px,94vw);box-shadow:0 18px 60px var(--scrim6)}' +
       '.apsa-avttl{font-size:13px;font-weight:700;color:var(--text);letter-spacing:.3px}' +
-      '.apsa-avsub{font-size:11.5px;color:#8a8a8a;margin-top:3px}' +
-      '.apsa-avgrid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin:14px 0 12px}' +
-      '.apsa-avgrid button{background:none;border:1px solid transparent;border-radius:10px;padding:3px;cursor:pointer;display:flex;align-items:center;justify-content:center}' +
-      '.apsa-avgrid button:hover{border-color:rgba(var(--w-rgb),.28)}' +
-      '.apsa-avgrid button.on{border-color:var(--accent-fill);background:rgba(var(--a-rgb),.12)}' +
-      '.apsa-avfoot{display:flex;justify-content:flex-end}' +
-      '.apsa-avclose{background:none;border:1px solid rgba(var(--w-rgb),.16);color:var(--text2);border-radius:9px;padding:6px 14px;font-size:12px;cursor:pointer}' +
-      '.apsa-avclose:hover{border-color:rgba(var(--w-rgb),.34);color:var(--text)}' +
-      '@media(max-width:520px){.apsa-avgrid{grid-template-columns:repeat(6,1fr)}}';
-    (document.head || document.documentElement).appendChild(st);
+      '.apsa-avsub{font-size:11.5px;color:#8a8a8a;margin-top:3px;line-height:1.5}' +
+      '.apsa-avprev{display:flex;align-items:center;gap:14px;margin:16px 0}' +
+      '.apsa-avbtns{display:flex;gap:8px;flex-wrap:wrap}' +
+      '.apsa-avb{background:none;border:1px solid rgba(var(--w-rgb),.16);color:var(--text);border-radius:9px;padding:7px 14px;font-size:12px;cursor:pointer}' +
+      '.apsa-avb:hover{border-color:rgba(var(--w-rgb),.34)}' +
+      '.apsa-avb.pri{background:var(--accent-fill);border-color:transparent;color:#1a1a16;font-weight:700}' +
+      '.apsa-avmsg{font-size:11.5px;color:#8a8a8a;min-height:16px}' +
+      '.apsa-avfoot{display:flex;justify-content:flex-end;margin-top:14px}';
+    document.head.appendChild(st);
+  }
+
+  function send(action, body, cb){
+    fetch('./api/auth-api.php?action=' + action, {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body || {})
+    }).then(function (r) { return r.json(); })
+      .then(function (j) { cb(!!(j && j.ok), (j && (j.data || j.error)) || ''); })
+      .catch(function () { cb(false, 'Lỗi mạng, thử lại nhé.'); });
+  }
+
+  function square(f, size, cb){
+    var fr = new FileReader();
+    fr.onerror = function () { cb(null, 'Không đọc được file.'); };
+    fr.onload = function () {
+      var im = new Image();
+      im.onerror = function () { cb(null, 'File này không phải ảnh hợp lệ.'); };
+      im.onload = function () {
+        var w = im.naturalWidth || im.width, h = im.naturalHeight || im.height;
+        if (!w || !h) { cb(null, 'Ảnh lỗi.'); return; }
+        var s = Math.min(w, h);
+        var c = document.createElement('canvas');
+        c.width = size; c.height = size;
+        var g = c.getContext('2d');
+        g.fillStyle = '#ffffff'; g.fillRect(0, 0, size, size);
+        g.drawImage(im, (w - s) / 2, (h - s) / 2, s, s, 0, 0, size, size);
+        try { cb(c.toDataURL('image/jpeg', 0.88), null); }
+        catch (e) { cb(null, 'Không xử lý được ảnh này.'); }
+      };
+      im.src = fr.result;
+    };
+    fr.readAsDataURL(f);
+  }
+
+  function apply(k){
+    if (window.__APSA_USER) window.__APSA_USER.avatar = k;
+    repaint();
+    window.dispatchEvent(new Event('apsa-avatar-changed'));
   }
 
   function openPicker(){
     css();
-    var u = window.__APSA_USER || {};
-    var cur = pick(u)[0];
-    var g = '';
-    for (var j = 0; j < LIST.length; j++) {
-      var a = LIST[j];
-      g += '<button type="button" data-k="' + a[0] + '"' + (a[0] === cur ? ' class="on"' : '') + '>' +
-           '<span class="apsa-av" style="width:36px;height:36px;background:' + a[2] + ';font-size:23px">' + ch(a[1]) + '</span></button>';
-    }
     var ov = document.createElement('div');
     ov.className = 'apsa-avmodal';
     ov.innerHTML = '<div class="apsa-avbox">' +
-      '<div class="apsa-avttl">Chọn nhân vật của bạn</div>' +
-      '<div class="apsa-avsub">Nhân vật này hiện ở góc phải và ở mọi nơi có tên bạn.</div>' +
-      '<div class="apsa-avgrid">' + g + '</div>' +
-      '<div class="apsa-avfoot"><button type="button" class="apsa-avclose">Đóng</button></div></div>';
+      '<div class="apsa-avttl">Ảnh đại diện</div>' +
+      '<div class="apsa-avsub">Tải ảnh từ máy tính. Ảnh sẽ được cắt vuông và thu về 256px.</div>' +
+      '<div class="apsa-avprev"><span id="apsaAvPrev"></span><div class="apsa-avbtns">' +
+      '<button type="button" class="apsa-avb pri" id="apsaAvPick">Chọn ảnh…</button>' +
+      '<button type="button" class="apsa-avb" id="apsaAvDel">Xoá ảnh</button></div></div>' +
+      '<div class="apsa-avmsg" id="apsaAvMsg"></div>' +
+      '<div class="apsa-avfoot"><button type="button" class="apsa-avb" id="apsaAvClose">Đóng</button></div>' +
+      '</div>' +
+      '<input type="file" id="apsaAvFile" accept="image/jpeg,image/png,image/webp" style="display:none">';
     document.body.appendChild(ov);
+    var prev = ov.querySelector('#apsaAvPrev');
+    var msg  = ov.querySelector('#apsaAvMsg');
+    var inp  = ov.querySelector('#apsaAvFile');
+    function draw(){ prev.innerHTML = html(window.__APSA_USER || {}, 72); }
+    draw();
     ov.addEventListener('click', function (e) {
-      if (e.target === ov || (e.target.closest && e.target.closest('.apsa-avclose'))) { ov.remove(); return; }
-      var b = e.target.closest ? e.target.closest('button[data-k]') : null;
-      if (!b) return;
-      var k = b.getAttribute('data-k');
-      if (window.__APSA_USER) window.__APSA_USER.avatar = k;
-      ov.remove();
-      repaint();
-      fetch('./api/auth-api.php?action=avatar-save', {
-        method: 'POST', credentials: 'same-origin',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ avatar: k })
-      }).catch(function () {});
-      window.dispatchEvent(new Event('apsa-avatar-changed'));
+      if (e.target === ov || (e.target.closest && e.target.closest('#apsaAvClose'))) ov.remove();
+    });
+    ov.querySelector('#apsaAvPick').addEventListener('click', function () { inp.value = ''; inp.click(); });
+    ov.querySelector('#apsaAvDel').addEventListener('click', function () {
+      msg.textContent = 'Đang xoá…';
+      send('avatar-clear', {}, function (good, d) {
+        if (!good) { msg.textContent = d || 'Lỗi.'; return; }
+        apply(''); draw(); msg.textContent = 'Đã xoá ảnh đại diện.';
+      });
+    });
+    inp.addEventListener('change', function () {
+      var f = inp.files && inp.files[0];
+      if (!f) return;
+      if (f.size > 12 * 1024 * 1024) { msg.textContent = 'Ảnh quá lớn (tối đa 12MB).'; return; }
+      msg.textContent = 'Đang xử lý ảnh…';
+      square(f, 256, function (dataUrl, err) {
+        if (!dataUrl) { msg.textContent = err || 'Không đọc được ảnh.'; return; }
+        msg.textContent = 'Đang tải lên…';
+        send('avatar-upload', { data: dataUrl }, function (good, d) {
+          if (!good) { msg.textContent = d || 'Tải lên thất bại.'; return; }
+          apply(d && d.avatar ? d.avatar : ''); draw();
+          msg.textContent = 'Đã cập nhật ảnh đại diện.';
+        });
+      });
     });
   }
 
   function paintAv(){
     var u = window.__APSA_USER; if (!u) return;
     var el = document.getElementById('av'); if (!el) return;
-    var k = pick(u)[0];
+    var k = String(u.avatar || '') + '|' + String(u.display_name || '');
     if (el.getAttribute('data-apsa-av') === k && el.querySelector('.apsa-av')) return;
     css();
     el.setAttribute('data-apsa-av', k);
     el.classList.add('apsa-avhost');
     el.innerHTML = html(u, 24);
-    el.title = 'Đổi nhân vật';
+    el.title = 'Đổi ảnh đại diện';
     if (!el.getAttribute('data-apsa-bound')) {
       el.setAttribute('data-apsa-bound', '1');
       el.addEventListener('click', function (e) { e.stopPropagation(); openPicker(); });
@@ -1577,11 +1635,12 @@ function pullHome() {
   function injectMenu(){
     var m = document.getElementById('apsaUserMenu');
     if (!m || document.getElementById('apsaAvBtn')) return;
+    css();
     var u = window.__APSA_USER || {};
     var b = document.createElement('button');
     b.type = 'button'; b.className = 'umlog'; b.id = 'apsaAvBtn';
-    b.innerHTML = '<span>Đổi nhân vật</span><em>' + ch(pick(u)[1]) + '</em>';
-    var sep = document.createElement('div'); sep.className = 'umsep';
+    b.innerHTML = '<span>Ảnh đại diện</span><em>' + html(u, 18) + '</em>';
+    var sep = document.createElement('div'); sep.className = 'umsep'; sep.id = 'apsaAvSep';
     m.insertBefore(sep, m.firstChild);
     m.insertBefore(b, m.firstChild);
     b.addEventListener('click', function (e) { e.stopPropagation(); openPicker(); });
@@ -1590,8 +1649,8 @@ function pullHome() {
   function repaint(){
     var el = document.getElementById('av');
     if (el) el.removeAttribute('data-apsa-av');
-    var b = document.getElementById('apsaAvBtn');
-    if (b) b.remove();
+    var b = document.getElementById('apsaAvBtn'); if (b) b.remove();
+    var s = document.getElementById('apsaAvSep'); if (s) s.remove();
     paintAv(); injectMenu();
   }
 
