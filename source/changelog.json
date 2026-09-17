@@ -1,5 +1,5 @@
 {
-    "version": "2.2.2",
+    "version": "2.2.3",
     "updated": "2026-09-17",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-17",
             "note": "Phiên bản 2.2",
             "items": [
+                {
+                    "d": "2026-09-17",
+                    "v": "2.2.3",
+                    "t": "APSA1933b: Esc dong dialog + sua nut X bi chan boi khoa pop-up",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-17",
                     "v": "2.2.2",

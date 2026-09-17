@@ -951,10 +951,18 @@ function pullHome() {
 
   var OVERLAY_RE = /(^|[\s\-_])(mask|modal|overlay|backdrop|scrim|dimmer)([\s\-_]|$)/i;
 
+  function isBackdropBox(el) {
+    var st = window.getComputedStyle(el);
+    if (st.position !== 'fixed' && st.position !== 'absolute') return false;
+    return el.offsetWidth >= 200 && el.offsetHeight >= 200;
+  }
+  var ESC_GO = false;
+
   function isOverlay(el) {
     if (!el || el.nodeType !== 1 || !el.getAttribute) return false;
     var cls = el.getAttribute('class') || '';
-    if (cls && OVERLAY_RE.test(cls)) return true;
+    /* APSA1933: chi chan lop nen phu, khong chan nut ben trong (vd .modal-x) */
+    if (cls && OVERLAY_RE.test(cls) && isBackdropBox(el)) return true;
     var oc = (el.getAttribute('onclick') || '').replace(/\s+/g, '');
     return oc.indexOf('event.target===this') === 0 || oc.indexOf('closeModalOutside') === 0;
   }
@@ -980,7 +988,7 @@ function pullHome() {
   }, true);
 
   document.addEventListener('click', function (e) {
-    if (isOverlay(e.target)) { e.preventDefault(); e.stopPropagation(); }
+    if (!ESC_GO && isOverlay(e.target)) { e.preventDefault(); e.stopPropagation(); }
   }, true);
 
   document.addEventListener('keydown', function (e) {
@@ -1026,7 +1034,7 @@ function pullHome() {
     var box = ovTop();
     if (!box) return false;
     var b = ovBtn(box);
-    if (b) { b.click(); return true; }
+    if (b) { ESC_GO = true; try { b.click(); } finally { ESC_GO = false; } return true; }
     box.classList.remove('on'); box.classList.remove('open');
     box.classList.remove('show'); box.classList.remove('active');
     if (window.getComputedStyle(box).display !== 'none') box.style.display = 'none';
