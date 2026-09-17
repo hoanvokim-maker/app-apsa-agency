@@ -1,5 +1,5 @@
 {
-    "version": "2.1.22",
+    "version": "2.1.23",
     "updated": "2026-09-17",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-16",
             "note": "Phiên bản 2.1",
             "items": [
+                {
+                    "d": "2026-09-17",
+                    "v": "2.1.23",
+                    "t": "APSA1926b: danh sach video tren dien thoai doc dung truong videos",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-17",
                     "v": "2.1.22",

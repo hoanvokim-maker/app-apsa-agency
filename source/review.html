@@ -469,7 +469,7 @@ function verPaint() {
 function plMini() {
   if (!PLT) return;
   api('pl-open', null, '&t=' + encodeURIComponent(PLT)).then(function (d) {
-    var rows = d.rows || d.items || [];
+    var rows = d.videos || d.rows || d.items || [];
     if (!rows.length) return;
     var h = '<div class="pmh">Danh sách video · ' + rows.length + '</div>';
     h += rows.map(function (x, i) {
