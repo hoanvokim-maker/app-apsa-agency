@@ -1000,18 +1000,22 @@ function pullHome() {
 
   /* APSA1933: bam Esc de dong hop thoai dang mo */
   function ovTop() {
-    var els = document.querySelectorAll(
-      '.mask,[class*="mask"],[class*="modal"],[class*="overlay"],[class*="backdrop"]');
-    var best = null, bz = -1, i, el, st, z;
+    var els = document.querySelectorAll('body *');
+    var vw = window.innerWidth || 0, vh = window.innerHeight || 0;
+    var best = null, bz = -1, i, el, st, z, full, named, cls;
     for (i = 0; i < els.length; i++) {
       el = els[i];
-      if (!el.getClientRects || !el.getClientRects().length) continue;
-      if (el.offsetWidth < 200 || el.offsetHeight < 200) continue;
       st = window.getComputedStyle(el);
+      if (st.position !== 'fixed' && st.position !== 'absolute') continue;
       if (st.display === 'none' || st.visibility === 'hidden') continue;
       if (parseFloat(st.opacity || '1') < 0.05) continue;
-      if (st.position !== 'fixed' && st.position !== 'absolute') continue;
+      if (!el.getClientRects || !el.getClientRects().length) continue;
       z = parseInt(st.zIndex, 10); if (!isFinite(z)) z = 0;
+      cls = el.getAttribute('class') || '';
+      named = OVERLAY_RE.test(cls) || /ov$|overlay|modal|dialog|popup/i.test(el.id || '');
+      full = (el.offsetWidth >= vw * 0.6 && el.offsetHeight >= vh * 0.6 && z >= 10);
+      if (!full && !(named && el.offsetWidth >= 200 && el.offsetHeight >= 200)) continue;
+      if (!el.querySelector('button,a,input,textarea,select')) continue;
       if (z >= bz) { bz = z; best = el; }
     }
     return best;
