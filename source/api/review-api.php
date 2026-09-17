@@ -77,6 +77,14 @@ try {
     if (!in_array('ver', $cols, true))     $pdo->exec("ALTER TABLE `video_reviews` ADD COLUMN `ver` SMALLINT UNSIGNED NOT NULL DEFAULT 1");
 } catch (Exception $e) {}
 
+/* APSA1922: khach duyet video */
+try {
+    $cols = array();
+    foreach ($pdo->query("SHOW COLUMNS FROM `video_reviews`") as $c) $cols[] = $c['Field'];
+    if (!in_array('appr_at', $cols, true)) $pdo->exec("ALTER TABLE `video_reviews` ADD COLUMN `appr_at` DATETIME NULL DEFAULT NULL");
+    if (!in_array('appr_by', $cols, true)) $pdo->exec("ALTER TABLE `video_reviews` ADD COLUMN `appr_by` VARCHAR(120) NOT NULL DEFAULT ''");
+} catch (Exception $e) {}
+
 /* APSA1825: cot anh thumbnail cho playlist */
 try {
     if (!$pdo->query("SHOW COLUMNS FROM `video_playlists` LIKE 'thumb'")->fetch()) {
@@ -446,7 +454,7 @@ case 'open': {
     $rootId = (int) (isset($r['root_id']) && $r['root_id'] ? $r['root_id'] : $r['id']);
     $vers = array();
     try {
-        $vs = $pdo->prepare("SELECT id, token, title, file_name, ver, active, created_at,
+        $vs = $pdo->prepare("SELECT id, token, title, file_name, ver, active, created_at, appr_at, appr_by,
                     (SELECT COUNT(*) FROM `video_comments` c WHERE c.review_id = v.id AND c.resolved = 0) AS n_open,
                     (SELECT COUNT(*) FROM `video_comments` c WHERE c.review_id = v.id) AS n_cmt
                FROM `video_reviews` v
@@ -461,12 +469,25 @@ case 'open': {
                 'created_at' => $x['created_at'],
                 'n_open' => (int) $x['n_open'], 'n_cmt' => (int) $x['n_cmt'],
                 'cur' => ((int) $x['id'] === (int) $r['id']) ? 1 : 0,
+                        'appr_at' => $x['appr_at'], 'appr_by' => (string) $x['appr_by'],
             );
         }
     } catch (Exception $e) { $vers = array(); }
     $latest = '';
     foreach ($vers as $x) if ((int) $x['active']) $latest = $x['token'];
     if ($latest === '' && $vers) $latest = $vers[count($vers) - 1]['token'];
+
+        /* APSA1922: ban da duoc khach duyet (neu co) */
+        $appr = null;
+        try {
+            $ap = $pdo->prepare("SELECT token, ver, appr_by, appr_at FROM `video_reviews`
+                                  WHERE (id = ? OR root_id = ?) AND appr_at IS NOT NULL
+                                  ORDER BY ver DESC LIMIT 1");
+            $ap->execute(array($rootId, $rootId));
+            $ax = $ap->fetch();
+            if ($ax) $appr = array('token' => $ax['token'], 'ver' => (int) $ax['ver'],
+                                   'by' => (string) $ax['appr_by'], 'at' => $ax['appr_at']);
+        } catch (Exception $e) { $appr = null; }
 
     rv_ok(array(
         'title' => $r['title'], 'note' => $r['note'], 'file_name' => $r['file_name'],
@@ -475,7 +496,39 @@ case 'open': {
         'ver' => (int) (isset($r['ver']) ? $r['ver'] : 1),
         'versions' => $vers,
         'latest' => $latest,
+            'appr'     => $appr,
     ));
+}
+
+/* ===== APSA1922: khach duyet ban video ===== */
+case 'approve': {
+    $r  = rv_byToken($pdo, $B['t'] ?? ($_GET['t'] ?? ''));
+    $nm = trim(rv_s($B['name'] ?? '', 120));
+    if (mb_strlen($nm) < 2) rv_fail('Vui lòng nhập tên người duyệt.', 400);
+    $rt = (int) ((isset($r['root_id']) && $r['root_id']) ? $r['root_id'] : $r['id']);
+    $q  = $pdo->prepare("SELECT id, ver, appr_by FROM `video_reviews`
+                          WHERE (id = ? OR root_id = ?) AND appr_at IS NOT NULL LIMIT 1");
+    $q->execute(array($rt, $rt));
+    $ex = $q->fetch();
+    if ($ex && (int) $ex['id'] !== (int) $r['id']) {
+        rv_fail('Video này đã được duyệt ở bản V' . (int) $ex['ver'] . ' rồi.', 409);
+    }
+    if ($ex) rv_ok(array('id' => (int) $r['id'], 'by' => (string) $ex['appr_by'], 'again' => 1));
+    $pdo->prepare("UPDATE `video_reviews` SET appr_at = NOW(), appr_by = ? WHERE id = ?")
+        ->execute(array($nm, (int) $r['id']));
+    $pdo->prepare("INSERT INTO `video_comments` (review_id, t_ms, author, body)
+                   VALUES (?,0,?,?)")
+        ->execute(array((int) $r['id'], $nm, '[Đã duyệt] Bản V' . (int) (isset($r['ver']) ? $r['ver'] : 1) . ' được duyệt.'));
+    rv_ok(array('id' => (int) $r['id'], 'by' => $nm));
+}
+
+case 'unapprove': {
+    rv_needAdmin($pdo);
+    $r  = rv_byToken($pdo, $B['t'] ?? ($_GET['t'] ?? ''), false);
+    $rt = (int) ((isset($r['root_id']) && $r['root_id']) ? $r['root_id'] : $r['id']);
+    $pdo->prepare("UPDATE `video_reviews` SET appr_at = NULL, appr_by = ''
+                    WHERE id = ? OR root_id = ?")->execute(array($rt, $rt));
+    rv_ok(array('id' => (int) $r['id']));
 }
 
 case 'comments': {
@@ -500,7 +553,16 @@ case 'comment': {
     $body   = rv_s($B['body'] ?? '', 4000);
     $tms    = max(0, (int) ($B['t_ms'] ?? 0));
     $img    = isset($B['img']) ? (string) $B['img'] : '';
-    if ($author === '') rv_fail('Nhập tên của bạn trước khi gửi.');
+    $ap0 = null;
+        try {
+            $rt0 = (int) ((isset($r['root_id']) && $r['root_id']) ? $r['root_id'] : $r['id']);
+            $q0  = $pdo->prepare("SELECT ver FROM `video_reviews` WHERE (id = ? OR root_id = ?) AND appr_at IS NOT NULL LIMIT 1");
+            $q0->execute(array($rt0, $rt0));
+            $ap0 = $q0->fetch();
+        } catch (Exception $e) { $ap0 = null; }
+        if ($ap0 && rv_lvl($pdo) < 2) rv_fail('Video này đã được duyệt nên không nhận thêm góp ý.', 403);
+
+        if ($author === '') rv_fail('Nhập tên của bạn trước khi gửi.');
     if ($body === '' && $img === '') rv_fail('Nhập nội dung hoặc đính hình.');
 
     $fname = null;

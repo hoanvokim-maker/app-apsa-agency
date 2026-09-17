@@ -137,6 +137,13 @@ html[data-theme="light"] .crumb a{ color:#d97757 !important; }
 html[data-theme="light"] .vb.pri{ background:#d97757 !important; color:#ffffff !important; }
 html[data-theme="light"] .dlg{ background:#fafaf9 !important; }
 html[data-theme="light"] .toast{ background:#d97757 !important; color:#ffffff !important; }
+  /* APSA1923 */
+  .pklist{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .pkchip{ display:inline-flex; align-items:center; gap:7px; max-width:100%;
+    font-size:11.5px; padding:5px 10px; border-radius:999px;
+    background:rgba(var(--w-rgb),.07); border:1px solid rgba(var(--w-rgb),.14); }
+  .pkchip b{ cursor:pointer; opacity:.55; font-weight:700; }
+  .pkchip b:hover{ opacity:1; color:#ff6b6b; }
 </style>
 </head>
 <body>
@@ -200,6 +207,7 @@ html[data-theme="light"] .toast{ background:#d97757 !important; color:#ffffff !i
     <div class="sub">Chọn file video trong SharePoint. Chỉ hiện thư mục và file mp4 · mov · m4v · webm.</div>
     <div class="crumb" id="crumb"></div>
     <div class="brw" id="brw"><div class="empty">Đang tải…</div></div>
+    <div class="pklist" id="pkList"></div>
     <div class="fld" style="margin-top:14px"><label>Tiêu đề gửi khách</label><input type="text" id="nTitle" placeholder="Để trống sẽ lấy tên file" /></div>
     <div class="fld"><label>Ghi chú cho khách (tuỳ chọn)</label><input type="text" id="nNote" placeholder="VD: Bản dựng lần 2, xin góp ý trước 17h thứ 6" /></div>
     <div class="row"><span class="spacer"></span>
@@ -336,10 +344,10 @@ function del(id) {
 /* ── trình duyệt SharePoint ───────────────────────────── */
 function openNew() {
   NEWPAR = 0; nvTitle('Tạo link duyệt video');
-  PICK = null; STACK = [];
+  PICK = null; PICKS = []; STACK = []; pickSync();
   el('nTitle').value = ''; el('nNote').value = '';
   el('ovNew').classList.add('open');
-  browse('', '');
+  browseLast();
 }
 /* APSA1826: tao ban moi (version) cua 1 video da co */
 function nvTitle(t) { var h = el('ovNew').querySelector('h2'); if (h) h.textContent = t; }
@@ -348,12 +356,12 @@ function newVer(id) {
   for (i = 0; i < ROWS.length; i++) if (Number(ROWS[i].id) === Number(id)) r = ROWS[i];
   if (!r) return;
   NEWPAR = Number(id);
-  PICK = null; STACK = [];
+  PICK = null; PICKS = []; STACK = []; pickSync();
   el('nTitle').value = r.title || '';
   el('nNote').value  = r.note || '';
   el('ovNew').classList.add('open');
   nvTitle('Bản mới (V' + ((Number(r.ver) || 1) + 1) + ') của: ' + (r.title || r.file_name || ''));
-  browse('', '');
+  browseLast();
 }
 
 function closeNew() { el('ovNew').classList.remove('open'); }
@@ -368,7 +376,7 @@ function jump(i) {
 }
 function browse(id, name) {
   if (name !== null && name !== '') STACK.push({ id: id, name: name });
-  PICK = null; crumb();
+  crumb(); dirSave();
   el('brw').innerHTML = '<div class="empty">Đang tải…</div>';
   api('browse', null, id ? '&id=' + encodeURIComponent(id) : '').then(function (d) {
     var it = d.items || [];
@@ -379,29 +387,73 @@ function browse(id, name) {
         '<span class="nm">' + esc(x.name) + '</span>' +
         '<span class="sz">' + (x.dir ? '' : mb(x.size)) + '</span></div>';
     }).join('');
-    window.__ITEMS = it;
+    window.__ITEMS = it; paintSel();
   }).catch(function (e) { el('brw').innerHTML = '<div class="empty">' + esc(e.message) + '</div>'; });
 }
+/* APSA1923: chon nhieu file lam nhieu phien ban + nho thu muc gan nhat */
+var PICKS = [], VD_DIRKEY = 'apsa_vd_dir';
+function dirSave() { try { localStorage.setItem(VD_DIRKEY, JSON.stringify(STACK || [])); } catch (e) {} }
+function browseLast() {
+  var a = null;
+  try { a = JSON.parse(localStorage.getItem(VD_DIRKEY) || '[]'); } catch (e) { a = null; }
+  if (!a || !a.length) { browse('', ''); return; }
+  STACK = a.slice(0, a.length - 1);
+  browse(a[a.length - 1].id, a[a.length - 1].name);
+}
+function paintSel() {
+  var its = window.__ITEMS || [];
+  for (var i = 0; i < its.length; i++) {
+    var n = el('it' + i); if (!n) continue;
+    var on = false;
+    for (var k = 0; k < PICKS.length; k++) if (PICKS[k].id === its[i].id) on = true;
+    n.classList[on ? 'add' : 'remove']('sel');
+  }
+}
+function pickSync() {
+  var b = el('bMk');
+  if (b && !b.disabled) b.textContent = PICKS.length > 1
+    ? ('Tạo link · ' + PICKS.length + ' phiên bản') : 'Tạo link';
+  var lst = el('pkList');
+  if (lst) lst.innerHTML = PICKS.map(function (x, i) {
+    return '<span class="pkchip">V' + (i + 1) + ' · ' + esc(x.name)
+         + ' <b onclick="pickDrop(' + i + ')">&times;</b></span>';
+  }).join('');
+}
+function pickDrop(i) { PICKS.splice(i, 1); PICK = PICKS[0] || null; paintSel(); pickSync(); }
 function hit(i) {
   var x = (window.__ITEMS || [])[i]; if (!x) return;
   if (x.dir) { browse(x.id, x.name); return; }
-  PICK = x;
-  Array.prototype.slice.call(document.querySelectorAll('.brw .it')).forEach(function (n) { n.classList.remove('sel'); });
-  el('it' + i).classList.add('sel');
-  if (!el('nTitle').value) el('nTitle').value = x.name.replace(/\.[^.]+$/, '');
+  var at = -1;
+  for (var k = 0; k < PICKS.length; k++) if (PICKS[k].id === x.id) at = k;
+  if (at >= 0) PICKS.splice(at, 1); else PICKS.push(x);
+  PICK = PICKS[0] || null;
+  paintSel(); pickSync();
+  if (!el('nTitle').value && PICKS.length === 1) el('nTitle').value = x.name.replace(/\.[^.]+$/, '');
 }
 function mk() {
-  if (!PICK) { toast('Chọn một file video trước.'); return; }
+  if (!PICKS.length) { toast('Chọn ít nhất một file video.'); return; }
   var b = el('bMk'); b.disabled = true; b.textContent = 'Đang tạo…';
-  api('create', { item_id: PICK.id, name: PICK.name, size: PICK.size, title: el('nTitle').value, note: el('nNote').value, parent: NEWPAR })
-    .then(function (d) {
-      b.disabled = false; b.textContent = 'Tạo link';
-      closeNew(); load();
-      var u = lnk(d.token);
+  var title = el('nTitle').value, note = el('nNote').value;
+  var par = NEWPAR, first = '', i = 0, n = PICKS.length;
+  function step() {
+    if (i >= n) {
+      b.disabled = false; pickSync(); closeNew(); load();
+      var u = lnk(first);
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).catch(function () {});
-      toast('Đã tạo link và copy vào clipboard');
-    })
-    .catch(function (e) { b.disabled = false; b.textContent = 'Tạo link'; toast(e.message); });
+      toast(n > 1 ? ('Đã tạo link với ' + n + ' phiên bản, đã copy.') : 'Đã tạo link và copy vào clipboard');
+      return;
+    }
+    var x = PICKS[i];
+    api('create', { item_id: x.id, name: x.name, size: x.size,
+                    title: (i === 0 ? title : ''), note: (i === 0 ? note : ''), parent: par })
+      .then(function (d) {
+        if (i === 0) { first = d.token; if (!par) par = d.id; }
+        i++; if (i < n) b.textContent = 'Đang tạo… ' + (i + 1) + '/' + n;
+        step();
+      })
+      .catch(function (e) { b.disabled = false; pickSync(); toast(e.message); });
+  }
+  step();
 }
 
 document.addEventListener('DOMContentLoaded', load);
