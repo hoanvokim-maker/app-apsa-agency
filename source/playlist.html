@@ -38,11 +38,36 @@
   .main iframe { width:100%; border:0; display:block; min-height:calc(100vh - 50px) }
   .empty { padding:40px 18px; color:var(--mu); text-align:center }
   .side .tog { display:none }
+  /* APSA1925: toi uu dien thoai */
   @media (max-width:860px) {
     .wrap { flex-direction:column }
-    .side { width:100%; flex:0 0 auto; position:static; max-height:none; border-right:0;
-            border-bottom:1px solid var(--bd) }
-    .side .list { max-height:240px; overflow:auto }
+    .main { order:1; width:100% }
+    .side { order:2; width:100%; flex:0 0 auto; position:static; max-height:none; border-right:0;
+            border-top:1px solid var(--bd) }
+    .side .list { max-height:none; overflow:visible }
+    .main iframe { min-height:0; height:76vh }
+  }
+  @media (max-width:640px) {
+    header { padding:10px 12px; gap:10px }
+    header .logo img { height:18px }
+    header .ttl { font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0 }
+    header .cnt { font-size:11px; flex:0 0 auto; margin-left:auto }
+    .note { padding:7px 12px; font-size:11.5px }
+    .vi { padding:9px 12px; gap:9px }
+    .vi .nm { font-size:12.5px }
+    .vi .sub { font-size:11px }
+    .side h2 { padding:10px 12px 7px }
+    .main iframe { height:80vh }
+  }
+  /* xoay ngang tren dien thoai: an danh sach, video chiem het man */
+  @media (orientation:landscape) and (max-height:540px) {
+    header { padding:5px 12px }
+    .side { display:none }
+    .note { display:none }
+    .main iframe { height:calc(100vh - 38px); min-height:0 }
+  }
+  @media (max-width:860px) {
+    .zz-unused { display:none }
   --w-rgb: 255,255,255;
   }
 
@@ -58,9 +83,32 @@ html[data-theme="light"] {
   --w-rgb: 0,0,0;
 }
  }
+  /* APSA1925: goi y xoay ngang */
+  .rothint{ position:fixed; inset:0; z-index:99998; background:rgba(0,0,0,.88);
+    display:none; align-items:center; justify-content:center; padding:24px }
+  .rothint.on{ display:flex }
+  .rh-box{ text-align:center; color:#fff; max-width:290px }
+  .rh-ph{ width:62px; height:104px; margin:0 auto 26px; border:3px solid #fff; border-radius:13px;
+    position:relative; animation:rhSpin 2.8s ease-in-out infinite }
+  .rh-ph:after{ content:''; position:absolute; left:50%; transform:translateX(-50%); bottom:5px;
+    width:20px; height:3px; border-radius:2px; background:rgba(255,255,255,.6) }
+  .rh-scr{ position:absolute; inset:9px 6px 15px; border-radius:5px; background:rgba(215,242,5,.22) }
+  @keyframes rhSpin{ 0%,18%{ transform:rotate(0) } 46%,76%{ transform:rotate(-90deg) }
+    100%{ transform:rotate(0) } }
+  .rh-tx{ font-size:15.5px; font-weight:700; line-height:1.5; letter-spacing:.3px }
+  .rh-tx span{ display:block; font-size:12.5px; font-weight:400; opacity:.62; margin-top:6px }
+  .rh-ok{ margin-top:22px; background:#d7f205; border:0; color:#111; font-weight:800;
+    font-size:12.5px; padding:9px 24px; border-radius:999px; cursor:pointer }
 </style>
 </head>
 <body>
+<div class="rothint" id="rotHint">
+  <div class="rh-box">
+    <div class="rh-ph"><span class="rh-scr"></span></div>
+    <div class="rh-tx">Xoay ngang điện thoại<span>để xem video rõ hơn</span></div>
+    <button class="rh-ok" onclick="rotClose()">Đã hiểu</button>
+  </div>
+</div>
 <header>
   <div class="logo"><img src="/Logo%20rectange.png" alt="APSA" /></div>
   <div class="ttl" id="ttl">Đang tải…</div>
@@ -144,6 +192,26 @@ function fail(m) {
     pick(want);
   }).catch(function (e) { fail(e.message); });
 })();
+</script>
+<script>
+/* APSA1925: goi y xoay ngang dien thoai */
+function rotClose(){
+  try { sessionStorage.setItem('apsa_rot', '1'); } catch (e) {}
+  var b = document.getElementById('rotHint'); if (b) b.classList.remove('on');
+}
+function rotShow(){
+  var b = document.getElementById('rotHint'); if (!b) return;
+  var seen = false;
+  try { seen = sessionStorage.getItem('apsa_rot') === '1'; } catch (e) {}
+  var small = Math.min(window.innerWidth, window.innerHeight) <= 560;
+  var port  = window.innerHeight > window.innerWidth;
+  var touch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+  b.classList[(small && port && touch && !seen) ? 'add' : 'remove']('on');
+}
+window.addEventListener('resize', rotShow);
+window.addEventListener('orientationchange', function () { setTimeout(rotShow, 350); });
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', rotShow);
+else rotShow();
 </script>
 </body>
 </html>
