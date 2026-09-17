@@ -253,6 +253,8 @@ function dmy(s) { s = String(s || ''); return s.length >= 10 ? s.slice(8, 10) + 
 function lnk(tk) { return location.origin + '/v/' + tk; }
 
 /* ===== APSA1928: ma QR cho link ===== */
+var IC_CP = "<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><rect x='9' y='9' width='11' height='11' rx='2.2'/><path d='M15 5.5A1.5 1.5 0 0 0 13.5 4h-8A1.5 1.5 0 0 0 4 5.5v8A1.5 1.5 0 0 0 5.5 15'/></svg>";
+var IC_QR = "<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><rect x='4' y='4' width='6.2' height='6.2' rx='1.2'/><rect x='13.8' y='4' width='6.2' height='6.2' rx='1.2'/><rect x='4' y='13.8' width='6.2' height='6.2' rx='1.2'/><path d='M14 14h2.6M20 14v2.6M14 20h2.6M17.6 17.4h2.4'/></svg>";
 var QRU = '', QRN = 'apsa';
 function qrSvgFor(txt, cell) {
   var q = qrcode(0, 'M'); q.addData(txt); q.make();
