@@ -1005,6 +1005,7 @@ function pullHome() {
     var best = null, bz = -1, i, el, st, z, full, named, cls;
     for (i = 0; i < els.length; i++) {
       el = els[i];
+      if (el.id === 'apsaSide' || el.id === 'apsaNtWrap') continue;
       st = window.getComputedStyle(el);
       if (st.position !== 'fixed' && st.position !== 'absolute') continue;
       if (st.display === 'none' || st.visibility === 'hidden') continue;
