@@ -426,7 +426,8 @@ function stPaint(d) {
       + (Number(r.ver) > 1 ? ' <span class="pill n">v' + r.ver + '</span>' : '')
       + '</td><td>' + op + '</td><td>' + (Number(r.people) || 0) + '</td><td>'
       + stSec(op ? (Number(r.secs) || 0) / op : 0) + '</td><td>'
-      + (du > 0 ? pc + '%<div class="stbar"><i style="width:' + pc + '%"></i></div>' : '-')
+      + (du > 0 ? pc + '% <span style="opacity:.45">' + stSec(po / 1000) + ' / ' + stSec(du / 1000)
+        + '</span><div class="stbar"><i style="width:' + pc + '%"></i></div>' : '-')
       + '</td></tr>';
   });
   h += '</table></div><div class="sth">Từng người xem</div><div class="stwrap"><table class="sttb">'
