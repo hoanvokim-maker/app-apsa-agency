@@ -236,6 +236,32 @@ html[data-theme="light"] /* APSA1849 */ .mk.prev{ background:#2f5fd0 !important;
     .bar{ padding:6px }
     .ctrls .vb{ padding:6px 9px; font-size:11px }
   }
+  /* APSA1926: icon theo phong cach APSA */
+  .ic{ width:14px; height:14px; display:block; flex:0 0 auto }
+  .vb{ display:inline-flex; align-items:center; gap:6px; white-space:nowrap }
+  .vb .ic{ opacity:.9 }
+  .vb:hover .ic{ opacity:1 }
+  .vb b{ font-weight:700; font-size:11px; letter-spacing:.02em; opacity:.78 }
+  /* APSA1926: che do chi xem + danh sach video tren dien thoai */
+  body.ro #cmp, body.ro #pens, body.ro .card.list,
+  body.ro .ctrls .vb.pri { display:none !important }
+  .robadge{ display:inline-flex; align-items:center; gap:7px; font-size:11.5px;
+    padding:6px 12px; border-radius:999px; opacity:.72;
+    border:1px solid rgba(var(--w-rgb),.16) }
+  .plmini{ display:none }
+  .plmini.on{ display:block }
+  .plmini{ border:1px solid rgba(var(--w-rgb),.12); border-radius:12px;
+      overflow:hidden; background:rgba(var(--w-rgb),.03) }
+    .pmh{ font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; opacity:.5;
+      padding:11px 14px 9px; font-weight:700 }
+    .pmi{ display:flex; gap:11px; align-items:flex-start; padding:10px 14px; cursor:pointer;
+      text-decoration:none; color:inherit; border-top:1px solid rgba(var(--w-rgb),.07);
+      border-left:3px solid transparent }
+    .pmi:hover{ background:rgba(var(--w-rgb),.04) }
+    .pmi.on{ border-left-color:var(--neon); background:rgba(var(--w-rgb),.05) }
+    .pmn{ font-size:11px; opacity:.4; min-width:15px; padding-top:1px }
+    .pmt{ font-size:12.5px; font-weight:600; line-height:1.36 }
+  .pmi.on .pmt{ color:var(--neon) }
 </style>
 </head>
 <body>
@@ -263,14 +289,14 @@ html[data-theme="light"] /* APSA1849 */ .mk.prev{ background:#2f5fd0 !important;
       <div class="bar">
         <div class="tl" id="tl"><div class="rail"></div><div class="cur" id="cur" style="left:0"></div></div>
         <div class="ctrls">
-          <button class="vb" id="bPlay" onclick="tog()">▶ Phát</button>
-          <button class="vb" onclick="step(-1)">⏪ 1s</button>
-          <button class="vb" onclick="step(-0.04)">◀|</button>
-          <button class="vb" onclick="step(0.04)">|▶</button>
-          <button class="vb" onclick="step(1)">1s ⏩</button>
+          <button class="vb" id="bPlay" onclick="tog()"><svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5.2v13.6L19 12z"/></svg><span>Phát</span></button>
+          <button class="vb" onclick="step(-1)" title="Lùi 1 giây"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 6l-6 6 6 6M19 6l-6 6 6 6"/></svg><b>1s</b></button>
+          <button class="vb" onclick="step(-0.04)" title="Lùi 1 khung hình"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-7 6 7 6M6 5.5v13"/></svg></button>
+          <button class="vb" onclick="step(0.04)" title="Tới 1 khung hình"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l7 6-7 6M18 5.5v13"/></svg></button>
+          <button class="vb" onclick="step(1)" title="Tới 1 giây"><b>1s</b><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 6l6 6-6 6M5 6l6 6-6 6"/></svg></button>
           <span class="tcode" id="tc">00:00.0</span>
           <span class="sp"></span>
-          <button class="vb pri" onclick="openCmp()">＋ Góp ý tại giây này</button>
+          <button class="vb pri" onclick="openCmp()"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/><path d="M12 8.7v6.6M8.7 12h6.6"/></svg><span>Góp ý tại giây này</span></button>
         </div>
       </div>
 
@@ -284,10 +310,10 @@ html[data-theme="light"] /* APSA1849 */ .mk.prev{ background:#2f5fd0 !important;
         <button class="vb" onclick="setW(3)">Mảnh</button>
         <button class="vb" onclick="setW(7)">Vừa</button>
         <button class="vb" onclick="setW(14)">Đậm</button>
-        <button class="vb" onclick="undo()">↶ Hoàn tác</button>
+        <button class="vb" onclick="undo()"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.2 8.2H16a4.4 4.4 0 0 1 0 8.8h-4.6M9.2 8.2l3.4-3.1M9.2 8.2l3.4 3.1"/></svg><span>Hoàn tác</span></button>
         <span class="sp"></span>
-        <button class="vb" onclick="drawOff(0)">Hủy vẽ</button>
-        <button class="vb pri" onclick="drawOff(1)">✓ Xong, đính vào góp ý</button>
+        <button class="vb" onclick="drawOff(0)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7l10 10M17 7L7 17"/></svg><span>Huỷ vẽ</span></button>
+        <button class="vb pri" onclick="drawOff(1)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.6l4.6 4.6L19 7.6"/></svg><span>Xong, đính vào góp ý</span></button>
       </div>
 
       <div class="cmp" id="cmp">
@@ -295,8 +321,8 @@ html[data-theme="light"] /* APSA1849 */ .mk.prev{ background:#2f5fd0 !important;
           <input type="text" class="name" id="au" placeholder="Tên của bạn" maxlength="120" />
           <span class="tcode" id="tc2">00:00.0</span>
           <span class="sp"></span>
-          <button class="vb" onclick="drawOn()">✎ Vẽ lên khung hình</button>
-          <button class="vb" onclick="fi.click()">🖼 Chèn ảnh</button>
+          <button class="vb" onclick="drawOn()"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1-4.2L15.6 5.2a1.9 1.9 0 0 1 2.7 0l.5.5a1.9 1.9 0 0 1 0 2.7L8.2 19z"/></svg><span>Vẽ lên khung hình</span></button>
+          <button class="vb" onclick="fi.click()"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="14" rx="2.2"/><circle cx="8.6" cy="10" r="1.5"/><path d="M4 17l4.6-4.3 3.2 3 2.7-2.4L20 17"/></svg><span>Chèn ảnh</span></button>
         </div>
         <textarea id="bd" placeholder="Nhập góp ý cho giây này… (có thể dán ảnh trực tiếp bằng Ctrl+V)"></textarea>
         <div class="thumbs" id="thumbs"></div>
@@ -308,6 +334,7 @@ html[data-theme="light"] /* APSA1849 */ .mk.prev{ background:#2f5fd0 !important;
       </div>
     </div>
 
+    <div class="plmini" id="plmini" style="display:none"></div>
     <div class="card list">
       <h3 id="lh">Góp ý</h3>
       <div id="cl"></div>
@@ -323,10 +350,12 @@ html[data-theme="light"] /* APSA1849 */ .mk.prev{ background:#2f5fd0 !important;
 <script>
 var API = './api/review-api.php';
 var T = new URLSearchParams(location.search).get('t') || '';
+var PLT = new URLSearchParams(location.search).get('p') || '';   /* APSA1926 */
 var v, cv, cx, fi, INFO = null, CM = [], IMGS = [], ADMIN = 0;
 var pen = '#ff2d55', pw = 7, snaps = [], drawing = false, dpt = null;
 
 function el(i) { return document.getElementById(i); }
+var APSA_IC = { play: '<svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5.2v13.6L19 12z"/></svg>', pause: '<svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8.6 5h2.5v14H8.6zM12.9 5h2.5v14h-2.5z"/></svg>' };
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
   return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 function toast(m) { var t = el('toast'); t.textContent = m; t.classList.add('on'); setTimeout(function () { t.classList.remove('on'); }, 1900); }
@@ -437,6 +466,31 @@ function verPaint() {
 }
 
 /* ===== APSA1922: duyet ban video ===== */
+function plMini() {
+  if (!PLT) return;
+  api('pl-open', null, '&t=' + encodeURIComponent(PLT)).then(function (d) {
+    var rows = d.rows || d.items || [];
+    if (!rows.length) return;
+    var h = '<div class="pmh">Danh sách video · ' + rows.length + '</div>';
+    h += rows.map(function (x, i) {
+      return '<a class="pmi' + (x.token === T ? ' on' : '') + '" href="./review.html?t='
+        + encodeURIComponent(x.token) + '&p=' + encodeURIComponent(PLT) + '">'
+        + '<span class="pmn">' + (i + 1) + '</span>'
+        + '<span class="pmt">' + esc(x.title || x.file_name || '') + '</span></a>';
+    }).join('');
+    var b = el('plmini'); if (!b) return;
+    b.innerHTML = h; plMiniSync();
+  }).catch(function () {});
+}
+
+function plMiniSync() {
+  var b = el('plmini'); if (!b || !b.innerHTML) return;
+  var W = window.innerWidth;
+  try { if (window.top && window.top.innerWidth) W = window.top.innerWidth; } catch (e) {}
+  b.classList[W <= 860 ? 'add' : 'remove']('on');
+}
+window.addEventListener('resize', plMiniSync);
+
 function apprFmt(v) {
   var d = new Date(String(v || '').replace(' ', 'T'));
   if (isNaN(d.getTime())) return String(v || '');
@@ -590,7 +644,13 @@ function boot() {
     if (APPR && !SHOWALL && APPR.token !== T) {               /* APSA1922 */
       location.replace('./review.html?t=' + encodeURIComponent(APPR.token)); return;
     }
-    verPaint(); apprPaint();
+    verPaint(); apprPaint(); plMini();
+    if (d.no_cmt && !ADMIN) {                                  /* APSA1926: chi xem */
+      document.body.classList.add('ro');
+      var ab = el('apbar');
+      if (ab && !APPR) { ab.style.display = ''; ab.innerHTML =
+        '<span class="robadge">Chế độ chỉ xem — link này không nhận góp ý.</span>'; }
+    }
     if (APPR && !ADMIN) {
       var cw = el('cmp');
       if (cw) cw.innerHTML = '<div class="aphint" style="padding:8px 2px">'
@@ -608,8 +668,8 @@ function boot() {
   v.addEventListener('timeupdate', tick);
   v.addEventListener('seeked', tick);
   v.addEventListener('loadedmetadata', function () { tick(); paintTl(); });
-  v.addEventListener('play', function () { el('bPlay').textContent = '❚❚ Dừng'; });
-  v.addEventListener('pause', function () { el('bPlay').textContent = '▶ Phát'; });
+  v.addEventListener('play', function () { el('bPlay').innerHTML = APSA_IC.pause + '<span>Dừng</span>'; });
+  v.addEventListener('pause', function () { el('bPlay').innerHTML = APSA_IC.play + '<span>Phát</span>'; });
   v.addEventListener('error', function () { toast('Không tải được video.'); });
 
   el('tl').addEventListener('click', function (e) {

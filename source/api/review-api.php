@@ -77,6 +77,16 @@ try {
     if (!in_array('ver', $cols, true))     $pdo->exec("ALTER TABLE `video_reviews` ADD COLUMN `ver` SMALLINT UNSIGNED NOT NULL DEFAULT 1");
 } catch (Exception $e) {}
 
+/* APSA1926: playlist chi xem, khong cho gop y */
+try {
+    $c1 = array();
+    foreach ($pdo->query("SHOW COLUMNS FROM `video_playlists`") as $c) $c1[] = $c['Field'];
+    if (!in_array('no_cmt', $c1, true)) $pdo->exec("ALTER TABLE `video_playlists` ADD COLUMN `no_cmt` TINYINT(1) NOT NULL DEFAULT 0");
+    $c2 = array();
+    foreach ($pdo->query("SHOW COLUMNS FROM `video_reviews`") as $c) $c2[] = $c['Field'];
+    if (!in_array('no_cmt', $c2, true)) $pdo->exec("ALTER TABLE `video_reviews` ADD COLUMN `no_cmt` TINYINT(1) NOT NULL DEFAULT 0");
+} catch (Exception $e) {}
+
 /* APSA1922: khach duyet video */
 try {
     $cols = array();
@@ -301,17 +311,19 @@ case 'pl-save': {
     $note  = rv_s(isset($B['note']) ? $B['note'] : '', 500);
     $ids   = (isset($B['items']) && is_array($B['items'])) ? $B['items'] : null;
     $thumb = rv_s(isset($B['thumb']) ? $B['thumb'] : '', 255);
+    $nocm  = (int) !empty($B['no_cmt']);                       /* APSA1926 */
     if ($thumb !== '' && !preg_match('#^uploads/playlists/[A-Za-z0-9._-]{1,120}$#', $thumb)) $thumb = '';
     if ($title === '') rv_fail('Tên playlist không được để trống.');
     $tk = null;
     if ($id > 0) {
-        $pdo->prepare("UPDATE `video_playlists` SET title = ?, note = ?, thumb = ? WHERE id = ?")->execute(array($title, $note, $thumb, $id));
+        $pdo->prepare("UPDATE `video_playlists` SET title = ?, note = ?, thumb = ?, no_cmt = ? WHERE id = ?")
+            ->execute(array($title, $note, $thumb, $nocm, $id));
     } else {
         $me = rv_me($pdo);
         $tk = bin2hex(random_bytes(16));
         $who = $me ? (isset($me['display_name']) && $me['display_name'] !== '' ? $me['display_name'] : $me['username']) : '';
-        $st = $pdo->prepare("INSERT INTO `video_playlists` (token, title, note, thumb, created_by) VALUES (?,?,?,?,?)");
-        $st->execute(array($tk, $title, $note, $thumb, $who));
+        $st = $pdo->prepare("INSERT INTO `video_playlists` (token, title, note, thumb, no_cmt, created_by) VALUES (?,?,?,?,?,?)");
+        $st->execute(array($tk, $title, $note, $thumb, $nocm, $who));
         $id = (int) $pdo->lastInsertId();
     }
     if ($ids !== null) {
@@ -323,7 +335,14 @@ case 'pl-save': {
             if ($rid > 0) { $ins->execute(array($id, $rid, $n)); $n++; }
         }
     }
-    rv_ok(array('id' => $id, 'token' => $tk));
+    /* APSA1926: ap che do chi xem xuong tung video trong playlist */
+    try {
+        $pdo->prepare("UPDATE `video_reviews` r
+                         JOIN `video_playlist_items` i ON i.review_id = r.id
+                          SET r.no_cmt = ?
+                        WHERE i.playlist_id = ?")->execute(array($nocm, $id));
+    } catch (Exception $e) {}
+    rv_ok(array('id' => $id, 'token' => $tk, 'no_cmt' => $nocm));
 }
 
 case 'pl-items': {
@@ -497,6 +516,7 @@ case 'open': {
         'versions' => $vers,
         'latest' => $latest,
             'appr'     => $appr,
+            'no_cmt'   => (int) (isset($r['no_cmt']) ? $r['no_cmt'] : 0),
     ));
 }
 
@@ -561,6 +581,7 @@ case 'comment': {
             $ap0 = $q0->fetch();
         } catch (Exception $e) { $ap0 = null; }
         if ($ap0 && rv_lvl($pdo) < 2) rv_fail('Video này đã được duyệt nên không nhận thêm góp ý.', 403);
+        if (!empty($r['no_cmt']) && rv_lvl($pdo) < 2) rv_fail('Link này ở chế độ chỉ xem, không nhận góp ý.', 403);
 
         if ($author === '') rv_fail('Nhập tên của bạn trước khi gửi.');
     if ($body === '' && $img === '') rv_fail('Nhập nội dung hoặc đính hình.');

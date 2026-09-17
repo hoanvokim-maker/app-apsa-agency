@@ -42,8 +42,8 @@
   @media (max-width:860px) {
     .wrap { flex-direction:column }
     .main { order:1; width:100% }
-    .side { order:2; width:100%; flex:0 0 auto; position:static; max-height:none; border-right:0;
-            border-top:1px solid var(--bd) }
+    /* danh sach hien ngay duoi trinh phat, ben trong khung video */
+    .side { display:none }
     .side .list { max-height:none; overflow:visible }
     .main iframe { min-height:0; height:76vh }
   }
@@ -160,7 +160,7 @@ function pick(i) {
   if (i < 0 || i >= VIDS.length) return;
   CUR = i;
   draw();
-  var u = './review.html?t=' + encodeURIComponent(VIDS[i].token) + '&embed=1';
+  var u = './review.html?t=' + encodeURIComponent(VIDS[i].token) + '&embed=1&p=' + encodeURIComponent(T);
   el('main').innerHTML = '<iframe id="fr" src="' + u + '" allowfullscreen></iframe>';
   try { history.replaceState(null, '', '?t=' + T + '&v=' + (i + 1)); } catch (e) { }
   if (window.innerWidth <= 860) {
