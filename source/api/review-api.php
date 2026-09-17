@@ -77,6 +77,71 @@ try {
     if (!in_array('ver', $cols, true))     $pdo->exec("ALTER TABLE `video_reviews` ADD COLUMN `ver` SMALLINT UNSIGNED NOT NULL DEFAULT 1");
 } catch (Exception $e) {}
 
+/* APSA1927: ghi nhan luot xem video */
+$pdo->exec("CREATE TABLE IF NOT EXISTS `video_views` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `review_id` INT UNSIGNED NOT NULL DEFAULT 0,
+  `playlist_id` INT UNSIGNED NOT NULL DEFAULT 0,
+  `vkey` CHAR(32) NOT NULL DEFAULT '',
+  `ip` VARCHAR(45) NOT NULL DEFAULT '',
+  `country` VARCHAR(80) NOT NULL DEFAULT '',
+  `city` VARCHAR(80) NOT NULL DEFAULT '',
+  `isp` VARCHAR(120) NOT NULL DEFAULT '',
+  `ua` VARCHAR(255) NOT NULL DEFAULT '',
+  `device` VARCHAR(60) NOT NULL DEFAULT '',
+  `secs` INT UNSIGNED NOT NULL DEFAULT 0,
+  `max_pos` INT UNSIGNED NOT NULL DEFAULT 0,
+  `dur` INT UNSIGNED NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_at` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `k_rv` (`review_id`), KEY `k_pl` (`playlist_id`), KEY `k_vk` (`vkey`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+function rvw_ip() {
+    foreach (array('HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR') as $h) {
+        if (empty($_SERVER[$h])) continue;
+        $v = explode(',', (string) $_SERVER[$h]);
+        $v = trim($v[0]);
+        if (filter_var($v, FILTER_VALIDATE_IP)) return $v;
+    }
+    return '';
+}
+function rvw_device($ua) {
+    $u = strtolower((string) $ua); $os = 'Khác'; $br = '';
+    if (strpos($u, 'iphone') !== false) $os = 'iPhone';
+    elseif (strpos($u, 'ipad') !== false) $os = 'iPad';
+    elseif (strpos($u, 'android') !== false) $os = 'Android';
+    elseif (strpos($u, 'mac os') !== false) $os = 'Mac';
+    elseif (strpos($u, 'windows') !== false) $os = 'Windows';
+    elseif (strpos($u, 'linux') !== false) $os = 'Linux';
+    if (strpos($u, 'edg/') !== false) $br = 'Edge';
+    elseif (strpos($u, 'chrome') !== false) $br = 'Chrome';
+    elseif (strpos($u, 'firefox') !== false) $br = 'Firefox';
+    elseif (strpos($u, 'safari') !== false) $br = 'Safari';
+    return $br ? ($os . ' · ' . $br) : $os;
+}
+function rvw_geo($ip) {
+    if ($ip === '' || !filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) return null;
+    $url = 'http://ip-api.com/json/' . rawurlencode($ip) . '?fields=status,country,city,isp';
+    $raw = false;
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 2);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
+        $raw = curl_exec($ch); curl_close($ch);
+    }
+    if ($raw === false) return null;
+    $j = json_decode($raw, true);
+    if (!is_array($j) || !isset($j['status']) || $j['status'] !== 'success') return null;
+    return array(
+        'country' => (string) (isset($j['country']) ? $j['country'] : ''),
+        'city'    => (string) (isset($j['city']) ? $j['city'] : ''),
+        'isp'     => (string) (isset($j['isp']) ? $j['isp'] : ''),
+    );
+}
+
 /* APSA1926: playlist chi xem, khong cho gop y */
 try {
     $c1 = array();
@@ -508,6 +573,13 @@ case 'open': {
                                    'by' => (string) $ax['appr_by'], 'at' => $ax['appr_at']);
         } catch (Exception $e) { $appr = null; }
 
+        $nView = 0;                                            /* APSA1927 */
+        try {
+            $nv = $pdo->prepare("SELECT COUNT(DISTINCT vkey) FROM `video_views` WHERE review_id = ?");
+            $nv->execute(array((int) $r['id']));
+            $nView = (int) $nv->fetchColumn();
+        } catch (Exception $e) { $nView = 0; }
+
     rv_ok(array(
         'title' => $r['title'], 'note' => $r['note'], 'file_name' => $r['file_name'],
         'size' => (int) $r['file_size'], 'created_at' => $r['created_at'],
@@ -517,7 +589,66 @@ case 'open': {
         'latest' => $latest,
             'appr'     => $appr,
             'no_cmt'   => (int) (isset($r['no_cmt']) ? $r['no_cmt'] : 0),
+            'views'    => $nView,
     ));
+}
+
+/* ===== APSA1927: ghi nhan luot xem ===== */
+case 'vping': {
+    $r  = rv_byToken($pdo, $B['t'] ?? ($_GET['t'] ?? ''), false);
+    $vk = strtolower(preg_replace('/[^a-f0-9]/', '', (string) ($B['v'] ?? '')));
+    if (strlen($vk) !== 32) rv_fail('Thiếu mã phiên', 400);
+    $rid = (int) $r['id'];
+    $pid = 0;
+    $pt  = strtolower(preg_replace('/[^a-f0-9]/', '', (string) ($B['p'] ?? '')));
+    if (strlen($pt) === 32) {
+        $q = $pdo->prepare("SELECT id FROM `video_playlists` WHERE token = ? LIMIT 1");
+        $q->execute(array($pt)); $pid = (int) $q->fetchColumn();
+    }
+    $vid = (int) ($B['view'] ?? 0);
+    if ($vid > 0) {
+        $ck = $pdo->prepare("SELECT id FROM `video_views` WHERE id = ? AND vkey = ? AND review_id = ?");
+        $ck->execute(array($vid, $vk, $rid));
+        if (!$ck->fetchColumn()) $vid = 0;
+    }
+    if ($vid <= 0) {
+        $q = $pdo->prepare("SELECT id FROM `video_views`
+                             WHERE review_id = ? AND vkey = ?
+                               AND created_at > DATE_SUB(NOW(), INTERVAL 6 HOUR)
+                             ORDER BY id DESC LIMIT 1");
+        $q->execute(array($rid, $vk));
+        $vid = (int) $q->fetchColumn();
+    }
+    if ($vid <= 0) {
+        $ip  = rvw_ip();
+        $ua  = substr((string) (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : ''), 0, 255);
+        $g   = null;
+        $old = $pdo->prepare("SELECT country, city, isp FROM `video_views`
+                               WHERE vkey = ? AND country <> '' ORDER BY id DESC LIMIT 1");
+        $old->execute(array($vk));
+        $g = $old->fetch();
+        if (!$g) $g = rvw_geo($ip);
+        $pdo->prepare("INSERT INTO `video_views`
+                (review_id, playlist_id, vkey, ip, country, city, isp, ua, device, last_at)
+                VALUES (?,?,?,?,?,?,?,?,?,NOW())")
+            ->execute(array($rid, $pid, $vk, $ip,
+                (string) (isset($g['country']) ? $g['country'] : ''),
+                (string) (isset($g['city']) ? $g['city'] : ''),
+                (string) (isset($g['isp']) ? $g['isp'] : ''),
+                $ua, rvw_device($ua)));
+        $vid = (int) $pdo->lastInsertId();
+    }
+    $sec = max(0, min(86400, (int) ($B['secs'] ?? 0)));
+    $pos = max(0, min(999999999, (int) ($B['pos'] ?? 0)));
+    $dur = max(0, min(999999999, (int) ($B['dur'] ?? 0)));
+    $pdo->prepare("UPDATE `video_views`
+                      SET last_at = NOW(), secs = GREATEST(secs, ?), max_pos = GREATEST(max_pos, ?),
+                          dur = IF(? > 0, ?, dur), playlist_id = IF(playlist_id = 0, ?, playlist_id)
+                    WHERE id = ?")
+        ->execute(array($sec, $pos, $dur, $dur, $pid, $vid));
+    $n = $pdo->prepare("SELECT COUNT(DISTINCT vkey) FROM `video_views` WHERE review_id = ?");
+    $n->execute(array($rid));
+    rv_ok(array('view' => $vid, 'views' => (int) $n->fetchColumn()));
 }
 
 /* ===== APSA1922: khach duyet ban video ===== */

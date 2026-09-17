@@ -262,6 +262,11 @@ html[data-theme="light"] /* APSA1849 */ .mk.prev{ background:#2f5fd0 !important;
     .pmn{ font-size:11px; opacity:.4; min-width:15px; padding-top:1px }
     .pmt{ font-size:12.5px; font-weight:600; line-height:1.36 }
   .pmi.on .pmt{ color:var(--neon) }
+  body.ro .bar{ display:none !important }
+  .eyebadge{ display:inline-flex; align-items:center; gap:8px; font-size:12.5px;
+    padding:7px 14px; border-radius:999px; border:1px solid rgba(var(--w-rgb),.16) }
+  .eyebadge b{ font-weight:800; font-size:13px }
+  .eyebadge .ic{ width:15px; height:15px; opacity:.75 }
 </style>
 </head>
 <body>
@@ -351,6 +356,7 @@ html[data-theme="light"] /* APSA1849 */ .mk.prev{ background:#2f5fd0 !important;
 var API = './api/review-api.php';
 var T = new URLSearchParams(location.search).get('t') || '';
 var PLT = new URLSearchParams(location.search).get('p') || '';   /* APSA1926 */
+var VK = '', VIEWID = 0, VIEWS = 0, WSEC = 0, WT0 = 0, RO = 0;   /* APSA1927 */
 var v, cv, cx, fi, INFO = null, CM = [], IMGS = [], ADMIN = 0;
 var pen = '#ff2d55', pw = 7, snaps = [], drawing = false, dpt = null;
 
@@ -495,6 +501,55 @@ function plMiniSync() {
   b.classList[W <= 860 ? 'add' : 'remove']('on');
 }
 window.addEventListener('resize', plMiniSync);
+
+/* ===== APSA1927: ghi nhan luot xem ===== */
+var IC_EYE = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor"'
+  + ' stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'
+  + '<path d="M2.6 12S6.5 5.4 12 5.4 21.4 12 21.4 12 17.5 18.6 12 18.6 2.6 12 2.6 12z"/>'
+  + '<circle cx="12" cy="12" r="2.9"/></svg>';
+function vkeyGet() {
+  try {
+    var k = localStorage.getItem('apsa_vk') || '';
+    if (!/^[a-f0-9]{32}$/.test(k)) {
+      var a = new Uint8Array(16);
+      (window.crypto || window.msCrypto).getRandomValues(a);
+      k = Array.prototype.map.call(a, function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+      localStorage.setItem('apsa_vk', k);
+    }
+    return k;
+  } catch (e) { return ''; }
+}
+function wFlush() { if (WT0) { WSEC += (Date.now() - WT0) / 1000; WT0 = 0; } }
+function vpBody() {
+  return { t: T, v: VK, p: PLT, view: VIEWID, secs: Math.round(WSEC),
+    pos: Math.round(((v && v.currentTime) || 0) * 1000),
+    dur: Math.round((v && isFinite(v.duration) ? v.duration : 0) * 1000) };
+}
+function vping(beacon) {
+  if (!VK || !T) return;
+  var body = JSON.stringify(vpBody());
+  if (beacon && navigator.sendBeacon) {
+    try { navigator.sendBeacon(API + '?action=vping',
+      new Blob([body], { type: 'application/json' })); } catch (e) {}
+    return;
+  }
+  fetch(API + '?action=vping', { method: 'POST', credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json' }, body: body })
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      if (j && j.ok && j.data) {
+        VIEWID = Number(j.data.view) || VIEWID;
+        VIEWS = Number(j.data.views) || VIEWS;
+        roPaint();
+      }
+    }).catch(function () {});
+}
+function roPaint() {
+  if (!RO) return;
+  var b = el('apbar'); if (!b) return;
+  b.style.display = '';
+  b.innerHTML = '<span class="eyebadge">' + IC_EYE + '<b>' + VIEWS + '</b> lượt xem</span>';
+}
 
 function apprFmt(v) {
   var d = new Date(String(v || '').replace(' ', 'T'));
@@ -650,12 +705,11 @@ function boot() {
       location.replace('./review.html?t=' + encodeURIComponent(APPR.token)); return;
     }
     verPaint(); apprPaint(); plMini();
-    if (d.no_cmt && !ADMIN) {                                  /* APSA1926: chi xem */
-      document.body.classList.add('ro');
-      var ab = el('apbar');
-      if (ab && !APPR) { ab.style.display = ''; ab.innerHTML =
-        '<span class="robadge">Chế độ chỉ xem — link này không nhận góp ý.</span>'; }
+    VIEWS = Number(d.views) || 0;
+    if (d.no_cmt && !ADMIN) {                                  /* APSA1926/1927: chi xem */
+      RO = 1; document.body.classList.add('ro'); roPaint();
     }
+    VK = vkeyGet(); vping();
     if (APPR && !ADMIN) {
       var cw = el('cmp');
       if (cw) cw.innerHTML = '<div class="aphint" style="padding:8px 2px">'
@@ -671,6 +725,12 @@ function boot() {
   }).catch(function (e) { fail(e.message); });
 
   v.addEventListener('timeupdate', tick);
+  v.addEventListener('play',  function () { WT0 = Date.now(); });
+  v.addEventListener('pause', function () { wFlush(); vping(); });
+  v.addEventListener('ended', function () { wFlush(); vping(); });
+  setInterval(function () { if (WT0) { WSEC += (Date.now() - WT0) / 1000; WT0 = Date.now(); vping(); } }, 20000);
+  document.addEventListener('visibilitychange', function () { if (document.hidden) { wFlush(); vping(true); } });
+  window.addEventListener('pagehide', function () { wFlush(); vping(true); });
   v.addEventListener('seeked', tick);
   v.addEventListener('loadedmetadata', function () { tick(); paintTl(); });
   v.addEventListener('play', function () { el('bPlay').innerHTML = APSA_IC.pause + '<span>Dừng</span>'; });
