@@ -225,7 +225,7 @@ html[data-theme="light"] {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/theme.css?v=53" />
-<script src="/apsa-ui.js?v=57"></script>
+<script src="/apsa-ui.js?v=58"></script>
   <script src="/perm-guard.js?v=3"></script>
   <style>
     /* APSA1858: Kho Font */
@@ -302,6 +302,20 @@ html[data-theme="light"] {
 html[data-theme="light"] .lic.free{ color:#157a3d !important; }
 html[data-theme="light"] .lic.client{ color:#2f5fd0 !important; }
 html[data-theme="light"] .uprow .stt.ok{ color:#157a3d !important; }
+    /* APSA1932: chuan hoa nut chinh + nut trong hop thoai */
+    .btn-primary{
+      font-family:var(--font-body); font-size:12px; font-weight:800; letter-spacing:.02em;
+      line-height:1; padding:9px 18px; border:1px solid transparent;
+      border-radius:var(--radius); cursor:pointer;
+      display:inline-flex; align-items:center; justify-content:center; gap:6px;
+      transition:filter .15s ease, transform .15s ease;
+    }
+    .btn-primary:hover{ filter:brightness(1.08); transform:translateY(-1px) }
+    .btn-primary:active{ transform:none }
+    .btn-primary[disabled]{ opacity:.45; cursor:default; transform:none; filter:none }
+    .modal-foot{ gap:10px; align-items:center }
+    .modal-foot .mini{ font-size:12px; padding:9px 16px; line-height:1 }
+    .modal-foot .mini:hover{ color:var(--text); border-color:var(--text2) }
 </style>
 </head>
 <body>
