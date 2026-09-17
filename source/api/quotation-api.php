@@ -1597,7 +1597,7 @@ function buildXlsx($quo, $items, $logoBinary, $withLiq = false) {
     $S_INFO = 1; $S_INFO_B = 2; $S_TITLE = 3; $S_QUOT = 4; $S_TH = 5;
     $S_SEC_L = 6; $S_SEC_C = 7; $S_SEC_N = 8;
     $S_IT_C = 9; $S_IT_L = 10; $S_IT_N = 11;
-    $S_TEAL_L = 12; $S_TEAL_N = 13; $S_BLUE_L = 14; $S_BLUE_N = 15;
+    $S_TEAL_L = 12; $S_TEAL_N = 13; $S_BLUE_L = 14; $S_BLUE_N = 15; $S_USD_N = 22; /* APSA1919 */
     $S_TEAL_BLANK = 16; $S_BLUE_BLANK = 17;
     $S_IT_C_R = 18; $S_IT_L_R = 19; $S_IT_N_R = 20;
     $sp = $withLiq ? '1:14' : '1:8';
@@ -1776,6 +1776,7 @@ function buildXlsx($quo, $items, $logoBinary, $withLiq = false) {
                   $liqSumFormula, $lt['subtotal']);
     $r++;
     $baseRow = $totalRow;
+    $finalRow = $totalRow; $finalVal = (float) $t['subtotal'];  $finalLiq = (float) $lt['subtotal'];
 
     if (!empty($quo['show_ma'])) {
         $maRow = $r;
@@ -1788,6 +1789,7 @@ function buildXlsx($quo, $items, $logoBinary, $withLiq = false) {
                       'M' . $totalRow . '+M' . $maRow, $lt['after_ma']);
         $r++;
         $baseRow = $afterRow;
+        $finalRow = $afterRow; $finalVal = (float) $t['after_ma']; $finalLiq = (float) $lt['after_ma'];
     }
     if (!empty($quo['show_vat'])) {
         $vatRow = $r;
@@ -1797,6 +1799,17 @@ function buildXlsx($quo, $items, $logoBinary, $withLiq = false) {
         $r++;
         $rows[] = $mk($r, 'TOTAL', 'G' . $baseRow . '+G' . $vatRow, $t['grand_total'], $S_BLUE_L, $S_BLUE_N, $S_BLUE_BLANK,
                       'M' . $baseRow . '+M' . $vatRow, $lt['grand_total']);
+        $finalRow = $r; $finalVal = (float) $t['grand_total']; $finalLiq = (float) $lt['grand_total'];
+        $r++;
+    }
+    /* APSA1919: them dong TOTAL USD cho ca Bao gia va Nghiem thu */
+    $usdRate = (float) st_get('finance.usd_rate', 0);
+    if ($usdRate > 0 && !empty($finalRow)) {
+        $usdLabel = 'TOTAL USD  (1 USD = ' . number_format($usdRate, 0, '.', ',') . ')';
+        $rows[] = $mk($r, $usdLabel,
+            'G' . $finalRow . '/' . $usdRate, ($finalVal / $usdRate),
+            $S_BLUE_L, $S_USD_N, $S_BLUE_BLANK,
+            'M' . $finalRow . '/' . $usdRate, ($finalLiq / $usdRate));
         $r++;
     }
     $lastRow = $r - 1;
@@ -1848,6 +1861,7 @@ function buildXlsx($quo, $items, $logoBinary, $withLiq = false) {
     // ── styles.xml ──
     $styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
       . '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+        . '<numFmts count="1"><numFmt numFmtId="164" formatCode="#,##0.00"/></numFmts>'
       . '<fonts count="7">'
       . '<font><sz val="11"/><name val="Times New Roman"/></font>'
       . '<font><b/><sz val="11"/><name val="Times New Roman"/></font>'
@@ -1871,7 +1885,7 @@ function buildXlsx($quo, $items, $logoBinary, $withLiq = false) {
       . '<top style="thin"><color indexed="64"/></top><bottom style="thin"><color indexed="64"/></bottom><diagonal/></border>'
       . '</borders>'
       . '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
-      . '<cellXfs count="22">'
+      . '<cellXfs count="23">'
       . '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'                                                        // 0
       . '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyFont="1"/>'                                          // 1 info
       . '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>'                                          // 2 info bold
@@ -1894,7 +1908,8 @@ function buildXlsx($quo, $items, $logoBinary, $withLiq = false) {
       . '<xf numFmtId="0" fontId="6" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center" wrapText="1"/></xf>' // 19
       . '<xf numFmtId="3" fontId="6" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>' // 20
       . '<xf numFmtId="0" fontId="0" fillId="5" borderId="0" xfId="0" applyFill="1"/>' // 21 cột I ngăn cách, nền đen
-      . '</cellXfs>'
+      . '<xf numFmtId="164" fontId="4" fillId="2" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>'   // 22 APSA1919: so USD 2 so le
+        . '</cellXfs>'
       . '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'
       . '</styleSheet>';
 
