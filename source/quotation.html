@@ -3443,9 +3443,17 @@ function dscWhen(v){
   if (m < 60) return m + ' phút trước';
   if (m < 1440) return Math.floor(m / 60) + ' giờ trước';
   const p = n => String(n).padStart(2, '0');
-  return p(d.getDate()) + '/' + p(d.getMonth() + 1) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
 }
 const dscIni = n => String(n || '?').trim().split(/\s+/).slice(-1)[0].charAt(0);
+/* APSA1917: luon co ngay-thang-nam day du khi ro chuot vao moc thoi gian */
+function dscFull(v){
+  const d = new Date(String(v).replace(' ', 'T'));
+  if (isNaN(d)) return String(v || '');
+  const p = n => String(n).padStart(2, '0');
+  return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear() +
+         ' luc ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
 
 /* Tô sáng @Tên dựa trên danh sách nhân sự đã biết */
 function dscBody(t){
@@ -3490,7 +3498,7 @@ function renderDsc(){
       '<div class="cav">' + esc(dscIni(c.user_name)) + '</div>' +
       '<div class="cbody">' +
         '<div><span class="cwho">' + esc(c.user_name) + '</span>' +
-          '<span class="cwhen">' + dscWhen(c.created_at) + '</span></div>' +
+          '<span class="cwhen" title="' + esc(dscFull(c.created_at)) + '">' + dscWhen(c.created_at) + '</span></div>' +
         '<div class="ctext">' + dscBody(c.body) + '</div>' +
         '<div class="cact">' +
           (isRep ? '' : '<button onclick="openReply(' + c.id + ')">Trả lời</button>') +
