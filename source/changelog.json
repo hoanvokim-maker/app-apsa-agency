@@ -1,7 +1,20 @@
 {
-    "version": "2.1.38",
+    "version": "2.2.0",
     "updated": "2026-09-17",
     "releases": [
+        {
+            "v": "2.2",
+            "date": "2026-09-17",
+            "note": "Phiên bản 2.2",
+            "items": [
+                {
+                    "d": "2026-09-17",
+                    "v": "2.2.0",
+                    "t": "2.2: Thong ke luot xem video/playlist + giao dien nut icon",
+                    "by": "mee53661"
+                }
+            ]
+        },
         {
             "v": "2.1",
             "date": "2026-09-16",
