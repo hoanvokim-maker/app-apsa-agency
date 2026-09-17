@@ -723,7 +723,6 @@ function plLoad() {
         '<a class="vb sm ico" title="Mở playlist" href="./playlist.html?t=' + p.token + '" target="_blank" rel="noopener">' + IC_OPEN + '</a>' +
         '<button class="vb sm ico" title="Sửa playlist" onclick="plEdit(' + p.id + ')">' + IC_ED + '</button>' +
         '<button class="vb sm ico' + (Number(p.active) ? '' : ' act') + '" title="' + (Number(p.active) ? 'Tắt link' : 'Bật link') + '" onclick="plTog(' + p.id + ',' + (Number(p.active) ? 0 : 1) + ')">' + IC_PWR + '</button>' +
-        (Number(p.active) ? 'Tắt' : 'Bật') + '</button>' +
         '<button class="vb sm ico dng" title="Xóa playlist" onclick="plDel(' + p.id + ')">' + IC_DEL + '</button>' +
         '</div></td></tr>';
     }).join('');
