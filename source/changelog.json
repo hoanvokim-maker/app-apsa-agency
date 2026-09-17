@@ -1,5 +1,5 @@
 {
-    "version": "2.1.9",
+    "version": "2.1.10",
     "updated": "2026-09-17",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-16",
             "note": "Phiên bản 2.1",
             "items": [
+                {
+                    "d": "2026-09-17",
+                    "v": "2.1.10",
+                    "t": "APSA1918: trang Lam viec hien khoi Can ban duyet - bao gia nguoi khac nho duyet",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-17",
                     "v": "2.1.9",

@@ -3407,6 +3407,28 @@ case 'comment-delete': {
          qr_bundle($pdo, (int)$c['quotation_id'], $c['scope'], $ME)));
 }
 
+/* ---- APSA1918: danh sach bao gia dang cho CHINH TOI duyet (hien o trang Lam viec) ---- */
+case 'review-inbox': {
+    $me = (int) $ME['id'];
+    $st = $pdo->prepare("SELECT r.quotation_id, r.scope, r.requested_by, r.note, r.created_at,
+                                q.code, q.title, q.client_name, q.kind,
+                                (SELECT COALESCE(SUM(i.qty * i.unit_price), 0)
+                                   FROM `quotation_items` i
+                                  WHERE i.quotation_id = q.id AND i.kind = 'item' AND i.is_off = 0) AS subtotal
+                           FROM `quotation_reviews` r
+                           JOIN `quotations` q ON q.id = r.quotation_id
+                          WHERE r.reviewer_id = ? AND r.status = 'pending' AND q.deleted_at IS NULL
+                          ORDER BY r.created_at ASC");
+    $st->execute(array($me));
+    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($rows as &$r) {
+        $r['subtotal'] = (float) $r['subtotal'];
+        $r['url'] = qr_url(array('code' => $r['code']), $r['scope']);
+    }
+    unset($r);
+    q_ok(array('list' => $rows));
+}
+
 case 'review-request': {
     $qid   = (int)($B['quotation_id'] ?? 0);
     $scope = qr_scope($B['scope'] ?? 'quote');
