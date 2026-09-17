@@ -413,8 +413,7 @@ table.asg col.c-stat{ width:132px; }
 
 #rvBox{ display:none; }
 /* APSA1918b: khop dung khung noi dung nhu .wrap, bot choi mat */
-#rvBox.on{ display:block; max-width:1500px; margin:0 auto; padding:16px 24px 0;
-  position:relative; z-index:1; }
+#rvBox.on{ display:block; margin:0 auto; padding:16px 24px 0; position:relative; z-index:1; }
 #rvBox .rvh{ display:flex; align-items:center; gap:8px; font-size:12px; font-weight:700;
   letter-spacing:.06em; text-transform:uppercase; color:var(--accent-fill); margin-bottom:10px; }
 #rvBox .rvh .ic{ width:15px; height:15px; flex:0 0 15px; }
@@ -950,7 +949,18 @@ async function loadRvInbox(){
       '</a>';
     }).join('');
   box.classList.add('on');
+  rvSync();
 }
+/* APSA1918c: bam theo dung be ngang cua khoi noi dung ben duoi, du CSS doi sau nay */
+function rvSync(){
+  var w = document.getElementById('wrap'), b = document.getElementById('rvBox');
+  if (!w || !b) return;
+  var c = getComputedStyle(w);
+  b.style.maxWidth     = c.maxWidth;
+  b.style.paddingLeft  = c.paddingLeft;
+  b.style.paddingRight = c.paddingRight;
+}
+window.addEventListener('resize', rvSync);
 async function boot(){
   paintUser();
   loadOpen();
