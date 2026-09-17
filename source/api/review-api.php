@@ -688,6 +688,45 @@ case 'vping': {
     rv_ok(array('view' => $vid, 'views' => (int) $n->fetchColumn()));
 }
 
+/* ===== APSA1930: thong ke luot xem ===== */
+case 'stats': {
+    rv_needRead($pdo);
+    $kind = (($B['kind'] ?? 'rv') === 'pl') ? 'pl' : 'rv';
+    $id   = (int) ($B['id'] ?? 0);
+    if ($id <= 0) rv_fail('Thieu id', 400);
+    if ($kind === 'pl') {
+        $q = $pdo->prepare("SELECT title FROM `video_playlists` WHERE id = ?");
+        $q->execute(array($id)); $title = (string) $q->fetchColumn();
+        $wh = "v.playlist_id = ?"; $pr = array($id);
+    } else {
+        $q = $pdo->prepare("SELECT title FROM `video_reviews` WHERE id = ?");
+        $q->execute(array($id)); $title = (string) $q->fetchColumn();
+        $wh = "(v.review_id = ? OR v.review_id IN (SELECT id FROM `video_reviews` WHERE root_id = ?))";
+        $pr = array($id, $id);
+    }
+    $s = $pdo->prepare("SELECT COUNT(*) AS opens, COUNT(DISTINCT v.vkey) AS people,
+            COALESCE(SUM(v.secs),0) AS secs, MAX(v.last_at) AS last_at
+        FROM `video_views` v WHERE " . $wh);
+    $s->execute($pr); $sum = $s->fetch(PDO::FETCH_ASSOC);
+    $t = $pdo->prepare("SELECT v.review_id AS rid, r.title AS title, r.ver AS ver,
+            COUNT(*) AS opens, COUNT(DISTINCT v.vkey) AS people,
+            COALESCE(SUM(v.secs),0) AS secs, MAX(v.dur) AS dur, MAX(v.max_pos) AS pos
+        FROM `video_views` v LEFT JOIN `video_reviews` r ON r.id = v.review_id
+        WHERE " . $wh . " GROUP BY v.review_id, r.title, r.ver ORDER BY opens DESC");
+    $t->execute($pr); $vids = $t->fetchAll(PDO::FETCH_ASSOC);
+    $p = $pdo->prepare("SELECT v.vkey AS vkey, COUNT(*) AS opens,
+            COALESCE(SUM(v.secs),0) AS secs, MAX(v.last_at) AS last_at,
+            MIN(v.created_at) AS first_at, MAX(v.country) AS country,
+            MAX(v.city) AS city, MAX(v.device) AS device, MAX(v.isp) AS isp
+        FROM `video_views` v WHERE " . $wh . " GROUP BY v.vkey ORDER BY secs DESC LIMIT 300");
+    $p->execute($pr); $ppl = $p->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($ppl as $k => $r) {
+        $ppl[$k]['who'] = 'Khach #' . strtoupper(substr((string) $r['vkey'], 0, 4));
+        unset($ppl[$k]['vkey']);
+    }
+    rv_ok(array('kind' => $kind, 'title' => $title, 'sum' => $sum, 'vids' => $vids, 'people' => $ppl));
+}
+
 /* ===== APSA1922: khach duyet ban video ===== */
 case 'approve': {
     $r  = rv_byToken($pdo, $B['t'] ?? ($_GET['t'] ?? ''));

@@ -164,7 +164,29 @@ html[data-theme="light"] .toast{ background:#d97757 !important; color:#ffffff !i
   #qrImg{ background:#fff; border-radius:12px; padding:12px; display:inline-block; line-height:0 }
   #qrImg svg{ width:220px; height:220px; display:block }
   #qrUrl{ font-size:11px; opacity:.55; margin:12px 0 16px; word-break:break-all }
-  #qrAct{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap }
+  #qrAct{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap }    /* APSA1930: Thong ke */
+    #stOv{ position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:100050;
+      display:none; align-items:flex-start; justify-content:center; padding:24px 16px; overflow:auto }
+    #stOv.on{ display:flex }
+    #stBox{ background:#101314; border:1px solid rgba(var(--w-rgb),.14); border-radius:16px;
+      padding:20px; width:min(880px,96vw) }
+    #stBox h3{ margin:0 0 4px; font-size:14px; font-weight:800 }
+    #stSub{ font-size:11px; opacity:.55; margin-bottom:14px }
+    .stkpi{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:6px }
+    .stk{ flex:1 1 130px; background:rgba(var(--w-rgb),.05); border-radius:12px; padding:10px 12px }
+    .stk b{ display:block; font-size:18px; font-weight:800; color:#d7f205; line-height:1.25 }
+    .stk span{ font-size:10px; opacity:.6; letter-spacing:.04em; text-transform:uppercase }
+    .sth{ font-size:11px; font-weight:800; opacity:.7; margin:16px 0 6px; letter-spacing:.05em; text-transform:uppercase }
+    .sttb{ width:100%; border-collapse:collapse; font-size:12px }
+    .sttb th{ text-align:left; font-size:10px; opacity:.5; padding:5px 8px; font-weight:700;
+      border-bottom:1px solid rgba(var(--w-rgb),.12); text-transform:uppercase; white-space:nowrap }
+    .sttb td{ padding:7px 8px; border-bottom:1px solid rgba(var(--w-rgb),.06); vertical-align:top }
+    .sttb tr:last-child td{ border-bottom:0 }
+    .stbar{ height:5px; border-radius:99px; background:rgba(var(--w-rgb),.12); min-width:54px; margin-top:4px }
+    .stbar i{ display:block; height:100%; border-radius:99px; background:#d7f205 }
+    .stwrap{ overflow-x:auto }
+    #stAct{ display:flex; justify-content:flex-end; margin-top:16px }
+
 </style>
 </head>
 <body>
@@ -349,6 +371,7 @@ function render() {
       '<td><div class="acts">' +
         '<button class="vb sm" onclick="cp(\'' + (r.slug || r.token) + '\', this)">' + IC_CP + 'Copy link</button>' +
         '<button class="vb sm" title="Ma QR" onclick="qrOpen(\'' + (r.slug || r.token) + '\',0)">' + IC_QR + 'QR</button>' +
+        '<button class="vb sm" onclick="stOpen(0,' + r.id + ')">' + IC_ST + 'Thống kê</button>' +
         '<a class="vb sm" href="./review.html?t=' + r.token + '" target="_blank" rel="noopener">↗ Mở</a>' +
         '<button class="vb sm" onclick="tg(' + r.id + ',' + (Number(r.active) ? 0 : 1) + ')">' + (Number(r.active) ? 'Tắt' : 'Bật') + '</button>' +
         '<button class="vb sm" onclick="newVer(' + r.id + ')" title="Tải lên bản chỉnh sửa mới của video này">+ Bản mới</button>' +
@@ -356,6 +379,67 @@ function render() {
       '<button class="vb sm" onclick="del(' + r.id + ')">Xóa</button>' +
       '</div></td></tr>';
   }).join('');
+}
+
+/* ===== APSA1930: bang thong ke luot xem ===== */
+var IC_ST = "<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round'><path d='M4 20V10M10 20V4M16 20v-7M22 20H2'/></svg>";
+function stSec(n) {
+  n = Math.max(0, Math.round(Number(n) || 0));
+  var h = Math.floor(n / 3600), m = Math.floor((n % 3600) / 60), x = n % 60;
+  var p = function (v) { return (v < 10 ? '0' : '') + v; };
+  return h ? (h + ':' + p(m) + ':' + p(x)) : (m + ':' + p(x));
+}
+function stDt(v) { return v ? String(v).replace('T', ' ').slice(0, 16) : '-'; }
+function stClose() { var o = document.getElementById('stOv'); if (o) o.classList.remove('on'); }
+function stOpen(isPl, id) {
+  var o = document.getElementById('stOv');
+  if (!o) {
+    o = document.createElement('div'); o.id = 'stOv';
+    o.innerHTML = '<div id="stBox"><h3 id="stTitle">Thống kê lượt xem</h3><div id="stSub"></div>'
+      + '<div id="stBody"></div><div id="stAct">'
+      + '<button class="vb sm" onclick="stClose()">Đóng</button></div></div>';
+    document.body.appendChild(o);
+    o.addEventListener('click', function (e) { if (e.target === o) stClose(); });
+  }
+  o.classList.add('on');
+  el('stSub').textContent = 'Đang tải...';
+  el('stBody').innerHTML = '';
+  api('stats', { kind: isPl ? 'pl' : 'rv', id: id }).then(stPaint)
+    .catch(function (e) { el('stSub').textContent = e.message; });
+}
+function stPaint(d) {
+  var su = d.sum || {}, vs = d.vids || [], ps = d.people || [];
+  el('stSub').textContent = (d.kind === 'pl' ? 'Playlist: ' : 'Video: ') + (d.title || '-');
+  var h = '<div class="stkpi">'
+    + '<div class="stk"><b>' + (Number(su.people) || 0) + '</b><span>Người xem</span></div>'
+    + '<div class="stk"><b>' + (Number(su.opens) || 0) + '</b><span>Lượt mở</span></div>'
+    + '<div class="stk"><b>' + stSec(su.secs) + '</b><span>Tổng thời gian xem</span></div>'
+    + '<div class="stk"><b>' + stDt(su.last_at) + '</b><span>Xem gần nhất</span></div>'
+    + '</div>';
+  h += '<div class="sth">Từng video</div><div class="stwrap"><table class="sttb">'
+    + '<tr><th>Video</th><th>Lượt mở</th><th>Người xem</th><th>TB mỗi lượt</th><th>Xem được</th></tr>';
+  if (!vs.length) h += '<tr><td colspan="5" style="opacity:.5">Chưa có lượt xem nào.</td></tr>';
+  vs.forEach(function (r) {
+    var op = Number(r.opens) || 0, du = Number(r.dur) || 0, po = Number(r.pos) || 0;
+    var pc = du > 0 ? Math.min(100, Math.round(po * 100 / du)) : 0;
+    h += '<tr><td>' + esc(r.title || ('#' + r.rid))
+      + (Number(r.ver) > 1 ? ' <span class="pill n">v' + r.ver + '</span>' : '')
+      + '</td><td>' + op + '</td><td>' + (Number(r.people) || 0) + '</td><td>'
+      + stSec(op ? (Number(r.secs) || 0) / op : 0) + '</td><td>'
+      + (du > 0 ? pc + '%<div class="stbar"><i style="width:' + pc + '%"></i></div>' : '-')
+      + '</td></tr>';
+  });
+  h += '</table></div><div class="sth">Từng người xem</div><div class="stwrap"><table class="sttb">'
+    + '<tr><th>Khách</th><th>Vị trí</th><th>Thiết bị</th><th>Lượt</th><th>Tổng xem</th><th>Gần nhất</th></tr>';
+  if (!ps.length) h += '<tr><td colspan="6" style="opacity:.5">Chưa có ai xem.</td></tr>';
+  ps.forEach(function (r) {
+    var loc = [r.city, r.country].filter(function (x) { return x; }).join(', ') || '-';
+    h += '<tr><td>' + esc(r.who) + '</td><td>' + esc(loc)
+      + (r.isp ? '<div style="opacity:.45;font-size:10.5px">' + esc(r.isp) + '</div>' : '')
+      + '</td><td>' + esc(r.device || '-') + '</td><td>' + (Number(r.opens) || 0) + '</td><td>'
+      + stSec(r.secs) + '</td><td>' + stDt(r.last_at) + '</td></tr>';
+  });
+  el('stBody').innerHTML = h + '</table></div>';
 }
 
 function renCss() {
@@ -622,6 +706,7 @@ function plLoad() {
         '<td><div class="acts">' +
         '<button class="vb sm" onclick="plCopy(\'' + (p.slug || p.token) + '\', this)">' + IC_CP + 'Copy link</button>' +
         '<button class="vb sm" title="Ma QR" onclick="qrOpen(\'' + (p.slug || p.token) + '\',1)">' + IC_QR + 'QR</button>' +
+        '<button class="vb sm" onclick="stOpen(1,' + p.id + ')">' + IC_ST + 'Thống kê</button>' +
         '<a class="vb sm" href="./playlist.html?t=' + p.token + '" target="_blank" rel="noopener">↗ Mở</a>' +
         '<button class="vb sm" onclick="plEdit(' + p.id + ')">✎ Sửa</button>' +
         '<button class="vb sm" onclick="plTog(' + p.id + ',' + (Number(p.active) ? 0 : 1) + ')">' +
