@@ -489,7 +489,8 @@ function plMini() {
 function plMiniSync() {
   var b = el('plmini'); if (!b || !b.innerHTML) return;
   var W = window.innerWidth;
-  try { if (window.top && window.top.innerWidth) W = window.top.innerWidth; } catch (e) {}
+  try { if (window.parent && window.parent !== window && window.parent.innerWidth)
+    W = window.parent.innerWidth; } catch (e) {}
   b.style.display = '';
   b.classList[W <= 860 ? 'add' : 'remove']('on');
 }
