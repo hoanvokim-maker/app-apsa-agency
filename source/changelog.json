@@ -1,5 +1,5 @@
 {
-    "version": "2.1.10",
+    "version": "2.1.11",
     "updated": "2026-09-17",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-16",
             "note": "Phiên bản 2.1",
             "items": [
+                {
+                    "d": "2026-09-17",
+                    "v": "2.1.11",
+                    "t": "APSA1918b: khoi Can ban duyet - khop khung noi dung, bo vien neon choi mat",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-17",
                     "v": "2.1.10",

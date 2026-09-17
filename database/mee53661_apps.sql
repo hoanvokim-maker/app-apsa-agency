@@ -78,7 +78,7 @@ CREATE TABLE `activity_log` (
   KEY `k_quo` (`quotation_id`),
   KEY `k_user` (`user_id`),
   KEY `k_area` (`area`)
-) ENGINE=InnoDB AUTO_INCREMENT=1603 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1605 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1677,6 +1677,8 @@ INSERT INTO `activity_log` VALUES (1599,'2026-09-17 10:32:15',3,'Thảo Lý','ex
 INSERT INTO `activity_log` VALUES (1600,'2026-09-17 10:38:23',1,'Harris','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
 INSERT INTO `activity_log` VALUES (1601,'2026-09-17 10:38:23',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
 INSERT INTO `activity_log` VALUES (1602,'2026-09-17 10:38:24',1,'Harris','quotation','close-state','Đổi trạng thái đóng',15,'30072026-135','',NULL);
+INSERT INTO `activity_log` VALUES (1603,'2026-09-17 10:56:55',1,'Harris','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (1604,'2026-09-17 10:56:56',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
 /*!40000 ALTER TABLE `activity_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2289,7 +2291,7 @@ CREATE TABLE `app_notifications` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `idx_user` (`user_id`,`is_read`,`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=141 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=142 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2428,6 +2430,7 @@ INSERT INTO `app_notifications` VALUES (137,8,'leave_new','Đơn nghỉ mới: P
 INSERT INTO `app_notifications` VALUES (138,1,'pay_due','Có 1 khoản chi đến hạn thanh toán','• Thuê Flipchart A0 — Trang Đỗ — 702.000 đ — 15/09 (quá hạn 2 ngày) — 25082026-152\nTổng: 702.000 đ','./chi-phi.html','Hệ thống',0,'2026-09-17 01:30:02');
 INSERT INTO `app_notifications` VALUES (139,1,'review_request','Thảo Lý mời bạn review báo giá 28082026-155 · AZ-ONCO-Blood Cancer Awareness Day','Anh view lại báo giá 1 lần nữa giúp em nha','./quotation.html?q=28082026-155&tab=quote#thaoluan','Thảo Lý',0,'2026-09-17 03:21:29');
 INSERT INTO `app_notifications` VALUES (140,1,'review_request','Thảo Lý mời bạn review báo giá 30072026-135 · AZ-R&I-COPD Forum HCM-2026','Anh Huy muốn báo giá này cỡ 350tr nha anh','./quotation.html?q=30072026-135&tab=quote#thaoluan','Thảo Lý',1,'2026-09-17 03:28:02');
+INSERT INTO `app_notifications` VALUES (141,9,'leave_approved','Đã duyệt: Phép năm — Tiên Tiên','Harris đã duyệt đơn nghỉ 28/09/2026 → 29/09/2026 của bạn.','/leave.html?id=25','Harris',0,'2026-09-17 03:57:21');
 /*!40000 ALTER TABLE `app_notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -4275,7 +4278,7 @@ INSERT INTO `leave_requests` VALUES (21,7,'Anh Thư','account3@apsa.agency','wor
 INSERT INTO `leave_requests` VALUES (22,3,'Thảo Lý','','work_from_home','2026-09-14','full','2026-09-14','full',1,1.0,'Chiều 1h45 em có mặt ở J&J nhe','','approved',1,'Harris','2026-09-13 21:21:34','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABahF4hAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABahF4hAAA%3D&exvsurl=1&path=/calendar/item','2026-09-13 21:11:31','2026-09-13 21:21:35');
 INSERT INTO `leave_requests` VALUES (23,6,'Can Kim','','work_from_home','2026-09-14','full','2026-09-14','full',1,1.0,'Chiều em qua thẳng J&J lun ạ','','approved',1,'Harris','2026-09-14 08:32:48','Chiều nay gặp lợi nhé','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABahF4jAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABahF4jAAA%3D&exvsurl=1&path=/calendar/item','2026-09-14 08:31:49','2026-09-14 08:32:51');
 INSERT INTO `leave_requests` VALUES (24,3,'Thảo Lý','','work_from_home','2026-09-18','full','2026-09-18','full',1,1.0,'Trốn tránh sự kẹt xe oe oe','','approved',1,'Harris','2026-09-16 18:42:40','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABahF4nAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABahF4nAAA%3D&exvsurl=1&path=/calendar/item','2026-09-16 18:40:11','2026-09-16 18:42:42');
-INSERT INTO `leave_requests` VALUES (25,9,'Tiên Tiên','','annual','2026-09-28','full','2026-09-29','full',1,2.0,'tiên sử dụng ngày phép để bay về trời hồi sức ạ','','pending',NULL,'',NULL,NULL,'','',NULL,'','2026-09-16 22:25:03','2026-09-16 22:25:03');
+INSERT INTO `leave_requests` VALUES (25,9,'Tiên Tiên','','annual','2026-09-28','full','2026-09-29','full',1,2.0,'tiên sử dụng ngày phép để bay về trời hồi sức ạ','','approved',1,'Harris','2026-09-17 10:57:18','chúc em thượng lộ bình an','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABahF4qAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABahF4qAAA%3D&exvsurl=1&path=/calendar/item','2026-09-16 22:25:03','2026-09-17 10:57:21');
 /*!40000 ALTER TABLE `leave_requests` ENABLE KEYS */;
 UNLOCK TABLES;
 
