@@ -207,6 +207,19 @@ function rotShow(){
   var touch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
   b.classList[(small && port && touch && !seen) ? 'add' : 'remove']('on');
 }
+/* APSA1925: tren dien thoai cho iframe cao bang noi dung -> chi 1 thanh cuon */
+function frSync(){
+  var f = document.getElementById('fr'); if (!f) return;
+  var mob = window.innerWidth <= 860 && window.innerHeight > window.innerWidth;
+  if (!mob) { f.style.height = ''; return; }
+  try {
+    var d = f.contentDocument; if (!d || !d.body) return;
+    var h = Math.max(d.body.scrollHeight, d.documentElement.scrollHeight);
+    if (h > 240) f.style.height = (h + 16) + 'px';
+  } catch (e) {}
+}
+setInterval(frSync, 1200);
+window.addEventListener('resize', frSync);
 window.addEventListener('resize', rotShow);
 window.addEventListener('orientationchange', function () { setTimeout(rotShow, 350); });
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', rotShow);
