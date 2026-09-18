@@ -223,6 +223,10 @@ html[data-theme="light"] {
     .grid2, .grid3 { grid-template-columns: 1fr; }
     .qr-wrap { grid-template-columns: 1fr; }
   }
+    /* APSA1934: theme ep select cao 28px trong khi o nay co padding doc
+       -> chu bi day ra ngoai nen khong thay ten ngan hang. Tra lai chieu cao tu nhien. */
+    #mQr .fg select { height: auto !important; min-height: 0 !important;
+      padding-top: 5px !important; padding-bottom: 5px !important; line-height: 1.4 !important; }
 </style>
 </head>
 <body>
