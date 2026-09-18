@@ -151,8 +151,12 @@
     tbody tr.grp td{ background:var(--gt, #f7f9fc); cursor:pointer;
       -webkit-user-select:none; user-select:none }
     tbody tr.grp:hover td{ filter:brightness(.97) }
-    tbody tr.grp .car{ display:inline-block; width:15px; font-size:9px;
-      color:var(--ink3); vertical-align:1px }
+    tbody tr.grp.cl .car{ transform:rotate(0deg) }
+    tbody tr.grp .car{ display:inline-block; width:0; height:0; margin-right:11px;
+      vertical-align:middle; border-top:5px solid transparent; border-bottom:5px solid transparent;
+      border-left:6px solid currentColor; transform:rotate(90deg); transition:transform .15s ease;
+      font-size:9px;
+      color:var(--ink3); opacity:.45 }
     tbody tr.grp .gct{ float:right; font-size:10.5px; font-weight:700;
       color:var(--ink3); letter-spacing:0 }
     tbody tr td.c1{ box-shadow:inset 3px 0 0 var(--gb, transparent) }
@@ -244,7 +248,7 @@ function vList() {
       }
       hid = !!COLL[gi];
       body += '<tr class="grp g' + (gi % 6) + (hid ? ' cl' : '') + '" onclick="tgGrp(' + gi + ')">'
-        + '<td colspan="3"><span class="car">' + (hid ? '▸' : '▾') + '</span>'
+        + '<td colspan="3"><span class="car"></span>'
         + esc(r.name) + '<span class="gct">' + dne + '/' + tot + '</span></td></tr>';
       continue;
     }
@@ -361,8 +365,17 @@ function paint() {
   h += (VIEW === 'cal') ? vCal() : (VIEW === 'tl' ? vTl() : vList());
   el('app').innerHTML = h;
   if (VIEW === 'tl') {
-    var sc = el('tlScroll'), td = el('tlToday');
-    if (sc && td) sc.scrollLeft = Math.max(0, td.offsetLeft - sc.clientWidth / 2 + 76);
+      /* APSA1947: cuon toi hom nay (hoac ngay su kien) cho chac an */
+      var sc = el('tlScroll');
+      var td = el('tlToday') || document.querySelector('.tl .tlcol.ev');
+      if (sc && td) {
+        var go = function () {
+          var r1 = sc.getBoundingClientRect(), r2 = td.getBoundingClientRect();
+          var x = sc.scrollLeft + (r2.left - r1.left) - (sc.clientWidth / 2) + 76;
+          sc.scrollTo({ left: Math.max(0, x), behavior: 'auto' });
+        };
+        go(); requestAnimationFrame(go); setTimeout(go, 60);
+      }
   }
   document.title = 'CHECKLIST theo dõi tiến độ'
     + (d.title ? ' ' + d.title : '') + ' · APSA';

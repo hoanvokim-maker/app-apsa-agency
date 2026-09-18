@@ -1,5 +1,5 @@
 {
-    "version": "2.2.20",
+    "version": "2.2.21",
     "updated": "2026-09-18",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-17",
             "note": "Phiên bản 2.2",
             "items": [
+                {
+                    "d": "2026-09-18",
+                    "v": "2.2.21",
+                    "t": "APSA1947: mui ten dong/mo nhom ve bang CSS, timeline tu cuon toi hom nay",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-18",
                     "v": "2.2.20",
