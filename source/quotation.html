@@ -230,7 +230,7 @@ table.pt td{ padding:6px 10px; border-top:1px solid var(--border); background:tr
     #ckOv{ position:fixed; inset:0; background:rgba(0,0,0,.66); z-index:100060;
       display:none; align-items:center; justify-content:center; padding:24px 16px; overflow:auto }
     #ckOv.on{ display:flex }
-    #ckBox{ background:var(--bg2); border:1px solid var(--border); border-radius:18px;
+    #cklBox{ background:var(--bg2); border:1px solid var(--border); border-radius:18px;
       padding:24px; width:min(480px,96vw); text-align:center }
     .ckh{ font-size:14px; font-weight:800; margin:0 0 10px; letter-spacing:.02em }
     .ckp{ font-size:12px; line-height:1.6; color:var(--text2); margin:12px 0 0 }
@@ -2227,16 +2227,16 @@ function ckEsc(v) {
 }
 function ckUrl(t) { return location.origin + '/ck/' + t; }
 function ckClose() { var o = document.getElementById('ckOv'); if (o) o.classList.remove('on'); }
-function ckBox(inner) {
+function cklBox(inner) {
   var o = document.getElementById('ckOv');
   if (!o) {
     o = document.createElement('div'); o.id = 'ckOv';
-    o.innerHTML = '<div id="ckBox"></div>';
+    o.innerHTML = '<div id="cklBox"></div>';
     document.body.appendChild(o);
     o.addEventListener('click', function (e) { if (e.target === o) ckClose(); });
   }
   o.classList.add('on');
-  document.getElementById('ckBox').innerHTML = inner;
+  document.getElementById('cklBox').innerHTML = inner;
 }
 function ckPaint() {
   var h = '<div class="ckh">Link checklist cho khách</div>';
@@ -2244,7 +2244,7 @@ function ckPaint() {
     h += '<div class="ckp">Khách mở link sẽ thấy mã dự án, tên dự án, khách hàng, % hoàn thành và danh sách đầu việc kèm trạng thái · hạn. Tên nhân sự nội bộ và mức ưu tiên được ẩn.</div>'
       + '<div class="cka"><button class="hbtn" type="button" onclick="ckClose()">Đóng</button>'
       + '<button class="hbtn pri" type="button" onclick="ckOn()">Bật link</button></div>';
-    ckBox(h); return;
+    cklBox(h); return;
   }
   var u = ckUrl(CK_SH.token);
   h += '<div class="cku">' + ckEsc(u) + '</div><div class="ckqr" id="ckQr"></div>'
@@ -2255,7 +2255,7 @@ function ckPaint() {
     + '<button class="hbtn" type="button" onclick="ckOff()">Tắt link</button>'
     + '<a class="hbtn" href="' + ckEsc(u) + '" target="_blank" rel="noopener">Mở thử</a>'
     + '<button class="hbtn pri" type="button" onclick="ckCopy(this)">Copy link</button></div>';
-  ckBox(h);
+  cklBox(h);
   if (window.qrcode) {
     try {
       var q = qrcode(0, 'M'); q.addData(u); q.make();
@@ -2265,7 +2265,7 @@ function ckPaint() {
 }
 async function ckShare() {
   if (!EDIT || !EDIT.id) { toast('Hãy lưu dự án trước khi tạo link cho khách', 'err'); return; }
-  ckBox('<div class="ckp">Đang tải...</div>');
+  cklBox('<div class="ckp">Đang tải...</div>');
   try {
     const d = await api(API, 'share-list', { query: '&id=' + EDIT.id });
     const list = (d && d.shares) || [];

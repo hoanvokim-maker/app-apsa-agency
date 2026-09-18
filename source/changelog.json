@@ -1,5 +1,5 @@
 {
-    "version": "2.2.7",
+    "version": "2.2.8",
     "updated": "2026-09-18",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-17",
             "note": "Phiên bản 2.2",
             "items": [
+                {
+                    "d": "2026-09-18",
+                    "v": "2.2.8",
+                    "t": "APSA1935b: doi ten ham tranh trung voi ckBox co san",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-18",
                     "v": "2.2.7",
