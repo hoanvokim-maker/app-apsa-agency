@@ -65,7 +65,7 @@ $ME = currentUser($pdo);
 /* Hai action duoi day phuc vu link chia se cho khach — khong can dang nhap.
    Chung CHI doc du lieu tu token, khong bao gio tin $_GET['id']. */
 $Q_ACT0   = isset($_GET['action']) ? (string) $_GET['action'] : '';
-$Q_PUBLIC = ($Q_ACT0 === 'share-view' || $Q_ACT0 === 'share-xlsx');
+$Q_PUBLIC = ($Q_ACT0 === 'share-view' || $Q_ACT0 === 'share-xlsx' || $Q_ACT0 === 'chk-view');
 if (!$ME && !$Q_PUBLIC) q_fail('Unauthorized — vui lòng đăng nhập', 401);
 $WHO = $ME ? ($ME['display_name'] ?: $ME['username']) : '';
 
@@ -1994,6 +1994,7 @@ function qs_ensure(PDO $pdo)
 function qs_scope($v)
 {
     $v = strtolower(trim((string) $v));
+    if (in_array($v, array('chk', 'checklist'), true)) return 'chk';   /* APSA1935 */
     return in_array($v, array('liq', 'liquidation', 'nghiemthu'), true) ? 'liq' : 'quote';
 }
 
@@ -2128,6 +2129,48 @@ case 'share-xlsx': {
 }
 
 /* ── Noi bo: liet ke / tao / thu hoi link chia se ── */
+/* ===== APSA1935: link checklist cho khach xem ===== */
+case 'chk-view': {
+    $tok = isset($_GET['t']) ? (string) $_GET['t'] : '';
+    $sh  = qs_byToken($pdo, $tok);
+    if (!$sh) q_fail('Link khong ton tai hoac da bi thu hoi.', 404);
+    if ((string) $sh['scope'] !== 'chk') q_fail('Link khong hop le.', 404);
+    $qid = (int) $sh['quotation_id'];
+    $q   = loadQuotation($pdo, $qid);
+    if (!$q) q_fail('Du an khong con ton tai.', 404);
+    if (isset($q['deleted_at']) && $q['deleted_at'] !== null && $q['deleted_at'] !== '') {
+        q_fail('Du an da bi xoa.', 404);
+    }
+    $rows = q_chkRows($pdo, $qid);
+    $out = array(); $done = 0; $doing = 0; $todo = 0; $total = 0;
+    foreach ($rows as $r) {
+        if ((string) $r['kind'] === 'group') {
+            $out[] = array('kind' => 'group', 'name' => (string) $r['name']);
+            continue;
+        }
+        $st = (string) $r['status'];
+        $total++;
+        if ($st === 'done') $done++;
+        elseif ($st === 'todo') $todo++;
+        else $doing++;
+        $out[] = array('kind' => 'item', 'name' => (string) $r['name'],
+                       'status' => $st, 'due' => (string) $r['due_date']);
+    }
+    $pdo->prepare("UPDATE `quotation_shares` SET `views` = `views` + 1, `last_view_at` = NOW() WHERE `id` = ?")
+        ->execute(array((int) $sh['id']));
+    header('X-Robots-Tag: noindex, nofollow', true);
+    q_ok(array(
+        'code'   => (string) $q['code'],
+        'title'  => (string) $q['title'],
+        'client' => (string) $q['client_name'],
+        'from'   => (string) $q['event_from'],
+        'to'     => (string) $q['event_to'],
+        'total'  => $total, 'done' => $done, 'doing' => $doing, 'todo' => $todo,
+        'pct'    => $total > 0 ? (int) round($done * 100 / $total) : 0,
+        'rows'   => $out
+    ));
+}
+
 case 'share-list': {
     if (!$ME) q_fail('Unauthorized', 401);
     $id = (int) (isset($_GET['id']) ? $_GET['id'] : 0);

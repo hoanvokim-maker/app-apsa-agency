@@ -1,5 +1,5 @@
 {
-    "version": "2.2.6",
+    "version": "2.2.7",
     "updated": "2026-09-18",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-17",
             "note": "Phiên bản 2.2",
             "items": [
+                {
+                    "d": "2026-09-18",
+                    "v": "2.2.7",
+                    "t": "APSA1935: link checklist cong khai cho khach hang (/ck/<token>) + nut bat/tat + QR",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-18",
                     "v": "2.2.6",

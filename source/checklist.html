@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow, noarchive" />
+<title>APSA — Tiến độ dự án</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+  :root {
+    --ink: #12151a; --ink2: #4a5361; --ink3: #8a93a3; --line: #e6e9ef;
+    --line2: #f2f4f8; --bg: #f4f6fa; --card: #ffffff;
+    --accent: #1d4ed8; --ok: #15803d; --ok-bg: #eafaf0;
+    --run: #1d4ed8; --run-bg: #eaf0ff; --rev: #b45309; --rev-bg: #fdf3e3;
+    --wait: #6b7280; --wait-bg: #f1f3f7; --late: #b91c1c; --late-bg: #fdeced;
+  }
+  body { font-family: 'Oxanium', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 28px 18px 60px }
+  .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 20px }
+  .brand b { font-size: 15px; font-weight: 800; letter-spacing: .14em }
+  .brand span { font-size: 11px; color: var(--ink3); letter-spacing: .06em; text-transform: uppercase }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(16,24,40,.04); }
+  .head { padding: 22px 22px 20px }
+  .code { font-size: 11px; font-weight: 700; letter-spacing: .1em; color: var(--accent);
+    text-transform: uppercase }
+  h1 { font-size: 21px; font-weight: 800; line-height: 1.3; margin: 6px 0 10px }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12.5px; color: var(--ink2) }
+  .meta i { font-style: normal; color: var(--ink3) }
+  .prog { display: flex; align-items: center; gap: 18px; padding: 18px 22px;
+    border-top: 1px solid var(--line2); flex-wrap: wrap }
+  .pct { font-size: 30px; font-weight: 800; line-height: 1; letter-spacing: -.02em }
+  .pbar { flex: 1 1 200px; height: 9px; border-radius: 99px; background: var(--line2); overflow: hidden }
+  .pbar i { display: block; height: 100%; border-radius: 99px;
+    background: linear-gradient(90deg, #22c55e, #16a34a); transition: width .5s ease }
+  .cnt { font-size: 12.5px; color: var(--ink2); white-space: nowrap }
+  .cnt b { color: var(--ink); font-weight: 700 }
+  table { width: 100%; border-collapse: collapse }
+  thead th { text-align: left; font-size: 10.5px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--ink3); padding: 12px 22px;
+    border-top: 1px solid var(--line2); border-bottom: 1px solid var(--line2); white-space: nowrap }
+  thead th.c2 { width: 150px } thead th.c3 { width: 110px }
+  tbody td { padding: 13px 22px; border-bottom: 1px solid var(--line2); font-size: 13.5px;
+    vertical-align: middle }
+  tbody tr:last-child td { border-bottom: 0 }
+  tbody tr.grp td { background: #fafbfd; font-size: 10.5px; font-weight: 800; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink3); padding: 10px 22px }
+  .nm { font-weight: 500; line-height: 1.45 }
+  tr.done .nm { color: var(--ink2) }
+  .pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 4px 10px;
+    border-radius: 999px; white-space: nowrap }
+  .p-done { color: var(--ok); background: var(--ok-bg) }
+  .p-doing { color: var(--run); background: var(--run-bg) }
+  .p-review { color: var(--rev); background: var(--rev-bg) }
+  .p-todo { color: var(--wait); background: var(--wait-bg) }
+  .due { font-size: 12.5px; color: var(--ink2); white-space: nowrap; font-variant-numeric: tabular-nums }
+  .due.late { color: var(--late); font-weight: 700 }
+  .due.non { color: var(--ink3) }
+  .foot { margin-top: 16px; text-align: center; font-size: 11.5px; color: var(--ink3); line-height: 1.7 }
+  .state { padding: 60px 22px; text-align: center; color: var(--ink2); font-size: 14px }
+  .state b { display: block; font-size: 16px; color: var(--ink); margin-bottom: 6px }
+  @media (max-width: 620px) {
+    .wrap { padding: 18px 12px 40px }
+    .head, .prog { padding-left: 16px; padding-right: 16px }
+    h1 { font-size: 18px }
+    thead th { display: none }
+    tbody td { display: block; padding: 0 16px; border: 0 }
+    tbody tr { display: block; border-bottom: 1px solid var(--line2); padding: 12px 0 }
+    tbody tr:last-child { border-bottom: 0 }
+    tbody tr.grp td { padding: 10px 16px }
+    td.c1 { margin-bottom: 8px }
+    td.c2 { display: inline-block !important; padding-right: 8px }
+    td.c3 { display: inline-block !important; padding-left: 0 }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><b>APSA</b><span>Tiến độ dự án</span></div>
+  <div class="card" id="app"><div class="state">Đang tải…</div></div>
+  <div class="foot" id="foot"></div>
+</div>
+<script>
+/* APSA1935 — trang cong khai: chi doc checklist theo token, khong lo thong tin noi bo */
+var API = '/api/quotation-api.php';
+var TOKEN = (function () {
+  var m = location.search.match(/[?&]t=([A-Za-z0-9]{6,64})/);
+  if (m) return m[1];
+  m = location.pathname.match(/\/ck\/([A-Za-z0-9]{6,64})/);
+  return m ? m[1] : '';
+})();
+var LB = { done: 'Đã hoàn thành', doing: 'Đang làm', review: 'Đang review', todo: 'Chưa giao' };
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function dmy(s) {
+  if (!s) return '';
+  var m = String(s).slice(0, 10).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return m ? (m[3] + '/' + m[2] + '/' + m[1]) : '';
+}
+function today() {
+  var d = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; };
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+}
+function fail(msg) {
+  document.getElementById('app').innerHTML =
+    '<div class="state"><b>Không mở được trang</b>' + esc(msg) + '</div>';
+}
+function render(d) {
+  var h = '<div class="head"><div class="code">' + esc(d.code || '') + '</div>'
+    + '<h1>' + esc(d.title || 'Dự án') + '</h1><div class="meta">';
+  if (d.client) h += '<span><i>Khách hàng:</i> ' + esc(d.client) + '</span>';
+  var f = dmy(d.from), t = dmy(d.to);
+  if (f || t) h += '<span><i>Thời gian:</i> ' + esc(f || '—') + (t && t !== f ? ' – ' + esc(t) : '') + '</span>';
+  h += '</div></div>';
+  h += '<div class="prog"><div class="pct">' + (Number(d.pct) || 0) + '%</div>'
+    + '<div class="pbar"><i style="width:' + (Number(d.pct) || 0) + '%"></i></div>'
+    + '<div class="cnt"><b>' + (Number(d.done) || 0) + '/' + (Number(d.total) || 0) + '</b> việc xong'
+    + (Number(d.doing) ? ' · ' + d.doing + ' đang làm' : '')
+    + (Number(d.todo) ? ' · ' + d.todo + ' chưa giao' : '') + '</div></div>';
+  var rows = d.rows || [], now = today(), body = '';
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i];
+    if (r.kind === 'group') {
+      if (!String(r.name || '').trim()) continue;
+      body += '<tr class="grp"><td colspan="3">' + esc(r.name) + '</td></tr>';
+      continue;
+    }
+    var st = LB[r.status] ? r.status : 'todo';
+    var due = dmy(r.due), late = (due && st !== 'done' && String(r.due).slice(0, 10) < now);
+    body += '<tr class="' + (st === 'done' ? 'done' : '') + '">'
+      + '<td class="c1"><div class="nm">' + esc(r.name || '—') + '</div></td>'
+      + '<td class="c2"><span class="pill p-' + st + '">' + LB[st] + '</span></td>'
+      + '<td class="c3"><span class="due ' + (late ? 'late' : (due ? '' : 'non')) + '">'
+      + (due ? esc(due) : '—') + '</span></td></tr>';
+  }
+  if (!body) body = '<tr><td colspan="3" style="color:#8a93a3">Chưa có đầu việc nào.</td></tr>';
+  h += '<table><thead><tr><th>Công việc</th><th class="c2">Trạng thái</th>'
+    + '<th class="c3">Hạn</th></tr></thead><tbody>' + body + '</tbody></table>';
+  document.getElementById('app').innerHTML = h;
+  document.title = (d.title ? d.title + ' — ' : '') + 'Tiến độ dự án · APSA';
+  document.getElementById('foot').innerHTML =
+    'Trang này cập nhật tự động theo tiến độ thực tế.<br>Vui lòng không chia sẻ đường dẫn ra ngoài.';
+}
+if (!TOKEN) {
+  fail('Thiếu mã liên kết. Hãy mở đúng đường dẫn đã được gửi cho bạn.');
+} else {
+  fetch(API + '?action=chk-view&t=' + encodeURIComponent(TOKEN), { cache: 'no-store' })
+    .then(function (r) { return r.json().catch(function () { return { ok: false, error: 'Máy chủ trả về dữ liệu không hợp lệ.' }; }); })
+    .then(function (j) {
+      if (!j || !j.ok) throw new Error((j && j.error) || 'Có lỗi xảy ra.');
+      render(j.data);
+    })
+    .catch(function (e) { fail(e.message); });
+}
+</script>
+</body>
+</html>

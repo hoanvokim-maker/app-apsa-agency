@@ -8,6 +8,7 @@
     RewriteRule ^f\.html$ /f.php [L,QSA]
     # APSA1916: anh ghep Frame Avatar phat lai tu SharePoint
     RewriteRule ^p/([a-f0-9]{32})$ /p.php?t=$1 [L,QSA]
+    RewriteRule ^ck/([A-Za-z0-9]{8,64})/?$ /checklist.html?t=$1 [L,QSA]
     RewriteRule ^v/([A-Za-z0-9]{6,40})/?$ /review.php?t=$1 [L,QSA]
     RewriteRule ^pl/([A-Za-z0-9]{6,40})/?$ /playlist.php?t=$1 [L,QSA]
     RewriteRule ^review\.html$ /review.php [L,QSA]
