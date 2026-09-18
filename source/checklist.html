@@ -20,7 +20,8 @@
   }
   body { font-family: 'Oxanium', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
-  .wrap { max-width: 860px; margin: 0 auto; padding: 28px 18px 60px }
+  /* APSA1938: dung tron be ngang man hinh, toi uu cho laptop */
+  .wrap { max-width: none; margin: 0 auto; padding: 24px 28px 48px }
   .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 20px }
   .brand b { font-size: 15px; font-weight: 800; letter-spacing: .14em }
   .brand span { font-size: 11px; color: var(--ink3); letter-spacing: .06em; text-transform: uppercase }
@@ -88,7 +89,8 @@
   .cal { display:grid; grid-template-columns:repeat(7,1fr); border-top:1px solid var(--line2) }
   .cal .dh { font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
     color:var(--ink3); padding:9px 8px; text-align:center; border-bottom:1px solid var(--line2) }
-  .cal .cell { min-height:92px; padding:7px 7px 4px; border-right:1px solid var(--line2);
+  .cal .cell { min-height:max(104px, calc((100vh - 430px) / 6)); padding:7px 7px 4px;
+    border-right:1px solid var(--line2);
     border-bottom:1px solid var(--line2) }
   .cal .cell:nth-child(7n) { border-right:0 }
   .cal .cell.out { background:#fbfcfe }
@@ -97,11 +99,12 @@
   .cal .cell.today .dn { color:var(--accent) }
   .cal .cell.out .dn { opacity:.4 }
   .tlwrap { display:flex; border-top:1px solid var(--line2); overflow:hidden }
-  .nodue { flex:0 0 190px; border-right:1px solid var(--line); padding:10px 12px;
-    background:#fbfcfe; max-height:440px; overflow:auto }
+  .nodue { flex:0 0 220px; border-right:1px solid var(--line); padding:10px 14px;
+    background:#fbfcfe; max-height:min(64vh,720px); overflow:auto }
   .nodue h4 { font-size:10px; font-weight:800; letter-spacing:.07em; text-transform:uppercase;
     color:var(--ink3); margin-bottom:8px }
-  .tl { flex:1 1 auto; display:flex; overflow-x:auto; scroll-behavior:smooth; max-height:440px }
+  .tl { flex:1 1 auto; display:flex; overflow-x:auto; scroll-behavior:smooth;
+    max-height:min(64vh,720px) }
   .tlcol { flex:0 0 152px; border-right:1px solid var(--line2); padding:0 8px 8px }
   .tlcol.today { background:#fffdf0 }
   .tlcol .th { position:sticky; top:0; background:inherit; padding:9px 0 8px; font-size:10.5px;
@@ -114,6 +117,7 @@
   .empt { font-size:11.5px; color:var(--ink3); padding:4px 0 }
   @media (max-width: 620px) {
     .wrap { padding: 18px 12px 40px }
+    .nodue { flex:0 0 150px }
     .head, .prog { padding-left: 16px; padding-right: 16px }
     h1 { font-size: 18px }
     thead th { display: none }
