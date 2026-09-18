@@ -118,6 +118,7 @@
     if (MODE === 'q3') return [pad(Y, m - 2), pad(Y, m)];
     if (MODE === 'q6') return [pad(Y, m - 5), pad(Y, m)];
     if (MODE === 'q9') return [pad(Y, m - 8), pad(Y, m)];
+    if (MODE === 'm1') return [pad(Y, m), pad(Y, m)];
     return [Y + '-01', Y + '-12'];
   }
   function pad(y, m) {
@@ -134,7 +135,7 @@
       h += '<option value="' + ys[i] + '"' + (ys[i] === Y ? ' selected' : '') + '>Năm ' + ys[i] + '</option>';
     }
     h += '</select>';
-    var M = [['y', 'Cả năm'], ['q9', '9 tháng gần nhất'], ['q6', '6 tháng gần nhất'], ['q3', '3 tháng gần nhất']];
+    var M = [['y', 'Cả năm'], ['q9', '9 tháng gần nhất'], ['q6', '6 tháng gần nhất'], ['q3', '3 tháng gần nhất'], ['m1', 'Tháng này']];
     h += '<span style="width:14px"></span>';
     var BS = [['ev', 'Theo ng\u00e0y di\u1ec5n ra'], ['qd', 'Theo ng\u00e0y b\u00e1o gi\u00e1']];
     for (i = 0; i < BS.length; i++) {
