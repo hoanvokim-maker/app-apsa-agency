@@ -243,6 +243,12 @@ table.pt td{ padding:6px 10px; border-top:1px solid var(--border); background:tr
     .ckqr svg{ width:168px; height:168px; display:block }
     .cka{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:18px }
     .cka .hbtn.pri{ background:var(--accent); color:#0b0d0e; border-color:var(--accent); font-weight:800 }
+    /* APSA1942: anh key visual */
+    .ckth{ border-top:1px solid var(--border); margin-top:18px; padding-top:16px }
+    .ckthv{ border:1px dashed rgba(var(--w-rgb),.22); border-radius:12px; min-height:96px;
+      display:flex; align-items:center; justify-content:center; overflow:hidden;
+      background:var(--bg3); font-size:11.5px; color:var(--text3) }
+    .ckthv img{ width:100%; display:block; max-height:190px; object-fit:cover }
 .srcrow .hbtn:disabled{ opacity:.4; cursor:not-allowed; }
 .qrbox{ display:grid; place-items:center; background:var(--bg2); border-radius:16px; padding:18px; margin-bottom:12px; }
 .qrbox canvas{ width:250px; height:250px; image-rendering:pixelated; display:block; }
@@ -2222,6 +2228,63 @@ function setQuoteUrl(q, push){
 /* APSA1878: nut Chep link tra ve LINK CONG KHAI cho khach hang xem
    (bao-gia.html?t=TOKEN) - khong can dang nhap. Truoc day no copy nham
    quotation.html?q=CODE la trang noi bo, khach mo ra bi doi dang nhap. */
+/* ===== APSA1942: anh key visual cho link chia se ===== */
+function ckThUrl() { return (typeof EDIT !== 'undefined' && EDIT && EDIT.thumb) ? String(EDIT.thumb) : ''; }
+function ckThBlock() {
+  var u = ckThUrl();
+  return '<div class="ckth"><div class="ckthv" id="ckThV">'
+    + (u ? '<img src="' + ckEsc(u) + '?v=' + Date.now() + '" alt="" />' : 'Chưa có ảnh key visual')
+    + '</div><div class="cka" style="margin-top:12px">'
+    + '<button class="hbtn" type="button" onclick="ckPick()">Chọn ảnh key visual</button>'
+    + (u ? '<button class="hbtn" type="button" onclick="ckThDel()">Bỏ ảnh</button>' : '')
+    + '</div><div class="ckp">Ảnh hiện ở đầu trang khách xem và làm thumbnail khi gửi link qua Zalo / Messenger. Nên dùng ảnh ngang, tỷ lệ khoảng 1200×630.</div></div>';
+}
+function ckPick() {
+  var inp = document.getElementById('ckThIn');
+  if (!inp) {
+    inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'image/*'; inp.id = 'ckThIn';
+    inp.style.display = 'none';
+    inp.addEventListener('change', function () {
+      var fl = inp.files && inp.files[0];
+      inp.value = '';
+      if (fl) ckThUp(fl);
+    });
+    document.body.appendChild(inp);
+  }
+  inp.click();
+}
+function ckThUp(file) {
+  var rd = new FileReader();
+  rd.onload = function () {
+    var im = new Image();
+    im.onload = async function () {
+      var W = 1200, w = im.width, h = im.height;
+      if (w > W) { h = Math.round(h * W / w); w = W; }
+      var cv = document.createElement('canvas');
+      cv.width = w; cv.height = h;
+      var cx = cv.getContext('2d');
+      cx.fillStyle = '#ffffff'; cx.fillRect(0, 0, w, h);
+      cx.drawImage(im, 0, 0, w, h);
+      var data = cv.toDataURL('image/jpeg', 0.85);
+      try {
+        var d = await api(API, 'thumb-save', { body: { id: EDIT.id, data: data } });
+        EDIT.thumb = (d && d.url) || '';
+        ckPaint(); toast('Đã lưu ảnh key visual', 'ok');
+      } catch (e) { toast(e.message || 'Có lỗi xảy ra', 'err'); }
+    };
+    im.onerror = function () { toast('File không phải ảnh hợp lệ', 'err'); };
+    im.src = rd.result;
+  };
+  rd.readAsDataURL(file);
+}
+async function ckThDel() {
+  try {
+    await api(API, 'thumb-clear', { body: { id: EDIT.id } });
+    EDIT.thumb = ''; ckPaint(); toast('Bỏ ảnhOK', 'ok');
+  } catch (e) { toast(e.message || 'Có lỗi xảy ra', 'err'); }
+}
+
 /* ===== APSA1935: link checklist rieng cho khach hang ===== */
 var CK_SH = null;
 function ckEsc(v) {
@@ -2257,7 +2320,8 @@ function ckPaint() {
     + '<div class="cka"><button class="hbtn" type="button" onclick="ckClose()">Đóng</button>'
     + '<button class="hbtn" type="button" onclick="ckOff()">Tắt link</button>'
     + '<a class="hbtn" href="' + ckEsc(u) + '" target="_blank" rel="noopener">Mở thử</a>'
-    + '<button class="hbtn pri" type="button" onclick="ckCopy(this)">Copy link</button></div>';
+    + '<button class="hbtn pri" type="button" onclick="ckCopy(this)">Copy link</button></div>'
+    + ckThBlock();
   cklBox(h);
   if (window.qrcode) {
     try {

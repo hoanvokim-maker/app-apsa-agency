@@ -2028,6 +2028,29 @@ function qs_newSlug(PDO $pdo)
     return '';
 }
 
+/* ===== APSA1942: anh key visual (thumbnail) cua du an ===== */
+function q_thumbCol(PDO $pdo)
+{
+    static $done = false;
+    if ($done) return;
+    $done = true;
+    try {
+        $has = $pdo->query("SHOW COLUMNS FROM `quotations` LIKE 'thumb'")->fetch();
+        if (!$has) $pdo->exec("ALTER TABLE `quotations` ADD `thumb` VARCHAR(64) NULL");
+    } catch (PDOException $e) { }
+}
+function q_thumbDir()
+{
+    $d = dirname(__DIR__) . '/uploads/thumbs';
+    if (!is_dir($d)) @mkdir($d, 0755, true);
+    return $d;
+}
+function q_thumbUrl($fn)
+{
+    $fn = (string) $fn;
+    return preg_match('/^q[0-9]+_[a-f0-9]{8}[.]jpg$/', $fn) ? ('/uploads/thumbs/' . $fn) : '';
+}
+
 function qs_byToken(PDO $pdo, $tok)
 {
     $tok = strtolower(preg_replace('/[^A-Za-z0-9]/', '', (string) $tok));
@@ -2172,6 +2195,7 @@ case 'chk-view': {
     if (isset($q['deleted_at']) && $q['deleted_at'] !== null && $q['deleted_at'] !== '') {
         q_fail('Du an da bi xoa.', 404);
     }
+    q_thumbCol($pdo);
     $rows = q_chkRows($pdo, $qid);
     $out = array(); $done = 0; $doing = 0; $todo = 0; $total = 0; $wsum = 0; $cwait = 0;
     foreach ($rows as $r) {
@@ -2196,6 +2220,7 @@ case 'chk-view': {
         'code'   => (string) $q['code'],
         'title'  => (string) $q['title'],
         'client' => (string) $q['client_name'],
+        'thumb'  => q_thumbUrl(isset($q['thumb']) ? $q['thumb'] : ''),
         'from'   => (string) $q['event_from'],
         'to'     => (string) $q['event_to'],
         'total'  => $total, 'done' => $done, 'doing' => $doing, 'todo' => $todo,
@@ -2204,6 +2229,48 @@ case 'chk-view': {
         'pct'    => $total > 0 ? (int) round($wsum / $total) : 0,
         'rows'   => $out
     ));
+}
+
+/* ===== APSA1942: luu / xoa anh key visual ===== */
+case 'thumb-save': {
+    if (!$ME) q_fail('Unauthorized', 401);
+    $b   = qs_body();
+    $id  = (int) (isset($b['id']) ? $b['id'] : 0);
+    if (!$id) q_fail('Thieu id du an');
+    $q = loadQuotation($pdo, $id);
+    if (!$q) q_fail('Khong thay du an.', 404);
+    q_thumbCol($pdo);
+    $raw = (string) (isset($b['data']) ? $b['data'] : '');
+    $cm  = strpos($raw, ',');
+    if ($cm !== false) $raw = substr($raw, $cm + 1);
+    $bin = base64_decode($raw, true);
+    if ($bin === false || strlen($bin) < 512) q_fail('Anh khong hop le');
+    if (strlen($bin) > 2500000) q_fail('Anh qua lon (toi da 2.5MB)');
+    if (substr($bin, 0, 3) !== chr(0xFF) . chr(0xD8) . chr(0xFF)) q_fail('Chi nhan anh JPEG');
+    $inf = @getimagesizefromstring($bin);
+    if (!$inf || (int) $inf[2] !== IMAGETYPE_JPEG) q_fail('Anh khong hop le');
+    if ((int) $inf[0] < 80 || (int) $inf[0] > 4096) q_fail('Kich thuoc anh khong hop le');
+    $dir = q_thumbDir();
+    $old = (string) (isset($q['thumb']) ? $q['thumb'] : '');
+    $fn  = 'q' . $id . '_' . bin2hex(random_bytes(4)) . '.jpg';
+    if (@file_put_contents($dir . '/' . $fn, $bin) === false) q_fail('Khong luu duoc anh', 500);
+    @chmod($dir . '/' . $fn, 0644);
+    $pdo->prepare("UPDATE `quotations` SET `thumb` = ? WHERE id = ?")->execute(array($fn, $id));
+    if ($old !== $fn && q_thumbUrl($old)) @unlink($dir . '/' . $old);
+    q_ok(array('thumb' => $fn, 'url' => q_thumbUrl($fn)));
+}
+case 'thumb-clear': {
+    if (!$ME) q_fail('Unauthorized', 401);
+    $b  = qs_body();
+    $id = (int) (isset($b['id']) ? $b['id'] : 0);
+    if (!$id) q_fail('Thieu id du an');
+    q_thumbCol($pdo);
+    $q = loadQuotation($pdo, $id);
+    if (!$q) q_fail('Khong thay du an.', 404);
+    $old = (string) (isset($q['thumb']) ? $q['thumb'] : '');
+    $pdo->prepare("UPDATE `quotations` SET `thumb` = NULL WHERE id = ?")->execute(array($id));
+    if (q_thumbUrl($old)) @unlink(q_thumbDir() . '/' . $old);
+    q_ok(array('thumb' => ''));
 }
 
 case 'share-list': {

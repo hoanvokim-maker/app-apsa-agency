@@ -27,6 +27,8 @@
   .brand span { font-size: 11px; color: var(--ink3); letter-spacing: .06em; text-transform: uppercase }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px;
     box-shadow: 0 1px 3px rgba(16,24,40,.04); }
+  .kv { display:block; width:100%; max-height:280px; object-fit:cover;
+    border-radius:16px 16px 0 0; background:var(--line2) }
   .head { padding: 22px 22px 20px }
   .code { font-size: 11px; font-weight: 700; letter-spacing: .1em; color: var(--accent);
     text-transform: uppercase }
@@ -120,6 +122,7 @@
     .wrap { padding: 18px 12px 40px }
     .nodue { flex:0 0 150px }
     .head, .prog { padding-left: 16px; padding-right: 16px }
+    .kv { max-height:180px }
     h1 { font-size: 18px }
     thead th { display: none }
     tbody td { display: block; padding: 0 16px; border: 0 }
@@ -268,7 +271,8 @@ function vTl() {
 }
 function paint() {
   var d = D;
-  var h = '<div class="head"><div class="code">' + esc(d.code || '') + '</div>'
+  var h = (d.thumb ? '<img class="kv" src="' + esc(d.thumb) + '" alt="" />' : '')
+    + '<div class="head"><div class="code">' + esc(d.code || '') + '</div>'
     + '<h1>' + esc(d.title || 'Dự án') + '</h1><div class="meta">';
   if (d.client) h += '<span><i>Khách hàng:</i> ' + esc(d.client) + '</span>';
   var f = dmy(d.from), t = dmy(d.to);
