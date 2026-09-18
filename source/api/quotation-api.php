@@ -2238,7 +2238,8 @@ case 'chk-view': {
         elseif ($st === 'cwait') { $cwait++; $wsum += 40; }
         else $todo++;
         $out[] = array('kind' => ((string) $r['kind'] === 'sub' ? 'sub' : 'item'), 'name' => (string) $r['name'],
-                       'status' => $st, 'due' => (string) $r['due_date']);
+                       'status' => $st, 'due' => (string) $r['due_date'],
+                       'prio' => (int) $r['priority']);
     }
     $pdo->prepare("UPDATE `quotation_shares` SET `views` = `views` + 1, `last_view_at` = NOW() WHERE `id` = ?")
         ->execute(array((int) $sh['id']));

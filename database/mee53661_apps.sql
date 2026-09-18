@@ -78,7 +78,7 @@ CREATE TABLE `activity_log` (
   KEY `k_quo` (`quotation_id`),
   KEY `k_user` (`user_id`),
   KEY `k_area` (`area`)
-) ENGINE=InnoDB AUTO_INCREMENT=2645 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2646 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2719,6 +2719,7 @@ INSERT INTO `activity_log` VALUES (2641,'2026-09-18 11:25:40',1,'Harris','checkl
 INSERT INTO `activity_log` VALUES (2642,'2026-09-18 11:25:46',1,'Harris','quotation','save','Lưu báo giá / dự án',292,'28082026-155','','id: 292 · kind: event · code: 28082026-155 · title: AZ-ONCO-Blood Cancer Awareness Day · company_id: 1 · customer_id: 71 · client_name: AstraZeneca Việt Nam · client_tax: 0315158696 · client_address: Tầng 18, Tòa nhà AB, Số 76, Đường Lê Lai, Phường Bến Thành, … · quotation_date: 2026-08-28 · event_from: 2026-09-28 · currency: VND');
 INSERT INTO `activity_log` VALUES (2643,'2026-09-18 11:25:46',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',292,'28082026-155','','quotation_id: 292 · list: 29 mục');
 INSERT INTO `activity_log` VALUES (2644,'2026-09-18 11:25:46',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',292,'28082026-155','','quotation_id: 292 · list: 1 mục');
+INSERT INTO `activity_log` VALUES (2645,'2026-09-18 11:27:09',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',292,'28082026-155','','quotation_id: 292 · list: 26 mục');
 /*!40000 ALTER TABLE `activity_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -6622,7 +6623,7 @@ CREATE TABLE `quotation_assignees` (
   KEY `idx_user` (`user_id`),
   KEY `idx_stat` (`status`),
   KEY `idx_due` (`due_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=3630 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3656 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -6676,35 +6677,32 @@ INSERT INTO `quotation_assignees` VALUES (1955,284,'item',4,NULL,'Làm việc v�
 INSERT INTO `quotation_assignees` VALUES (1956,284,'item',4,NULL,'Đăng ký tòa nhà gửi C Nga','2026-09-12','done',5,'Trang Đỗ','2026-09-16 04:28:44','2026-09-16 04:28:44',NULL,0,0,0);
 INSERT INTO `quotation_assignees` VALUES (1957,284,'item',4,NULL,'Thuê Flipchart A0 - 2 cái _ đầu HCM',NULL,'done',6,'Trang Đỗ','2026-09-16 04:28:44','2026-09-16 04:28:44',NULL,0,0,0);
 INSERT INTO `quotation_assignees` VALUES (2156,300,'item',1,NULL,'',NULL,'doing',0,'Thảo Lý','2026-09-16 08:25:01','2026-09-16 08:25:01',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3601,292,'group',0,NULL,'procurement',NULL,'todo',0,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3602,292,'item',3,NULL,'Báo giá',NULL,'done',1,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,1);
-INSERT INTO `quotation_assignees` VALUES (3603,292,'group',0,NULL,'idea & concept',NULL,'todo',2,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3604,292,'item',34,NULL,'Idea box bổ máu',NULL,'done',3,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3605,292,'item',34,NULL,'Idea booth + gift set',NULL,'done',4,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3606,292,'group',0,NULL,'design',NULL,'todo',5,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3607,292,'item',8,NULL,'Thiết kế KV','2026-09-07','done',6,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3608,292,'item',8,NULL,'Photobooth + frame','2026-09-17','done',7,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3609,292,'item',0,NULL,'Infographic MCL','2026-09-18','doing',8,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,109,0);
-INSERT INTO `quotation_assignees` VALUES (3610,292,'sub',0,NULL,'ZZTEST layout','2026-09-18','done',9,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,109,0);
-INSERT INTO `quotation_assignees` VALUES (3611,292,'sub',0,NULL,'ZZTEST nội dung','2026-09-18','doing',10,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,109,0);
-INSERT INTO `quotation_assignees` VALUES (3612,292,'sub',0,NULL,'ZZTEST duyệt','2026-09-18','todo',11,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,109,0);
-INSERT INTO `quotation_assignees` VALUES (3613,292,'item',0,NULL,'Infographic CLL','2026-09-18','doing',12,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,84,0);
-INSERT INTO `quotation_assignees` VALUES (3614,292,'item',0,NULL,'Hanger + hashtag + bảng decor','2026-09-18','doing',13,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,84,0);
-INSERT INTO `quotation_assignees` VALUES (3615,292,'item',0,NULL,'Standee hướng dẫn và lưu ý khi hiến máu',NULL,'todo',14,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3616,292,'item',0,NULL,'Thư cảm ơn (Giấy chứng nhận người tốt)',NULL,'todo',15,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3617,292,'item',0,NULL,'Infographic bệnh học',NULL,'cwait',16,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3618,292,'group',0,NULL,'video',NULL,'todo',17,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3619,292,'item',1,NULL,'Video Vietsub','2026-09-14','done',18,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3620,292,'item',1,NULL,'Video hướng dẫn quy trình','2026-09-18','doing',19,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3621,292,'group',0,NULL,'logistic & production',NULL,'todo',20,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3622,292,'item',14,NULL,'Setup booth, tiểu cảnh, hanger, lồng đèn','2026-09-22','todo',21,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3623,292,'item',3,NULL,'Sitecheck setup cho hiến máu (lối vào, thiết bị, người hỗ trợ,...)','2026-09-16','done',22,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3624,292,'item',7,NULL,'Tìm vendor tiểu cảnh HCM',NULL,'done',23,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,1);
-INSERT INTO `quotation_assignees` VALUES (3625,292,'item',3,NULL,'Chốt phương án quán ăn / box bổ máu','2026-09-21','cwait',24,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3626,292,'item',4,NULL,'Check option quán ăn + teabreak + trà đường','2026-09-21','doing',25,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3627,292,'item',3,NULL,'Gửi in sticker nhóm máu','2026-09-19','todo',26,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,1);
-INSERT INTO `quotation_assignees` VALUES (3628,292,'item',3,NULL,'Gửi file PPM + file sx cho anh Dũng','2026-09-19','todo',27,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,1);
-INSERT INTO `quotation_assignees` VALUES (3629,292,'item',34,NULL,'Gửi form đăng ký tòa nhà','2026-09-21','todo',28,'Harris','2026-09-18 04:25:46','2026-09-18 04:25:46',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3630,292,'group',0,NULL,'procurement',NULL,'todo',0,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3631,292,'item',3,NULL,'Báo giá',NULL,'done',1,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,1);
+INSERT INTO `quotation_assignees` VALUES (3632,292,'group',0,NULL,'idea & concept',NULL,'todo',2,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3633,292,'item',34,NULL,'Idea box bổ máu',NULL,'done',3,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3634,292,'item',34,NULL,'Idea booth + gift set',NULL,'done',4,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3635,292,'group',0,NULL,'design',NULL,'todo',5,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3636,292,'item',8,NULL,'Thiết kế KV','2026-09-07','done',6,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3637,292,'item',8,NULL,'Photobooth + frame','2026-09-17','done',7,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3638,292,'item',0,NULL,'Infographic MCL','2026-09-18','doing',8,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,109,0);
+INSERT INTO `quotation_assignees` VALUES (3639,292,'item',0,NULL,'Infographic CLL','2026-09-18','doing',9,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,84,0);
+INSERT INTO `quotation_assignees` VALUES (3640,292,'item',0,NULL,'Hanger + hashtag + bảng decor','2026-09-18','doing',10,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,84,0);
+INSERT INTO `quotation_assignees` VALUES (3641,292,'item',0,NULL,'Standee hướng dẫn và lưu ý khi hiến máu',NULL,'todo',11,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3642,292,'item',0,NULL,'Thư cảm ơn (Giấy chứng nhận người tốt)',NULL,'todo',12,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3643,292,'item',0,NULL,'Infographic bệnh học',NULL,'cwait',13,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3644,292,'group',0,NULL,'video',NULL,'todo',14,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3645,292,'item',1,NULL,'Video Vietsub','2026-09-14','done',15,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3646,292,'item',1,NULL,'Video hướng dẫn quy trình','2026-09-18','doing',16,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3647,292,'group',0,NULL,'logistic & production',NULL,'todo',17,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3648,292,'item',14,NULL,'Setup booth, tiểu cảnh, hanger, lồng đèn','2026-09-22','todo',18,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3649,292,'item',3,NULL,'Sitecheck setup cho hiến máu (lối vào, thiết bị, người hỗ trợ,...)','2026-09-16','done',19,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3650,292,'item',7,NULL,'Tìm vendor tiểu cảnh HCM',NULL,'done',20,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,1);
+INSERT INTO `quotation_assignees` VALUES (3651,292,'item',3,NULL,'Chốt phương án quán ăn / box bổ máu','2026-09-21','cwait',21,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3652,292,'item',4,NULL,'Check option quán ăn + teabreak + trà đường','2026-09-21','doing',22,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3653,292,'item',3,NULL,'Gửi in sticker nhóm máu','2026-09-19','todo',23,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,1);
+INSERT INTO `quotation_assignees` VALUES (3654,292,'item',3,NULL,'Gửi file PPM + file sx cho anh Dũng','2026-09-19','todo',24,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,1);
+INSERT INTO `quotation_assignees` VALUES (3655,292,'item',34,NULL,'Gửi form đăng ký tòa nhà','2026-09-21','todo',25,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
 /*!40000 ALTER TABLE `quotation_assignees` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -11258,7 +11256,7 @@ INSERT INTO `quotation_shares` VALUES (1,5,'quote','e6641b8e70c16756a7c167a6e887
 INSERT INTO `quotation_shares` VALUES (2,5,'liq','9a93c0e006c95d0ce519701b44c87393232042bf','Harris','2026-08-27 17:09:17','2026-08-28 00:14:45',3,'2026-08-28 00:14:17','9sgnq637');
 INSERT INTO `quotation_shares` VALUES (3,306,'quote','5f2904d1c71dcd9bef6f048ac89c4309f65cfe18','Harris','2026-09-15 07:15:35',NULL,2,'2026-09-15 14:16:50','856cqeby');
 INSERT INTO `quotation_shares` VALUES (4,293,'chk','950d06ac2cab80456099d8215ed77b8bf3093ca7','Harris','2026-09-18 03:07:29','2026-09-18 10:10:03',1,'2026-09-18 10:07:49','y5jbmqf5');
-INSERT INTO `quotation_shares` VALUES (5,292,'chk','16f776b5bd6124ddcf1013194b7b72bb1c811ce4','Harris','2026-09-18 03:08:33',NULL,41,'2026-09-18 11:25:46','b9yu7gzv');
+INSERT INTO `quotation_shares` VALUES (5,292,'chk','16f776b5bd6124ddcf1013194b7b72bb1c811ce4','Harris','2026-09-18 03:08:33',NULL,44,'2026-09-18 11:27:27','b9yu7gzv');
 /*!40000 ALTER TABLE `quotation_shares` ENABLE KEYS */;
 UNLOCK TABLES;
 

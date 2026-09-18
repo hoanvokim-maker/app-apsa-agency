@@ -186,6 +186,18 @@
     .spg b{ font-size:10.5px; font-weight:800; color:var(--ok) }
     .spg em{ font-size:10px }
 
+    /* APSA1949: icon uu tien do + dem nguoc han */
+    .pri{ width:13px; height:13px; fill:#e11d48 }
+    .prw{ display:inline-flex; align-items:center; margin-right:6px; vertical-align:-2px }
+    .chip .prw{ margin-right:4px; vertical-align:-1px }
+    .chip .pri{ width:11px; height:11px }
+    tbody tr.sub .pri{ width:11.5px; height:11.5px }
+    .dsub{ display:block; font-style:normal; font-size:10.5px; font-weight:700;
+      color:var(--ink3); margin-top:3px; white-space:nowrap; letter-spacing:.01em }
+    .dsub.soon{ color:#d97706 }
+    .dsub.over{ color:var(--late, #e11d48) }
+    tbody tr.done .dsub{ display:none }
+
 </style>
 </head>
 <body>
@@ -228,7 +240,7 @@ function items() { return (D.rows || []).filter(function (r) { return r.kind !==
 function chip(r) {
   var sb = (r.kind === 'sub');
   return '<span class="chip s-' + st9(r) + (isLate(r) ? ' late' : '') + (sb ? ' sub' : '') + '" title="'
-    + esc(r.name) + ' — ' + LB[st9(r)] + '">' + (sb ? '↳ ' : '') + esc(r.name) + '</span>';
+    + esc(r.name) + ' — ' + LB[st9(r)] + '">' + (sb ? '↳ ' : '') + pflag(r) + esc(r.name) + '</span>';
 }
 function fail(msg) {
   el('app').innerHTML = '<div class="state"><b>Không mở được trang</b>' + esc(msg) + '</div>';
@@ -249,6 +261,25 @@ function isEv(k) {
   var f = String((D && D.from) || '').slice(0, 10);
   var t = String((D && D.to) || '').slice(0, 10) || f;
   return !!f && k >= f && k <= t;
+}
+var PFI = '<svg class="pri" viewBox="0 0 24 24" aria-hidden="true">'
+  + '<path d="M4.6 22a1.1 1.1 0 0 1-1.1-1.1V3.1a1.1 1.1 0 1 1 2.2 0v17.8A1.1 1.1 0 0 1 4.6 22Z"/>'
+  + '<path d="M7 3.6h11.6a.9.9 0 0 1 .73 1.43L17.1 8.2l2.23 3.17a.9.9 0 0 1-.73 1.43H7Z"/></svg>';
+function pflag(r) {
+  var p = Number(r.prio) || 0;
+  if (p < 2) return '';
+  return '<span class="prw" title="' + (p >= 3 ? 'Ứu tiên: Khẩn' : 'Ứu tiên: Quan trọng') + '">' + PFI + '</span>';
+}
+/* APSA1949: con bao nhieu ngay toi han */
+function dleft(r) {
+  var d = String(r.due || '').slice(0, 10);
+  if (!d || st9(r) === 'done') return '';
+  var a = mkd(d), b = mkd(TODAY);
+  if (!a || !b) return '';
+  var n = Math.round((a.getTime() - b.getTime()) / 86400000);
+  if (n < 0) return '<em class="dsub over">Quá hạn ' + (-n) + ' ngày</em>';
+  if (n === 0) return '<em class="dsub over">Hôm nay</em>';
+  return '<em class="dsub' + (n <= 3 ? ' soon' : '') + '">Còn ' + n + ' ngày</em>';
 }
 function w9(r) {
   var x = st9(r);
@@ -291,10 +322,10 @@ function vList() {
         + (r.kind === 'sub' ? ' sub' : '') + '">'
       + '<td class="c1"><div class="nm">'
       + (r.kind === 'sub' ? '<span class="sb">↳</span>' : '')
-      + esc(r.name || '—') + extra + '</div></td>'
+      + pflag(r) + esc(r.name || '—') + extra + '</div></td>'
       + '<td class="c2"><span class="pill p-' + st + '">' + LB[st] + '</span></td>'
       + '<td class="c3"><span class="due ' + (late ? 'late' : (due ? '' : 'non')) + '">'
-      + (due ? esc(due) : '—') + '</span></td></tr>';
+      + (due ? esc(due) : '—') + '</span>' + dleft(r) + '</td></tr>';
   }
   if (!body) body = '<tr><td colspan="3" class="empt">Chưa có đầu việc nào.</td></tr>';
   return '<table><thead><tr><th>Công việc</th><th class="c2">Trạng thái</th>'
