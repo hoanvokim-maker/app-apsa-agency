@@ -2,7 +2,7 @@
 /* APSA1942 — phuc vu /ck/<ma>: chen the og: de link co thumbnail khi share */
 $t = isset($_GET['t']) ? preg_replace('/[^A-Za-z0-9]/', '', (string) $_GET['t']) : '';
 $t = strtolower($t);
-$title = 'Tiến độ dự án';
+$title = 'CHECKLIST theo dõi tiến độ';
 $desc  = 'Theo dõi tiến độ dự án cùng APSA.';
 $img   = '';
 if (strlen($t) >= 8 && strlen($t) <= 40) {
@@ -17,7 +17,8 @@ if (strlen($t) >= 8 && strlen($t) <= 40) {
         $st->execute(array($t, $t));
         $r = $st->fetch(PDO::FETCH_ASSOC);
         if ($r) {
-            if (trim((string) $r['title']) !== '') $title = (string) $r['title'];
+            $tt = trim((string) $r['title']);
+            if ($tt !== '') $title = 'CHECKLIST theo dõi tiến độ ' . $tt;
             $cl = trim((string) $r['client_name']);
             $desc = 'Tiến độ dự án' . ($cl !== '' ? ' · ' . $cl : '') . ' — APSA';
             $th = isset($r['thumb']) ? (string) $r['thumb'] : '';

@@ -313,7 +313,8 @@ function paint() {
     var sc = el('tlScroll'), td = el('tlToday');
     if (sc && td) sc.scrollLeft = Math.max(0, td.offsetLeft - sc.clientWidth / 2 + 76);
   }
-  document.title = (d.title ? d.title + ' — ' : '') + 'Tiến độ dự án · APSA';
+  document.title = 'CHECKLIST theo dõi tiến độ'
+    + (d.title ? ' ' + d.title : '') + ' · APSA';
   el('foot').innerHTML =
     'Trang này cập nhật tự động theo tiến độ thực tế.<br>Vui lòng không chia sẻ đường dẫn ra ngoài.';
 }
