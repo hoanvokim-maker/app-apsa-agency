@@ -67,6 +67,7 @@
   .state { padding: 60px 22px; text-align: center; color: var(--ink2); font-size: 14px }
   .state b { display: block; font-size: 16px; color: var(--ink); margin-bottom: 6px }
   .tabs { display:flex; gap:6px; padding:0 22px 16px; flex-wrap:wrap; align-items:center }
+  .tlb { font-size:12px; font-weight:500; color:var(--ink2); margin-right:4px }
   .tab { font-family:inherit; font-size:12px; font-weight:700; padding:7px 14px; cursor:pointer;
     border:1px solid var(--line); background:var(--card); color:var(--ink2);
     border-radius:999px; transition:all .15s ease }
@@ -280,7 +281,7 @@ function paint() {
     + (Number(d.cwait) ? ' · ' + d.cwait + ' chờ khách' : '')
     + (Number(d.todo) ? ' · ' + d.todo + ' chưa giao' : '') + '</div></div>';
   var tb = [['list', 'Bảng'], ['cal', 'Lịch'], ['tl', 'Timeline']];
-  h += '<div class="tabs">';
+  h += '<div class="tabs"><span class="tlb">Xem checklist dưới dạng:</span>';
   for (var i = 0; i < tb.length; i++) {
     h += '<button type="button" class="tab' + (VIEW === tb[i][0] ? ' on' : '')
       + '" onclick="setView(\'' + tb[i][0] + '\')">' + tb[i][1] + '</button>';
