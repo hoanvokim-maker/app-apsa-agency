@@ -372,7 +372,10 @@ function paint() {
         var go = function () {
           var r1 = sc.getBoundingClientRect(), r2 = td.getBoundingClientRect();
           var x = sc.scrollLeft + (r2.left - r1.left) - (sc.clientWidth / 2) + 76;
-          sc.scrollTo({ left: Math.max(0, x), behavior: 'auto' });
+          var sb = sc.style.scrollBehavior;
+          sc.style.scrollBehavior = 'auto';
+          sc.scrollLeft = Math.max(0, x);
+          sc.style.scrollBehavior = sb;
         };
         go(); requestAnimationFrame(go); setTimeout(go, 60);
       }

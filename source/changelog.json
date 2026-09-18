@@ -1,5 +1,5 @@
 {
-    "version": "2.2.21",
+    "version": "2.2.22",
     "updated": "2026-09-18",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-17",
             "note": "Phiên bản 2.2",
             "items": [
+                {
+                    "d": "2026-09-18",
+                    "v": "2.2.22",
+                    "t": "APSA1947b: timeline cuon toi hom nay khong bi scroll-behavior smooth chan",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-18",
                     "v": "2.2.21",
