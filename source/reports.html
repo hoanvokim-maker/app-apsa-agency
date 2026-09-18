@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script>
+  document.documentElement.style.visibility = 'hidden';
+  fetch('./api/auth-api.php?action=me', { credentials: 'same-origin' })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(res => {
+      if (!res.ok) throw new Error();
+      window.__APSA_USER = res.data;
+      if (String(res.data.role || '').toLowerCase() !== 'admin') {
+        location.replace('./index.html');
+        return;
+      }
+      document.documentElement.style.visibility = 'visible';
+    })
+    .catch(() => {
+      location.replace('./login.html?next=' + encodeURIComponent(location.pathname + location.search));
+    });
+</script>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=1">
+  <meta name="theme-color" content="#dff20d">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>APSA — Báo cáo tài chính</title>
+  <script src="/apsa-ui.js?v=63"></script>
+  <style>
+    .wrap{ max-width:1500px; margin:0 auto; padding:18px 20px 60px }
+    .ttl{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin:6px 0 16px }
+    .ttl h1{ font-size:19px; font-weight:800; letter-spacing:.06em; margin:0; text-transform:uppercase }
+    .ttl .sub{ font-size:12px; color:var(--text2,#9a9a9a) }
+    .bar{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:16px }
+    .pb{ font-family:inherit; font-size:12px; font-weight:700; letter-spacing:.02em; padding:8px 14px;
+      border-radius:8px; border:1px solid rgba(var(--w-rgb,255,255,255),.16); background:transparent;
+      color:var(--text,#e9e9e9); cursor:pointer; transition:border-color .15s, background .15s, color .15s }
+    .pb:hover{ border-color:var(--accent,#dff20d) }
+    .pb.on{ background:var(--accent,#dff20d); border-color:var(--accent,#dff20d); color:#111 }
+    .bar select{ font-family:inherit; font-size:12px; font-weight:700; padding:8px 10px; border-radius:8px;
+      border:1px solid rgba(var(--w-rgb,255,255,255),.16); background:var(--card,#141414); color:var(--text,#e9e9e9) }
+    .kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; margin-bottom:18px }
+    .kpi{ border:1px solid rgba(var(--w-rgb,255,255,255),.10); border-radius:12px; padding:14px 16px;
+      background:rgba(var(--w-rgb,255,255,255),.022) }
+    .kpi .k{ font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--text2,#9a9a9a); font-weight:700 }
+    .kpi .v{ font-size:23px; font-weight:800; margin-top:6px; letter-spacing:-.01em }
+    .kpi .n{ font-size:11px; color:var(--text2,#9a9a9a); margin-top:4px }
+    .kpi.rev .v{ color:#7dd3fc } .kpi.cost .v{ color:#fca5a5 }
+    .kpi.prof .v{ color:var(--accent,#dff20d) } .kpi.debt .v{ color:#f0a83c }
+    .panel{ border:1px solid rgba(var(--w-rgb,255,255,255),.10); border-radius:12px; padding:16px 18px 10px;
+      background:rgba(var(--w-rgb,255,255,255),.022); margin-bottom:18px }
+    .panel h2{ font-size:12px; letter-spacing:.09em; text-transform:uppercase; margin:0 0 4px; font-weight:800 }
+    .lg{ display:flex; gap:16px; flex-wrap:wrap; font-size:11.5px; color:var(--text2,#9a9a9a); margin:2px 0 10px }
+    .lg i{ display:inline-block; width:18px; height:3px; border-radius:2px; margin-right:6px; vertical-align:3px }
+    .cols{ display:grid; grid-template-columns:1fr 1fr; gap:18px }
+    @media (max-width:1000px){ .cols{ grid-template-columns:1fr } }
+    table.rp{ width:100%; border-collapse:collapse; font-size:12.5px }
+    table.rp th{ text-align:left; font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+      color:var(--text2,#9a9a9a); font-weight:700; padding:8px 10px;
+      border-bottom:1px solid rgba(var(--w-rgb,255,255,255),.12) }
+    table.rp td{ padding:9px 10px; border-bottom:1px solid rgba(var(--w-rgb,255,255,255),.06) }
+    table.rp td.n, table.rp th.n{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap }
+    table.rp tr:hover td{ background:rgba(var(--w-rgb,255,255,255),.03) }
+    .muted{ color:var(--text2,#9a9a9a) }
+    .pos{ color:var(--accent,#dff20d) } .neg{ color:#ff7a7a }
+    .empt{ text-align:center; color:var(--text2,#9a9a9a); padding:26px 0; font-size:12.5px }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="ttl">
+      <h1>Báo cáo tài chính</h1>
+      <span class="sub" id="rgLbl"></span>
+    </div>
+    <div class="bar" id="bar"></div>
+    <div class="kpis" id="kpis"></div>
+    <div class="panel">
+      <h2>Doanh thu · Chi phí · Lợi nhuận theo tháng</h2>
+      <div class="lg">
+        <span><i style="background:#7dd3fc"></i>Doanh thu</span>
+        <span><i style="background:#fca5a5"></i>Chi phí</span>
+        <span><i style="background:#dff20d"></i>Lợi nhuận</span>
+      </div>
+      <div id="chart"></div>
+    </div>
+    <div class="cols">
+      <div class="panel"><h2>Doanh thu theo khách hàng</h2><div id="cus"></div></div>
+      <div class="panel"><h2>Chi phí theo nhà cung cấp</h2><div id="sup"></div></div>
+    </div>
+  </div>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function t0(s) { return s.indexOf('.') >= 0 ? s.replace(/0+$/, '').replace(/\.$/, '') : s; }
+  function money(n) {
+    n = Math.round(Number(n) || 0);
+    var neg = n < 0; n = Math.abs(n);
+    var s;
+    if (n >= 1e9) s = t0((n / 1e9).toFixed(2)) + ' tỷ';
+    else if (n >= 1e6) s = t0((n / 1e6).toFixed(1)) + ' tr';
+    else s = n.toLocaleString('vi-VN') + ' đ';
+    return (neg ? '−' : '') + s;
+  }
+  function full(n) { return (Math.round(Number(n) || 0)).toLocaleString('vi-VN') + ' đ'; }
+  function mlbl(ym) { var p = String(ym).split('-'); return 'T' + Number(p[1]) + '/' + String(p[0]).slice(2); }
+
+  var Y = new Date().getFullYear();
+  var MODE = 'y';
+  var D = null;
+
+  function range() {
+    var now = new Date(), m = now.getMonth() + 1;
+    if (MODE === 'y')  return [Y + '-01', Y + '-12'];
+    if (MODE === 'q3') return [pad(Y, m - 2), pad(Y, m)];
+    if (MODE === 'q6') return [pad(Y, m - 5), pad(Y, m)];
+    if (MODE === 'q9') return [pad(Y, m - 8), pad(Y, m)];
+    return [Y + '-01', Y + '-12'];
+  }
+  function pad(y, m) {
+    while (m < 1) { m += 12; y -= 1; }
+    while (m > 12) { m -= 12; y += 1; }
+    return y + '-' + (m < 10 ? '0' : '') + m;
+  }
+
+  function bar() {
+    var ys = [], cy = new Date().getFullYear(), i;
+    for (i = cy + 1; i >= cy - 5; i--) ys.push(i);
+    var h = '<select id="selY">';
+    for (i = 0; i < ys.length; i++) {
+      h += '<option value="' + ys[i] + '"' + (ys[i] === Y ? ' selected' : '') + '>Năm ' + ys[i] + '</option>';
+    }
+    h += '</select>';
+    var M = [['y', 'Cả năm'], ['q9', '9 tháng gần nhất'], ['q6', '6 tháng gần nhất'], ['q3', '3 tháng gần nhất']];
+    for (i = 0; i < M.length; i++) {
+      h += '<button type="button" class="pb' + (MODE === M[i][0] ? ' on' : '') +
+           '" data-m="' + M[i][0] + '">' + M[i][1] + '</button>';
+    }
+    $('bar').innerHTML = h;
+    $('selY').onchange = function () { Y = Number(this.value) || Y; load(); };
+    var bs = $('bar').querySelectorAll('.pb');
+    for (i = 0; i < bs.length; i++) {
+      bs[i].onclick = function () { MODE = this.getAttribute('data-m'); load(); };
+    }
+  }
+
+  function chart(ms) {
+    if (!ms.length) { $('chart').innerHTML = '<div class="empt">Chưa có số liệu.</div>'; return; }
+    var W = 1000, H = 320, PL = 72, PR = 16, PT = 14, PB = 34;
+    var iw = W - PL - PR, ih = H - PT - PB;
+    var hi = 0, lo = 0, i, m;
+    for (i = 0; i < ms.length; i++) {
+      m = ms[i];
+      hi = Math.max(hi, m.rev, m.cost, m.profit);
+      lo = Math.min(lo, m.profit);
+    }
+    if (hi === 0 && lo === 0) hi = 1;
+    var span = hi - lo || 1;
+    var X = function (i) { return PL + (ms.length === 1 ? iw / 2 : iw * i / (ms.length - 1)); };
+    var Yp = function (v) { return PT + ih - (v - lo) / span * ih; };
+    var g = '';
+    var TICKS = 4, k, vv, yy;
+    for (k = 0; k <= TICKS; k++) {
+      vv = lo + span * k / TICKS; yy = Yp(vv);
+      g += '<line x1="' + PL + '" y1="' + yy.toFixed(1) + '" x2="' + (W - PR) + '" y2="' + yy.toFixed(1) +
+           '" stroke="rgba(255,255,255,.08)" stroke-width="1"/>' +
+           '<text x="' + (PL - 10) + '" y="' + (yy + 4).toFixed(1) + '" text-anchor="end" font-size="10.5" ' +
+           'fill="rgba(255,255,255,.45)">' + money(vv) + '</text>';
+    }
+    if (lo < 0) {
+      g += '<line x1="' + PL + '" y1="' + Yp(0).toFixed(1) + '" x2="' + (W - PR) + '" y2="' + Yp(0).toFixed(1) +
+           '" stroke="rgba(255,255,255,.22)" stroke-width="1"/>';
+    }
+    for (i = 0; i < ms.length; i++) {
+      g += '<text x="' + X(i).toFixed(1) + '" y="' + (H - 12) + '" text-anchor="middle" font-size="10.5" ' +
+           'fill="rgba(255,255,255,.55)">' + mlbl(ms[i].ym) + '</text>';
+    }
+    var series = [['rev', '#7dd3fc'], ['cost', '#fca5a5'], ['profit', '#dff20d']];
+    for (k = 0; k < series.length; k++) {
+      var key = series[k][0], col = series[k][1], d = '';
+      for (i = 0; i < ms.length; i++) d += (i ? ' L' : 'M') + X(i).toFixed(1) + ' ' + Yp(ms[i][key]).toFixed(1);
+      g += '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="2.2" ' +
+           'stroke-linejoin="round" stroke-linecap="round"/>';
+      for (i = 0; i < ms.length; i++) {
+        g += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Yp(ms[i][key]).toFixed(1) + '" r="3.2" fill="' + col + '">' +
+             '<title>' + mlbl(ms[i].ym) + ' — ' + full(ms[i][key]) + '</title></circle>';
+      }
+    }
+    $('chart').innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" ' +
+      'style="display:block;height:auto;overflow:visible" role="img">' + g + '</svg>';
+  }
+
+  function kpis(d) {
+    var t = d.total || {}, mg = t.rev > 0 ? (t.profit / t.rev * 100) : 0;
+    var h = '';
+    h += '<div class="kpi rev"><div class="k">Doanh thu</div><div class="v" title="' + full(t.rev) + '">' +
+         money(t.rev) + '</div><div class="n">' + (t.n || 0) + ' dự án đã nhận</div></div>';
+    h += '<div class="kpi cost"><div class="k">Chi phí thực tế</div><div class="v" title="' + full(t.cost) + '">' +
+         money(t.cost) + '</div><div class="n">Đã trả ' + money(t.paid) + ' · còn ' + money(t.unpaid) + '</div></div>';
+    h += '<div class="kpi prof"><div class="k">Lợi nhuận</div><div class="v" title="' + full(t.profit) + '">' +
+         money(t.profit) + '</div><div class="n">Biên lợi nhuận ' + mg.toFixed(1) + '%</div></div>';
+    h += '<div class="kpi debt"><div class="k">Chưa thanh toán (toàn bộ)</div><div class="v" title="' +
+         full((d.debt || {}).amount) + '">' + money((d.debt || {}).amount) + '</div><div class="n">' +
+         ((d.debt || {}).lines || 0) + ' dòng chi phí chưa trả</div></div>';
+    $('kpis').innerHTML = h;
+  }
+
+  function tblCus(rows) {
+    if (!rows.length) { $('cus').innerHTML = '<div class="empt">Chưa có số liệu.</div>'; return; }
+    var h = '<table class="rp"><thead><tr><th>Khách hàng</th><th class="n">Dự án</th>' +
+            '<th class="n">Doanh thu</th><th class="n">Lợi nhuận</th></tr></thead><tbody>';
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      h += '<tr><td>' + esc(r.name) + '</td><td class="n muted">' + r.n + '</td>' +
+           '<td class="n" title="' + full(r.rev) + '">' + money(r.rev) + '</td>' +
+           '<td class="n ' + (r.profit < 0 ? 'neg' : 'pos') + '" title="' + full(r.profit) + '">' +
+           money(r.profit) + '</td></tr>';
+    }
+    $('cus').innerHTML = h + '</tbody></table>';
+  }
+
+  function tblSup(rows) {
+    if (!rows.length) { $('sup').innerHTML = '<div class="empt">Chưa có số liệu.</div>'; return; }
+    var h = '<table class="rp"><thead><tr><th>Nhà cung cấp / bên nhận</th><th class="n">Dòng</th>' +
+            '<th class="n">Tổng chi</th><th class="n">Chưa trả</th></tr></thead><tbody>';
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      h += '<tr><td>' + esc(r.name) + '</td><td class="n muted">' + r.n + '</td>' +
+           '<td class="n" title="' + full(r.total) + '">' + money(r.total) + '</td>' +
+           '<td class="n ' + (r.unpaid > 0 ? 'neg' : 'muted') + '" title="' + full(r.unpaid) + '">' +
+           (r.unpaid > 0 ? money(r.unpaid) : '—') + '</td></tr>';
+    }
+    $('sup').innerHTML = h + '</tbody></table>';
+  }
+
+  function paint(d) {
+    D = d;
+    $('rgLbl').textContent = 'Từ ' + mlbl(d.from) + ' đến ' + mlbl(d.to) +
+      ' · tính theo ngày diễn ra sự kiện' +
+      (d.nodate ? ' · ' + d.nodate + ' dự án chưa nhập ngày (không tính)' : '');
+    kpis(d);
+    chart(d.months || []);
+    tblCus(d.cus || []);
+    tblSup(d.sup || []);
+  }
+
+  async function load() {
+    bar();
+    var r = range();
+    $('chart').innerHTML = '<div class="empt">Đang tải…</div>';
+    try {
+      var res = await fetch('./api/reports-api.php?from=' + r[0] + '&to=' + r[1],
+        { credentials: 'same-origin' });
+      var d = await res.json();
+      if (!d.ok) throw new Error(d.error || 'Lỗi');
+      paint(d);
+    } catch (e) {
+      $('chart').innerHTML = '<div class="empt">Không tải được báo cáo: ' + esc(e.message || e) + '</div>';
+    }
+  }
+
+  function boot() { load(); }
+  if (window.__APSA_USER) boot();
+  else window.addEventListener('apsa-auth-ready', boot);
+  setTimeout(function () { if (!D && window.__APSA_USER) boot(); }, 1200);
+})();
+</script>
+</body>
+</html>

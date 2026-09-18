@@ -1,7 +1,20 @@
 {
-    "version": "2.2.30",
+    "version": "2.3.0",
     "updated": "2026-09-18",
     "releases": [
+        {
+            "v": "2.3",
+            "date": "2026-09-18",
+            "note": "Phiên bản 2.3",
+            "items": [
+                {
+                    "d": "2026-09-18",
+                    "v": "2.3.0",
+                    "t": "APSA1954: module Bao cao tai chinh (chi Admin) - doanh thu/chi phi/loi nhuan theo thang, top khach hang, top NCC, cong no",
+                    "by": "mee53661"
+                }
+            ]
+        },
         {
             "v": "2.2",
             "date": "2026-09-17",

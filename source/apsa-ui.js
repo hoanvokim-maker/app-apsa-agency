@@ -422,7 +422,8 @@
     task:    '<rect x="4" y="4" width="16" height="16" rx="2.5"/><path d="M8 10.5 9.8 12.3 13.5 8.6M8 16h8"/>',
     chat:    '<path d="M20.5 12a7.5 7.5 0 0 1-10.9 6.7L4 20.5l1.9-5.4A7.5 7.5 0 1 1 20.5 12z"/><path d="M9 11.5h6M9 14.5h4"/>',
     rise:    '<path d="M3 17l6-6 4 4 7-7"/><path d="M14 8h6v6"/>',
-    trophy:  '<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 5.5H4.5V7A3.5 3.5 0 0 0 7 10.3M17 5.5h2.5V7A3.5 3.5 0 0 1 17 10.3"/><path d="M12 14v3.5M8.5 20.5h7l-.7-3h-5.6z"/>'
+    chart:  '<path d="M4 20.5V11"/><path d="M10 20.5V4.5"/><path d="M16 20.5v-6.5"/><path d="M21 20.5H3"/>',
+  trophy:  '<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 5.5H4.5V7A3.5 3.5 0 0 0 7 10.3M17 5.5h2.5V7A3.5 3.5 0 0 1 17 10.3"/><path d="M12 14v3.5M8.5 20.5h7l-.7-3h-5.6z"/>'
   };
 
   var NAV = [
@@ -441,6 +442,7 @@
     { ico: 'mic',      name: 'Thư viện Speaker', url: './speakers.html',  id: 106 },
     { ico: 'contract',     name: 'Tủ hợp đồng',     url: './contracts.html', id: 96 },
     { ico: 'money', name: 'Chi phí thực tế', url: './chi-phi.html', id: 97 },
+    { ico: 'chart',    name: 'Báo cáo tài chính', url: './reports.html', adm: true },
   { ico: 'video', name: 'Duyệt video', url: './videos.html', id: 98 },
   { ico: 'payroll', name: 'Bảng lương', url: './luong.html', id: 99 },
     { grp: 'Nội dung' },
@@ -629,6 +631,7 @@
 
     for (i = 0; i < NAVX.length; i++) {
       var n = NAVX[i];
+      if (n.adm && String((window.__APSA_USER || {}).role || '').toLowerCase() !== 'admin') continue;
       if (n.home) { home = n; continue; }
       if (n.grp)  { cur = { grp: n.grp, items: [] }; groups.push(cur); continue; }
       n._i = k++;
