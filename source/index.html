@@ -1795,6 +1795,16 @@ html[data-theme="light"] {
     $('bizBS').textContent = 'Chào giá: ' + (b.pend_count || 0) + ' · ' + money(b.pend_total)
       + (b.nodate ? '  ·  ' + b.nodate + ' dự án đang chạy chưa nhập ngày diễn ra' : '');
 
+    /* APSA1952: an moi thong tin tien bac tren trang chu voi nguoi khong phai Admin */
+    if (String((window.__APSA_USER || {}).role || '').toLowerCase() !== 'admin') {
+      $('bizAV').style.display = 'none'; $('bizAV').textContent = ''; $('bizAV').removeAttribute('title');
+      $('bizBV').style.display = 'none'; $('bizBV').textContent = ''; $('bizBV').removeAttribute('title');
+      $('bizAS').textContent = 'Chào giá: ' + (a.pend_count || 0)
+        + (a.lost ? ' · Trượt: ' + a.lost : '')
+        + ' · Tháng ' + (a.prev_label || '') + ': ' + (a.prev_count || 0);
+      $('bizBS').textContent = 'Chào giá: ' + (b.pend_count || 0)
+        + (b.nodate ? ' · ' + b.nodate + ' dự án đang chạy chưa nhập ngày diễn ra' : '');
+    }
     $('bizNum').textContent = (a.count || 0) + ' / ' + (b.count || 0);
     sec.style.display = '';
   }

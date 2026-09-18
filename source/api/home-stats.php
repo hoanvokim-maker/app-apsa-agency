@@ -172,4 +172,11 @@ if ($uidMe > 0) {
     } catch (PDOException $e) { /* bo qua */ }
 }
 
+/* APSA1952: khong phai Admin thi khong gui so tien ve trinh duyet */
+if (!pm_is_admin()) {
+    foreach (array('total', 'pend_total', 'prev_total') as $mk) {
+        if (array_key_exists($mk, $mon)) $mon[$mk] = null;
+        if (array_key_exists($mk, $nxt)) $nxt[$mk] = null;
+    }
+}
 hs_out(array('ok' => true, 'allowed' => true, 'month' => $mon, 'next' => $nxt, 'mine' => $mine));
