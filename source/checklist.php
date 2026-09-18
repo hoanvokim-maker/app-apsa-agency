@@ -2,8 +2,8 @@
 /* APSA1942 — phuc vu /ck/<ma>: chen the og: de link co thumbnail khi share */
 $t = isset($_GET['t']) ? preg_replace('/[^A-Za-z0-9]/', '', (string) $_GET['t']) : '';
 $t = strtolower($t);
-$title = 'Tien do du an';
-$desc  = 'Theo doi tien do du an cung APSA.';
+$title = 'Tiến độ dự án';
+$desc  = 'Theo dõi tiến độ dự án cùng APSA.';
 $img   = '';
 if (strlen($t) >= 8 && strlen($t) <= 40) {
     try {
@@ -19,7 +19,7 @@ if (strlen($t) >= 8 && strlen($t) <= 40) {
         if ($r) {
             if (trim((string) $r['title']) !== '') $title = (string) $r['title'];
             $cl = trim((string) $r['client_name']);
-            $desc = 'Tien do du an' . ($cl !== '' ? ' - ' . $cl : '') . ' | APSA';
+            $desc = 'Tiến độ dự án' . ($cl !== '' ? ' · ' . $cl : '') . ' — APSA';
             $th = isset($r['thumb']) ? (string) $r['thumb'] : '';
             if (preg_match('/^q[0-9]+_[a-f0-9]{8}[.]jpg$/', $th)) $img = '/uploads/thumbs/' . $th;
         }
