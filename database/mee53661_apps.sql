@@ -78,7 +78,7 @@ CREATE TABLE `activity_log` (
   KEY `k_quo` (`quotation_id`),
   KEY `k_user` (`user_id`),
   KEY `k_area` (`area`)
-) ENGINE=InnoDB AUTO_INCREMENT=2646 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2744 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2720,6 +2720,104 @@ INSERT INTO `activity_log` VALUES (2642,'2026-09-18 11:25:46',1,'Harris','quotat
 INSERT INTO `activity_log` VALUES (2643,'2026-09-18 11:25:46',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',292,'28082026-155','','quotation_id: 292 · list: 29 mục');
 INSERT INTO `activity_log` VALUES (2644,'2026-09-18 11:25:46',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',292,'28082026-155','','quotation_id: 292 · list: 1 mục');
 INSERT INTO `activity_log` VALUES (2645,'2026-09-18 11:27:09',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',292,'28082026-155','','quotation_id: 292 · list: 26 mục');
+INSERT INTO `activity_log` VALUES (2646,'2026-09-18 11:46:30',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',292,'28082026-155','','quotation_id: 292 · list: 26 mục');
+INSERT INTO `activity_log` VALUES (2647,'2026-09-18 11:47:09',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',292,'28082026-155','','quotation_id: 292 · list: 26 mục');
+INSERT INTO `activity_log` VALUES (2648,'2026-09-18 12:00:37',1,'Harris','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2649,'2026-09-18 12:00:37',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2650,'2026-09-18 12:00:38',1,'Harris','quotation','close-state','Đổi trạng thái đóng',292,'28082026-155','',NULL);
+INSERT INTO `activity_log` VALUES (2651,'2026-09-18 12:08:44',1,'Harris','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2652,'2026-09-18 12:08:44',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2653,'2026-09-18 12:09:37',1,'Harris','quotation','save','Lưu báo giá / dự án',0,'','','id: 0 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 0 · customer_id: 0 · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10 · vat_percent: 8 · show_ma: 1 · show_vat: 1');
+INSERT INTO `activity_log` VALUES (2654,'2026-09-18 12:09:37',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2655,'2026-09-18 12:09:37',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2656,'2026-09-18 12:09:38',1,'Harris','quotation','close-state','Đổi trạng thái đóng',311,'30092026-173','',NULL);
+INSERT INTO `activity_log` VALUES (2657,'2026-09-18 12:09:47',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 0 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2658,'2026-09-18 12:09:47',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2659,'2026-09-18 12:09:47',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2660,'2026-09-18 12:09:59',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2661,'2026-09-18 12:09:59',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2662,'2026-09-18 12:09:59',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2663,'2026-09-18 12:10:32',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2664,'2026-09-18 12:10:32',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2665,'2026-09-18 12:10:32',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2666,'2026-09-18 12:11:07',1,'Harris','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2667,'2026-09-18 12:11:07',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2668,'2026-09-18 12:11:08',1,'Harris','quotation','close-state','Đổi trạng thái đóng',292,'28082026-155','',NULL);
+INSERT INTO `activity_log` VALUES (2669,'2026-09-18 12:11:55',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2670,'2026-09-18 12:11:55',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2671,'2026-09-18 12:11:55',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2672,'2026-09-18 12:12:49',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2673,'2026-09-18 12:12:49',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2674,'2026-09-18 12:12:49',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2675,'2026-09-18 12:13:23',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2676,'2026-09-18 12:13:23',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2677,'2026-09-18 12:13:23',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2678,'2026-09-18 12:13:33',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2679,'2026-09-18 12:13:33',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2680,'2026-09-18 12:13:33',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2681,'2026-09-18 12:14:06',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2682,'2026-09-18 12:14:06',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2683,'2026-09-18 12:14:06',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2684,'2026-09-18 12:14:10',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2685,'2026-09-18 12:14:10',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2686,'2026-09-18 12:14:10',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2687,'2026-09-18 12:14:14',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2688,'2026-09-18 12:14:14',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2689,'2026-09-18 12:14:14',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2690,'2026-09-18 12:17:05',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2691,'2026-09-18 12:17:05',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2692,'2026-09-18 12:17:05',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2693,'2026-09-18 12:17:23',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2694,'2026-09-18 12:17:23',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2695,'2026-09-18 12:17:23',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2696,'2026-09-18 12:17:30',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2697,'2026-09-18 12:17:30',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2698,'2026-09-18 12:17:30',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2699,'2026-09-18 12:17:37',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2700,'2026-09-18 12:17:37',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2701,'2026-09-18 12:17:37',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2702,'2026-09-18 12:18:23',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2703,'2026-09-18 12:18:23',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2704,'2026-09-18 12:18:23',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2705,'2026-09-18 12:18:34',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2706,'2026-09-18 12:18:34',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2707,'2026-09-18 12:18:34',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2708,'2026-09-18 12:18:40',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2709,'2026-09-18 12:18:40',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2710,'2026-09-18 12:18:40',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2711,'2026-09-18 12:18:58',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2712,'2026-09-18 12:18:58',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2713,'2026-09-18 12:18:58',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2714,'2026-09-18 12:19:08',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2715,'2026-09-18 12:19:08',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2716,'2026-09-18 12:19:08',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2717,'2026-09-18 12:19:15',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2718,'2026-09-18 12:19:15',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2719,'2026-09-18 12:19:15',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2720,'2026-09-18 12:19:26',1,'Harris','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2721,'2026-09-18 12:19:26',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2722,'2026-09-18 12:19:26',1,'Harris','quotation','close-state','Đổi trạng thái đóng',311,'30092026-173','',NULL);
+INSERT INTO `activity_log` VALUES (2723,'2026-09-18 12:19:46',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2724,'2026-09-18 12:19:46',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2725,'2026-09-18 12:19:46',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2726,'2026-09-18 12:19:47',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2727,'2026-09-18 12:19:47',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2728,'2026-09-18 12:19:47',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2729,'2026-09-18 12:19:49',1,'Harris','quotation','save','Lưu báo giá / dự án',311,'30092026-173','','id: 311 · kind: media · code: 30092026-173 · title: PA-CumlaudeLab · company_id: 4 · customer_id: 75 · client_name: APSA · client_tax: 0317301221 · client_address: 23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh,… · quotation_date: 2026-09-30 · currency: VND · ma_percent: 10');
+INSERT INTO `activity_log` VALUES (2730,'2026-09-18 12:19:49',1,'Harris','checklist','assignees-save','Lưu phân công / checklist',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2731,'2026-09-18 12:19:49',1,'Harris','expense','expenses-save','Lưu chi phí thực tế',311,'30092026-173','','quotation_id: 311 · list: 0 mục');
+INSERT INTO `activity_log` VALUES (2732,'2026-09-18 12:20:23',1,'Harris','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2733,'2026-09-18 12:20:23',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2734,'2026-09-18 12:20:24',1,'Harris','quotation','close-state','Đổi trạng thái đóng',311,'30092026-173','',NULL);
+INSERT INTO `activity_log` VALUES (2735,'2026-09-18 12:22:30',1,'Harris','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2736,'2026-09-18 12:22:30',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2737,'2026-09-18 12:50:23',1,'Harris','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2738,'2026-09-18 12:50:23',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2739,'2026-09-18 12:50:27',1,'Harris','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2740,'2026-09-18 12:50:28',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2741,'2026-09-18 12:53:40',7,'Anh Thư','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2742,'2026-09-18 12:53:40',7,'Anh Thư','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2743,'2026-09-18 12:53:41',7,'Anh Thư','quotation','close-state','Đổi trạng thái đóng',292,'28082026-155','',NULL);
 /*!40000 ALTER TABLE `activity_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3484,7 +3582,7 @@ INSERT INTO `app_notifications` VALUES (150,1,'pay_due','Có 5 khoản chi đế
 INSERT INTO `app_notifications` VALUES (151,3,'reply','Harris trả lời trong báo giá 30072026-135 · AZ-R&I-COPD Forum HCM-2026','a điều chỉnh giảm sâu luôn rồi em nha','./quotation.html?q=30072026-135&tab=quote#thaoluan','Harris',1,'2026-09-18 02:03:58');
 INSERT INTO `app_notifications` VALUES (152,8,'assign','Thảo Lý giao việc cho bạn','Photobooth + frame — báo giá 28082026-155 · AZ-ONCO-Blood Cancer Awareness Day','./quotation.html?q=28082026-155&tab=quote#giaoviec','Thảo Lý',0,'2026-09-18 03:37:59');
 INSERT INTO `app_notifications` VALUES (153,14,'assign','Thảo Lý giao việc cho bạn','Setup booth, tiểu cảnh, hanger, lồng đèn — báo giá 28082026-155 · AZ-ONCO-Blood Cancer Awareness Day','./quotation.html?q=28082026-155&tab=quote#giaoviec','Thảo Lý',0,'2026-09-18 03:46:08');
-INSERT INTO `app_notifications` VALUES (154,7,'assign','Thảo Lý giao việc cho bạn','Tìm vendor tiểu cảnh HCM — báo giá 28082026-155 · AZ-ONCO-Blood Cancer Awareness Day','./quotation.html?q=28082026-155&tab=quote#giaoviec','Thảo Lý',0,'2026-09-18 03:58:28');
+INSERT INTO `app_notifications` VALUES (154,7,'assign','Thảo Lý giao việc cho bạn','Tìm vendor tiểu cảnh HCM — báo giá 28082026-155 · AZ-ONCO-Blood Cancer Awareness Day','./quotation.html?q=28082026-155&tab=quote#giaoviec','Thảo Lý',1,'2026-09-18 03:58:28');
 INSERT INTO `app_notifications` VALUES (155,4,'assign','Thảo Lý giao việc cho bạn','Gửi form đăng ký tòa nhà — báo giá 28082026-155 · AZ-ONCO-Blood Cancer Awareness Day','./quotation.html?q=28082026-155&tab=quote#giaoviec','Thảo Lý',0,'2026-09-18 03:59:41');
 INSERT INTO `app_notifications` VALUES (156,34,'assign','Thảo Lý giao việc cho bạn','Gửi form đăng ký tòa nhà — báo giá 28082026-155 · AZ-ONCO-Blood Cancer Awareness Day','./quotation.html?q=28082026-155&tab=quote#giaoviec','Thảo Lý',0,'2026-09-18 04:02:05');
 INSERT INTO `app_notifications` VALUES (157,1,'assign','Thảo Lý giao việc cho bạn','Video hướng dẫn quy trình — báo giá 28082026-155 · AZ-ONCO-Blood Cancer Awareness Day','./quotation.html?q=28082026-155&tab=quote#giaoviec','Thảo Lý',0,'2026-09-18 04:03:05');
@@ -3551,7 +3649,7 @@ CREATE TABLE `app_user_prefs` (
 LOCK TABLES `app_user_prefs` WRITE;
 /*!40000 ALTER TABLE `app_user_prefs` DISABLE KEYS */;
 INSERT INTO `app_user_prefs` VALUES (1,'home','{\"order\":[32,33,30,29,26,31,97,95,27,98,1,90,23,24,100,101,25,35,17,18,91,96,99,34,92,28],\"hidden\":[28],\"custom\":[],\"pinned\":[32,30,29,26,31,97,95,27,35],\"cats\":[]}','2026-09-05 07:22:33');
-INSERT INTO `app_user_prefs` VALUES (1,'quo_recent','[{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1789705546528},{\"id\":114,\"code\":\"07032026-37\",\"title\":\"OGN-Symposium 2026\",\"client\":\"Organon\",\"date\":\"2026-03-07\",\"at\":1789704675455},{\"id\":293,\"code\":\"28082026-156\",\"title\":\"APSA-NỘI-BỘ\",\"client\":\"APSA\",\"date\":\"2026-08-28\",\"at\":1789700989986},{\"id\":15,\"code\":\"30072026-135\",\"title\":\"AZ-R&I-COPD Forum HCM-2026\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-07-30\",\"at\":1789697043054},{\"id\":305,\"code\":\"08092026-168\",\"title\":\"AZ-ONCO-Truqap Internal Launch 2026\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-08\",\"at\":1789661153577},{\"id\":309,\"code\":\"15092026-172\",\"title\":\"AZ-R&I-Internal-3009\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-15\",\"at\":1789576206471},{\"id\":306,\"code\":\"11092026-169\",\"title\":\"AZ-KACD-Booth Hội Dược Cần Thơ-9&1010\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-11\",\"at\":1789554404857},{\"id\":9,\"code\":\"07082026-141\",\"title\":\"JNJ-ONCO-Launch Tecvayli ( 14&15 Nov)\",\"client\":\"Johnson&Johnson\",\"date\":\"2026-08-07\",\"at\":1789537799297},{\"id\":182,\"code\":\"04112025-235\",\"title\":\"Novartis-KOM 2026\",\"client\":\"Novartis\",\"date\":\"2025-11-04\",\"at\":1789488943290},{\"id\":282,\"code\":\"25022026-150\",\"title\":\"AZ-R&I-RESPI-SUMMIT\",\"client\":\"AstraZeneca\",\"date\":\"2026-02-25\",\"at\":1789488393063},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1789473915981},{\"id\":308,\"code\":\"14092026-171\",\"title\":\"AZ-IT-SETUP-VR\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-14\",\"at\":1789453088752},{\"id\":6,\"code\":\"17082026-144\",\"title\":\"AZ-R&I-Meeting-1908\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-17\",\"at\":1789404196131},{\"id\":296,\"code\":\"04092026-159\",\"title\":\"AZ-CVRM-Webcast CKM 360 buổi số 4\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-04\",\"at\":1789401465161},{\"id\":304,\"code\":\"07092026-167\",\"title\":\"AZ-ONCO-Phát sinh Expert Meeting 1309\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-07\",\"at\":1789272979028},{\"id\":307,\"code\":\"11092026-170\",\"title\":\"VFR-GIFTBOX\",\"client\":\"VFR\",\"date\":\"2026-09-11\",\"at\":1789270679140},{\"id\":295,\"code\":\"03092026-158\",\"title\":\"AZ-RI-Synagis-Booth-0509\",\"client\":\"AstraZeneca\",\"date\":\"2026-09-03\",\"at\":1789233004762}]','2026-09-18 04:25:47');
+INSERT INTO `app_user_prefs` VALUES (1,'quo_recent','[{\"id\":311,\"code\":\"30092026-173\",\"title\":\"PA-CumlaudeLab\",\"client\":\"APSA\",\"date\":\"2026-09-30\",\"at\":1789708823800},{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1789707637582},{\"id\":114,\"code\":\"07032026-37\",\"title\":\"OGN-Symposium 2026\",\"client\":\"Organon\",\"date\":\"2026-03-07\",\"at\":1789704675455},{\"id\":293,\"code\":\"28082026-156\",\"title\":\"APSA-NỘI-BỘ\",\"client\":\"APSA\",\"date\":\"2026-08-28\",\"at\":1789700989986},{\"id\":15,\"code\":\"30072026-135\",\"title\":\"AZ-R&I-COPD Forum HCM-2026\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-07-30\",\"at\":1789697043054},{\"id\":305,\"code\":\"08092026-168\",\"title\":\"AZ-ONCO-Truqap Internal Launch 2026\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-08\",\"at\":1789661153577},{\"id\":309,\"code\":\"15092026-172\",\"title\":\"AZ-R&I-Internal-3009\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-15\",\"at\":1789576206471},{\"id\":306,\"code\":\"11092026-169\",\"title\":\"AZ-KACD-Booth Hội Dược Cần Thơ-9&1010\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-11\",\"at\":1789554404857},{\"id\":9,\"code\":\"07082026-141\",\"title\":\"JNJ-ONCO-Launch Tecvayli ( 14&15 Nov)\",\"client\":\"Johnson&Johnson\",\"date\":\"2026-08-07\",\"at\":1789537799297},{\"id\":182,\"code\":\"04112025-235\",\"title\":\"Novartis-KOM 2026\",\"client\":\"Novartis\",\"date\":\"2025-11-04\",\"at\":1789488943290},{\"id\":282,\"code\":\"25022026-150\",\"title\":\"AZ-R&I-RESPI-SUMMIT\",\"client\":\"AstraZeneca\",\"date\":\"2026-02-25\",\"at\":1789488393063},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1789473915981},{\"id\":308,\"code\":\"14092026-171\",\"title\":\"AZ-IT-SETUP-VR\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-14\",\"at\":1789453088752},{\"id\":6,\"code\":\"17082026-144\",\"title\":\"AZ-R&I-Meeting-1908\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-17\",\"at\":1789404196131},{\"id\":296,\"code\":\"04092026-159\",\"title\":\"AZ-CVRM-Webcast CKM 360 buổi số 4\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-04\",\"at\":1789401465161},{\"id\":304,\"code\":\"07092026-167\",\"title\":\"AZ-ONCO-Phát sinh Expert Meeting 1309\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-07\",\"at\":1789272979028},{\"id\":307,\"code\":\"11092026-170\",\"title\":\"VFR-GIFTBOX\",\"client\":\"VFR\",\"date\":\"2026-09-11\",\"at\":1789270679140},{\"id\":295,\"code\":\"03092026-158\",\"title\":\"AZ-RI-Synagis-Booth-0509\",\"client\":\"AstraZeneca\",\"date\":\"2026-09-03\",\"at\":1789233004762}]','2026-09-18 05:20:24');
 INSERT INTO `app_user_prefs` VALUES (1,'theme','\"dark\"','2026-09-17 16:05:43');
 INSERT INTO `app_user_prefs` VALUES (1,'ui','{\"font_size\":\"md\"}','2026-08-26 07:23:53');
 INSERT INTO `app_user_prefs` VALUES (3,'home','{\"order\":[32,26,30,1,17,18,90,23,24,25,27,28,29,35,34,31],\"hidden\":[28],\"custom\":[]}','2026-08-24 02:48:51');
@@ -3567,7 +3665,7 @@ INSERT INTO `app_user_prefs` VALUES (5,'ui','{\"font_size\":\"xl\"}','2026-08-26
 INSERT INTO `app_user_prefs` VALUES (6,'quo_recent','[{\"id\":306,\"code\":\"11092026-169\",\"title\":\"AZ-KACD-Booth Hội Dược Cần Thơ-9&1010\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-11\",\"at\":1789634640129},{\"id\":9,\"code\":\"07082026-141\",\"title\":\"JNJ-ONCO-Launch Tecvayli ( 14&15 Nov)\",\"client\":\"Johnson&Johnson\",\"date\":\"2026-08-07\",\"at\":1789629483559},{\"id\":119,\"code\":\"02032026-32\",\"title\":\"AZ-KACD-FocusMeeting-Series-05-Events\",\"client\":\"AstraZeneca\",\"date\":\"2026-03-02\",\"at\":1789121320452},{\"id\":7,\"code\":\"12082026-143\",\"title\":\"AZ-ONCO-GI-SOTAYBENHNHAN\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-12\",\"at\":1787714099126}]','2026-09-17 08:44:01');
 INSERT INTO `app_user_prefs` VALUES (6,'ui','{\"font_size\":\"xl\"}','2026-08-26 03:12:53');
 INSERT INTO `app_user_prefs` VALUES (7,'home','{\"order\":[32,1,17,18,90,23,24,25,26,35,27,34,31,29,30,28],\"hidden\":[34,31,28],\"custom\":[]}','2026-08-24 03:59:09');
-INSERT INTO `app_user_prefs` VALUES (7,'quo_recent','[{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1789703928980},{\"id\":293,\"code\":\"28082026-156\",\"title\":\"APSA-NỘI-BỘ\",\"client\":\"APSA\",\"date\":\"2026-08-28\",\"at\":1789637732436},{\"id\":304,\"code\":\"07092026-167\",\"title\":\"AZ-ONCO-Phát sinh Expert Meeting 1309\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-07\",\"at\":1789637704125},{\"id\":31,\"code\":\"17072026-119\",\"title\":\"OGN-MKT-PRODUCT-PORTFOLIO-PRODUCTION\",\"client\":\"Organon\",\"date\":\"2026-07-17\",\"at\":1789449203648},{\"id\":4,\"code\":\"18082026-146\",\"title\":\"OGN-MKT-HOIDUOCHOC-CANTHO\",\"client\":\"Organon\",\"date\":\"2026-08-18\",\"at\":1789441750135},{\"id\":298,\"code\":\"04092026-161\",\"title\":\"OGN-MKT-PRODUCT-PORTFOLIO-PRODUCTION\",\"client\":\"Organon\",\"date\":\"2026-09-04\",\"at\":1789441367850},{\"id\":296,\"code\":\"04092026-159\",\"title\":\"AZ-CVRM-Webcast CKM 360 buổi số 4\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-04\",\"at\":1789101089392},{\"id\":192,\"code\":\"22102025-226\",\"title\":\"OGN-MKT-HoiDuocHoc-2025\",\"client\":\"Công ty TNHH Organon\",\"date\":\"2025-10-22\",\"at\":1789009591759},{\"id\":106,\"code\":\"26032026-44\",\"title\":\"OGN-HoiDuocHoc-NhaTrang\",\"client\":\"Organon\",\"date\":\"2026-03-26\",\"at\":1789009567773},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1788952596714},{\"id\":295,\"code\":\"03092026-158\",\"title\":\"AZ-RI-Synagis-Booth-0509\",\"client\":\"AstraZeneca\",\"date\":\"2026-09-03\",\"at\":1788421630073},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787568241648}]','2026-09-18 03:58:49');
+INSERT INTO `app_user_prefs` VALUES (7,'quo_recent','[{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1789710820736},{\"id\":293,\"code\":\"28082026-156\",\"title\":\"APSA-NỘI-BỘ\",\"client\":\"APSA\",\"date\":\"2026-08-28\",\"at\":1789637732436},{\"id\":304,\"code\":\"07092026-167\",\"title\":\"AZ-ONCO-Phát sinh Expert Meeting 1309\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-07\",\"at\":1789637704125},{\"id\":31,\"code\":\"17072026-119\",\"title\":\"OGN-MKT-PRODUCT-PORTFOLIO-PRODUCTION\",\"client\":\"Organon\",\"date\":\"2026-07-17\",\"at\":1789449203648},{\"id\":4,\"code\":\"18082026-146\",\"title\":\"OGN-MKT-HOIDUOCHOC-CANTHO\",\"client\":\"Organon\",\"date\":\"2026-08-18\",\"at\":1789441750135},{\"id\":298,\"code\":\"04092026-161\",\"title\":\"OGN-MKT-PRODUCT-PORTFOLIO-PRODUCTION\",\"client\":\"Organon\",\"date\":\"2026-09-04\",\"at\":1789441367850},{\"id\":296,\"code\":\"04092026-159\",\"title\":\"AZ-CVRM-Webcast CKM 360 buổi số 4\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-04\",\"at\":1789101089392},{\"id\":192,\"code\":\"22102025-226\",\"title\":\"OGN-MKT-HoiDuocHoc-2025\",\"client\":\"Công ty TNHH Organon\",\"date\":\"2025-10-22\",\"at\":1789009591759},{\"id\":106,\"code\":\"26032026-44\",\"title\":\"OGN-HoiDuocHoc-NhaTrang\",\"client\":\"Organon\",\"date\":\"2026-03-26\",\"at\":1789009567773},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1788952596714},{\"id\":295,\"code\":\"03092026-158\",\"title\":\"AZ-RI-Synagis-Booth-0509\",\"client\":\"AstraZeneca\",\"date\":\"2026-09-03\",\"at\":1788421630073},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787568241648}]','2026-09-18 05:53:41');
 INSERT INTO `app_user_prefs` VALUES (7,'ui','{\"font_size\":\"xl\"}','2026-08-24 07:46:16');
 INSERT INTO `app_user_prefs` VALUES (8,'quo_recent','[{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1789705476094},{\"id\":140,\"code\":\"16012026-9\",\"title\":\"AZ-VDO Hope Nexium\",\"client\":\"AstraZeneca\",\"date\":\"2026-01-16\",\"at\":1788864893100},{\"id\":5,\"code\":\"17082026-145\",\"title\":\"AZ-R&I-NEXIUM-BOOTH\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-17\",\"at\":1788864725869},{\"id\":298,\"code\":\"04092026-161\",\"title\":\"OGN-MKT-PRODUCT-PORTFOLIO-PRODUCTION\",\"client\":\"Organon\",\"date\":\"2026-09-04\",\"at\":1788864710452}]','2026-09-18 04:24:36');
 INSERT INTO `app_user_prefs` VALUES (8,'ui','{\"font_size\":\"xl\"}','2026-08-25 06:03:41');
@@ -4389,7 +4487,7 @@ CREATE TABLE `crm_audit_log` (
   KEY `idx_customer` (`customer_id`),
   KEY `idx_created` (`created_at`),
   KEY `idx_company_id` (`company_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=181 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=182 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4576,6 +4674,7 @@ INSERT INTO `crm_audit_log` VALUES (175,5,28,NULL,NULL,'customer','update','Cậ
 INSERT INTO `crm_audit_log` VALUES (176,5,72,NULL,NULL,'customer','create','Thêm khách hàng Phạm Trâm Anh (Organon)',NULL,'Harris','2026-09-07 03:27:27');
 INSERT INTO `crm_audit_log` VALUES (177,1,12,NULL,NULL,'customer','update','Cập nhật khách hàng Nguyễn Minh Tin (AstraZeneca Việt Nam)',NULL,'Harris','2026-09-12 11:28:43');
 INSERT INTO `crm_audit_log` VALUES (180,1,74,NULL,NULL,'customer','create','Thêm khách hàng Thu Thảo (AstraZeneca Việt Nam)',NULL,'Harris','2026-09-14 10:24:09');
+INSERT INTO `crm_audit_log` VALUES (181,4,75,NULL,NULL,'customer','create','Thêm khách hàng Phương Anh (APSA)',NULL,'Harris','2026-09-18 05:09:47');
 /*!40000 ALTER TABLE `crm_audit_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -4662,7 +4761,7 @@ CREATE TABLE `crm_customers` (
   KEY `idx_company` (`company`(100)),
   KEY `idx_deleted` (`deleted_at`),
   KEY `idx_company_id` (`company_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4743,6 +4842,7 @@ INSERT INTO `crm_customers` VALUES (70,24,'Bùi Thị Hoàng Nhung','Product Spe
 INSERT INTO `crm_customers` VALUES (71,1,'Đoàn Nguyễn Kim Ngân','','AstraZeneca Việt Nam','','','',1,'Thảo Lý',NULL,'2026-08-28 09:29:35','2026-08-28 09:29:35');
 INSERT INTO `crm_customers` VALUES (72,5,'Phạm Trâm Anh','Marketing WHEB','Organon','','tram.anh.pham@organon.com','',1,'Harris',NULL,'2026-09-07 03:27:27','2026-09-07 03:27:27');
 INSERT INTO `crm_customers` VALUES (74,1,'Thu Thảo','IT','AstraZeneca Việt Nam','0918 316 496','thithuthao.lai@astrazeneca.com','',1,'Harris',NULL,'2026-09-14 10:24:09','2026-09-14 10:24:09');
+INSERT INTO `crm_customers` VALUES (75,4,'Phương Anh','','APSA','','','',1,'Harris',NULL,'2026-09-18 05:09:47','2026-09-18 05:09:47');
 /*!40000 ALTER TABLE `crm_customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -6623,7 +6723,7 @@ CREATE TABLE `quotation_assignees` (
   KEY `idx_user` (`user_id`),
   KEY `idx_stat` (`status`),
   KEY `idx_due` (`due_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=3656 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3708 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -6677,32 +6777,32 @@ INSERT INTO `quotation_assignees` VALUES (1955,284,'item',4,NULL,'Làm việc v�
 INSERT INTO `quotation_assignees` VALUES (1956,284,'item',4,NULL,'Đăng ký tòa nhà gửi C Nga','2026-09-12','done',5,'Trang Đỗ','2026-09-16 04:28:44','2026-09-16 04:28:44',NULL,0,0,0);
 INSERT INTO `quotation_assignees` VALUES (1957,284,'item',4,NULL,'Thuê Flipchart A0 - 2 cái _ đầu HCM',NULL,'done',6,'Trang Đỗ','2026-09-16 04:28:44','2026-09-16 04:28:44',NULL,0,0,0);
 INSERT INTO `quotation_assignees` VALUES (2156,300,'item',1,NULL,'',NULL,'doing',0,'Thảo Lý','2026-09-16 08:25:01','2026-09-16 08:25:01',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3630,292,'group',0,NULL,'procurement',NULL,'todo',0,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3631,292,'item',3,NULL,'Báo giá',NULL,'done',1,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,1);
-INSERT INTO `quotation_assignees` VALUES (3632,292,'group',0,NULL,'idea & concept',NULL,'todo',2,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3633,292,'item',34,NULL,'Idea box bổ máu',NULL,'done',3,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3634,292,'item',34,NULL,'Idea booth + gift set',NULL,'done',4,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3635,292,'group',0,NULL,'design',NULL,'todo',5,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3636,292,'item',8,NULL,'Thiết kế KV','2026-09-07','done',6,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3637,292,'item',8,NULL,'Photobooth + frame','2026-09-17','done',7,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3638,292,'item',0,NULL,'Infographic MCL','2026-09-18','doing',8,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,109,0);
-INSERT INTO `quotation_assignees` VALUES (3639,292,'item',0,NULL,'Infographic CLL','2026-09-18','doing',9,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,84,0);
-INSERT INTO `quotation_assignees` VALUES (3640,292,'item',0,NULL,'Hanger + hashtag + bảng decor','2026-09-18','doing',10,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,84,0);
-INSERT INTO `quotation_assignees` VALUES (3641,292,'item',0,NULL,'Standee hướng dẫn và lưu ý khi hiến máu',NULL,'todo',11,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3642,292,'item',0,NULL,'Thư cảm ơn (Giấy chứng nhận người tốt)',NULL,'todo',12,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3643,292,'item',0,NULL,'Infographic bệnh học',NULL,'cwait',13,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3644,292,'group',0,NULL,'video',NULL,'todo',14,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3645,292,'item',1,NULL,'Video Vietsub','2026-09-14','done',15,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3646,292,'item',1,NULL,'Video hướng dẫn quy trình','2026-09-18','doing',16,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3647,292,'group',0,NULL,'logistic & production',NULL,'todo',17,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3648,292,'item',14,NULL,'Setup booth, tiểu cảnh, hanger, lồng đèn','2026-09-22','todo',18,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3649,292,'item',3,NULL,'Sitecheck setup cho hiến máu (lối vào, thiết bị, người hỗ trợ,...)','2026-09-16','done',19,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3650,292,'item',7,NULL,'Tìm vendor tiểu cảnh HCM',NULL,'done',20,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,1);
-INSERT INTO `quotation_assignees` VALUES (3651,292,'item',3,NULL,'Chốt phương án quán ăn / box bổ máu','2026-09-21','cwait',21,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3652,292,'item',4,NULL,'Check option quán ăn + teabreak + trà đường','2026-09-21','doing',22,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
-INSERT INTO `quotation_assignees` VALUES (3653,292,'item',3,NULL,'Gửi in sticker nhóm máu','2026-09-19','todo',23,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,1);
-INSERT INTO `quotation_assignees` VALUES (3654,292,'item',3,NULL,'Gửi file PPM + file sx cho anh Dũng','2026-09-19','todo',24,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,1);
-INSERT INTO `quotation_assignees` VALUES (3655,292,'item',34,NULL,'Gửi form đăng ký tòa nhà','2026-09-21','todo',25,'Harris','2026-09-18 04:27:09','2026-09-18 04:27:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3682,292,'group',0,NULL,'procurement',NULL,'todo',0,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3683,292,'item',3,NULL,'Báo giá',NULL,'done',1,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,1);
+INSERT INTO `quotation_assignees` VALUES (3684,292,'group',0,NULL,'idea & concept',NULL,'todo',2,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3685,292,'item',34,NULL,'Idea box bổ máu',NULL,'done',3,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3686,292,'item',34,NULL,'Idea booth + gift set',NULL,'done',4,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3687,292,'group',0,NULL,'design',NULL,'todo',5,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3688,292,'item',8,NULL,'Thiết kế KV','2026-09-07','done',6,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3689,292,'item',8,NULL,'Photobooth + frame','2026-09-17','done',7,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3690,292,'item',0,NULL,'Infographic MCL','2026-09-18','doing',8,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,109,0);
+INSERT INTO `quotation_assignees` VALUES (3691,292,'item',0,NULL,'Infographic CLL','2026-09-18','doing',9,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,84,0);
+INSERT INTO `quotation_assignees` VALUES (3692,292,'item',0,NULL,'Hanger + hashtag + bảng decor','2026-09-18','doing',10,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,84,0);
+INSERT INTO `quotation_assignees` VALUES (3693,292,'item',0,NULL,'Standee hướng dẫn và lưu ý khi hiến máu',NULL,'todo',11,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3694,292,'item',0,NULL,'Thư cảm ơn (Giấy chứng nhận người tốt)',NULL,'todo',12,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3695,292,'item',0,NULL,'Infographic bệnh học',NULL,'cwait',13,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3696,292,'group',0,NULL,'video',NULL,'todo',14,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3697,292,'item',1,NULL,'Video Vietsub','2026-09-14','done',15,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3698,292,'item',1,NULL,'Video hướng dẫn quy trình','2026-09-18','doing',16,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3699,292,'group',0,NULL,'logistic & production',NULL,'todo',17,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3700,292,'item',14,NULL,'Setup booth, tiểu cảnh, hanger, lồng đèn','2026-09-22','todo',18,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3701,292,'item',3,NULL,'Sitecheck setup cho hiến máu (lối vào, thiết bị, người hỗ trợ,...)','2026-09-16','done',19,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3702,292,'item',7,NULL,'Tìm vendor tiểu cảnh HCM',NULL,'done',20,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,1);
+INSERT INTO `quotation_assignees` VALUES (3703,292,'item',3,NULL,'Chốt phương án quán ăn / box bổ máu','2026-09-21','cwait',21,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3704,292,'item',4,NULL,'Check option quán ăn + teabreak + trà đường','2026-09-21','doing',22,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,0);
+INSERT INTO `quotation_assignees` VALUES (3705,292,'item',3,NULL,'Gửi in sticker nhóm máu','2026-09-19','todo',23,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,1);
+INSERT INTO `quotation_assignees` VALUES (3706,292,'item',3,NULL,'Gửi file PPM + file sx cho anh Dũng','2026-09-19','todo',24,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,1);
+INSERT INTO `quotation_assignees` VALUES (3707,292,'item',34,NULL,'Gửi form đăng ký tòa nhà','2026-09-21','todo',25,'Harris','2026-09-18 04:47:09','2026-09-18 04:47:09',NULL,0,0,0);
 /*!40000 ALTER TABLE `quotation_assignees` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -7504,7 +7604,7 @@ CREATE TABLE `quotation_items` (
   `is_off` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Bo qua dong nay khi cong total',
   PRIMARY KEY (`id`),
   KEY `idx_quotation` (`quotation_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32402 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=32575 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -11100,6 +11200,14 @@ INSERT INTO `quotation_items` VALUES (32398,292,'item','Account','',1.00,'Ngư�
 INSERT INTO `quotation_items` VALUES (32399,292,'item','Supporter','5 bạn/site, hỗ trợ vận chuyển trang thiết bị bệnh viện',10.00,'Người',500000.00,'',41,0.00,'',0.00,0.00,'',NULL,NULL,0);
 INSERT INTO `quotation_items` VALUES (32400,292,'item','Chụp ảnh sự kiện — 1 nhân sự (< 4h)','Bao gồm hậu kỳ cơ bản',2.00,'Ca',4000000.00,'',42,0.00,'',0.00,0.00,'',NULL,NULL,0);
 INSERT INTO `quotation_items` VALUES (32401,292,'item','Quay phim — 1 nhân sự (< 4h)','1 camera',2.00,'Ca',4000000.00,'',43,0.00,'',0.00,0.00,'',NULL,NULL,0);
+INSERT INTO `quotation_items` VALUES (32567,311,'section','Sản xuất video','',0.00,'',0.00,'',0,0.00,'',0.00,0.00,'',NULL,NULL,0);
+INSERT INTO `quotation_items` VALUES (32568,311,'item','Quay phim bác sĩ','Shooting nền xanh, 1 cam tại studio, có thu tiếng',1.00,'Gói',4000000.00,'',1,0.00,'',0.00,0.00,'',NULL,NULL,0);
+INSERT INTO `quotation_items` VALUES (32569,311,'item','Setup đèn','',1.00,'Gói',3000000.00,'',2,0.00,'',0.00,0.00,'',NULL,NULL,0);
+INSERT INTO `quotation_items` VALUES (32570,311,'item','Storyboard','',11.00,'Scene',300000.00,'',3,0.00,'',0.00,0.00,'',NULL,NULL,0);
+INSERT INTO `quotation_items` VALUES (32571,311,'item','Footage','',1.00,'Gói',3000000.00,'',4,0.00,'',0.00,0.00,'',NULL,NULL,0);
+INSERT INTO `quotation_items` VALUES (32572,311,'item','Animation','',11.00,'Scene',700000.00,'',5,0.00,'',0.00,0.00,'',NULL,NULL,0);
+INSERT INTO `quotation_items` VALUES (32573,311,'item','Editor','Nhạc + sound effect',1.00,'Gói',3000000.00,'',6,0.00,'',0.00,0.00,'',NULL,NULL,0);
+INSERT INTO `quotation_items` VALUES (32574,311,'item','Voice talent','',1.00,'Gói',5000000.00,'',7,0.00,'',0.00,0.00,'',NULL,NULL,0);
 /*!40000 ALTER TABLE `quotation_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -11256,7 +11364,7 @@ INSERT INTO `quotation_shares` VALUES (1,5,'quote','e6641b8e70c16756a7c167a6e887
 INSERT INTO `quotation_shares` VALUES (2,5,'liq','9a93c0e006c95d0ce519701b44c87393232042bf','Harris','2026-08-27 17:09:17','2026-08-28 00:14:45',3,'2026-08-28 00:14:17','9sgnq637');
 INSERT INTO `quotation_shares` VALUES (3,306,'quote','5f2904d1c71dcd9bef6f048ac89c4309f65cfe18','Harris','2026-09-15 07:15:35',NULL,2,'2026-09-15 14:16:50','856cqeby');
 INSERT INTO `quotation_shares` VALUES (4,293,'chk','950d06ac2cab80456099d8215ed77b8bf3093ca7','Harris','2026-09-18 03:07:29','2026-09-18 10:10:03',1,'2026-09-18 10:07:49','y5jbmqf5');
-INSERT INTO `quotation_shares` VALUES (5,292,'chk','16f776b5bd6124ddcf1013194b7b72bb1c811ce4','Harris','2026-09-18 03:08:33',NULL,44,'2026-09-18 11:27:27','b9yu7gzv');
+INSERT INTO `quotation_shares` VALUES (5,292,'chk','16f776b5bd6124ddcf1013194b7b72bb1c811ce4','Harris','2026-09-18 03:08:33',NULL,49,'2026-09-18 12:00:25','b9yu7gzv');
 /*!40000 ALTER TABLE `quotation_shares` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -11363,7 +11471,7 @@ CREATE TABLE `quotations` (
   KEY `idx_manage_id` (`manage_id`),
   KEY `idx_event_from` (`event_from`),
   KEY `idx_priority` (`priority`)
-) ENGINE=InnoDB AUTO_INCREMENT=311 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=312 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -11676,6 +11784,7 @@ INSERT INTO `quotations` VALUES (306,'event','11092026-169','AZ-KACD-Booth Hội
 INSERT INTO `quotations` VALUES (307,'production','11092026-170','VFR-GIFTBOX',3,6,'VFR','','3702289042','Số 47/4, ĐT 743, Khu phố Bình Phước B, Phường An Phú, Thành phố Hồ Chí Minh, Việt Nam','2026-09-11','','VND',10.00,8.00,1,1,'','Harris',NULL,'2026-09-11 08:26:01','2026-09-11 09:36:22',0,NULL,'running','','po-20260911163622-592fcc.pdf','PO-2609-0659.pdf',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'','','',0,0,0,0,NULL);
 INSERT INTO `quotations` VALUES (308,'production','14092026-171','AZ-IT-SETUP-VR',1,74,'AstraZeneca Việt Nam','thithuthao.lai@astrazeneca.com','0315158696','Tầng 18, Tòa nhà AB, Số 76, Đường Lê Lai, Phường Bến Thành, Thành phố Hồ Chí Minh, Việt Nam','2026-09-14','','VND',10.00,8.00,1,1,'','Harris',NULL,'2026-09-14 10:23:50','2026-09-15 06:22:38',0,NULL,'confirmed','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'','','',1,0,0,0,NULL);
 INSERT INTO `quotations` VALUES (309,'event','15092026-172','AZ-R&I-Internal-3009',1,20,'AstraZeneca Việt Nam','quynhmai.le@astrazeneca.com','0315158696','Tầng 18, Tòa nhà AB, Số 76, Đường Lê Lai, Phường Bến Thành, Thành phố Hồ Chí Minh, Việt Nam','2026-09-15','','VND',10.00,8.00,1,1,'','Thảo Lý',NULL,'2026-09-15 03:53:55','2026-09-15 03:57:10',0,NULL,'request','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'','','',0,0,0,0,NULL);
+INSERT INTO `quotations` VALUES (311,'media','30092026-173','PA-CumlaudeLab',4,75,'APSA','','0317301221','23/22 Nơ Trang Long, phường Gia Định, thành phố Hồ Chí Minh, Việt Nam.','2026-09-30','','VND',10.00,8.00,0,1,'','Harris',NULL,'2026-09-18 05:09:37','2026-09-18 05:19:49',0,NULL,'quote','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'','','',0,0,0,23,NULL);
 /*!40000 ALTER TABLE `quotations` ENABLE KEYS */;
 UNLOCK TABLES;
 

@@ -660,7 +660,7 @@ table.imptbl td.n{ text-align:right; font-variant-numeric:tabular-nums; white-sp
 .rowbtn:hover{ color:var(--bg); background:var(--accent); border-color:var(--accent); }
 .rowbtn.del:hover{ color:var(--text); background:var(--red); border-color:var(--red); }
 /* Kéo-thả đổi thứ tự dòng */
-table.q td.dragh{ text-align:center; font-weight:700; cursor:grab; user-select:none; position:relative; padding-top:12px; }
+table.q td.dragh{ text-align:left; padding-left:15px; font-weight:700; cursor:grab; user-select:none; position:relative; padding-top:12px; }
 table.q td.dragh:active{ cursor:grabbing; }
 table.q td.dragh .grip{ position:absolute; left:4px; top:50%; transform:translateY(-50%);
   width:8px; height:14px; opacity:0; transition:opacity .12s; pointer-events:none;
@@ -854,8 +854,37 @@ table.q tbody tr.sec td.secnm .secn{position:absolute;right:7px;top:50%;transfor
 /* Cot STT rong hon de chua nut thu gon + so La Ma + badge, khong de bi tran sang cot ten */
 /* Chua tay keo o ben trai, noi dung bat dau sau no de khong bi de len */
 table.q tbody tr.sec td.dragh{ padding-left:15px; text-align:left }
-table.q tbody tr.sec td.dragh .secno{display:inline-block;min-width:26px;text-align:left;vertical-align:middle;letter-spacing:.5px}
-table.q tbody tr.g0>td{background:rgba(var(--w-rgb),.020)}
+table.q tbody td.dragh .secno{display:inline-block;min-width:26px;text-align:left;vertical-align:middle;letter-spacing:.5px}
+    /* APSA1950: checkbox bat/tat dong -> icon con mat */
+    table.q td.dragh .rowck{
+      -webkit-appearance:none; appearance:none; box-sizing:border-box;
+      width:22px; height:19px; margin:0 5px 0 13px; padding:0;
+      border:1px solid rgba(var(--w-rgb),.22); border-radius:5px;
+      background-color:transparent; background-repeat:no-repeat;
+      background-position:center; background-size:13px 13px;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a9a9a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.9 5.4A10.6 10.6 0 0 1 12 5.2c6.3 0 10.2 6.8 10.2 6.8a19 19 0 0 1-2.8 3.7M6.4 6.9A18.5 18.5 0 0 0 1.8 12s3.9 6.8 10.2 6.8a10.4 10.4 0 0 0 4.1-.8'/%3E%3Cpath d='M9.9 9.9a3 3 0 0 0 4.2 4.2'/%3E%3Cpath d='m3 3 18 18'/%3E%3C/svg%3E");
+      cursor:pointer; vertical-align:middle;
+      transition:border-color .15s ease, background-color .15s ease }
+    table.q td.dragh .rowck:checked{
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23dff20d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.8 12S5.7 5.2 12 5.2 22.2 12 22.2 12 18.3 18.8 12 18.8 1.8 12 1.8 12Z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");
+      border-color:rgba(223,242,13,.42); background-color:rgba(223,242,13,.10) }
+    table.q td.dragh .rowck:hover:not(:disabled){ border-color:var(--accent) }
+    table.q td.dragh .rowck:disabled{ opacity:.35; cursor:default }
+    /* ===== APSA1950: canh padding cot STT + tieu de, ghim cot thao tac ===== */
+    .secph{ display:inline-block; width:17px; height:17px; margin-right:4px; vertical-align:middle }
+    .expbody .toolbar{ margin-top:13px }
+    table.q thead th:not(.sep){ padding-left:15px; padding-right:15px }
+    table.q thead th:nth-child(4), table.q thead th:nth-child(5){
+      text-align:center; padding-left:6px; padding-right:6px }
+    table.q thead th:nth-child(6){ text-align:right }
+    table.q thead th.num{ text-align:right }
+    table.q tbody td.amt, table.q tbody td.actamt{ padding-right:15px }
+    table.q thead th:last-child, table.q tbody td:last-child{
+      position:sticky; right:0; z-index:4; background-color:#0b0b0b;
+      box-shadow:-12px 0 14px -10px rgba(0,0,0,.9) }
+    table.q thead th:last-child{ background-color:#000; z-index:6 }
+    table.q tbody tr.sec td:last-child{ background-color:#25290f }
+    table.q tbody tr.g0>td{background:rgba(var(--w-rgb),.020)}
 table.q tbody tr.g1>td{background:rgba(var(--a-rgb),.042)}
 table.q tbody tr.g2>td{background:var(--blue-wash)}
 table.q tbody tr.g3>td{background:rgba(255,159,10,.048)}
@@ -3523,8 +3552,8 @@ function renderRows(){
           ? '<button type="button" class="seccol" onclick="toggleSec(\'' + it._skey + '\', event)" title="' +
             (SEC_COLLAPSED[it._skey] ? 'Mở nhóm' : 'Thu gọn nhóm') + '">' +
             svgIco(SEC_COLLAPSED[it._skey] ? ICO.right : ICO.down, 13) + '</button>'
-                      : '') +
-          (isSec ? '<span class="secno">' + label + '</span>' : label) +
+                      : '<span class="secph" aria-hidden="true"></span>') +
+          '<span class="secno">' + label + '</span>' +
         '</td>' +
       '<td' + (isSec ? ' class="secnm"' : '') + '><input value="' + esc(it.name) + '" placeholder="' + (isSec ? 'Tên nhóm (VD: Chụp ảnh)' : 'Tên hạng mục') + '" oninput="upd(' + i + ',\'name\',this.value);queueFit()" />' + (isSec && SEC_COLLAPSED[it._skey] ? '<span class="secn">' + (SEC_N[it._skey] || 0) + '</span>' : '') + '</td>' +
       '<td><textarea rows="1" placeholder="' + (isSec ? '' : 'Mô tả / thời gian / địa điểm — Enter để xuống dòng') + '" ' +
