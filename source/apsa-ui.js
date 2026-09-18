@@ -426,6 +426,18 @@
   trophy:  '<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 5.5H4.5V7A3.5 3.5 0 0 0 7 10.3M17 5.5h2.5V7A3.5 3.5 0 0 1 17 10.3"/><path d="M12 14v3.5M8.5 20.5h7l-.7-3h-5.6z"/>'
   };
 
+  function apsaAdmFlag() {
+    try {
+      var u = window.__APSA_USER || {};
+      var ok = String(u.role || '').toLowerCase() === 'admin';
+      if (document.body) document.body.classList.toggle('apsa-adm', ok);
+    } catch (e) {}
+  }
+  window.addEventListener('apsa-auth-ready', apsaAdmFlag);
+  document.addEventListener('DOMContentLoaded', apsaAdmFlag);
+  setTimeout(apsaAdmFlag, 400);
+  setTimeout(apsaAdmFlag, 1500);
+
   var NAV = [
     { home: 1, ico: 'home',   name: 'Trang chủ',        url: './index.html' },
     { ico: 'help',    name: 'Hướng dẫn hệ thống', url: './help.html', id: 108 },
@@ -500,6 +512,8 @@
     '#apsaSide:hover{ width:214px; box-shadow:16px 0 40px var(--scrim7); }' +
     '#apsaSide .as-txt{ opacity:0; white-space:nowrap; transition:opacity .13s; }' +
     '#apsaSide:hover .as-txt{ opacity:1; }' +
+    '#apsaSide .as-item.admonly{ display:none !important }' +
+    'body.apsa-adm #apsaSide .as-item.admonly{ display:flex !important }' +
     '#apsaSide .as-brand{ display:flex; align-items:center; gap:11px; width:100%;' +
       ' height:56px; flex:0 0 56px; padding:0 12px; margin:0; border-radius:0;' +
       ' background:transparent; text-decoration:none;' +
@@ -631,7 +645,6 @@
 
     for (i = 0; i < NAVX.length; i++) {
       var n = NAVX[i];
-      if (n.adm && String((window.__APSA_USER || {}).role || '').toLowerCase() !== 'admin') continue;
       if (n.home) { home = n; continue; }
       if (n.grp)  { cur = { grp: n.grp, items: [] }; groups.push(cur); continue; }
       n._i = k++;
@@ -856,7 +869,7 @@ function paintBell() {
       }
       var u  = String(n.url).toLowerCase().replace(/^\.\//, '');
       var on = !/^https?:/.test(u) && u === cur;
-      h += '<a class="as-item' + (on ? ' on' : '') + '" href="' + n.url + '" title="' + n.name + '">' +
+      h += '<a class="as-item' + (on ? ' on' : '') + (n.adm ? ' admonly' : '') + '" href="' + n.url + '" title="' + n.name + '">' +
              '<svg viewBox="0 0 24 24" aria-hidden="true">' + (I[n.ico] || I.work) + '</svg>' +
              '<span class="as-txt">' + n.name + '</span></a>';
     }

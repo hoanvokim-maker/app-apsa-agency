@@ -1,5 +1,5 @@
 {
-    "version": "2.3.1",
+    "version": "2.3.2",
     "updated": "2026-09-18",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-18",
             "note": "Phiên bản 2.3",
             "items": [
+                {
+                    "d": "2026-09-18",
+                    "v": "2.3.2",
+                    "t": "APSA1954c: menu Bao cao tai chinh an/hien bang CSS theo quyen Admin (het dua tranh voi auth)",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-18",
                     "v": "2.3.1",
