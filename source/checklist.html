@@ -65,6 +65,53 @@
   .foot { margin-top: 16px; text-align: center; font-size: 11.5px; color: var(--ink3); line-height: 1.7 }
   .state { padding: 60px 22px; text-align: center; color: var(--ink2); font-size: 14px }
   .state b { display: block; font-size: 16px; color: var(--ink); margin-bottom: 6px }
+  .tabs { display:flex; gap:6px; padding:0 22px 16px; flex-wrap:wrap; align-items:center }
+  .tab { font-family:inherit; font-size:12px; font-weight:700; padding:7px 14px; cursor:pointer;
+    border:1px solid var(--line); background:var(--card); color:var(--ink2);
+    border-radius:999px; transition:all .15s ease }
+  .tab:hover { color:var(--ink); border-color:var(--ink3) }
+  .tab.on { background:var(--ink); color:#fff; border-color:var(--ink) }
+  .navm { display:flex; align-items:center; gap:8px; margin-left:auto }
+  .navm button { font-family:inherit; font-size:13px; width:28px; height:28px; cursor:pointer;
+    border:1px solid var(--line); background:var(--card); color:var(--ink2); border-radius:8px }
+  .navm button:hover { color:var(--ink); border-color:var(--ink3) }
+  .navm b { font-size:12.5px; font-weight:700; min-width:118px; text-align:center }
+  .chip { display:block; font-size:11.5px; line-height:1.35; padding:5px 8px; border-radius:7px;
+    margin-bottom:5px; border-left:3px solid; background:var(--line2); color:var(--ink);
+    word-break:break-word }
+  .chip.s-done { border-color:var(--ok); background:var(--ok-bg) }
+  .chip.s-doing { border-color:var(--run); background:var(--run-bg) }
+  .chip.s-review { border-color:var(--rev); background:var(--rev-bg) }
+  .chip.s-cwait { border-color:var(--rev); background:var(--rev-bg) }
+  .chip.s-todo { border-color:var(--ink3); background:var(--wait-bg) }
+  .chip.late { box-shadow:inset 0 0 0 1px rgba(185,28,28,.35) }
+  .cal { display:grid; grid-template-columns:repeat(7,1fr); border-top:1px solid var(--line2) }
+  .cal .dh { font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--ink3); padding:9px 8px; text-align:center; border-bottom:1px solid var(--line2) }
+  .cal .cell { min-height:92px; padding:7px 7px 4px; border-right:1px solid var(--line2);
+    border-bottom:1px solid var(--line2) }
+  .cal .cell:nth-child(7n) { border-right:0 }
+  .cal .cell.out { background:#fbfcfe }
+  .cal .cell.today { background:#fffdf0; box-shadow:inset 0 0 0 2px rgba(29,78,216,.25) }
+  .cal .dn { font-size:11px; font-weight:700; color:var(--ink3); margin-bottom:6px }
+  .cal .cell.today .dn { color:var(--accent) }
+  .cal .cell.out .dn { opacity:.4 }
+  .tlwrap { display:flex; border-top:1px solid var(--line2); overflow:hidden }
+  .nodue { flex:0 0 190px; border-right:1px solid var(--line); padding:10px 12px;
+    background:#fbfcfe; max-height:440px; overflow:auto }
+  .nodue h4 { font-size:10px; font-weight:800; letter-spacing:.07em; text-transform:uppercase;
+    color:var(--ink3); margin-bottom:8px }
+  .tl { flex:1 1 auto; display:flex; overflow-x:auto; scroll-behavior:smooth; max-height:440px }
+  .tlcol { flex:0 0 152px; border-right:1px solid var(--line2); padding:0 8px 8px }
+  .tlcol.today { background:#fffdf0 }
+  .tlcol .th { position:sticky; top:0; background:inherit; padding:9px 0 8px; font-size:10.5px;
+    font-weight:700; color:var(--ink3); text-align:center; border-bottom:1px solid var(--line2);
+    margin-bottom:8px; line-height:1.4 }
+  .tlcol.today .th { color:var(--accent) }
+  .tlcol .th i { display:block; font-style:normal; font-size:13px; font-weight:800; color:var(--ink) }
+  .tlcol.today .th i { color:var(--accent) }
+  .tlcol.wk { background:#fafbfd }
+  .empt { font-size:11.5px; color:var(--ink3); padding:4px 0 }
   @media (max-width: 620px) {
     .wrap { padding: 18px 12px 40px }
     .head, .prog { padding-left: 16px; padding-right: 16px }
@@ -87,7 +134,7 @@
   <div class="foot" id="foot"></div>
 </div>
 <script>
-/* APSA1935 — trang cong khai: chi doc checklist theo token, khong lo thong tin noi bo */
+/* APSA1935/1937 — trang cong khai: chi doc checklist theo token */
 var API = '/api/quotation-api.php';
 var TOKEN = (function () {
   var m = location.search.match(/[?&]t=([A-Za-z0-9]{6,64})/);
@@ -97,24 +144,125 @@ var TOKEN = (function () {
 })();
 var LB = { done: 'Đã hoàn thành', doing: 'Đang làm', review: 'Đang review',
   cwait: 'Chờ khách gửi thêm thông tin', todo: 'Chưa giao' };
+var D = null, VIEW = 'list', CUR = null;
 function esc(s) {
   return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
+function el(i) { return document.getElementById(i); }
+function iso(d) {
+  var p = function (n) { return (n < 10 ? '0' : '') + n; };
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+}
+function mkd(s) { var a = String(s).slice(0, 10).split('-'); return new Date(+a[0], +a[1] - 1, +a[2]); }
 function dmy(s) {
   if (!s) return '';
   var m = String(s).slice(0, 10).match(/^(\d{4})-(\d{2})-(\d{2})$/);
   return m ? (m[3] + '/' + m[2] + '/' + m[1]) : '';
 }
-function today() {
-  var d = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; };
-  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+var TODAY = iso(new Date());
+function st9(r) { return LB[r.status] ? r.status : 'todo'; }
+function isLate(r) { var d = String(r.due || '').slice(0, 10); return !!d && st9(r) !== 'done' && d < TODAY; }
+function items() { return (D.rows || []).filter(function (r) { return r.kind === 'item'; }); }
+function chip(r) {
+  return '<span class="chip s-' + st9(r) + (isLate(r) ? ' late' : '') + '" title="'
+    + esc(r.name) + ' — ' + LB[st9(r)] + '">' + esc(r.name) + '</span>';
 }
 function fail(msg) {
-  document.getElementById('app').innerHTML =
-    '<div class="state"><b>Không mở được trang</b>' + esc(msg) + '</div>';
+  el('app').innerHTML = '<div class="state"><b>Không mở được trang</b>' + esc(msg) + '</div>';
 }
-function render(d) {
+function setView(v) {
+  VIEW = v;
+  try { localStorage.setItem('apsa_ck_view', v); } catch (e) {}
+  paint();
+}
+function shiftM(n) {
+  CUR = new Date(CUR.getFullYear(), CUR.getMonth() + n, 1);
+  paint();
+}
+function vList() {
+  var rows = D.rows || [], body = '';
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i];
+    if (r.kind === 'group') {
+      if (!String(r.name || '').trim()) continue;
+      body += '<tr class="grp"><td colspan="3">' + esc(r.name) + '</td></tr>';
+      continue;
+    }
+    var s = st9(r), due = dmy(r.due), late = isLate(r);
+    body += '<tr class="' + (s === 'done' ? 'done' : '') + '">'
+      + '<td class="c1"><div class="nm">' + esc(r.name || '—') + '</div></td>'
+      + '<td class="c2"><span class="pill p-' + s + '">' + LB[s] + '</span></td>'
+      + '<td class="c3"><span class="due ' + (late ? 'late' : (due ? '' : 'non')) + '">'
+      + (due ? esc(due) : '—') + '</span></td></tr>';
+  }
+  if (!body) body = '<tr><td colspan="3" class="empt">Chưa có đầu việc nào.</td></tr>';
+  return '<table><thead><tr><th>Công việc</th><th class="c2">Trạng thái</th>'
+    + '<th class="c3">Hạn</th></tr></thead><tbody>' + body + '</tbody></table>';
+}
+function vCal() {
+  var its = items(), byDay = {}, i, d;
+  for (i = 0; i < its.length; i++) {
+    d = String(its[i].due || '').slice(0, 10);
+    if (!d) continue;
+    (byDay[d] = byDay[d] || []).push(its[i]);
+  }
+  var y = CUR.getFullYear(), m = CUR.getMonth();
+  var first = new Date(y, m, 1), start = new Date(y, m, 1);
+  start.setDate(1 - ((first.getDay() + 6) % 7));
+  var h = '<div class="cal">';
+  var dn = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+  for (i = 0; i < 7; i++) h += '<div class="dh">' + dn[i] + '</div>';
+  for (i = 0; i < 42; i++) {
+    var cur = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+    var k = iso(cur), out = cur.getMonth() !== m;
+    if (i >= 35 && out) break;
+    h += '<div class="cell' + (out ? ' out' : '') + (k === TODAY ? ' today' : '') + '">'
+      + '<div class="dn">' + cur.getDate() + '</div>';
+    var list = byDay[k] || [];
+    for (var j = 0; j < list.length; j++) h += chip(list[j]);
+    h += '</div>';
+  }
+  return h + '</div>';
+}
+function vTl() {
+  var its = items(), withd = [], nod = [], i;
+  for (i = 0; i < its.length; i++) {
+    if (String(its[i].due || '').slice(0, 10)) withd.push(its[i]); else nod.push(its[i]);
+  }
+  var h = '<div class="tlwrap"><div class="nodue"><h4>Chưa có hạn</h4>';
+  if (!nod.length) h += '<div class="empt">Không có</div>';
+  for (i = 0; i < nod.length; i++) h += chip(nod[i]);
+  h += '</div><div class="tl" id="tlScroll">';
+  if (!withd.length) {
+    h += '<div class="empt" style="padding:20px">Chưa có đầu việc nào đặt hạn.</div>';
+    return h + '</div></div>';
+  }
+  var ds = withd.map(function (r) { return String(r.due).slice(0, 10); }).sort();
+  var a = mkd(ds[0]), b = mkd(ds[ds.length - 1]), t = mkd(TODAY);
+  if (t < a) a = t;
+  if (t > b) b = t;
+  a = new Date(a.getFullYear(), a.getMonth(), a.getDate() - 2);
+  b = new Date(b.getFullYear(), b.getMonth(), b.getDate() + 2);
+  var dn = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+  var mo = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+  var guard = 0;
+  for (var c = a; c <= b && guard < 400; c = new Date(c.getFullYear(), c.getMonth(), c.getDate() + 1)) {
+    guard++;
+    var k = iso(c), wk = (c.getDay() === 0 || c.getDay() === 6);
+    h += '<div class="tlcol' + (k === TODAY ? ' today' : (wk ? ' wk' : '')) + '"'
+      + (k === TODAY ? ' id="tlToday"' : '') + '><div class="th">' + dn[c.getDay()]
+      + '<i>' + c.getDate() + '/' + mo[c.getMonth()] + '</i></div>';
+    var any = 0;
+    for (i = 0; i < withd.length; i++) {
+      if (String(withd[i].due).slice(0, 10) === k) { h += chip(withd[i]); any++; }
+    }
+    h += '</div>';
+  }
+  return h + '</div></div>';
+}
+function paint() {
+  var d = D;
   var h = '<div class="head"><div class="code">' + esc(d.code || '') + '</div>'
     + '<h1>' + esc(d.title || 'Dự án') + '</h1><div class="meta">';
   if (d.client) h += '<span><i>Khách hàng:</i> ' + esc(d.client) + '</span>';
@@ -127,38 +275,54 @@ function render(d) {
     + (Number(d.doing) ? ' · ' + d.doing + ' đang làm' : '')
     + (Number(d.cwait) ? ' · ' + d.cwait + ' chờ khách' : '')
     + (Number(d.todo) ? ' · ' + d.todo + ' chưa giao' : '') + '</div></div>';
-  var rows = d.rows || [], now = today(), body = '';
-  for (var i = 0; i < rows.length; i++) {
-    var r = rows[i];
-    if (r.kind === 'group') {
-      if (!String(r.name || '').trim()) continue;
-      body += '<tr class="grp"><td colspan="3">' + esc(r.name) + '</td></tr>';
-      continue;
-    }
-    var st = LB[r.status] ? r.status : 'todo';
-    var due = dmy(r.due), late = (due && st !== 'done' && String(r.due).slice(0, 10) < now);
-    body += '<tr class="' + (st === 'done' ? 'done' : '') + '">'
-      + '<td class="c1"><div class="nm">' + esc(r.name || '—') + '</div></td>'
-      + '<td class="c2"><span class="pill p-' + st + '">' + LB[st] + '</span></td>'
-      + '<td class="c3"><span class="due ' + (late ? 'late' : (due ? '' : 'non')) + '">'
-      + (due ? esc(due) : '—') + '</span></td></tr>';
+  var tb = [['list', 'Bảng'], ['cal', 'Lịch'], ['tl', 'Timeline']];
+  h += '<div class="tabs">';
+  for (var i = 0; i < tb.length; i++) {
+    h += '<button type="button" class="tab' + (VIEW === tb[i][0] ? ' on' : '')
+      + '" onclick="setView(\'' + tb[i][0] + '\')">' + tb[i][1] + '</button>';
   }
-  if (!body) body = '<tr><td colspan="3" style="color:#8a93a3">Chưa có đầu việc nào.</td></tr>';
-  h += '<table><thead><tr><th>Công việc</th><th class="c2">Trạng thái</th>'
-    + '<th class="c3">Hạn</th></tr></thead><tbody>' + body + '</tbody></table>';
-  document.getElementById('app').innerHTML = h;
+  if (VIEW === 'cal') {
+    h += '<div class="navm"><button type="button" onclick="shiftM(-1)" title="Tháng trước">&lsaquo;</button>'
+      + '<b>Tháng ' + (CUR.getMonth() + 1) + '/' + CUR.getFullYear() + '</b>'
+      + '<button type="button" onclick="shiftM(1)" title="Tháng sau">&rsaquo;</button></div>';
+  }
+  h += '</div>';
+  h += (VIEW === 'cal') ? vCal() : (VIEW === 'tl' ? vTl() : vList());
+  el('app').innerHTML = h;
+  if (VIEW === 'tl') {
+    var sc = el('tlScroll'), td = el('tlToday');
+    if (sc && td) sc.scrollLeft = Math.max(0, td.offsetLeft - sc.clientWidth / 2 + 76);
+  }
   document.title = (d.title ? d.title + ' — ' : '') + 'Tiến độ dự án · APSA';
-  document.getElementById('foot').innerHTML =
+  el('foot').innerHTML =
     'Trang này cập nhật tự động theo tiến độ thực tế.<br>Vui lòng không chia sẻ đường dẫn ra ngoài.';
+}
+function boot(d) {
+  D = d;
+  try { var v = localStorage.getItem('apsa_ck_view'); if (v === 'cal' || v === 'tl' || v === 'list') VIEW = v; }
+  catch (e) {}
+  var its = items(), ds = [];
+  for (var i = 0; i < its.length; i++) {
+    var k = String(its[i].due || '').slice(0, 10);
+    if (k) ds.push(k);
+  }
+  ds.sort();
+  CUR = ds.length ? mkd(ds[Math.floor(ds.length / 2)]) : new Date();
+  CUR = new Date(CUR.getFullYear(), CUR.getMonth(), 1);
+  paint();
 }
 if (!TOKEN) {
   fail('Thiếu mã liên kết. Hãy mở đúng đường dẫn đã được gửi cho bạn.');
 } else {
   fetch(API + '?action=chk-view&t=' + encodeURIComponent(TOKEN), { cache: 'no-store' })
-    .then(function (r) { return r.json().catch(function () { return { ok: false, error: 'Máy chủ trả về dữ liệu không hợp lệ.' }; }); })
+    .then(function (r) {
+      return r.json().catch(function () {
+        return { ok: false, error: 'Máy chủ trả về dữ liệu không hợp lệ.' };
+      });
+    })
     .then(function (j) {
       if (!j || !j.ok) throw new Error((j && j.error) || 'Có lỗi xảy ra.');
-      render(j.data);
+      boot(j.data);
     })
     .catch(function (e) { fail(e.message); });
 }
