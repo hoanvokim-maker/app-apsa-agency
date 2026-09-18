@@ -1,5 +1,5 @@
 {
-    "version": "2.2.16",
+    "version": "2.2.17",
     "updated": "2026-09-18",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-17",
             "note": "Phiên bản 2.2",
             "items": [
+                {
+                    "d": "2026-09-18",
+                    "v": "2.2.17",
+                    "t": "APSA1943: key visual lam nen mo phu trang thay vi banner",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-18",
                     "v": "2.2.16",
