@@ -128,6 +128,12 @@ html[data-theme="light"] {
     .nowrap { white-space: nowrap; }
     .days { font-weight: 800; font-size: 15px; color: var(--green); }
     .reason { max-width: 280px; color: var(--text2); font-size: 12.5px; line-height: 1.5; }
+    /* APSA1956: noi dung dai (link, ghi chu) cat bot bang ... cho khoi vo layout */
+    .reason .rsn { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden; overflow-wrap: anywhere; word-break: break-word; cursor: pointer; }
+    .reason .rsn.open { display: block; -webkit-line-clamp: none; }
+    .reason .rsn.sub { -webkit-line-clamp: 1; }
+    .reason .rsn.sub.open { -webkit-line-clamp: none; }
 
     .pill {
       display: inline-block; border-radius: 999px; padding: 4px 12px;
@@ -679,7 +685,7 @@ function rowHtml(r, showWho) {
     '<td class="nowrap">' + esc(r.type_label) + '</td>' +
     '<td class="nowrap">' + esc(rangeText(r)) + '</td>' +
     '<td class="days nowrap">' + nd(r.days) + '</td>' +
-    '<td class="reason">' + esc(r.reason) + (r.handover ? '<div class="sub">Bàn giao: ' + esc(r.handover) + '</div>' : '') + '</td>' +
+    '<td class="reason"><div class="rsn" title="' + esc(r.reason) + '">' + esc(r.reason) + '</div>' + (r.handover ? '<div class="sub rsn" title="' + esc(r.handover) + '">Bàn giao: ' + esc(r.handover) + '</div>' : '') + '</td>' +
     '<td><span class="pill st-' + r.status + '">' + esc(r.status_label) + '</span>' + decided + note + '</td>' +
     (IS_ADMIN ? '<td class="nowrap">' + cal + '</td>' : '') +
     '<td><div class="acts">' + acts.join('') + '</div></td>' +
@@ -950,6 +956,13 @@ document.querySelectorAll('.mask').forEach(m => {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
 init();
+</script>
+<script>
+/* APSA1956: bam vao doan van ban bi cat de xem day du */
+document.addEventListener('click', function (e) {
+  var t = e.target && e.target.closest ? e.target.closest('.reason .rsn') : null;
+  if (t) t.classList.toggle('open');
+});
 </script>
 </body>
 </html>

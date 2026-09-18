@@ -78,7 +78,7 @@ CREATE TABLE `activity_log` (
   KEY `k_quo` (`quotation_id`),
   KEY `k_user` (`user_id`),
   KEY `k_area` (`area`)
-) ENGINE=InnoDB AUTO_INCREMENT=2756 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2759 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2830,6 +2830,9 @@ INSERT INTO `activity_log` VALUES (2752,'2026-09-18 12:58:39',1,'Harris','expens
 INSERT INTO `activity_log` VALUES (2753,'2026-09-18 12:58:44',1,'Harris','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
 INSERT INTO `activity_log` VALUES (2754,'2026-09-18 12:58:44',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
 INSERT INTO `activity_log` VALUES (2755,'2026-09-18 12:58:45',1,'Harris','quotation','close-state','Đổi trạng thái đóng',292,'28082026-155','',NULL);
+INSERT INTO `activity_log` VALUES (2756,'2026-09-18 13:26:26',34,'Trần Mai Hiền','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2757,'2026-09-18 13:26:26',34,'Trần Mai Hiền','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2758,'2026-09-18 13:26:27',34,'Trần Mai Hiền','quotation','close-state','Đổi trạng thái đóng',292,'28082026-155','',NULL);
 /*!40000 ALTER TABLE `activity_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3442,7 +3445,7 @@ CREATE TABLE `app_notifications` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `idx_user` (`user_id`,`is_read`,`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=163 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=166 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3603,6 +3606,9 @@ INSERT INTO `app_notifications` VALUES (159,8,'assign','Harris giao việc cho b
 INSERT INTO `app_notifications` VALUES (160,8,'assign','Harris giao việc cho bạn','báo giá 28082026-155 · AZ-ONCO-Blood Cancer Awareness Day','./quotation.html?q=28082026-155&tab=quote#giaoviec','Harris',0,'2026-09-18 04:11:50');
 INSERT INTO `app_notifications` VALUES (161,8,'assign','Harris giao việc cho bạn','TEST sub – phác thảo KV — báo giá 28082026-155 · AZ-ONCO-Blood Cancer Awareness Day','./quotation.html?q=28082026-155&tab=quote#giaoviec','Harris',1,'2026-09-18 04:11:55');
 INSERT INTO `app_notifications` VALUES (162,8,'assign','Harris giao việc cho bạn','TEST sub – chỉnh sửa theo feedback — báo giá 28082026-155 · AZ-ONCO-Blood Cancer Awareness Day','./quotation.html?q=28082026-155&tab=quote#giaoviec','Harris',1,'2026-09-18 04:11:55');
+INSERT INTO `app_notifications` VALUES (163,1,'leave_new','Đơn nghỉ mới: Khác — Minh Trí','Minh Trí xin nghỉ 1 ngày (Khác): 19/09/2026','/leave.html?id=27','Minh Trí',1,'2026-09-18 06:31:41');
+INSERT INTO `app_notifications` VALUES (164,8,'leave_approved','Đã duyệt: Khác — Minh Trí','Harris đã duyệt đơn nghỉ 19/09/2026 của bạn.','/leave.html?id=27','Harris',0,'2026-09-18 06:32:35');
+INSERT INTO `app_notifications` VALUES (165,4,'leave_canceled','Đã huỷ: Khác — Trang Đỗ','Harris đã huỷ đơn nghỉ 18/09/2026 của bạn.','/leave.html?id=26','Harris',0,'2026-09-18 06:50:40');
 /*!40000 ALTER TABLE `app_notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3685,7 +3691,7 @@ INSERT INTO `app_user_prefs` VALUES (9,'home','{\"order\":[1,90,91,17,18,23,24,2
 INSERT INTO `app_user_prefs` VALUES (9,'quo_recent','[{\"id\":303,\"code\":\"07092026-166\",\"title\":\"OGN-WHEB-DESIGN-MATERIAL\",\"client\":\"Organon\",\"date\":\"2026-09-07\",\"at\":1788928964897},{\"id\":140,\"code\":\"16012026-9\",\"title\":\"AZ-VDO Hope Nexium\",\"client\":\"AstraZeneca\",\"date\":\"2026-01-16\",\"at\":1788928958402}]','2026-09-09 04:42:45');
 INSERT INTO `app_user_prefs` VALUES (14,'quo_recent','[{\"id\":295,\"code\":\"03092026-158\",\"title\":\"AZ-RI-Synagis-Booth-0509\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-03\",\"at\":1789553012039},{\"id\":296,\"code\":\"04092026-159\",\"title\":\"AZ-CVRM-Webcast CKM 360 buổi số 4\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-04\",\"at\":1789441643041},{\"id\":175,\"code\":\"06112025-242\",\"title\":\"AZ-CVRM-Lokelma Launching\",\"client\":\"AstraZeneca\",\"date\":\"2025-11-06\",\"at\":1787719846081},{\"id\":158,\"code\":\"10122025-259\",\"title\":\"AZ-Bidding CVRM NC 2026\",\"client\":\"AstraZeneca\",\"date\":\"2025-12-10\",\"at\":1787719821956}]','2026-09-16 10:03:33');
 INSERT INTO `app_user_prefs` VALUES (34,'home','{\"order\":[32,26,35,30,92,95,29,1,91,98,17,18,31,90,23,25,27,34,100,101,96,97,99,28],\"hidden\":[17,18,28],\"custom\":[],\"pinned\":[32,26,35,30]}','2026-09-03 03:24:38');
-INSERT INTO `app_user_prefs` VALUES (34,'quo_recent','[{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1789704342340},{\"id\":296,\"code\":\"04092026-159\",\"title\":\"AZ-CVRM-Webcast CKM 360 buổi số 4\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-04\",\"at\":1788773036304}]','2026-09-18 04:05:43');
+INSERT INTO `app_user_prefs` VALUES (34,'quo_recent','[{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1789712786550},{\"id\":296,\"code\":\"04092026-159\",\"title\":\"AZ-CVRM-Webcast CKM 360 buổi số 4\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-04\",\"at\":1788773036304}]','2026-09-18 06:26:27');
 INSERT INTO `app_user_prefs` VALUES (34,'ui','{\"font_size\":\"md\"}','2026-09-03 03:26:54');
 /*!40000 ALTER TABLE `app_user_prefs` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -5762,7 +5768,7 @@ CREATE TABLE `leave_requests` (
   KEY `ix_user` (`user_id`),
   KEY `ix_status` (`status`),
   KEY `ix_start` (`start_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -5791,7 +5797,8 @@ INSERT INTO `leave_requests` VALUES (22,3,'Thảo Lý','','work_from_home','2026
 INSERT INTO `leave_requests` VALUES (23,6,'Can Kim','','work_from_home','2026-09-14','full','2026-09-14','full',1,1.0,'Chiều em qua thẳng J&J lun ạ','','approved',1,'Harris','2026-09-14 08:32:48','Chiều nay gặp lợi nhé','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABahF4jAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABahF4jAAA%3D&exvsurl=1&path=/calendar/item','2026-09-14 08:31:49','2026-09-14 08:32:51');
 INSERT INTO `leave_requests` VALUES (24,3,'Thảo Lý','','work_from_home','2026-09-18','full','2026-09-18','full',1,1.0,'Trốn tránh sự kẹt xe oe oe','','approved',1,'Harris','2026-09-16 18:42:40','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABahF4nAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABahF4nAAA%3D&exvsurl=1&path=/calendar/item','2026-09-16 18:40:11','2026-09-16 18:42:42');
 INSERT INTO `leave_requests` VALUES (25,9,'Tiên Tiên','','annual','2026-09-28','full','2026-09-29','full',1,2.0,'tiên sử dụng ngày phép để bay về trời hồi sức ạ','','approved',1,'Harris','2026-09-17 10:57:18','chúc em thượng lộ bình an','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABahF4qAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABahF4qAAA%3D&exvsurl=1&path=/calendar/item','2026-09-16 22:25:03','2026-09-17 10:57:21');
-INSERT INTO `leave_requests` VALUES (26,4,'Trang Đỗ','','other','2026-09-18','full','2026-09-18','full',1,1.0,'Em cần reset lại tâm hồn. Em sẽ hỗ trợ online. Mong a duyệt giúp e','','approved',1,'Harris','2026-09-17 16:03:23','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABahF4sAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABahF4sAAA%3D&exvsurl=1&path=/calendar/item','2026-09-17 16:02:29','2026-09-17 16:03:26');
+INSERT INTO `leave_requests` VALUES (26,4,'Trang Đỗ','','other','2026-09-18','full','2026-09-18','full',1,1.0,'Em cần reset lại tâm hồn. Em sẽ hỗ trợ online. Mong a duyệt giúp e','','canceled',1,'Harris','2026-09-18 13:50:39','','','','','','2026-09-17 16:02:29','2026-09-18 13:50:39');
+INSERT INTO `leave_requests` VALUES (27,8,'Minh Trí','','other','2026-09-19','full','2026-09-19','full',1,1.0,'Em xin phép off vài tiếng buổi sáng đi Hội chợ Print Pack bên SECC bên quận 7\nhttps://www.chanchao.com.tw/vn/preReg/?id=FFPRHCMW2026&c=26vnpp_ad_TMGoogleads&utm_source=26vnpp_ad_TMGoogleads&utm_medium=26vnpp_ad_TMGoogleads&utm_campaign=26vnpp_ad_TMGoogleads&gad_source=1&gad_campaignid=24163124299&gbraid=0AAAAAppQIUBMT5vjarLeV6Z5ECZsfFITN&gclid=CjwKCAjwn67VBhBnEiwAXUIN1bb0LSSomRzjVcT2t9cFtgfd3Yhy_N7iOSCUzv5tMvwDTMYKVYx9DRoCbggQAvD_BwE','','approved',1,'Harris','2026-09-18 13:32:33','','AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj-PvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABdwbRxAAA=','ok','','https://outlook.office365.com/owa/?itemid=AAMkAGMzYjQyMWFlLTdmYjMtNDk3Yy1hMjk5LTg0ODVkYTI4YzAxZgBGAAAAAADvDI8xlov8TYCqyTMj%2FPvJBwBezyv5FHP3RpyRaEL0TmkxAAAAAAENAABezyv5FHP3RpyRaEL0TmkxAABdwbRxAAA%3D&exvsurl=1&path=/calendar/item','2026-09-18 13:31:41','2026-09-18 13:32:35');
 /*!40000 ALTER TABLE `leave_requests` ENABLE KEYS */;
 UNLOCK TABLES;
 

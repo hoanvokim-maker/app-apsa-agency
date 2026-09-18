@@ -1,5 +1,5 @@
 {
-    "version": "2.3.4",
+    "version": "2.3.5",
     "updated": "2026-09-18",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-18",
             "note": "Phiên bản 2.3",
             "items": [
+                {
+                    "d": "2026-09-18",
+                    "v": "2.3.5",
+                    "t": "APSA1956: don xin nghi - cat bot van ban dai bang ..., bam de xem day du",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-18",
                     "v": "2.3.4",
