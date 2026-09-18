@@ -24,6 +24,8 @@
   <meta name="theme-color" content="#dff20d">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>APSA — Báo cáo tài chính</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/theme.css?v=53" />
   <script src="/apsa-ui.js?v=63"></script>
   <style>
     .wrap{ max-width:1500px; margin:0 auto; padding:18px 20px 60px }
@@ -107,6 +109,7 @@
 
   var Y = new Date().getFullYear();
   var MODE = 'y';
+  var BASIS = 'ev';
   var D = null;
 
   function range() {
@@ -132,6 +135,12 @@
     }
     h += '</select>';
     var M = [['y', 'Cả năm'], ['q9', '9 tháng gần nhất'], ['q6', '6 tháng gần nhất'], ['q3', '3 tháng gần nhất']];
+    h += '<span style="width:14px"></span>';
+    var BS = [['ev', 'Theo ng\u00e0y di\u1ec5n ra'], ['qd', 'Theo ng\u00e0y b\u00e1o gi\u00e1']];
+    for (i = 0; i < BS.length; i++) {
+      h += '<button type="button" class="pb' + (BASIS === BS[i][0] ? ' on' : '') +
+           '" data-b="' + BS[i][0] + '">' + BS[i][1] + '</button>';
+    }
     for (i = 0; i < M.length; i++) {
       h += '<button type="button" class="pb' + (MODE === M[i][0] ? ' on' : '') +
            '" data-m="' + M[i][0] + '">' + M[i][1] + '</button>';
@@ -140,7 +149,11 @@
     $('selY').onchange = function () { Y = Number(this.value) || Y; load(); };
     var bs = $('bar').querySelectorAll('.pb');
     for (i = 0; i < bs.length; i++) {
-      bs[i].onclick = function () { MODE = this.getAttribute('data-m'); load(); };
+      bs[i].onclick = function () {
+        var m = this.getAttribute('data-m'), b = this.getAttribute('data-b');
+        if (m) MODE = m; else if (b) BASIS = b;
+        load();
+      };
     }
   }
 
@@ -236,7 +249,7 @@
   function paint(d) {
     D = d;
     $('rgLbl').textContent = 'Từ ' + mlbl(d.from) + ' đến ' + mlbl(d.to) +
-      ' · tính theo ngày diễn ra sự kiện' +
+      ' · tính theo ' + (d.basis === 'qd' ? 'ngày báo giá' : 'ngày diễn ra sự kiện') +
       (d.nodate ? ' · ' + d.nodate + ' dự án chưa nhập ngày (không tính)' : '');
     kpis(d);
     chart(d.months || []);
@@ -249,7 +262,7 @@
     var r = range();
     $('chart').innerHTML = '<div class="empt">Đang tải…</div>';
     try {
-      var res = await fetch('./api/reports-api.php?from=' + r[0] + '&to=' + r[1],
+      var res = await fetch('./api/reports-api.php?from=' + r[0] + '&to=' + r[1] + '&basis=' + BASIS,
         { credentials: 'same-origin' });
       var d = await res.json();
       if (!d.ok) throw new Error(d.error || 'Lỗi');

@@ -71,6 +71,8 @@ $to = isset($_GET['to'])   ? preg_replace('/[^0-9-]/', '', (string) $_GET['to'])
 if (!preg_match('/^\d{4}-\d{2}$/', $fm)) $fm = date('Y') . '-01';
 if (!preg_match('/^\d{4}-\d{2}$/', $to)) $to = date('Y') . '-12';
 if ($to < $fm) { $tmp = $fm; $fm = $to; $to = $tmp; }
+/* Moc thoi gian: ev = ngay dien ra su kien (mac dinh), qd = ngay bao gia */
+$basis = (isset($_GET['basis']) && $_GET['basis'] === 'qd') ? 'qd' : 'ev';
 
 $months = array();
 $cur = $fm;
@@ -87,7 +89,7 @@ $d1 = date('Y-m-d', strtotime($to . '-01 +1 month'));
 $WON = array('confirmed', 'running', 'service_done', 'liq_sent', 'done', 'paid', 'dong_du_an');
 
 /* --- Doanh thu tung du an --- */
-$qsql = "SELECT q.id, q.status, q.event_date, q.client_name, q.customer_id, q.code, q.title,
+$qsql = "SELECT q.id, q.status, q.event_date, q.quotation_date, q.client_name, q.customer_id, q.code, q.title,
                 q.show_ma, q.ma_percent, q.show_vat, q.vat_percent,
                 COALESCE(s.sub, 0) AS sub
            FROM quotations q
@@ -120,7 +122,12 @@ $tot = array('rev' => 0.0, 'cost' => 0.0, 'n' => 0, 'paid' => 0.0);
 
 foreach ($pdo->query($qsql) as $r) {
     if (!in_array((string) $r['status'], $WON, true)) continue;
-    $ev = rp_evdate($r['event_date']);
+    if ($basis === 'qd') {
+        $ev = substr(trim((string) $r['quotation_date']), 0, 10);
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $ev)) $ev = '';
+    } else {
+        $ev = rp_evdate($r['event_date']);
+    }
     if ($ev === '') { $nodate++; continue; }
     if ($ev < $d0 || $ev >= $d1) continue;
     $ym = substr($ev, 0, 7);
@@ -208,6 +215,7 @@ foreach ($cusL as $i => $v) {
 
 rp_out(array(
     'ok'     => true,
+    'basis'  => $basis,
     'from'   => $fm,
     'to'     => $to,
     'months' => $out,
