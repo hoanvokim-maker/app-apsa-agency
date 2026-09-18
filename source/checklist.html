@@ -304,8 +304,8 @@ function paint() {
 }
 function boot(d) {
   D = d;
-  try { var v = localStorage.getItem('apsa_ck_view'); if (v === 'cal' || v === 'tl' || v === 'list') VIEW = v; }
-  catch (e) {}
+  /* APSA1941: luon mo o dang Bang cho lan dau, khong nho lua chon cu */
+  VIEW = 'list';
   var its = items(), ds = [];
   for (var i = 0; i < its.length; i++) {
     var k = String(its[i].due || '').slice(0, 10);

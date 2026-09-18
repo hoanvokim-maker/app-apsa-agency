@@ -2228,7 +2228,7 @@ function ckEsc(v) {
   return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
-function ckUrl(t) { return location.origin + '/ck/' + t; }
+function ckUrl(sh) { return location.origin + '/ck/' + ((sh && (sh.slug || sh.token)) || ''); }
 function ckClose() { var o = document.getElementById('ckOv'); if (o) o.classList.remove('on'); }
 function cklBox(inner) {
   var o = document.getElementById('ckOv');
@@ -2249,7 +2249,7 @@ function ckPaint() {
       + '<button class="hbtn pri" type="button" onclick="ckOn()">Bật link</button></div>';
     cklBox(h); return;
   }
-  var u = ckUrl(CK_SH.token);
+  var u = ckUrl(CK_SH);
   h += '<div class="cku">' + ckEsc(u) + '</div><div class="ckqr" id="ckQr"></div>'
     + '<div class="ckp">Đã xem: <b>' + (Number(CK_SH.views) || 0) + '</b> lượt'
     + (CK_SH.last_view_at ? ' &middot; gần nhất ' + ckEsc(String(CK_SH.last_view_at).slice(0, 16)) : '')
@@ -2292,7 +2292,7 @@ async function ckOff() {
 }
 async function ckCopy(b) {
   if (!CK_SH || !CK_SH.token) return;
-  const u = ckUrl(CK_SH.token), old = b.textContent;
+  const u = ckUrl(CK_SH), old = b.textContent;
   try { await navigator.clipboard.writeText(u); }
   catch (e) {
     const ta = document.createElement('textarea');

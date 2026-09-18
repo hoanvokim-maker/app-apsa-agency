@@ -2000,12 +2000,42 @@ function qs_scope($v)
 }
 
 /** Doc ban ghi chia se tu token — nguon duy nhat cho moi trang cong khai. */
+/* ===== APSA1940: link chia se co ma ngan de doc ===== */
+function qs_slugCol(PDO $pdo)
+{
+    static $done = false;
+    if ($done) return;
+    $done = true;
+    try {
+        $has = $pdo->query("SHOW COLUMNS FROM `quotation_shares` LIKE 'slug'")->fetch();
+        if (!$has) {
+            $pdo->exec("ALTER TABLE `quotation_shares` ADD `slug` VARCHAR(16) NULL, ADD KEY `k_slug` (`slug`)");
+        }
+    } catch (PDOException $e) { }
+}
+function qs_newSlug(PDO $pdo)
+{
+    qs_ensure($pdo);
+    $al = '23456789abcdefghjkmnpqrstuvwxyz';
+    $n  = strlen($al);
+    for ($t = 0; $t < 40; $t++) {
+        $v = '';
+        for ($i = 0; $i < 8; $i++) $v .= $al[random_int(0, $n - 1)];
+        $q = $pdo->prepare("SELECT id FROM `quotation_shares` WHERE `slug` = ? LIMIT 1");
+        $q->execute(array($v));
+        if (!$q->fetch()) return $v;
+    }
+    return '';
+}
+
 function qs_byToken(PDO $pdo, $tok)
 {
-    if (!preg_match('/^[a-f0-9]{40}$/', (string) $tok)) return null;
-    qs_ensure($pdo);
-    $st = $pdo->prepare("SELECT * FROM `quotation_shares` WHERE `token` = ? AND `revoked_at` IS NULL LIMIT 1");
-    $st->execute(array((string) $tok));
+    $tok = strtolower(preg_replace('/[^A-Za-z0-9]/', '', (string) $tok));
+    if (strlen($tok) < 8 || strlen($tok) > 40) return null;
+    qs_ensure($pdo); qs_slugCol($pdo);
+    $st = $pdo->prepare("SELECT * FROM `quotation_shares`
+                         WHERE (`token` = ? OR `slug` = ?) AND `revoked_at` IS NULL LIMIT 1");
+    $st->execute(array($tok, $tok));
     $r = $st->fetch();
     return $r ? $r : null;
 }
@@ -2180,8 +2210,8 @@ case 'share-list': {
     if (!$ME) q_fail('Unauthorized', 401);
     $id = (int) (isset($_GET['id']) ? $_GET['id'] : 0);
     if (!$id) q_fail('id is required');
-    qs_ensure($pdo);
-    $st = $pdo->prepare("SELECT `scope`, `token`, `created_by`, `created_at`, `views`, `last_view_at`
+    qs_ensure($pdo); qs_slugCol($pdo);
+    $st = $pdo->prepare("SELECT `scope`, `token`, `slug`, `created_by`, `created_at`, `views`, `last_view_at`
                            FROM `quotation_shares`
                           WHERE `quotation_id` = ? AND `revoked_at` IS NULL
                        ORDER BY `id` DESC");
@@ -2201,8 +2231,8 @@ case 'share-create': {
     if (!$q) q_fail('Không tìm thấy báo giá.', 404);
     if ($scope === 'liq' && empty($q['has_liquidation'])) q_fail('Báo giá này chưa bật phần nghiệm thu.', 400);
 
-    qs_ensure($pdo);
-    $sel = $pdo->prepare("SELECT `scope`, `token`, `created_by`, `created_at`, `views`, `last_view_at`
+    qs_ensure($pdo); qs_slugCol($pdo);
+    $sel = $pdo->prepare("SELECT `scope`, `token`, `slug`, `created_by`, `created_at`, `views`, `last_view_at`
                             FROM `quotation_shares`
                            WHERE `quotation_id` = ? AND `scope` = ? AND `revoked_at` IS NULL
                         ORDER BY `id` DESC LIMIT 1");
@@ -2211,8 +2241,8 @@ case 'share-create': {
 
     if (!$row) {
         $tok = bin2hex(random_bytes(20));
-        $pdo->prepare("INSERT INTO `quotation_shares` (`quotation_id`, `scope`, `token`, `created_by`) VALUES (?, ?, ?, ?)")
-            ->execute(array($id, $scope, $tok, $WHO));
+        $pdo->prepare("INSERT INTO `quotation_shares` (`quotation_id`, `scope`, `token`, `slug`, `created_by`) VALUES (?, ?, ?, ?, ?)")
+            ->execute(array($id, $scope, $tok, qs_newSlug($pdo), $WHO));
         $sel->execute(array($id, $scope));
         $row = $sel->fetch();
     }
@@ -2225,7 +2255,7 @@ case 'share-revoke': {
     $b   = qs_body();
     $tok = (string) (isset($b['token']) ? $b['token'] : '');
     if (!preg_match('/^[a-f0-9]{40}$/', $tok)) q_fail('Token không hợp lệ.');
-    qs_ensure($pdo);
+    qs_ensure($pdo); qs_slugCol($pdo);
     $pdo->prepare("UPDATE `quotation_shares` SET `revoked_at` = NOW() WHERE `token` = ? AND `revoked_at` IS NULL")
         ->execute(array($tok));
     q_ok(array('revoked' => true));
