@@ -107,6 +107,11 @@ if (!q_hasColumn($pdo, 'quotation_assignees', 'priority')) {
     q_mig($pdo, "ALTER TABLE `quotation_assignees`
         ADD COLUMN `priority` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '0 khong / 1 binh thuong / 2 quan trong / 3 khan'");
 }
+/* APSA1945: co the tat hien thi tung viec tren link khach xem */
+if (!q_hasColumn($pdo, 'quotation_assignees', 'cli_hide')) {
+    q_mig($pdo, "ALTER TABLE `quotation_assignees`
+        ADD COLUMN `cli_hide` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1 = an viec nay khoi link khach xem'");
+}
 if (!q_hasColumn($pdo, 'quotation_assignees', 'kind')) {
     q_mig($pdo, "ALTER TABLE `quotation_assignees`
         ADD COLUMN `kind` VARCHAR(8) NOT NULL DEFAULT 'item' COMMENT 'group|item' AFTER `quotation_id`");
@@ -140,7 +145,7 @@ function q_chkRows(PDO $pdo, $qid) {
     global $ASSIGN_STATUS;
     $out = array();
     try {
-        $st = $pdo->prepare("SELECT a.id, a.kind, a.user_id, a.supplier_id, a.task, a.due_date, a.status, a.sort_order, a.priority,
+        $st = $pdo->prepare("SELECT a.id, a.kind, a.user_id, a.supplier_id, a.task, a.due_date, a.status, a.sort_order, a.priority, a.cli_hide,
                                     u.display_name, sp.name AS supplier_name
                                FROM `quotation_assignees` a
                           LEFT JOIN `app_users` u ON u.id = a.user_id
@@ -163,6 +168,7 @@ function q_chkRows(PDO $pdo, $qid) {
                 'due_date'  => $r['due_date'] ? (string) $r['due_date'] : '',
                 'status'    => isset($ASSIGN_STATUS[$stt]) ? $stt : 'todo',
                 'priority'  => (int) $r['priority'],
+                'hide'      => (int) $r['cli_hide'],
             );
         }
     } catch (PDOException $e) { }
@@ -2197,6 +2203,19 @@ case 'chk-view': {
     }
     q_thumbCol($pdo);
     $rows = q_chkRows($pdo, $qid);
+        /* APSA1945: bo viec da tat, bo luon nhom rong sau khi loc */
+        $vis = array(); $gi = -1; $gc = 0;
+        foreach ($rows as $rw) {
+            if ((string) $rw['kind'] === 'group') {
+                if ($gi >= 0 && $gc === 0) array_pop($vis);
+                $vis[] = $rw; $gi = count($vis) - 1; $gc = 0;
+                continue;
+            }
+            if (!empty($rw['hide'])) continue;
+            $vis[] = $rw; $gc++;
+        }
+        if ($gi >= 0 && $gc === 0) array_pop($vis);
+        $rows = $vis;
     $out = array(); $done = 0; $doing = 0; $todo = 0; $total = 0; $wsum = 0; $cwait = 0;
     foreach ($rows as $r) {
         if ((string) $r['kind'] === 'group') {
@@ -2485,8 +2504,8 @@ case 'assignees-save': {
     try {
         $pdo->prepare("DELETE FROM `quotation_assignees` WHERE quotation_id = ?")->execute([$qid]);
         $ins = $pdo->prepare("INSERT INTO `quotation_assignees`
-            (quotation_id, kind, user_id, supplier_id, position, task, due_date, status, sort_order, assigned_by, priority)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+            (quotation_id, kind, user_id, supplier_id, position, task, due_date, status, sort_order, assigned_by, priority, cli_hide)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
         $n = 0;
         foreach ($list as $i => $a) {
             $kd  = (isset($a['kind']) && (string) $a['kind'] === 'group') ? 'group' : 'item';
@@ -2504,7 +2523,8 @@ case 'assignees-save': {
             $ins->execute([$qid, $kd, $uid, $sup, q_asgPos($a['position'] ?? ''),
                            $nm, dateOrNull($a['due_date'] ?? ''),
                            $sttRow, $i, $WHO,
-                           max(0, min(3, (int)($a['priority'] ?? 0)))]);
+                           max(0, min(3, (int)($a['priority'] ?? 0))),
+                    (!empty($a['hide']) ? 1 : 0)]);
             $n++;
         }
         $pdo->commit();

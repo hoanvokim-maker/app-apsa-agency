@@ -957,6 +957,17 @@ table.chktbl tr.it.late select option, table.chktbl tr.it.soon select option{ ba
 table.chktbl tr.it.done > td input, table.chktbl tr.it.done > td select{ opacity:.62; }
 table.chktbl td.chk-x{ width:34px; text-align:center; }
 table.chktbl td.chk-p{ width:74px; text-align:center; }
+    /* APSA1945: nut con mat - an/hien tung viec tren link khach xem */
+    table.chktbl th.chk-eye, table.chktbl td.chk-eye{ width:52px; text-align:center }
+    .chkeye{ width:28px; height:24px; padding:0; display:inline-flex; align-items:center; justify-content:center;
+      border:1px solid var(--line, rgba(255,255,255,.14)); border-radius:6px; background:transparent;
+      color:var(--accent, #d7f205); cursor:pointer;
+      transition:color .15s ease, border-color .15s ease, opacity .15s ease }
+    .chkeye:hover{ border-color:var(--accent, #d7f205) }
+    .chkeye.off{ color:var(--muted, #8a8f98); opacity:.8 }
+    .chkeye.off:hover{ color:#ff7a7a; border-color:rgba(255,122,122,.45); opacity:1 }
+    table.chktbl tr.it.chid > td:not(.chk-eye) > input,
+    table.chktbl tr.it.chid > td:not(.chk-eye) > select{ opacity:.5 }
 table.chktbl th:nth-last-child(2){ width:74px; }
 /* APSA1812: input date an cua bo chon ngay khong duoc an theo opacity cua dong */
 table.chktbl input.dmy-h{ opacity:0 !important; }
@@ -2400,7 +2411,7 @@ async function openQuote(id, opts){
       act_amount: Number(i.act_amount)||0, act_remark: i.act_remark || '', off: Number(i.is_off)||0
     })) });
     if (!EDIT.items.length) EDIT.items = [blankItem('section')];
-    ASG = (d.checklist || []).map(a => ({ kind:a.kind||'item', name:a.name||'', user_id:Number(a.user_id)||0, supplier_id:Number(a.supplier_id)||0, due_date:a.due_date||'', status:a.status||'todo', priority:Number(a.priority)||0 }));
+    ASG = (d.checklist || []).map(a => ({ kind:a.kind||'item', name:a.name||'', user_id:Number(a.user_id)||0, supplier_id:Number(a.supplier_id)||0, due_date:a.due_date||'', status:a.status||'todo', priority:Number(a.priority)||0, hide:Number(a.hide)||0 }));
     renderAsg();
     EXP = (d.expenses || []).map(r => ({ id:Number(r.id)||0, has_proof:Number(r.has_proof)||0, proof_name:r.proof_name||'', kind:r.kind || 'item', name:r.name || '', description:r.description || '',
                                          qty:Number(r.qty)||0, unit:r.unit || '',
@@ -2483,7 +2494,24 @@ function asgGrip(i){
 function asgDnd(i){
   return ' data-ai="' + i + '" ondragover="asgDragOver(event,' + i + ')" ondragleave="asgDragLeave(event)" ondrop="asgDrop(event,' + i + ')"';
 }
-function asgBlockLen(i){
+var CHK_EYE  = '<svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 12S5.7 5.2 12 5.2 22.2 12 22.2 12 18.3 18.8 12 18.8 1.8 12 1.8 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var CHK_EYEX = '<svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.9 5.4A10.6 10.6 0 0 1 12 5.2c6.3 0 10.2 6.8 10.2 6.8a19 19 0 0 1-2.8 3.7M6.4 6.9A18.5 18.5 0 0 0 1.8 12s3.9 6.8 10.2 6.8a10.4 10.4 0 0 0 4.1-.8"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="m3 3 18 18"/></svg>';
+  function chkEyeBtn(a, i){
+    var on = !Number(a.hide);
+    return '<button type="button" class="chkeye' + (on ? '' : ' off') + '"'
+      + ' title="' + (on ? 'Khách xem được việc này. Bấm để ẩn khỏi link khách.'
+                         : 'Đang ẩn khỏi link khách. Bấm để hiện lại.') + '"'
+      + ' aria-pressed="' + (on ? 'true' : 'false') + '" onclick="chkEyeTog(' + i + ')">'
+      + (on ? CHK_EYE : CHK_EYEX) + '</button>';
+  }
+  function chkEyeTog(i){
+    if (!ASG[i] || ASG[i].kind === 'group') return;
+    ASG[i].hide = Number(ASG[i].hide) ? 0 : 1;
+    renderAsg(); markDirty();
+    try { toast(Number(ASG[i].hide) ? 'Đã ẩn việc này khỏi link khách xem'
+                                    : 'Đã hiện lại việc này cho khách', 'ok'); } catch (x) {}
+  }
+  function asgBlockLen(i){
   if (!ASG[i]) return 1;
   if (ASG[i].kind !== 'group') return 1;
   var n = 1;
@@ -2665,7 +2693,7 @@ function renderAsg(){
   const rows = ASG.map((a, i) => {
     const del = `<td class="chk-c"><button class="asgrow-x asgrow-c" type="button" title="Nhân đôi (nhóm: cả nhóm)" onclick="asgDup(${i})">${CHK_C}</button></td><td class="chk-x"><button class="asgrow-x" type="button" title="Xoá" onclick="asgDel(${i})">${CHK_X}</button></td>`;
     if (a.kind === 'group') {
-      return `<tr class="gr"${asgDnd(i)}>${asgGrip(i)}<td colspan="5"><input value="${esc(a.name || '')}" placeholder="Tên nhóm" oninput="asgSet(${i},'name',this.value)" /></td>${del}</tr>`;
+      return `<tr class="gr"${asgDnd(i)}>${asgGrip(i)}<td colspan="6"><input value="${esc(a.name || '')}" placeholder="Tên nhóm" oninput="asgSet(${i},'name',this.value)" /></td>${del}</tr>`;
     }
     let cls = '';
     if (a.status === 'done') cls = ' done';
@@ -2674,18 +2702,18 @@ function renderAsg(){
       const days = Math.round((dd - today) / 86400000);
       if (days < 0) cls = ' late'; else if (days <= 2) cls = ' soon';
     }
-    return `<tr class="it${cls}"${asgDnd(i)}>${asgGrip(i)}` +
+    return `<tr class="it${cls}${Number(a.hide) ? ' chid' : ''}"${asgDnd(i)}>${asgGrip(i)}` +
       `<td><input value="${esc(a.name || '')}" placeholder="Tên công việc" oninput="asgSet(${i},'name',this.value)" /></td>` +
       `<td style="width:210px"><select onchange="asgSet(${i},'who',this.value)">${whoOpts(a)}</select></td>` +
       `<td style="width:145px"><input type="date" value="${esc(a.due_date || '')}" onchange="asgSet(${i},'due_date',this.value)" /></td>` +
       `<td style="width:150px"><select class="asgst asgst-${a.status || 'todo'}"${(false /* APSA1847: ai cung doi duoc trang thai */) ? ' disabled title="Ch\u1ec9 ng\u01b0\u1eddi \u0111\u01b0\u1ee3c giao m\u1edbi \u0111\u1ed5i \u0111\u01b0\u1ee3c tr\u1ea1ng th\u00e1i"' : ''} onchange="asgSet(${i},'status',this.value)">${chkOpts(stats, a.status || 'todo')}</select></td>` +
-      `<td class="chk-p">${chkPrioBtn(a, i)}</td>` +
+      `<td class="chk-p">${chkPrioBtn(a, i)}</td><td class="chk-eye">${chkEyeBtn(a, i)}</td>` +
       del + `</tr>`;
   }).join('');
 
   box.innerHTML = asgProgHtml() +
     (ASG.length
-      ? `<table class="asgtbl chktbl"><thead><tr><th class="chk-grip"></th><th>Công việc</th><th>Người được giao</th><th>Hạn</th><th>Trạng thái</th><th>Ưu tiên</th><th colspan="2"></th></tr></thead><tbody>${rows}</tbody></table>`
+      ? `<table class="asgtbl chktbl"><thead><tr><th class="chk-grip"></th><th>Công việc</th><th>Người được giao</th><th>Hạn</th><th>Trạng thái</th><th>Ưu tiên</th><th class="chk-eye" title="Hiện việc này trên link khách xem">Khách</th><th colspan="2"></th></tr></thead><tbody>${rows}</tbody></table>`
       : `<div class="asgempty">Chưa có công việc nào — bấm “+ Thêm dòng”.</div>`) +
     `<div class="asgadd">` +
       `<button class="hbtn" type="button" onclick="asgAdd('group')">+ Thêm nhóm</button>` +
@@ -3016,7 +3044,7 @@ async function saveAsg(qid, quiet){
   const list = ASG.filter(a => (String(a.name||'').trim() !== '') || Number(a.user_id) > 0 || Number(a.supplier_id) > 0);
   try {
     const d = await api(API, 'assignees-save', { body: { quotation_id: qid, list } });
-    ASG = (d.list || []).map(a => ({ kind:a.kind||'item', name:a.name||'', user_id:Number(a.user_id)||0, supplier_id:Number(a.supplier_id)||0, due_date:a.due_date||'', status:a.status||'todo', priority:Number(a.priority)||0 }));
+    ASG = (d.list || []).map(a => ({ kind:a.kind||'item', name:a.name||'', user_id:Number(a.user_id)||0, supplier_id:Number(a.supplier_id)||0, due_date:a.due_date||'', status:a.status||'todo', priority:Number(a.priority)||0, hide:Number(a.hide)||0 }));
     if (!quiet) renderAsg();
   } catch(e){ toast('Không lưu được phân công: ' + e.message, 'err'); }
 }
