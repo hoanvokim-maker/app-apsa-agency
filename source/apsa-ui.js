@@ -637,7 +637,7 @@
       }
       for (jj = 0; jj < NAV.length; jj++) {
         nnx = NAV[jj];
-        if (nnx.home || nnx.grp || nnx.id == null) continue;
+        if (nnx.home || nnx.grp || (nnx.id == null && !nnx.adm)) continue;
         if (!seen[nnx.id]) outx.push(nnx);
       }
       NAVX = outx;
