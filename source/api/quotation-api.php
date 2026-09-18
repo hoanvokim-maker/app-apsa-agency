@@ -2142,7 +2142,7 @@ case 'chk-view': {
         q_fail('Du an da bi xoa.', 404);
     }
     $rows = q_chkRows($pdo, $qid);
-    $out = array(); $done = 0; $doing = 0; $todo = 0; $total = 0;
+    $out = array(); $done = 0; $doing = 0; $todo = 0; $total = 0; $wsum = 0;
     foreach ($rows as $r) {
         if ((string) $r['kind'] === 'group') {
             $out[] = array('kind' => 'group', 'name' => (string) $r['name']);
@@ -2150,9 +2150,10 @@ case 'chk-view': {
         }
         $st = (string) $r['status'];
         $total++;
-        if ($st === 'done') $done++;
-        elseif ($st === 'todo') $todo++;
-        else $doing++;
+        if ($st === 'done') { $done++; $wsum += 100; }
+        elseif ($st === 'review') { $doing++; $wsum += 75; }
+        elseif ($st === 'doing') { $doing++; $wsum += 40; }
+        else $todo++;
         $out[] = array('kind' => 'item', 'name' => (string) $r['name'],
                        'status' => $st, 'due' => (string) $r['due_date']);
     }
@@ -2166,7 +2167,8 @@ case 'chk-view': {
         'from'   => (string) $q['event_from'],
         'to'     => (string) $q['event_to'],
         'total'  => $total, 'done' => $done, 'doing' => $doing, 'todo' => $todo,
-        'pct'    => $total > 0 ? (int) round($done * 100 / $total) : 0,
+        /* cung cong thuc voi bang trong he thong: done=100, review=75, doing=40 */
+        'pct'    => $total > 0 ? (int) round($wsum / $total) : 0,
         'rows'   => $out
     ));
 }
