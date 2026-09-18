@@ -1,5 +1,5 @@
 {
-    "version": "2.2.9",
+    "version": "2.2.10",
     "updated": "2026-09-18",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-17",
             "note": "Phiên bản 2.2",
             "items": [
+                {
+                    "d": "2026-09-18",
+                    "v": "2.2.10",
+                    "t": "APSA1936: them trang thai Cho khach gui them thong tin vao checklist",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-18",
                     "v": "2.2.9",

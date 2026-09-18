@@ -115,6 +115,7 @@ if (!q_hasColumn($pdo, 'quotation_assignees', 'kind')) {
 $ASSIGN_STATUS = [
     'todo'   => 'Chưa giao',
     'doing'  => 'Đang làm',
+    'cwait'  => 'Chờ khách gửi thêm thông tin',   /* APSA1936 */
     'review' => 'Đang review',
     'done'   => 'Đã hoàn thành',
 ];
@@ -2142,7 +2143,7 @@ case 'chk-view': {
         q_fail('Du an da bi xoa.', 404);
     }
     $rows = q_chkRows($pdo, $qid);
-    $out = array(); $done = 0; $doing = 0; $todo = 0; $total = 0; $wsum = 0;
+    $out = array(); $done = 0; $doing = 0; $todo = 0; $total = 0; $wsum = 0; $cwait = 0;
     foreach ($rows as $r) {
         if ((string) $r['kind'] === 'group') {
             $out[] = array('kind' => 'group', 'name' => (string) $r['name']);
@@ -2153,6 +2154,7 @@ case 'chk-view': {
         if ($st === 'done') { $done++; $wsum += 100; }
         elseif ($st === 'review') { $doing++; $wsum += 75; }
         elseif ($st === 'doing') { $doing++; $wsum += 40; }
+        elseif ($st === 'cwait') { $cwait++; $wsum += 40; }
         else $todo++;
         $out[] = array('kind' => 'item', 'name' => (string) $r['name'],
                        'status' => $st, 'due' => (string) $r['due_date']);
@@ -2167,6 +2169,7 @@ case 'chk-view': {
         'from'   => (string) $q['event_from'],
         'to'     => (string) $q['event_to'],
         'total'  => $total, 'done' => $done, 'doing' => $doing, 'todo' => $todo,
+        'cwait'  => $cwait,
         /* cung cong thuc voi bang trong he thong: done=100, review=75, doing=40 */
         'pct'    => $total > 0 ? (int) round($wsum / $total) : 0,
         'rows'   => $out
@@ -2236,7 +2239,7 @@ case 'list': {
                    (SELECT COUNT(*) FROM quotation_items i WHERE i.quotation_id = q.id AND i.kind = 'item') AS item_count,
                        (SELECT COUNT(*) FROM quotation_assignees ca WHERE ca.quotation_id = q.id AND ca.kind <> 'group') AS task_total,
                        (SELECT COUNT(*) FROM quotation_assignees ca WHERE ca.quotation_id = q.id AND ca.kind <> 'group' AND ca.status = 'done') AS task_done,
-                       (SELECT ROUND(AVG(CASE ca.status WHEN 'done' THEN 100 WHEN 'review' THEN 75 WHEN 'doing' THEN 40 ELSE 0 END))
+                       (SELECT ROUND(AVG(CASE ca.status WHEN 'done' THEN 100 WHEN 'review' THEN 75 WHEN 'doing' THEN 40 WHEN 'cwait' THEN 40 ELSE 0 END))
                           FROM quotation_assignees ca WHERE ca.quotation_id = q.id AND ca.kind <> 'group') AS task_pct,
                    (SELECT COALESCE(SUM(i.qty * i.unit_price),0) FROM quotation_items i WHERE i.quotation_id = q.id AND i.kind = 'item') AS subtotal,
                    (SELECT COALESCE(SUM(CASE WHEN i.act_amount > 0 THEN i.act_amount ELSE i.act_qty * i.act_price END),0)

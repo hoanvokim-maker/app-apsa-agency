@@ -58,6 +58,7 @@
   .p-doing { color: var(--run); background: var(--run-bg) }
   .p-review { color: var(--rev); background: var(--rev-bg) }
   .p-todo { color: var(--wait); background: var(--wait-bg) }
+  .p-cwait { color: var(--rev); background: var(--rev-bg) }
   .due { font-size: 12.5px; color: var(--ink2); white-space: nowrap; font-variant-numeric: tabular-nums }
   .due.late { color: var(--late); font-weight: 700 }
   .due.non { color: var(--ink3) }
@@ -94,7 +95,8 @@ var TOKEN = (function () {
   m = location.pathname.match(/\/ck\/([A-Za-z0-9]{6,64})/);
   return m ? m[1] : '';
 })();
-var LB = { done: 'Đã hoàn thành', doing: 'Đang làm', review: 'Đang review', todo: 'Chưa giao' };
+var LB = { done: 'Đã hoàn thành', doing: 'Đang làm', review: 'Đang review',
+  cwait: 'Chờ khách gửi thêm thông tin', todo: 'Chưa giao' };
 function esc(s) {
   return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -123,6 +125,7 @@ function render(d) {
     + '<div class="pbar"><i style="width:' + (Number(d.pct) || 0) + '%"></i></div>'
     + '<div class="cnt"><b>' + (Number(d.done) || 0) + '/' + (Number(d.total) || 0) + '</b> việc xong'
     + (Number(d.doing) ? ' · ' + d.doing + ' đang làm' : '')
+    + (Number(d.cwait) ? ' · ' + d.cwait + ' chờ khách' : '')
     + (Number(d.todo) ? ' · ' + d.todo + ' chưa giao' : '') + '</div></div>';
   var rows = d.rows || [], now = today(), body = '';
   for (var i = 0; i < rows.length; i++) {
