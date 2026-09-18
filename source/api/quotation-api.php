@@ -154,7 +154,7 @@ function q_chkRows(PDO $pdo, $qid) {
                            ORDER BY a.sort_order ASC, a.id ASC");
         $st->execute(array((int) $qid));
         foreach ($st->fetchAll() as $r) {
-            $kd  = ((string) $r['kind'] === 'group') ? 'group' : 'item';
+            $kd  = in_array((string) $r['kind'], array('group','sub'), true) ? (string) $r['kind'] : 'item';
             $stt = (string) $r['status'];
             $out[] = array(
                 'id'        => (int) $r['id'],
@@ -2204,14 +2204,22 @@ case 'chk-view': {
     q_thumbCol($pdo);
     $rows = q_chkRows($pdo, $qid);
         /* APSA1945: bo viec da tat, bo luon nhom rong sau khi loc */
-        $vis = array(); $gi = -1; $gc = 0;
+        $vis = array(); $gi = -1; $gc = 0; $ph = false;
         foreach ($rows as $rw) {
-            if ((string) $rw['kind'] === 'group') {
+            $rk = (string) $rw['kind'];
+            if ($rk === 'group') {
                 if ($gi >= 0 && $gc === 0) array_pop($vis);
-                $vis[] = $rw; $gi = count($vis) - 1; $gc = 0;
+                $vis[] = $rw; $gi = count($vis) - 1; $gc = 0; $ph = false;
                 continue;
             }
-            if (!empty($rw['hide'])) continue;
+            /* APSA1946: an viec cha thi an luon sub-task cua no */
+            if ($rk === 'sub') {
+                if ($ph || !empty($rw['hide'])) continue;
+                $vis[] = $rw; $gc++;
+                continue;
+            }
+            $ph = !empty($rw['hide']);
+            if ($ph) continue;
             $vis[] = $rw; $gc++;
         }
         if ($gi >= 0 && $gc === 0) array_pop($vis);
@@ -2229,7 +2237,7 @@ case 'chk-view': {
         elseif ($st === 'doing') { $doing++; $wsum += 40; }
         elseif ($st === 'cwait') { $cwait++; $wsum += 40; }
         else $todo++;
-        $out[] = array('kind' => 'item', 'name' => (string) $r['name'],
+        $out[] = array('kind' => ((string) $r['kind'] === 'sub' ? 'sub' : 'item'), 'name' => (string) $r['name'],
                        'status' => $st, 'due' => (string) $r['due_date']);
     }
     $pdo->prepare("UPDATE `quotation_shares` SET `views` = `views` + 1, `last_view_at` = NOW() WHERE `id` = ?")
@@ -2508,7 +2516,8 @@ case 'assignees-save': {
             VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
         $n = 0;
         foreach ($list as $i => $a) {
-            $kd  = (isset($a['kind']) && (string) $a['kind'] === 'group') ? 'group' : 'item';
+            $kd  = (isset($a['kind']) && in_array((string) $a['kind'], array('group','sub'), true))
+                ? (string) $a['kind'] : 'item';
             $uid = (int)($a['user_id'] ?? 0);
             $nm  = s((string)($a['name'] ?? ($a['task'] ?? '')), 300);
             $sup = (int)($a['supplier_id'] ?? 0);

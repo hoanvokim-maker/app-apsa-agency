@@ -141,6 +141,32 @@
     td.c2 { display: inline-block !important; padding-right: 8px }
     td.c3 { display: inline-block !important; padding-left: 0 }
   }
+    /* APSA1946/1947: nen rieng tung nhom, dong/mo nhom, viec con, ngay su kien */
+    tbody tr.g0{ --gt:#eef2ff; --gb:#c7d2fe }
+    tbody tr.g1{ --gt:#ecfdf5; --gb:#a7f3d0 }
+    tbody tr.g2{ --gt:#fff7ed; --gb:#fed7aa }
+    tbody tr.g3{ --gt:#fdf2f8; --gb:#fbcfe8 }
+    tbody tr.g4{ --gt:#eff6ff; --gb:#bfdbfe }
+    tbody tr.g5{ --gt:#fefce8; --gb:#fde68a }
+    tbody tr.grp td{ background:var(--gt, #f7f9fc); cursor:pointer;
+      -webkit-user-select:none; user-select:none }
+    tbody tr.grp:hover td{ filter:brightness(.97) }
+    tbody tr.grp .car{ display:inline-block; width:15px; font-size:9px;
+      color:var(--ink3); vertical-align:1px }
+    tbody tr.grp .gct{ float:right; font-size:10.5px; font-weight:700;
+      color:var(--ink3); letter-spacing:0 }
+    tbody tr td.c1{ box-shadow:inset 3px 0 0 var(--gb, transparent) }
+    tbody tr.sub td.c1 .nm{ padding-left:20px; font-size:12.5px; color:var(--ink2) }
+    tbody tr.sub td.c1 .nm .sb{ margin-left:-16px; margin-right:5px; opacity:.5 }
+    .chip.sub{ font-size:10.5px; opacity:.92 }
+    .cal .cell.ev{ background:rgba(225,29,72,.07); border-color:rgba(225,29,72,.38) }
+    .cal .cell.ev .dn{ color:#e11d48; font-weight:800 }
+    .cal .cell.ev .dn::after{ content:' ● SỰ KIỆN'; font-size:8.5px;
+      letter-spacing:.08em; font-weight:800 }
+    .tl .tlcol.ev{ background:rgba(225,29,72,.06) }
+    .tl .tlcol.ev .th{ color:#e11d48; background:rgba(225,29,72,.11) }
+    .tl .tlcol.ev .th i{ color:#e11d48; opacity:1 }
+
 </style>
 </head>
 <body>
@@ -179,10 +205,11 @@ function dmy(s) {
 var TODAY = iso(new Date());
 function st9(r) { return LB[r.status] ? r.status : 'todo'; }
 function isLate(r) { var d = String(r.due || '').slice(0, 10); return !!d && st9(r) !== 'done' && d < TODAY; }
-function items() { return (D.rows || []).filter(function (r) { return r.kind === 'item'; }); }
+function items() { return (D.rows || []).filter(function (r) { return r.kind !== 'group'; }); }
 function chip(r) {
-  return '<span class="chip s-' + st9(r) + (isLate(r) ? ' late' : '') + '" title="'
-    + esc(r.name) + ' — ' + LB[st9(r)] + '">' + esc(r.name) + '</span>';
+  var sb = (r.kind === 'sub');
+  return '<span class="chip s-' + st9(r) + (isLate(r) ? ' late' : '') + (sb ? ' sub' : '') + '" title="'
+    + esc(r.name) + ' — ' + LB[st9(r)] + '">' + (sb ? '↳ ' : '') + esc(r.name) + '</span>';
 }
 function fail(msg) {
   el('app').innerHTML = '<div class="state"><b>Không mở được trang</b>' + esc(msg) + '</div>';
@@ -196,19 +223,39 @@ function shiftM(n) {
   CUR = new Date(CUR.getFullYear(), CUR.getMonth() + n, 1);
   paint();
 }
+var COLL = {};
+function tgGrp(k) { COLL[k] = !COLL[k]; paint(); }
+/* APSA1947: ngay dien ra su kien */
+function isEv(k) {
+  var f = String((D && D.from) || '').slice(0, 10);
+  var t = String((D && D.to) || '').slice(0, 10) || f;
+  return !!f && k >= f && k <= t;
+}
 function vList() {
-  var rows = D.rows || [], body = '';
-  for (var i = 0; i < rows.length; i++) {
+  var rows = D.rows || [], body = '', gi = -1, hid = false, i, j;
+  for (i = 0; i < rows.length; i++) {
     var r = rows[i];
     if (r.kind === 'group') {
-      if (!String(r.name || '').trim()) continue;
-      body += '<tr class="grp"><td colspan="3">' + esc(r.name) + '</td></tr>';
+      if (!String(r.name || '').trim()) { gi = -1; hid = false; continue; }
+      gi++;
+      var tot = 0, dne = 0;
+      for (j = i + 1; j < rows.length && rows[j].kind !== 'group'; j++) {
+        tot++; if (st9(rows[j]) === 'done') dne++;
+      }
+      hid = !!COLL[gi];
+      body += '<tr class="grp g' + (gi % 6) + (hid ? ' cl' : '') + '" onclick="tgGrp(' + gi + ')">'
+        + '<td colspan="3"><span class="car">' + (hid ? '▸' : '▾') + '</span>'
+        + esc(r.name) + '<span class="gct">' + dne + '/' + tot + '</span></td></tr>';
       continue;
     }
-    var s = st9(r), due = dmy(r.due), late = isLate(r);
-    body += '<tr class="' + (s === 'done' ? 'done' : '') + '">'
-      + '<td class="c1"><div class="nm">' + esc(r.name || '—') + '</div></td>'
-      + '<td class="c2"><span class="pill p-' + s + '">' + LB[s] + '</span></td>'
+    if (hid) continue;
+    var st = st9(r), due = dmy(r.due), late = isLate(r);
+    body += '<tr class="g' + (gi < 0 ? 0 : gi % 6) + (st === 'done' ? ' done' : '')
+        + (r.kind === 'sub' ? ' sub' : '') + '">'
+      + '<td class="c1"><div class="nm">'
+      + (r.kind === 'sub' ? '<span class="sb">↳</span>' : '')
+      + esc(r.name || '—') + '</div></td>'
+      + '<td class="c2"><span class="pill p-' + st + '">' + LB[st] + '</span></td>'
       + '<td class="c3"><span class="due ' + (late ? 'late' : (due ? '' : 'non')) + '">'
       + (due ? esc(due) : '—') + '</span></td></tr>';
   }
@@ -233,7 +280,7 @@ function vCal() {
     var cur = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
     var k = iso(cur), out = cur.getMonth() !== m;
     if (i >= 35 && out) break;
-    h += '<div class="cell' + (out ? ' out' : '') + (k === TODAY ? ' today' : '') + '">'
+    h += '<div class="cell' + (out ? ' out' : '') + (k === TODAY ? ' today' : '') + (isEv(k) ? ' ev' : '') + '">'
       + '<div class="dn">' + cur.getDate() + '</div>';
     var list = byDay[k] || [];
     for (var j = 0; j < list.length; j++) h += chip(list[j]);
@@ -258,6 +305,10 @@ function vTl() {
   var a = mkd(ds[0]), b = mkd(ds[ds.length - 1]), t = mkd(TODAY);
   if (t < a) a = t;
   if (t > b) b = t;
+    /* APSA1947: keo dai timeline de luon thay ngay su kien */
+    var _ef = String(D.from || '').slice(0, 10), _et = String(D.to || '').slice(0, 10) || _ef;
+    if (_ef) { var _ea = mkd(_ef), _eb = mkd(_et);
+      if (_ea && _ea < a) a = _ea; if (_eb && _eb > b) b = _eb; }
   a = new Date(a.getFullYear(), a.getMonth(), a.getDate() - 2);
   b = new Date(b.getFullYear(), b.getMonth(), b.getDate() + 2);
   var dn = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
@@ -266,7 +317,7 @@ function vTl() {
   for (var c = a; c <= b && guard < 400; c = new Date(c.getFullYear(), c.getMonth(), c.getDate() + 1)) {
     guard++;
     var k = iso(c), wk = (c.getDay() === 0 || c.getDay() === 6);
-    h += '<div class="tlcol' + (k === TODAY ? ' today' : (wk ? ' wk' : '')) + '"'
+    h += '<div class="tlcol' + (k === TODAY ? ' today' : (wk ? ' wk' : '')) + (isEv(k) ? ' ev' : '') + '"'
       + (k === TODAY ? ' id="tlToday"' : '') + '><div class="th">' + dn[c.getDay()]
       + '<i>' + c.getDate() + '/' + mo[c.getMonth()] + '</i></div>';
     var any = 0;
