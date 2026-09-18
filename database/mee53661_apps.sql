@@ -78,7 +78,7 @@ CREATE TABLE `activity_log` (
   KEY `k_quo` (`quotation_id`),
   KEY `k_user` (`user_id`),
   KEY `k_area` (`area`)
-) ENGINE=InnoDB AUTO_INCREMENT=2635 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2641 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2709,6 +2709,12 @@ INSERT INTO `activity_log` VALUES (2631,'2026-09-18 11:16:44',1,'Harris','checkl
 INSERT INTO `activity_log` VALUES (2632,'2026-09-18 11:17:39',1,'Harris','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
 INSERT INTO `activity_log` VALUES (2633,'2026-09-18 11:17:39',1,'Harris','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
 INSERT INTO `activity_log` VALUES (2634,'2026-09-18 11:17:42',1,'Harris','quotation','close-state','Đổi trạng thái đóng',292,'28082026-155','',NULL);
+INSERT INTO `activity_log` VALUES (2635,'2026-09-18 11:22:54',8,'Minh Trí','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2636,'2026-09-18 11:22:54',8,'Minh Trí','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2637,'2026-09-18 11:22:55',8,'Minh Trí','quotation','close-state','Đổi trạng thái đóng',292,'28082026-155','',NULL);
+INSERT INTO `activity_log` VALUES (2638,'2026-09-18 11:24:35',8,'Minh Trí','quotation','co-info','Sửa thông tin công ty',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2639,'2026-09-18 11:24:35',8,'Minh Trí','checklist','assign-meta','Sửa chi tiết công việc',0,'','',NULL);
+INSERT INTO `activity_log` VALUES (2640,'2026-09-18 11:24:36',8,'Minh Trí','quotation','close-state','Đổi trạng thái đóng',292,'28082026-155','',NULL);
 /*!40000 ALTER TABLE `activity_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3480,8 +3486,8 @@ INSERT INTO `app_notifications` VALUES (157,1,'assign','Thảo Lý giao việc c
 INSERT INTO `app_notifications` VALUES (158,1,'pay_due','Khoan chi den han thanh toan','- Led / CÔNG TY TNHH TỨ QUANG MINH / 33.588.000 d / 18/09 (den han hom nay)\nDu an: 07032026-37 - OGN-Symposium 2026','./chi-phi.html','He thong',0,'2026-09-18 04:11:49');
 INSERT INTO `app_notifications` VALUES (159,8,'assign','Harris giao việc cho bạn','TEST sub-task B — báo giá 28082026-155 · AZ-ONCO-Blood Cancer Awareness Day','./quotation.html?q=28082026-155&tab=quote#giaoviec','Harris',0,'2026-09-18 04:11:50');
 INSERT INTO `app_notifications` VALUES (160,8,'assign','Harris giao việc cho bạn','báo giá 28082026-155 · AZ-ONCO-Blood Cancer Awareness Day','./quotation.html?q=28082026-155&tab=quote#giaoviec','Harris',0,'2026-09-18 04:11:50');
-INSERT INTO `app_notifications` VALUES (161,8,'assign','Harris giao việc cho bạn','TEST sub – phác thảo KV — báo giá 28082026-155 · AZ-ONCO-Blood Cancer Awareness Day','./quotation.html?q=28082026-155&tab=quote#giaoviec','Harris',0,'2026-09-18 04:11:55');
-INSERT INTO `app_notifications` VALUES (162,8,'assign','Harris giao việc cho bạn','TEST sub – chỉnh sửa theo feedback — báo giá 28082026-155 · AZ-ONCO-Blood Cancer Awareness Day','./quotation.html?q=28082026-155&tab=quote#giaoviec','Harris',0,'2026-09-18 04:11:55');
+INSERT INTO `app_notifications` VALUES (161,8,'assign','Harris giao việc cho bạn','TEST sub – phác thảo KV — báo giá 28082026-155 · AZ-ONCO-Blood Cancer Awareness Day','./quotation.html?q=28082026-155&tab=quote#giaoviec','Harris',1,'2026-09-18 04:11:55');
+INSERT INTO `app_notifications` VALUES (162,8,'assign','Harris giao việc cho bạn','TEST sub – chỉnh sửa theo feedback — báo giá 28082026-155 · AZ-ONCO-Blood Cancer Awareness Day','./quotation.html?q=28082026-155&tab=quote#giaoviec','Harris',1,'2026-09-18 04:11:55');
 /*!40000 ALTER TABLE `app_notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3558,7 +3564,7 @@ INSERT INTO `app_user_prefs` VALUES (6,'ui','{\"font_size\":\"xl\"}','2026-08-26
 INSERT INTO `app_user_prefs` VALUES (7,'home','{\"order\":[32,1,17,18,90,23,24,25,26,35,27,34,31,29,30,28],\"hidden\":[34,31,28],\"custom\":[]}','2026-08-24 03:59:09');
 INSERT INTO `app_user_prefs` VALUES (7,'quo_recent','[{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1789703928980},{\"id\":293,\"code\":\"28082026-156\",\"title\":\"APSA-NỘI-BỘ\",\"client\":\"APSA\",\"date\":\"2026-08-28\",\"at\":1789637732436},{\"id\":304,\"code\":\"07092026-167\",\"title\":\"AZ-ONCO-Phát sinh Expert Meeting 1309\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-07\",\"at\":1789637704125},{\"id\":31,\"code\":\"17072026-119\",\"title\":\"OGN-MKT-PRODUCT-PORTFOLIO-PRODUCTION\",\"client\":\"Organon\",\"date\":\"2026-07-17\",\"at\":1789449203648},{\"id\":4,\"code\":\"18082026-146\",\"title\":\"OGN-MKT-HOIDUOCHOC-CANTHO\",\"client\":\"Organon\",\"date\":\"2026-08-18\",\"at\":1789441750135},{\"id\":298,\"code\":\"04092026-161\",\"title\":\"OGN-MKT-PRODUCT-PORTFOLIO-PRODUCTION\",\"client\":\"Organon\",\"date\":\"2026-09-04\",\"at\":1789441367850},{\"id\":296,\"code\":\"04092026-159\",\"title\":\"AZ-CVRM-Webcast CKM 360 buổi số 4\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-09-04\",\"at\":1789101089392},{\"id\":192,\"code\":\"22102025-226\",\"title\":\"OGN-MKT-HoiDuocHoc-2025\",\"client\":\"Công ty TNHH Organon\",\"date\":\"2025-10-22\",\"at\":1789009591759},{\"id\":106,\"code\":\"26032026-44\",\"title\":\"OGN-HoiDuocHoc-NhaTrang\",\"client\":\"Organon\",\"date\":\"2026-03-26\",\"at\":1789009567773},{\"id\":284,\"code\":\"25082026-152\",\"title\":\"AZ-R&I-AZ Vietnam Customer Engagement 2.0 Workshop\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-25\",\"at\":1788952596714},{\"id\":295,\"code\":\"03092026-158\",\"title\":\"AZ-RI-Synagis-Booth-0509\",\"client\":\"AstraZeneca\",\"date\":\"2026-09-03\",\"at\":1788421630073},{\"id\":3,\"code\":\"18082026-147\",\"title\":\"Decathlon-Event-FamilyDay2026\",\"client\":\"APSA\",\"date\":\"2026-08-18\",\"at\":1787568241648}]','2026-09-18 03:58:49');
 INSERT INTO `app_user_prefs` VALUES (7,'ui','{\"font_size\":\"xl\"}','2026-08-24 07:46:16');
-INSERT INTO `app_user_prefs` VALUES (8,'quo_recent','[{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1789447442214},{\"id\":140,\"code\":\"16012026-9\",\"title\":\"AZ-VDO Hope Nexium\",\"client\":\"AstraZeneca\",\"date\":\"2026-01-16\",\"at\":1788864893100},{\"id\":5,\"code\":\"17082026-145\",\"title\":\"AZ-R&I-NEXIUM-BOOTH\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-17\",\"at\":1788864725869},{\"id\":298,\"code\":\"04092026-161\",\"title\":\"OGN-MKT-PRODUCT-PORTFOLIO-PRODUCTION\",\"client\":\"Organon\",\"date\":\"2026-09-04\",\"at\":1788864710452}]','2026-09-15 04:44:02');
+INSERT INTO `app_user_prefs` VALUES (8,'quo_recent','[{\"id\":292,\"code\":\"28082026-155\",\"title\":\"AZ-ONCO-Blood Cancer Awareness Day\",\"client\":\"AstraZeneca Việt Nam\",\"date\":\"2026-08-28\",\"at\":1789705476094},{\"id\":140,\"code\":\"16012026-9\",\"title\":\"AZ-VDO Hope Nexium\",\"client\":\"AstraZeneca\",\"date\":\"2026-01-16\",\"at\":1788864893100},{\"id\":5,\"code\":\"17082026-145\",\"title\":\"AZ-R&I-NEXIUM-BOOTH\",\"client\":\"AstraZeneca\",\"date\":\"2026-08-17\",\"at\":1788864725869},{\"id\":298,\"code\":\"04092026-161\",\"title\":\"OGN-MKT-PRODUCT-PORTFOLIO-PRODUCTION\",\"client\":\"Organon\",\"date\":\"2026-09-04\",\"at\":1788864710452}]','2026-09-18 04:24:36');
 INSERT INTO `app_user_prefs` VALUES (8,'ui','{\"font_size\":\"xl\"}','2026-08-25 06:03:41');
 INSERT INTO `app_user_prefs` VALUES (9,'home','{\"order\":[1,90,91,17,18,23,24,25,26,35,27,34,32,31,29,30,28,92,95,96,97],\"hidden\":[],\"custom\":[],\"pinned\":[1,90,91]}','2026-08-28 09:39:23');
 INSERT INTO `app_user_prefs` VALUES (9,'quo_recent','[{\"id\":303,\"code\":\"07092026-166\",\"title\":\"OGN-WHEB-DESIGN-MATERIAL\",\"client\":\"Organon\",\"date\":\"2026-09-07\",\"at\":1788928964897},{\"id\":140,\"code\":\"16012026-9\",\"title\":\"AZ-VDO Hope Nexium\",\"client\":\"AstraZeneca\",\"date\":\"2026-01-16\",\"at\":1788928958402}]','2026-09-09 04:42:45');
@@ -11245,7 +11251,7 @@ INSERT INTO `quotation_shares` VALUES (1,5,'quote','e6641b8e70c16756a7c167a6e887
 INSERT INTO `quotation_shares` VALUES (2,5,'liq','9a93c0e006c95d0ce519701b44c87393232042bf','Harris','2026-08-27 17:09:17','2026-08-28 00:14:45',3,'2026-08-28 00:14:17','9sgnq637');
 INSERT INTO `quotation_shares` VALUES (3,306,'quote','5f2904d1c71dcd9bef6f048ac89c4309f65cfe18','Harris','2026-09-15 07:15:35',NULL,2,'2026-09-15 14:16:50','856cqeby');
 INSERT INTO `quotation_shares` VALUES (4,293,'chk','950d06ac2cab80456099d8215ed77b8bf3093ca7','Harris','2026-09-18 03:07:29','2026-09-18 10:10:03',1,'2026-09-18 10:07:49','y5jbmqf5');
-INSERT INTO `quotation_shares` VALUES (5,292,'chk','16f776b5bd6124ddcf1013194b7b72bb1c811ce4','Harris','2026-09-18 03:08:33',NULL,38,'2026-09-18 11:17:45','b9yu7gzv');
+INSERT INTO `quotation_shares` VALUES (5,292,'chk','16f776b5bd6124ddcf1013194b7b72bb1c811ce4','Harris','2026-09-18 03:08:33',NULL,40,'2026-09-18 11:22:14','b9yu7gzv');
 /*!40000 ALTER TABLE `quotation_shares` ENABLE KEYS */;
 UNLOCK TABLES;
 

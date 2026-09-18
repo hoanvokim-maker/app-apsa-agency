@@ -171,6 +171,20 @@
     .tl .tlcol.ev .th{ color:#e11d48; background:rgba(225,29,72,.11) }
     .tl .tlcol.ev .th i{ color:#e11d48; opacity:1 }
 
+    /* APSA1948: dong xong nen xanh, % theo nhom va theo task cha */
+    tbody tr.done td{ background:var(--ok-bg) }
+    tbody tr.grp .gct{ display:flex; align-items:center; gap:8px }
+    tbody tr.grp .gct em, .spg em{ font-style:normal; color:var(--ink3); font-weight:600 }
+    tbody tr.grp .gbar, .spg .sbar{ display:inline-block; height:5px; border-radius:99px;
+      background:rgba(16,24,40,.13); overflow:hidden }
+    tbody tr.grp .gbar{ width:70px }
+    .spg .sbar{ width:54px }
+    tbody tr.grp .gbar i, .spg .sbar i{ display:block; height:100%;
+      background:var(--ok); border-radius:99px; transition:width .2s ease }
+    .spg{ display:inline-flex; align-items:center; gap:6px; margin-left:12px; vertical-align:middle }
+    .spg b{ font-size:10.5px; font-weight:800; color:var(--ok) }
+    .spg em{ font-size:10px }
+
 </style>
 </head>
 <body>
@@ -235,6 +249,10 @@ function isEv(k) {
   var t = String((D && D.to) || '').slice(0, 10) || f;
   return !!f && k >= f && k <= t;
 }
+function w9(r) {
+  var x = st9(r);
+  return x === 'done' ? 100 : (x === 'review' ? 75 : ((x === 'doing' || x === 'cwait') ? 40 : 0));
+}
 function vList() {
   var rows = D.rows || [], body = '', gi = -1, hid = false, i, j;
   for (i = 0; i < rows.length; i++) {
@@ -242,23 +260,37 @@ function vList() {
     if (r.kind === 'group') {
       if (!String(r.name || '').trim()) { gi = -1; hid = false; continue; }
       gi++;
-      var tot = 0, dne = 0;
+      var tot = 0, dne = 0, wsum = 0;
       for (j = i + 1; j < rows.length && rows[j].kind !== 'group'; j++) {
-        tot++; if (st9(rows[j]) === 'done') dne++;
+        tot++; wsum += w9(rows[j]); if (st9(rows[j]) === 'done') dne++;
       }
+      var gp = tot ? Math.round(wsum / tot) : 0;
       hid = !!COLL[gi];
       body += '<tr class="grp g' + (gi % 6) + (hid ? ' cl' : '') + '" onclick="tgGrp(' + gi + ')">'
-        + '<td colspan="3"><span class="car"></span>'
-        + esc(r.name) + '<span class="gct">' + dne + '/' + tot + '</span></td></tr>';
+        + '<td colspan="3"><span class="car"></span>' + esc(r.name)
+        + '<span class="gct"><span class="gbar"><i style="width:' + gp + '%"></i></span>'
+        + '<b>' + gp + '%</b><em>' + dne + '/' + tot + '</em></span></td></tr>';
       continue;
     }
     if (hid) continue;
-    var st = st9(r), due = dmy(r.due), late = isLate(r);
+    var st = st9(r), due = dmy(r.due), late = isLate(r), extra = '';
+    if (r.kind === 'item') {
+      var sn = 0, sd = 0, sw = 0;
+      for (j = i + 1; j < rows.length && rows[j].kind === 'sub'; j++) {
+        sn++; sw += w9(rows[j]); if (st9(rows[j]) === 'done') sd++;
+      }
+      if (sn) {
+        var sp = Math.round(sw / sn);
+        extra = '<span class="spg" title="' + sd + '/' + sn + ' việc con đã xong">'
+          + '<span class="sbar"><i style="width:' + sp + '%"></i></span>'
+          + '<b>' + sp + '%</b><em>' + sd + '/' + sn + '</em></span>';
+      }
+    }
     body += '<tr class="g' + (gi < 0 ? 0 : gi % 6) + (st === 'done' ? ' done' : '')
         + (r.kind === 'sub' ? ' sub' : '') + '">'
       + '<td class="c1"><div class="nm">'
       + (r.kind === 'sub' ? '<span class="sb">↳</span>' : '')
-      + esc(r.name || '—') + '</div></td>'
+      + esc(r.name || '—') + extra + '</div></td>'
       + '<td class="c2"><span class="pill p-' + st + '">' + LB[st] + '</span></td>'
       + '<td class="c3"><span class="due ' + (late ? 'late' : (due ? '' : 'non')) + '">'
       + (due ? esc(due) : '—') + '</span></td></tr>';
