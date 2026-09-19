@@ -1,5 +1,5 @@
 {
-    "version": "2.5.1",
+    "version": "2.5.2",
     "updated": "2026-09-19",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-19",
             "note": "Phiên bản 2.5",
             "items": [
+                {
+                    "d": "2026-09-19",
+                    "v": "2.5.2",
+                    "t": "APSA1964: bang mau nhom chuyen sang tong lanh, danh rieng do/cam cho deadline gap va xanh la cho da xong",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-19",
                     "v": "2.5.1",
