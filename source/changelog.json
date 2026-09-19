@@ -1,7 +1,20 @@
 {
-    "version": "2.4.6",
+    "version": "2.5.0",
     "updated": "2026-09-19",
     "releases": [
+        {
+            "v": "2.5",
+            "date": "2026-09-19",
+            "note": "Phiên bản 2.5",
+            "items": [
+                {
+                    "d": "2026-09-19",
+                    "v": "2.5.0",
+                    "t": "APSA1962: nen dong theo do gap deadline (qua han do dam / hom nay do nhat / con 3 ngay cam / xong xanh); APSA1963: dien thoai gon 1 hang moi viec, phan cap nhom-viec-viec con, thanh tien do va ten nhom dinh tren dau",
+                    "by": "mee53661"
+                }
+            ]
+        },
         {
             "v": "2.4",
             "date": "2026-09-19",
