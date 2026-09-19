@@ -228,6 +228,25 @@
       .seg .tab{ flex:1 1 0; justify-content:center; padding:8px 4px; gap:5px; font-size:11.5px }
       .seg .tab svg{ width:14px; height:14px; flex:0 0 14px }
     }
+  
+    /* APSA1958b: tren dien thoai gom moi dong thanh 1 the, nen mau phu kin dong */
+    @media (max-width: 620px) {
+      tbody tr{ display:block; padding:11px 16px 12px; border-bottom:1px solid var(--line2);
+        box-shadow:inset 3px 0 0 var(--gb, transparent) }
+      tbody tr:last-child{ border-bottom:0 }
+      tbody td{ display:block; padding:0 !important; border:0 !important;
+        background:transparent !important; box-shadow:none !important }
+      tbody tr.done{ background:#e4f6ec }
+      tbody tr.grp{ padding:10px 16px; background:var(--gt, #f7f9fc); box-shadow:none;
+        border-bottom:1px solid var(--line2) }
+      tbody tr.grp td{ padding:0 !important }
+      tbody td.c1{ margin-bottom:7px; font-size:13.5px; line-height:1.4 }
+      tbody tr.grp td.c1{ margin-bottom:0 }
+      tbody td.c2, tbody td.c3{ display:inline-block !important; vertical-align:middle }
+      tbody td.c2{ padding-right:10px !important }
+      tbody tr.grp .gbar{ width:52px }
+      .dsub{ display:block; margin-top:2px }
+    }
   </style>
 </head>
 <body>
