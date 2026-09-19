@@ -500,6 +500,16 @@ function paint() {
   h += '</div>';
   h += (VIEW === 'cal') ? vCal() : (VIEW === 'tl' ? vTl() : vList());
   el('app').innerHTML = h;
+    /* APSA1958d: tren dien thoai keo lich thang toi ngay hom nay */
+    if (VIEW === 'cal') {
+      var cw = document.querySelector('.cal');
+      var cc = cw && (cw.querySelector('.cell.today') || cw.querySelector('.cell.ev'));
+      if (cw && cc && cw.scrollWidth > cw.clientWidth + 4) {
+        var q1 = cw.getBoundingClientRect(), q2 = cc.getBoundingClientRect();
+        cw.scrollLeft = Math.max(0, cw.scrollLeft + (q2.left - q1.left)
+          - (cw.clientWidth / 2) + (q2.width / 2));
+      }
+    }
   if (VIEW === 'tl') {
       /* APSA1947: cuon toi hom nay (hoac ngay su kien) cho chac an */
       var sc = el('tlScroll');
