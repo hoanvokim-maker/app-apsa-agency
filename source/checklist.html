@@ -301,6 +301,19 @@
         padding:9px 14px; background:var(--gt, #f7f9fc) }
       tbody tr.grp td{ display:block; padding:0 !important }
     }
+  
+    /* APSA1963b: sua xep hang 3 o tren 1 dong + tra lai nen mau cho dong */
+    @media (max-width: 620px) {
+      tbody td.c2{ grid-column:1; grid-row:1 }
+      tbody td.c1{ grid-column:2; grid-row:1 }
+      tbody td.c3{ grid-column:3; grid-row:1 }
+      tbody tr.over  { background:#ffe0e0 }
+      tbody tr.dtoday{ background:#fff0ee }
+      tbody tr.soon  { background:#fff4e0 }
+      tbody tr.done  { background:#e4f6ec }
+      tbody tr.grp .gbar{ margin-left:8px }
+      tbody tr.grp .gct{ margin-left:auto }
+    }
   </style>
 </head>
 <body>
