@@ -891,19 +891,23 @@ html[data-theme="light"] {
         <a class="biz-card" href="./quotation.html">
           <div class="biz-lbl">Dự án đã nhận · tháng <b id="bizAM">--</b></div>
           <div class="biz-num" id="bizAN">–</div>
-          <div class="biz-val" id="bizAV">&nbsp;</div>
           <div class="biz-sub" id="bizAS"></div>
         </a>
         <a class="biz-card" href="./quotation.html">
           <div class="biz-lbl">Dự kiến chạy · tháng <b id="bizBM">--</b></div>
           <div class="biz-num" id="bizBN">–</div>
-          <div class="biz-val" id="bizBV">&nbsp;</div>
           <div class="biz-sub" id="bizBS"></div>
         </a>
       </div>
     </section>
 
-    <section class="gsec" id="secMine" style="display:none">
+    <!-- APSA1957: cac loai du an theo trang thai -->
+        <section class="gsec" id="secType" style="display:none">
+          <div class="qhead"><span class="qtl">&#9670; C&#225;c lo&#7841;i d&#7921; &#225;n</span><span class="qline"></span><span class="qnum" id="typeNum"></span></div>
+          <div class="tp-wrap" id="tpWrap"></div>
+        </section>
+
+        <section class="gsec" id="secMine" style="display:none">
       <div class="ghead"><span class="gttl">&#9670; D&#7921; &#225;n c&#7911;a t&#244;i</span><span class="gline"></span><span class="gnum" id="mineNum"></span></div>
       <div class="biz-wrap">
         <a class="biz-card" href="./quotation.html">
@@ -1621,7 +1625,14 @@ html[data-theme="light"] {
 .tdo-s .due.late{color:var(--rose);font-weight:600}
 .tdo-empty{font-size:12px;color:var(--text2,var(--slate));padding:6px 2px}
 /* ===== Tong hop du an (v1.6.25) ===== */
-.biz-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+/* APSA1957: chip cac loai du an */
+    .tp-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+    .tp-chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:7px 14px 7px 11px;text-decoration:none;color:inherit;transition:background .15s,transform .15s}
+    .tp-chip:hover{background:rgba(var(--rgb),.06);transform:translateY(-1px)}
+    .tp-dot{width:8px;height:8px;border-radius:50%;flex:0 0 8px}
+    .tp-n{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:800;line-height:1}
+    .tp-t{font-size:11.5px;color:var(--text2,var(--slate))}
+    .biz-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
 .biz-card{display:block;padding:14px 16px;border-radius:12px;text-decoration:none;color:inherit;
   background:rgba(var(--w-rgb),.03);border:1px solid rgba(var(--w-rgb),.07);
   border-left:3px solid var(--green,var(--accent));transition:background .15s,transform .15s}
@@ -1782,30 +1793,38 @@ html[data-theme="light"] {
 
     $('bizAM').textContent = a.label || '';
     $('bizAN').textContent = a.count || 0;
-    $('bizAV').textContent = money(a.total);
-    $('bizAV').title = full(a.total);
-    $('bizAS').textContent = 'Chào giá: ' + (a.pend_count || 0) + ' · ' + money(a.pend_total)
+    $('bizAS').textContent = 'Chào giá: ' + (a.pend_count || 0) + ''
       + (a.lost ? '  ·  Trượt: ' + a.lost : '')
-      + '  ·  Tháng ' + (a.prev_label || '') + ': ' + (a.prev_count || 0) + ' · ' + money(a.prev_total);
+      + '  ·  Tháng ' + (a.prev_label || '') + ': ' + (a.prev_count || 0) + '';
 
     $('bizBM').textContent = b.label || '';
     $('bizBN').textContent = b.count || 0;
-    $('bizBV').textContent = money(b.total);
-    $('bizBV').title = full(b.total);
-    $('bizBS').textContent = 'Chào giá: ' + (b.pend_count || 0) + ' · ' + money(b.pend_total)
+    $('bizBS').textContent = 'Chào giá: ' + (b.pend_count || 0) + ''
       + (b.nodate ? '  ·  ' + b.nodate + ' dự án đang chạy chưa nhập ngày diễn ra' : '');
 
-    /* APSA1952: an moi thong tin tien bac tren trang chu voi nguoi khong phai Admin */
-    if (String((window.__APSA_USER || {}).role || '').toLowerCase() !== 'admin') {
-      $('bizAV').style.display = 'none'; $('bizAV').textContent = ''; $('bizAV').removeAttribute('title');
-      $('bizBV').style.display = 'none'; $('bizBV').textContent = ''; $('bizBV').removeAttribute('title');
-      $('bizAS').textContent = 'Chào giá: ' + (a.pend_count || 0)
-        + (a.lost ? ' · Trượt: ' + a.lost : '')
-        + ' · Tháng ' + (a.prev_label || '') + ': ' + (a.prev_count || 0);
-      $('bizBS').textContent = 'Chào giá: ' + (b.pend_count || 0)
-        + (b.nodate ? ' · ' + b.nodate + ' dự án đang chạy chưa nhập ngày diễn ra' : '');
-    }
     $('bizNum').textContent = (a.count || 0) + ' / ' + (b.count || 0);
+        /* APSA1957: cac loai du an theo nhom trang thai */
+        var TB = [
+          ['quote',  'Ch&#224;o gi&#225;',          '#f59e0b'],
+          ['run',    '&#272;ang ch&#7841;y',        '#5b8cff'],
+          ['ack',    'Nghi&#7879;m thu',            '#a78bfa'],
+          ['closed', '&#272;&#227; &#273;&#243;ng', '#22c55e'],
+          ['lost',   'Tr&#432;&#7907;t',            '#7a8494']
+        ];
+        var tby = a.by || {}, tht = '', ttt = 0;
+        for (var ti = 0; ti < TB.length; ti++) {
+          var tn = Number(tby[TB[ti][0]]) || 0;
+          ttt += tn;
+          if (!tn) continue;
+          tht += '<a class="tp-chip" href="./quotation.html">'
+            + '<i class="tp-dot" style="background:' + TB[ti][2] + '"></i>'
+            + '<b class="tp-n">' + tn + '</b><span class="tp-t">' + TB[ti][1] + '</span></a>';
+        }
+        if ($('tpWrap')) {
+          $('tpWrap').innerHTML = tht || '<span class="tp-t">Th&#225;ng n&#224;y ch&#432;a c&#243; d&#7921; &#225;n n&#224;o</span>';
+          $('typeNum').innerHTML = ttt + ' d&#7921; &#225;n';
+          $('secType').style.display = '';
+        }
     sec.style.display = '';
   }
 
@@ -1827,13 +1846,14 @@ html[data-theme="light"] {
   function g(id) { return document.getElementById(id); }
   function paintMine(d) {
     var m = d && d.mine;
+    var mo = (d && d.month) || {};
     var sec = g('secMine');
     if (!sec || !m) return;
     g('mineM1').textContent = m.label || '';
     g('mineM2').textContent = m.label || '';
     g('mineDoing').textContent = m.doing || 0;
     g('mineDone').textContent  = m.done  || 0;
-    g('mineNum').textContent   = (m.total || 0) + ' d\u1ef1 \u00e1n';
+    g('mineNum').textContent   = (m.total || 0) + ' / ' + (mo.all || 0) + ' d\u1ef1 \u00e1n';
     g('mineDoingS').textContent = (m.total || 0)
       ? 'B\u1ea1n \u0111\u01b0\u1ee3c giao vi\u1ec7c \u1edf ' + (m.total || 0)
         + ' d\u1ef1 \u00e1n th\u00e1ng n\u00e0y'

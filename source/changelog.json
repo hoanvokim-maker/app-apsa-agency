@@ -1,7 +1,20 @@
 {
-    "version": "2.3.5",
-    "updated": "2026-09-18",
+    "version": "2.4.0",
+    "updated": "2026-09-19",
     "releases": [
+        {
+            "v": "2.4",
+            "date": "2026-09-19",
+            "note": "Phiên bản 2.4",
+            "items": [
+                {
+                    "d": "2026-09-19",
+                    "v": "2.4.0",
+                    "t": "APSA1957: trang chu bo het thong tin chi phi, chi dem so luong du an; them the Cac loai du an theo trang thai; Du an cua toi hien X/Y",
+                    "by": "mee53661"
+                }
+            ]
+        },
         {
             "v": "2.3",
             "date": "2026-09-18",

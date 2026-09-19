@@ -97,6 +97,17 @@ $mon = array('count' => 0, 'total' => 0.0, 'pend_count' => 0, 'pend_total' => 0.
              'prev_count' => 0, 'prev_total' => 0.0);
 $nxt = array('count' => 0, 'total' => 0.0, 'pend_count' => 0, 'pend_total' => 0.0, 'nodate' => 0);
 
+/* APSA1957: dem du an theo nhom trang thai trong thang */
+$mon['all'] = 0;
+$mon['by']  = array('quote' => 0, 'run' => 0, 'ack' => 0, 'closed' => 0, 'lost' => 0);
+function hs_bucket($st) {
+    if (in_array($st, array('request', 'quote'), true))         return 'quote';
+    if (in_array($st, array('confirmed', 'running'), true))     return 'run';
+    if (in_array($st, array('service_done', 'liq_sent'), true)) return 'ack';
+    if ($st === 'lost')                                         return 'lost';
+    return 'closed';
+}
+
 foreach ($rows as $r) {
     $st  = (string) $r['status'];
     $won = in_array($st, $WON, true);
@@ -106,6 +117,8 @@ foreach ($rows as $r) {
     /* Khoi 1 — theo ngay tao bao gia */
     $qd = (string) $r['quotation_date'];
     if ($qd !== '' && $qd >= $m0 && $qd < $m1) {
+        $mon['all']++;
+        $mon['by'][hs_bucket($st)]++;
         if ($won) {
             $mon['count']++;
             $mon['total'] += $tot;
@@ -172,8 +185,8 @@ if ($uidMe > 0) {
     } catch (PDOException $e) { /* bo qua */ }
 }
 
-/* APSA1952: khong phai Admin thi khong gui so tien ve trinh duyet */
-if (!pm_is_admin()) {
+/* APSA1957: trang chu chi dem so luong, khong gui so tien nua */
+if (true) {
     foreach (array('total', 'pend_total', 'prev_total') as $mk) {
         if (array_key_exists($mk, $mon)) $mon[$mk] = null;
         if (array_key_exists($mk, $nxt)) $nxt[$mk] = null;
