@@ -324,6 +324,15 @@
     tbody tr.g4{ --gt:#f1f5f9; --gb:#64748b }
     tbody tr.g5{ --gt:#faf5ff; --gb:#a855f7 }
     tbody tr.grp td{ color:#334155 }
+  
+    /* APSA1965: tren may tinh cung dinh thanh tien do + dong tieu de + ten nhom */
+    @media (min-width: 621px) {
+      .prog{ position:sticky; top:0; z-index:40; background:var(--card, #fff);
+        border-bottom:1px solid var(--line2) }
+      thead th{ position:sticky; top:var(--progh, 66px); z-index:35;
+        background:var(--card, #fff) }
+      tbody tr.grp td{ position:sticky; top:var(--headh, 108px); z-index:30 }
+    }
   </style>
 </head>
 <body>
@@ -644,6 +653,25 @@ if (!TOKEN) {
   }
   window.addEventListener('scroll', f, { passive: true });
   f();
+})();
+</script>
+<script>
+/* APSA1965: do chieu cao thanh tien do de cac phan dinh xep dung cho */
+(function () {
+  function m() {
+    var p = document.querySelector('.prog');
+    var t = document.querySelector('thead th');
+    if (!p) return;
+    var ph = Math.round(p.getBoundingClientRect().height);
+    var hh = t ? Math.round(t.getBoundingClientRect().height) : 0;
+    var r = document.documentElement.style;
+    r.setProperty('--progh', ph + 'px');
+    r.setProperty('--headh', (ph + hh) + 'px');
+  }
+  window.addEventListener('resize', m, { passive: true });
+  window.addEventListener('scroll', m, { passive: true });
+  document.addEventListener('click', function () { setTimeout(m, 30); });
+  m(); setTimeout(m, 300); setTimeout(m, 1200); setTimeout(m, 2500);
 })();
 </script>
 </body>
