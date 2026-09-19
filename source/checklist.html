@@ -247,6 +247,20 @@
       tbody tr.grp .gbar{ width:52px }
       .dsub{ display:block; margin-top:2px }
     }
+  
+    /* APSA1960: HOM NAY noi bat bang nen vang nhat o Lich va Timeline */
+    .cal .cell.today:not(.ev){ background:#fff6cc; box-shadow:inset 0 0 0 2px #edbe12 }
+    .cal .cell.today:not(.ev) .dn{ color:#8a6408; font-weight:800 }
+    .cal .cell.today:not(.ev) .dn::after{ content:' \2022 H\00D4M NAY'; font-size:8.5px;
+      font-weight:800; letter-spacing:.04em }
+    .tl .tlcol.today:not(.ev){ background:#fff6cc }
+    .tl .tlcol.today:not(.ev) .th{ background:#ffeea6; color:#8a6408 }
+    .tl .tlcol.today:not(.ev) .th i{ color:#8a6408 }
+    /* APSA1958c: lich thang tren dien thoai keo ngang cho de doc */
+    @media (max-width: 620px) {
+      .cal{ grid-template-columns:repeat(7, 86px); overflow-x:auto; -webkit-overflow-scrolling:touch }
+      .cal .cell{ min-height:74px }
+    }
   </style>
 </head>
 <body>

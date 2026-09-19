@@ -1,5 +1,5 @@
 {
-    "version": "2.4.4",
+    "version": "2.4.5",
     "updated": "2026-09-19",
     "releases": [
         {
@@ -7,6 +7,12 @@
             "date": "2026-09-19",
             "note": "Phiên bản 2.4",
             "items": [
+                {
+                    "d": "2026-09-19",
+                    "v": "2.4.5",
+                    "t": "APSA1960: highlight hom nay nen vang o Lich + Timeline; APSA1958c: lich thang keo ngang tren dien thoai",
+                    "by": "mee53661"
+                },
                 {
                     "d": "2026-09-19",
                     "v": "2.4.4",
